@@ -4,6 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+// 測試 group card 是否成功導入
+import 'createGroupCard.dart';
+
 void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -51,7 +54,8 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  //State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _testPageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -143,3 +147,18 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+// 測試 group card component 的 page
+class _testPageState extends State<MyHomePage> {
+
+  String testTitle = 'Title';
+  String testDes = 'this is a test\nwith a looooooooooooooooooooooooooooong text';
+
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: CreateGroupCardView(testTitle, testDes)
+    );
+  }
+}
+
