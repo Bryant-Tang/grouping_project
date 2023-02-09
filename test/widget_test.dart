@@ -23,7 +23,7 @@ void main() {
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
 
-    // Verify that our counter has incremented.
+    // Verify that our counter has incremented.z
     expect(find.text('0'), findsNothing);
     expect(find.text('1'), findsOneWidget);
   });
