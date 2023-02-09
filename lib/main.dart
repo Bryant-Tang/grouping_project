@@ -6,6 +6,8 @@ import 'home_page.dart';
 
 // 測試 group card 是否成功導入
 import 'createGroupCard.dart';
+// 測試 card view
+import 'createCardView.dart';
 
 void main() async {
   await Firebase.initializeApp(
