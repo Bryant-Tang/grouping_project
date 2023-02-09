@@ -6,6 +6,8 @@ import 'firebase_options.dart';
 
 // 測試 group card 是否成功導入
 import 'createGroupCard.dart';
+// 測試 card view
+import 'createCardView.dart';
 
 void main() async {
   await Firebase.initializeApp(
@@ -157,7 +159,7 @@ class _testPageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      body: CreateGroupCardView(testTitle, testDes)
+      body: CreateUpcoming('personal', 'Flutter tutorial', 'we will try something new', '9:00 PM, FEB 7, 2023', '11:00 PM, FEB 7, 2023')
     );
   }
 }
