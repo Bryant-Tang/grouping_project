@@ -4,10 +4,7 @@ import 'page/loginPage.dart';
 
 import 'home_page.dart';
 
-// 測試 group card 是否成功導入
-import 'createGroupCard.dart';
-// 測試 card view
-import 'createCardView.dart';
+import 'home_page.dart';
 
 void main() async {
   await Firebase.initializeApp(
@@ -31,14 +28,6 @@ class MyApp extends StatelessWidget {
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-  @override
-  //State<MyHomePage> createState() => _MyHomePageState();
-  State<MyHomePage> createState() => _testPageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
