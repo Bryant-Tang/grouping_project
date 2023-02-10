@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:grouping_project/wrapper.dart';
-import 'package:provider/provider.dart';
-import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/model/user_model.dart';
-import 'firebase_options.dart';
+import 'page/cover.dart';
+import 'page/loginPage.dart';
 
 import 'home_page.dart';
 
@@ -37,14 +31,8 @@ class MyApp extends StatelessWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<UserModel?>.value(
-        initialData: null,
-        value: AuthService().onAuthStateChanged,
-        builder: (context, snapshot) {
-          return MaterialApp(
-            home: Wrapper(),
-          );
-        });
+    return const Scaffold(body: LoginPage());
   }
 }
+
 
