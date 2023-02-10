@@ -26,10 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.orange,
-        // 將 NotoSansTC 設為 default font family
-        fontFamily: 'NotoSansTC'
+        primarySwatch: Colors.amber,
       ),
       // 呼叫 home_page.dart
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
