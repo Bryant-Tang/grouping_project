@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
 
+<<<<<<< HEAD
 import 'dart:math';
 
 List<Color> randomColor = [Colors.amber, Colors.redAccent, Colors.lightBlue, Colors.greenAccent,
@@ -128,5 +129,10 @@ Container oneTaggedMessage(String name, String message){
         )
       ],
     ),
+=======
+Container peronalCard(){
+  return Container(
+    
+>>>>>>> 2ce20f4 (feat: fix some issue)
   );
 }

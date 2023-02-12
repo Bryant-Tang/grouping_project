@@ -8,9 +8,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
 
+<<<<<<< HEAD
 List<Color> randomColor = [Colors.amber, Colors.redAccent, Colors.lightBlue, Colors.greenAccent,
           Colors.orangeAccent, Colors.pinkAccent, Colors.purple];
 
+=======
+>>>>>>> 2ce20f4 (feat: fix some issue)
 // 建立主頁面的名片
 Container createPersonalCard(){
   return Container(
@@ -47,7 +50,11 @@ Container createPersonalCard(){
             ),
             // 創造頭貼空間的邊框
             Positioned(
+<<<<<<< HEAD
               top: 18.75,
+=======
+              top: 13.75,
+>>>>>>> 2ce20f4 (feat: fix some issue)
               left: 38.75,
               // 創造六角形的空間
               child: ClipPath(
@@ -61,7 +68,11 @@ Container createPersonalCard(){
             ),
             // 創造頭貼的空間
             Positioned(
+<<<<<<< HEAD
               top: 20,
+=======
+              top: 15,
+>>>>>>> 2ce20f4 (feat: fix some issue)
               left: 40,
               child: ClipPath(
                 clipper: hexagon(),
@@ -138,8 +149,11 @@ Container createPersonalCard(){
 
 // 建立小組專區的 component
 Container createGroupCardView(String title, String descript){
+<<<<<<< HEAD
   /// 隨機選擇使用的顏色
   Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
+=======
+>>>>>>> 2ce20f4 (feat: fix some issue)
   return Container(
         margin: EdgeInsets.all(5),
         width: 340,
@@ -165,7 +179,11 @@ Container createGroupCardView(String title, String descript){
                 width: 80,
                 height: double.infinity,
                 decoration: BoxDecoration(
+<<<<<<< HEAD
                   color: UsingColor,
+=======
+                  color: Colors.amber,
+>>>>>>> 2ce20f4 (feat: fix some issue)
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)
                   )
@@ -174,7 +192,11 @@ Container createGroupCardView(String title, String descript){
             ),
             // 創造頭貼空間的邊框
             Positioned(
+<<<<<<< HEAD
               top: 18.75,
+=======
+              top: 13.75,
+>>>>>>> 2ce20f4 (feat: fix some issue)
               left: 38.75,
               // 創造六角形的空間
               child: ClipPath(
@@ -188,7 +210,11 @@ Container createGroupCardView(String title, String descript){
             ),
             // 創造頭貼的空間
             Positioned(
+<<<<<<< HEAD
               top: 20,
+=======
+              top: 15,
+>>>>>>> 2ce20f4 (feat: fix some issue)
               left: 40,
               child: ClipPath(
                 clipper: hexagon(),
