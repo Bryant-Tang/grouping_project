@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
 
-Container CreateUpcoming(String group, String title, String descript, String date1, String date2){
+// 建立 upcoming component
+Container createUpcoming(String group, String title, String descript, String date1, String date2){
   return Container(
     width: 338,
     height: 84,
@@ -22,6 +23,7 @@ Container CreateUpcoming(String group, String title, String descript, String dat
     ),
     child: Stack(
       children: [
+        // 左方的矩形方塊
         Positioned(
           child: Container(
             width: 8,
@@ -32,6 +34,7 @@ Container CreateUpcoming(String group, String title, String descript, String dat
             ),
           ),
         ),
+        // 建立右方資訊
         Positioned(
           left: 15,
           top: 3,
@@ -39,12 +42,13 @@ Container CreateUpcoming(String group, String title, String descript, String dat
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _CreateAntiLabel(group),
+                createAntiLabel(group),
                 SizedBox(height: 1,),
                 Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                 SizedBox(height: 1,),
                 Text(descript, style: TextStyle(fontSize: 13),),
                 SizedBox(height: 1,),
+                // 建立時間, 尚未完成
                 Container(
                   child: RichText(
                     text: TextSpan(
@@ -65,7 +69,8 @@ Container CreateUpcoming(String group, String title, String descript, String dat
   );
 }
 
-Container CreateTracked(String group, String title, String descript, String date1, String date2, int state){
+// 建立track component
+Container createTracked(String group, String title, String descript, String date1, String date2, int state){
   return Container(
     width: 338,
     height: 84,
@@ -83,6 +88,7 @@ Container CreateTracked(String group, String title, String descript, String date
     ),
     child: Stack(
       children: [
+        // 左方的矩形方塊
         Positioned(
           child: Container(
             width: 8,
@@ -93,6 +99,7 @@ Container CreateTracked(String group, String title, String descript, String date
             ),
           ),
         ),
+        // 建立右方資訊
         Positioned(
           left: 15,
           top: 3,
@@ -100,12 +107,13 @@ Container CreateTracked(String group, String title, String descript, String date
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _CreateAntiLabel(group),
+                createAntiLabel(group),
                 SizedBox(height: 1,),
                 Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                 SizedBox(height: 1,),
                 Text(descript, style: TextStyle(fontSize: 13),),
                 SizedBox(height: 1,),
+                // 建立時間, 尚未完成
                 Container(
                   child: RichText(
                     text: TextSpan(
@@ -121,17 +129,20 @@ Container CreateTracked(String group, String title, String descript, String date
             ),
           ),
         ),
+        // 建立狀態
         Positioned(
-          left: 300,
+          right: 15,
           top: 60,
-          child: _CreateState(state),
+          child: createState(state),
         )
       ],
     )
   );
 }
 
-Container _CreateAntiLabel(String group){
+// 標示反白的標籤
+// event/missions屬於來自哪裡的那個標籤
+Container createAntiLabel(String group){
   return Container(
     decoration: BoxDecoration(
       color: Colors.amber,
@@ -151,7 +162,9 @@ Container _CreateAntiLabel(String group){
   );
 }
 
-Container _CreateState(int state){
+// 建立狀態
+// 尚未完工
+Container createState(int state){
   Color stateColor = (state == 0 ? Colors.grey : state == 1 ? Colors.lightBlueAccent : Colors.greenAccent);
   String stateName = (state == 0 ? 'Not Start 未開始' : state == 1 ? 'In progress 進行中' : 'Done 完成');
   

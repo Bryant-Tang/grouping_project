@@ -8,8 +8,8 @@ import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'firebase_options.dart';
 
-import 'component/createGroupCard.dart';
-import 'component/createCardView.dart';
+import 'component/business_card.dart';
+import 'component/card_view.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -37,6 +37,7 @@ class _testPageState extends State<MyHomePage> {
       child: Column(
         children: [
           // 名片位置
+          /*
           Container(
             margin: EdgeInsets.all(3),
             width: 340,
@@ -51,12 +52,13 @@ class _testPageState extends State<MyHomePage> {
                 )
               ]
             ),
-          ),
+          ),*/
+          createPersonalCard(),
           SizedBox(height: 3,),
           // 功能選擇區
           Container(
             height: 80,
-            width: 300,
+            width: 325,
             child: GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -65,26 +67,44 @@ class _testPageState extends State<MyHomePage> {
               itemCount: 4,
               itemBuilder: ((context, index){
                 return 
-                Container(margin: EdgeInsets.all(1),
-                 decoration: BoxDecoration(border: Border.all(color: Colors.black))
-                 ,child: TextButton(onPressed: (){
-                  setState(() {
-                    funtionSelect = index;
-                  });
-                },
-                child: Center(child: Text(
-                  index == 0 ?
-                    'WORKSPACE\n小組專區' :
-                  index == 1 ?
-                    'UPCOMING EVENT\n即將來臨' :
-                  index == 2 ?
-                    'TRACKED MISSION\n任務追蹤' :
-                    'TAGGED MESSAGE\n待回覆'
-                ),),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.amberAccent
-                ),
-                ));
+                Container(width: 150, margin: EdgeInsets.all(1),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: funtionSelect == index ? Colors.black : Colors.grey
+                    ),
+                  ),
+                  child: TextButton.icon(
+                    onPressed: (){
+                      setState(() {
+                      funtionSelect = index;
+                    });
+                    },
+                    icon: (
+                      index == 0 ?
+                        Icon(Icons.group) :
+                      index == 1 ?
+                        Icon(Icons.calendar_today) :
+                      index == 2 ?
+                        Icon(Icons.list) :
+                        Icon(Icons.message)
+                    ),
+                    label: Center(child: Text(
+                      index == 0 ?
+                        'WORKSPACE\n小組專區' :
+                      index == 1 ?
+                        'UPCOMING EVENT\n即將來臨' :
+                      index == 2 ?
+                        'TRACKED MISSION\n任務追蹤' :
+                        'TAGGED MESSAGE\n待回覆'
+                      , style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 12
+                      ),
+                      ),
+                      )
+                  ),
+                  );
               }) 
             ),
           ),
@@ -119,26 +139,26 @@ List<Widget> DifferentFunctionPage = [
   Expanded(
     child: ListView(
       children: [
-        CreateGroupCardView('Group 1', 'this is a test 1'),
+        createGroupCardView('Group 1', 'this is a test 1'),
         SizedBox(height: 2,),
-        CreateGroupCardView('group 2', 'this is a test 2'),
+        createGroupCardView('group 2', 'this is a test 2'),
         SizedBox(height: 2,),
-        CreateGroupCardView('group 3', 'this is a test 3'),
+        createGroupCardView('group 3', 'this is a test 3'),
         SizedBox(height: 2,),
-        CreateGroupCardView('group 4', 'this is a test 4'),
+        createGroupCardView('group 4', 'this is a test 4'),
         SizedBox(height: 2,),
-        CreateGroupCardView('group 5', 'this is a test 5'),
+        createGroupCardView('group 5', 'this is a test 5'),
         SizedBox(height: 2,),
-        CreateGroupCardView('group 6', 'this is a test 6')
+        createGroupCardView('group 6', 'this is a test 6')
       ],
     )
   ),
   Expanded(
     child: ListView(
       children: [
-        CreateUpcoming('personal', 'P+ 籃球會', '領航員 vs 富邦勇士', '9:00 PM, FEB 2, 2023', '11:00 PM, FEB 2, 2023'),
+        createUpcoming('personal', 'P+ 籃球會', '領航員 vs 富邦勇士', '9:00 PM, FEB 2, 2023', '11:00 PM, FEB 2, 2023'),
         SizedBox(height: 2,),
-        CreateUpcoming('flutter 讀書會', '例行性讀書會', '討論 UI 設計與狀態儲存', '9:00 PM, FEB2, 2023', '11:00 PM, FEB 2, 2023')
+        createUpcoming('flutter 讀書會', '例行性讀書會', '討論 UI 設計與狀態儲存', '9:00 PM, FEB2, 2023', '11:00 PM, FEB 2, 2023')
       ],
     )
   ),
@@ -147,18 +167,18 @@ List<Widget> DifferentFunctionPage = [
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       children: [
-        CreateTracked('personal', '寒假規劃表進度', '年後 ~ 開學的規劃進度', '9:00 PM, FEB 2, 2023', '11:00 PM, FEB 2, 2023', 0),
+        createTracked('personal', '寒假規劃表進度', '年後 ~ 開學的規劃進度', '9:00 PM, FEB 2, 2023', '11:00 PM, FEB 2, 2023', 0),
         SizedBox(height: 2,),
-        CreateTracked('flutter 讀書會', '例行性讀書會', '討論 UI 設計與狀態儲存', '9:00 PM, FEB2, 2023', '11:00 PM, FEB 2, 2023', 1)
+        createTracked('flutter 讀書會', '例行性讀書會', '討論 UI 設計與狀態儲存', '9:00 PM, FEB2, 2023', '11:00 PM, FEB 2, 2023', 1)
       ],
     )
   ),
   Expanded(
     child: ListView(
       children: [
-        CreateGroupCardView('Group 7', 'this is a test 7'),
+        createGroupCardView('Group 7', 'this is a test 7'),
         SizedBox(height: 2,),
-        CreateGroupCardView('group 8', 'this is a test 8')
+        createGroupCardView('group 8', 'this is a test 8')
       ],
     )
   )
