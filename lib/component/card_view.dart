@@ -4,8 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
 
+import 'dart:math';
+
+List<Color> randomColor = [Colors.amber, Colors.redAccent, Colors.lightBlue, Colors.greenAccent,
+          Colors.orangeAccent, Colors.pinkAccent, Colors.purple];
+
 // 建立 upcoming component
 Container createUpcoming(String group, String title, String descript, String date1, String date2){
+  /// 隨機選擇使用的顏色
+  Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
   return Container(
     width: 338,
     height: 84,
@@ -29,7 +36,7 @@ Container createUpcoming(String group, String title, String descript, String dat
             width: 8,
             height: 84,
             decoration: BoxDecoration(
-              color: Colors.amber,
+              color: UsingColor,
               borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5))
             ),
           ),
@@ -42,7 +49,7 @@ Container createUpcoming(String group, String title, String descript, String dat
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                createAntiLabel(group),
+                createAntiLabel(group, UsingColor),
                 SizedBox(height: 1,),
                 Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                 SizedBox(height: 1,),
@@ -71,6 +78,8 @@ Container createUpcoming(String group, String title, String descript, String dat
 
 // 建立track component
 Container createTracked(String group, String title, String descript, String date1, String date2, int state){
+  /// 隨機選擇使用的顏色
+  Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
   return Container(
     width: 338,
     height: 84,
@@ -94,7 +103,7 @@ Container createTracked(String group, String title, String descript, String date
             width: 8,
             height: 84,
             decoration: BoxDecoration(
-              color: Colors.amber,
+              color: UsingColor,
               borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5))
             ),
           ),
@@ -107,7 +116,7 @@ Container createTracked(String group, String title, String descript, String date
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                createAntiLabel(group),
+                createAntiLabel(group, UsingColor),
                 SizedBox(height: 1,),
                 Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                 SizedBox(height: 1,),
@@ -142,10 +151,10 @@ Container createTracked(String group, String title, String descript, String date
 
 // 標示反白的標籤
 // event/missions屬於來自哪裡的那個標籤
-Container createAntiLabel(String group){
+Container createAntiLabel(String group, Color UsingColor){
   return Container(
     decoration: BoxDecoration(
-      color: Colors.amber,
+      color: UsingColor,
       borderRadius: BorderRadius.circular(10)
     ),
     child: RichText(

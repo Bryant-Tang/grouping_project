@@ -10,6 +10,7 @@ import 'firebase_options.dart';
 
 import 'component/business_card.dart';
 import 'component/card_view.dart';
+import 'component/message.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -20,7 +21,7 @@ class MyHomePage extends StatefulWidget {
 
 class _testPageState extends State<MyHomePage> {
 
-  var funtionSelect = 0;
+  var funtionSelect = 3;
 
   @override
   Widget build(BuildContext context){
@@ -67,7 +68,7 @@ class _testPageState extends State<MyHomePage> {
               itemCount: 4,
               itemBuilder: ((context, index){
                 return 
-                Container(width: 150, margin: EdgeInsets.all(1),
+                Container(width: 150, margin: EdgeInsets.all(1), alignment: Alignment.centerLeft,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
@@ -89,7 +90,7 @@ class _testPageState extends State<MyHomePage> {
                         Icon(Icons.list) :
                         Icon(Icons.message)
                     ),
-                    label: Center(child: Text(
+                    label: Text(
                       index == 0 ?
                         'WORKSPACE\n小組專區' :
                       index == 1 ?
@@ -102,7 +103,6 @@ class _testPageState extends State<MyHomePage> {
                         fontSize: 12
                       ),
                       ),
-                      )
                   ),
                   );
               }) 
@@ -150,6 +150,7 @@ List<Widget> DifferentFunctionPage = [
         createGroupCardView('group 5', 'this is a test 5'),
         SizedBox(height: 2,),
         createGroupCardView('group 6', 'this is a test 6')
+        // 按下加會同時新增 SizedBox(height: 2,), 跟 createGroupCardView(title, short description)
       ],
     )
   ),
@@ -176,9 +177,10 @@ List<Widget> DifferentFunctionPage = [
   Expanded(
     child: ListView(
       children: [
-        createGroupCardView('Group 7', 'this is a test 7'),
-        SizedBox(height: 2,),
-        createGroupCardView('group 8', 'this is a test 8')
+        createMessage(1)
+        // createGroupCardView('Group 7', 'this is a test 7'),
+        // SizedBox(height: 2,),
+        // createGroupCardView('group 8', 'this is a test 8')
       ],
     )
   )
