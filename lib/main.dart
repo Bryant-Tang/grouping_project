@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
@@ -28,8 +29,10 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.orange,
           // 將 NotoSansTC 設為 default font family
           fontFamily: 'NotoSansTC'),
+      debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
       home: Wrapper(),
+      //home: MyHomePage(),
     );
   }
 }
