@@ -3,7 +3,47 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum EventState { upComing, inProgress, finish }
 
-class _Event {
+dynamic _convertEventState(dynamic state) {
+  if (state.runtimeType == int) {
+    switch (state) {
+      case 0:
+        {
+          return EventState.upComing;
+        }
+
+      case 1:
+        {
+          return EventState.inProgress;
+        }
+
+      case 2:
+        {
+          return EventState.finish;
+        }
+    }
+  } else if (state.runtimeType == EventState) {
+    switch (state) {
+      case EventState.upComing:
+        {
+          return 0;
+        }
+
+      case EventState.inProgress:
+        {
+          return 1;
+        }
+
+      case EventState.finish:
+        {
+          return 2;
+        }
+    }
+  } else {
+    return null;
+  }
+}
+
+class EventData {
   final String title;
   final DateTime startTime;
   final DateTime endTime;
@@ -13,7 +53,7 @@ class _Event {
   final List<String>? tags;
   final List<DateTime>? notifications;
 
-  _Event(
+  EventData(
       {required this.title,
       required this.startTime,
       required this.endTime,
@@ -23,43 +63,64 @@ class _Event {
       this.tags,
       this.notifications});
 
-  factory _Event.fromFirestore(
+  factory EventData.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   ) {
     final data = snapshot.data();
-    return _Event(
+
+    List<UserModel> fromFireContributors = [];
+    if (data?['notifications'] is Iterable) {
+      for (String element in List.from(data?['contributors'])) {
+        fromFireContributors.add(UserModel(uid: element));
+      }
+    }
+
+    List<DateTime> fromFireNotifications = [];
+    if (data?['notifications'] is Iterable) {
+      for (Timestamp element in List.from(data?['notifications'])) {
+        fromFireNotifications.add(element.toDate());
+      }
+    }
+
+    return EventData(
       title: data?['title'],
-      startTime: data?['start_time'],
-      endTime: data?['end_time'],
-      contributors: data?['contributors'] is Iterable
-          ? List.from(data?['contributors'])
-          : null,
+      startTime: data?['start_time'].toDate(),
+      endTime: data?['end_time'].toDate(),
+      contributors: fromFireContributors,
       introduction: data?['introduction'],
-      state: data?['state'],
+      state: _convertEventState(data?['state']),
       tags: data?['tags'] is Iterable ? List.from(data?['tags']) : null,
-      notifications: data?['notifications'] is Iterable
-          ? List.from(data?['notifications'])
-          : null,
+      notifications: fromFireNotifications,
     );
   }
 
   Map<String, dynamic> toFirestore() {
+    List<String> toFireContributors = [];
+    contributors?.forEach((element) {
+      toFireContributors.add(element.uid);
+    });
+
+    List<Timestamp> toFireNotifications = [];
+    notifications?.forEach((element) {
+      toFireNotifications.add(Timestamp.fromDate(element));
+    });
+
     return {
-      if (title != null) "title": title,
-      if (startTime != null) "start_time": startTime,
-      if (endTime != null) "end_time": endTime,
-      if (contributors != null) "contributors": contributors,
-      if (introduction != null) "introduction": introduction,
-      if (state != null) "state": state,
-      if (tags != null) "tags": tags,
-      if (notifications != null) "notifications": notifications,
+      "title": title,
+      "start_time": Timestamp.fromDate(startTime),
+      "end_time": Timestamp.fromDate(endTime),
+      "contributors": toFireContributors,
+      "introduction": introduction,
+      "state": _convertEventState(state),
+      "tags": tags,
+      "notifications": toFireNotifications,
     };
   }
 }
 
-void createEventData(
-    {required String locationId,
+Future<void> createEventData(
+    {required String userOrGroupId,
     required String eventId,
     required String title,
     required DateTime startTime,
@@ -68,8 +129,8 @@ void createEventData(
     String introduction = '',
     EventState state = EventState.inProgress,
     List<String>? tags,
-    List<DateTime>? notifications}) {
-  final newEvent = _Event(
+    List<DateTime>? notifications}) async {
+  final newEvent = EventData(
     title: title,
     startTime: startTime,
     endTime: endTime,
@@ -80,12 +141,47 @@ void createEventData(
     notifications: notifications,
   );
   final newEventLocation = FirebaseFirestore.instance
-      .doc(locationId)
+      .collection("client_properties")
+      .doc(userOrGroupId)
+      .collection("events")
+      .doc(eventId)
+      .withConverter(
+        fromFirestore: EventData.fromFirestore,
+        toFirestore: (EventData event, options) => event.toFirestore(),
+      );
+  await newEventLocation.set(newEvent);
+  return;
+}
+
+Future<EventData?> getOneEventData(
+    {required String userOrGroupId, required String eventId}) async {
+  final eventLocation = FirebaseFirestore.instance
+      .collection("client_properties")
+      .doc(userOrGroupId)
+      .collection("events")
+      .doc(eventId)
+      .withConverter(
+        fromFirestore: EventData.fromFirestore,
+        toFirestore: (EventData event, options) => event.toFirestore(),
+      );
+  final eventSnap = await eventLocation.get();
+  return eventSnap.data();
+}
+
+Future<List<EventData?>> getAllEventData(
+    {required String userOrGroupId}) async {
+  final eventLocation = FirebaseFirestore.instance
+      .collection("client_properties")
+      .doc(userOrGroupId)
       .collection("events")
       .withConverter(
-        fromFirestore: _Event.fromFirestore,
-        toFirestore: (_Event event, options) => event.toFirestore(),
-      )
-      .doc(eventId);
-  newEventLocation.set(newEvent);
+        fromFirestore: EventData.fromFirestore,
+        toFirestore: (EventData event, options) => event.toFirestore(),
+      );
+  final eventListSnap = await eventLocation.get();
+  List<EventData?> eventDataList = [];
+  for (var eventSnap in eventListSnap.docs) {
+    eventDataList.add(eventSnap.data());
+  }
+  return eventDataList;
 }
