@@ -14,13 +14,13 @@ class Home extends StatelessWidget {
         elevation: 0.0,
         actions: <Widget>[
           TextButton.icon(
-            icon: Icon(
+            icon: const Icon(
               Icons.logout_outlined,
             ),
             style: TextButton.styleFrom(
-              iconColor: Color.fromARGB(255, 255, 255, 255),
+              iconColor: const Color.fromARGB(255, 255, 255, 255),
             ),
-            label: Text('Sign out'),
+            label: const Text('Sign out'),
             onPressed: () async {
               await _authService.signOut();
               Navigator.pushReplacement(context,
