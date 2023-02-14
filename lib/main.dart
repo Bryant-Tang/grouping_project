@@ -1,14 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
-import 'page/cover.dart';
-import 'page/loginPage.dart';
-
 import 'home_page.dart';
 
 import 'home_page.dart';
+import './pages/auth/login.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -27,22 +26,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.amber,
       ),
       // 呼叫 home_page.dart
-      home: Wrapper(),
+      //home: const MyHomePage(title: 'Flutter
+      //Demo Home Page'),
+      home: const LoginPage(),
     );
-  }
-}
-
-// class MyHomePage extends StatefulWidget {
-//   const MyHomePage({super.key, required this.title});
-//   final String title;
-//   @override
-//   //State<MyHomePage> createState() => _MyHomePageState();
-//   State<MyHomePage> createState() => _testPageState();
-// }
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(body: LoginPage());
   }
 }
