@@ -9,13 +9,17 @@ import 'dart:math';
 List<Color> randomColor = [Colors.amber, Colors.redAccent, Colors.lightBlue, Colors.greenAccent,
           Colors.orangeAccent, Colors.pinkAccent, Colors.purple];
 
-Container createMessage(int messageNumber){
-
+class Message extends StatelessWidget{
+  Message({super.key, required this.messageNumber});
+  final int messageNumber;
+  
   /// 隨機選擇使用的顏色
   Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
   var cardHeight = 30.0;
 
-  return Container(
+  @override
+  Widget build(BuildContext context){
+    return Container(
     width: 338,
     height: cardHeight + 40 * messageNumber,
     margin: EdgeInsets.all(5),
@@ -66,7 +70,9 @@ Container createMessage(int messageNumber){
     )
  
   );
+  }
 }
+
 
 // 標示反白的標籤
 // event/missions屬於來自哪裡的那個標籤
