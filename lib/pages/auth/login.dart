@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grouping_project/pages/auth/cover.dart';
-import 'package:grouping_project/pages/home/home.dart';
+import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 
 class LogIn extends StatefulWidget {
@@ -87,14 +87,37 @@ class _LogInState extends State<LogIn> {
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () async {
-                  dynamic result = _authService.emailLogIn(email, password);
+                  dynamic result =
+                      await _authService.emailLogIn(email, password);
                   if (result != null) {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => new Home()));
+                    print(result);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => new MyHomePage()));
                   }
                 },
               ),
             ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 50.0),
+              child: TextButton.icon(
+                label: Text("Gmail"),
+                icon: Icon(
+                  Icons.account_circle_outlined,
+                ),
+                onPressed: () async {
+                  dynamic result = await _authService.googleLogn();
+                  if (result != null) {
+                    print(result);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => new MyHomePage()));
+                  }
+                },
+              ),
+            )
           ],
         ));
   }
