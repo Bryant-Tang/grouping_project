@@ -10,10 +10,19 @@ List<Color> randomColor = [Colors.amber, Colors.redAccent, Colors.lightBlue, Col
           Colors.orangeAccent, Colors.pinkAccent, Colors.purple];
 
 // 建立 upcoming component
-Container createUpcoming(String group, String title, String descript, String date1, String date2){
+class Upcoming extends StatelessWidget{
+  Upcoming({super.key, required this.group, required this.title, required this.descript, required this.date1, required this.date2});
+  final String group;
+  final String title;
+  final String descript;
+  final String date1;
+  final String date2;
+
   /// 隨機選擇使用的顏色
   Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
-  return Container(
+  @override
+  Widget build(BuildContext context){
+    return Container(
     width: 338,
     height: 84,
     margin: EdgeInsets.all(5),
@@ -74,13 +83,26 @@ Container createUpcoming(String group, String title, String descript, String dat
       ],
     )
   );
+  }
 }
 
+
 // 建立track component
-Container createTracked(String group, String title, String descript, String date1, String date2, int state){
+class Tracked extends StatelessWidget{
+  Tracked({super.key, required this.group, required this.title, required this.descript, required this.date1, required this.date2, required this.state});
+  final String group;
+  final String title;
+  final String descript;
+  final String date1;
+  final String date2;
+  final int state;
+
   /// 隨機選擇使用的顏色
   Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
-  return Container(
+
+  @override
+  Widget build(BuildContext context){
+    return Container(
     width: 338,
     height: 84,
     margin: EdgeInsets.all(5),
@@ -147,6 +169,7 @@ Container createTracked(String group, String title, String descript, String date
       ],
     )
   );
+  }
 }
 
 // 標示反白的標籤
