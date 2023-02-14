@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:grouping_project/pages/auth/cover.dart';
+import 'package:grouping_project/pages/home/card_edit_page.dart';
 import 'package:grouping_project/wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
@@ -27,11 +28,12 @@ class _testPageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QUAN 的工作區'),
+        title: Text('QUAN 的工作區', style: TextStyle(fontWeight: FontWeight.bold),),
         actions: [
           IconButton(
               onPressed: () {
                 print('switch to personal Intro.');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => CardEditDone()));
               },
               icon: Icon(Icons.circle)),
           IconButton(
@@ -42,28 +44,13 @@ class _testPageState extends State<MyHomePage> {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => new Wrapper()));
               },
-              icon: Icon(Icons.logout_outlined))
+              icon: Icon(Icons.logout_outlined)),
         ],
+        backgroundColor: Colors.white,
       ),
       body: Container(
         child: Column(children: [
           // 名片位置
-          /*
-          Container(
-            margin: EdgeInsets.all(3),
-            width: 340,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black,
-                  spreadRadius: 2,
-                  blurRadius: 2
-                )
-              ]
-            ),
-          ),*/
           PersonalCard(),
           SizedBox(
             height: 3,

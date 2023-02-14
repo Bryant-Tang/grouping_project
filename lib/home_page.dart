@@ -6,6 +6,8 @@ import 'package:grouping_project/wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/model/user_model.dart';
+import 'component/createCardView.dart';
+import 'component/createGroupCard.dart';
 import 'firebase_options.dart';
 
 import 'component/business_card.dart';
@@ -36,6 +38,7 @@ class _testPageState extends State<MyHomePage> {
     body: Container(
       child: Column(
         children: [
+          Container(
           // 名片位置
             decoration: BoxDecoration(
               color: Colors.white,
@@ -48,7 +51,7 @@ class _testPageState extends State<MyHomePage> {
               ]
             ),
           ),
-          SizedBox(height: 3,),
+          SizedBox(height: 3),
           // 功能選擇區
           Container(
             height: 80,

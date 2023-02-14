@@ -1,5 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:grouping_project/pages/home/home_page.dart';
+import 'package:grouping_project/wrapper.dart';
+import 'package:provider/provider.dart';
+import 'package:grouping_project/service/auth_service.dart';
+import 'package:grouping_project/model/user_model.dart';
 import 'firebase_options.dart';
 import 'home_page.dart';
 import './pages/auth/login.dart';
@@ -24,12 +29,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.amber,
-      ),
+          brightness: Brightness.light,
+          primarySwatch: Colors.orange,
+          // 將 NotoSansTC 設為 default font family
+          fontFamily: 'NotoSansTC'),
+      debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
-      //home: const MyHomePage(title: 'Flutter
-      //Demo Home Page'),
-      home: const LoginPage(),
+      home: Wrapper(),
+      //home: MyHomePage(),
     );
   }
 }
