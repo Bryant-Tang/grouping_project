@@ -66,6 +66,11 @@ class _cardEditDoneState extends State<CardEditDone>{
               ),
             ),
             Positioned(
+              top: 25,
+              right: 5,
+              child: Icon(Icons.edit_document),
+            ),
+            Positioned(
               top: 20,
               child: Container(
                 margin: EdgeInsets.only(top: 10),
