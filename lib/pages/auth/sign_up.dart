@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/pages/auth/cover.dart';
-import 'package:grouping_project/pages/home/home.dart';
+import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 
 class SignUp extends StatefulWidget {
@@ -106,8 +106,10 @@ class _SignUpState extends State<SignUp> {
                         loading = false;
                       });
                     } else {
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => new Home()));
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => new MyHomePage()));
                     }
                   }
                 },
