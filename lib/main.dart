@@ -8,6 +8,8 @@ import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'firebase_options.dart';
 
+import 'home_page.dart';
+
 void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -26,17 +28,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.orange,
+        // 將 NotoSansTC 設為 default font family
+        fontFamily: 'NotoSansTC'
       ),
+      // 呼叫 home_page.dart
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -52,3 +50,4 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 }
+
