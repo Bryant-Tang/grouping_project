@@ -90,7 +90,6 @@ class _LogInState extends State<LogIn> {
                   dynamic result =
                       await _authService.emailLogIn(email, password);
                   if (result != null) {
-                    print(result);
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -107,9 +106,8 @@ class _LogInState extends State<LogIn> {
                   Icons.account_circle_outlined,
                 ),
                 onPressed: () async {
-                  dynamic result = await _authService.googleLogn();
+                  dynamic result = await _authService.googleLogin();
                   if (result != null) {
-                    print(result);
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

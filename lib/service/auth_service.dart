@@ -57,7 +57,7 @@ class AuthService {
     }
   }
 
-  Future googleLogn() async {
+  Future googleLogin() async {
     try {
       return _userModelFromGAuth(await _googleSignIn.signIn());
     } catch (e) {

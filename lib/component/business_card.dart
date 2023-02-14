@@ -11,9 +11,11 @@ import '../firebase_options.dart';
 List<Color> randomColor = [Colors.amber, Colors.redAccent, Colors.lightBlue, Colors.greenAccent,
           Colors.orangeAccent, Colors.pinkAccent, Colors.purple];
 
-// 建立主頁面的名片
-Container createPersonalCard(){
-  return Container(
+// 建立 home page 上面的 card component
+class PersonalCard extends StatelessWidget{
+  @override
+  Widget build(BuildContext context){
+    return Container(
         margin: EdgeInsets.all(5),
         width: 340,
         height: 90,
@@ -134,13 +136,19 @@ Container createPersonalCard(){
           ],
         )
       );
+  }
 }
 
 // 建立小組專區的 component
-Container createGroupCardView(String title, String descript){
+class GroupCard extends StatelessWidget{
+  GroupCard({super.key, required this.title, required this.descript});
+  final String title;
+  final String descript;
   /// 隨機選擇使用的顏色
   Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
-  return Container(
+  @override
+  Widget build(BuildContext context){
+    return Container(
         margin: EdgeInsets.all(5),
         width: 340,
         height: 90,
@@ -249,6 +257,7 @@ Container createGroupCardView(String title, String descript){
           ],
         )
       );
+  }
 }
 
 // 將長方形裁剪出左方的五角形

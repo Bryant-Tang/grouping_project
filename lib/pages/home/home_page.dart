@@ -20,7 +20,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _testPageState extends State<MyHomePage> {
-  final AuthService _authService = AuthService();
+  AuthService _authService = AuthService();
   var funtionSelect = 3;
 
   @override
@@ -35,16 +35,14 @@ class _testPageState extends State<MyHomePage> {
               },
               icon: Icon(Icons.circle)),
           IconButton(
-            onPressed: () async {
-              await _authService.signOut();
-              await _authService.googleSignOut();
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => new CoverPage()));
-            },
-            icon: Icon(
-              Icons.logout_outlined,
-            ),
-          )
+              //temp remove async for quick test
+              onPressed: () async {
+                _authService.signOut();
+                _authService.googleSignOut();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => new Wrapper()));
+              },
+              icon: Icon(Icons.logout_outlined))
         ],
       ),
       body: Container(
@@ -66,7 +64,7 @@ class _testPageState extends State<MyHomePage> {
               ]
             ),
           ),*/
-          createPersonalCard(),
+          PersonalCard(),
           SizedBox(
             height: 3,
           ),
@@ -150,40 +148,48 @@ List<Widget> DifferentFunctionPage = [
   Expanded(
       child: ListView(
     children: [
-      createGroupCardView('Group 1', 'this is a test 1'),
+      GroupCard(title: 'Group 1', descript: 'this is a test 1'),
       SizedBox(
         height: 2,
       ),
-      createGroupCardView('group 2', 'this is a test 2'),
+      GroupCard(title: 'group 2', descript: 'this is a test 2'),
       SizedBox(
         height: 2,
       ),
-      createGroupCardView('group 3', 'this is a test 3'),
+      GroupCard(title: 'group 3', descript: 'this is a test 3'),
       SizedBox(
         height: 2,
       ),
-      createGroupCardView('group 4', 'this is a test 4'),
+      GroupCard(title: 'group 4', descript: 'this is a test 4'),
       SizedBox(
         height: 2,
       ),
-      createGroupCardView('group 5', 'this is a test 5'),
+      GroupCard(title: 'group 5', descript: 'this is a test 5'),
       SizedBox(
         height: 2,
       ),
-      createGroupCardView('group 6', 'this is a test 6')
+      GroupCard(title: 'group 6', descript: 'this is a test 6'),
       // 按下加會同時新增 SizedBox(height: 2,), 跟 createGroupCardView(title, short description)
     ],
   )),
   Expanded(
       child: ListView(
     children: [
-      createUpcoming('personal', 'P+ 籃球會', '領航員 vs 富邦勇士',
-          '9:00 PM, FEB 2, 2023', '11:00 PM, FEB 2, 2023'),
+      Upcoming(
+          group: 'personal',
+          title: 'P+ 籃球會',
+          descript: '領航員 vs 富邦勇士',
+          date1: '9:00 PM, FEB 2, 2023',
+          date2: '11:00 PM, FEB 2, 2023'),
       SizedBox(
         height: 2,
       ),
-      createUpcoming('flutter 讀書會', '例行性讀書會', '討論 UI 設計與狀態儲存',
-          '9:00 PM, FEB2, 2023', '11:00 PM, FEB 2, 2023')
+      Upcoming(
+          group: 'flutter 讀書會',
+          title: '例行性讀書會',
+          descript: '討論 UI 設計與狀態儲存',
+          date1: '9:00 PM, FEB2, 2023',
+          date2: '11:00 PM, FEB 2, 2023')
     ],
   )),
   Expanded(
@@ -191,22 +197,27 @@ List<Widget> DifferentFunctionPage = [
     shrinkWrap: true,
     physics: NeverScrollableScrollPhysics(),
     children: [
-      createTracked('personal', '寒假規劃表進度', '年後 ~ 開學的規劃進度',
-          '9:00 PM, FEB 2, 2023', '11:00 PM, FEB 2, 2023', 0),
+      Tracked(
+          group: 'personal',
+          title: '寒假規劃表進度',
+          descript: '年後 ~ 開學的規劃進度',
+          date1: '9:00 PM, FEB 2, 2023',
+          date2: '11:00 PM, FEB 2, 2023',
+          state: 0),
       SizedBox(
         height: 2,
       ),
-      createTracked('flutter 讀書會', '例行性讀書會', '討論 UI 設計與狀態儲存',
-          '9:00 PM, FEB2, 2023', '11:00 PM, FEB 2, 2023', 1)
+      Tracked(
+          group: 'flutter 讀書會',
+          title: '例行性讀書會',
+          descript: '討論 UI 設計與狀態儲存',
+          date1: '9:00 PM, FEB2, 2023',
+          date2: '11:00 PM, FEB 2, 2023',
+          state: 1)
     ],
   )),
   Expanded(
       child: ListView(
-    children: [
-      createMessage(1)
-      // createGroupCardView('Group 7', 'this is a test 7'),
-      // SizedBox(height: 2,),
-      // createGroupCardView('group 8', 'this is a test 8')
-    ],
+    children: [Message(messageNumber: 1)],
   ))
 ];
