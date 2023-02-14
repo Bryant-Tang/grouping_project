@@ -4,25 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
 
-import 'dart:math';
-
-List<Color> randomColor = [Colors.amber, Colors.redAccent, Colors.lightBlue, Colors.greenAccent,
-          Colors.orangeAccent, Colors.pinkAccent, Colors.purple];
-
 // 建立 upcoming component
-class Upcoming extends StatelessWidget{
-  Upcoming({super.key, required this.group, required this.title, required this.descript, required this.date1, required this.date2});
-  final String group;
-  final String title;
-  final String descript;
-  final String date1;
-  final String date2;
-
-  /// 隨機選擇使用的顏色
-  Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
-  @override
-  Widget build(BuildContext context){
-    return Container(
+Container createUpcoming(String group, String title, String descript, String date1, String date2){
+  return Container(
     width: 338,
     height: 84,
     margin: EdgeInsets.all(5),
@@ -45,7 +29,7 @@ class Upcoming extends StatelessWidget{
             width: 8,
             height: 84,
             decoration: BoxDecoration(
-              color: UsingColor,
+              color: Colors.amber,
               borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5))
             ),
           ),
@@ -58,7 +42,7 @@ class Upcoming extends StatelessWidget{
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                createAntiLabel(group, UsingColor),
+                createAntiLabel(group),
                 SizedBox(height: 1,),
                 Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                 SizedBox(height: 1,),
@@ -88,21 +72,8 @@ class Upcoming extends StatelessWidget{
 
 
 // 建立track component
-class Tracked extends StatelessWidget{
-  Tracked({super.key, required this.group, required this.title, required this.descript, required this.date1, required this.date2, required this.state});
-  final String group;
-  final String title;
-  final String descript;
-  final String date1;
-  final String date2;
-  final int state;
-
-  /// 隨機選擇使用的顏色
-  Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
-
-  @override
-  Widget build(BuildContext context){
-    return Container(
+Container createTracked(String group, String title, String descript, String date1, String date2, int state){
+  return Container(
     width: 338,
     height: 84,
     margin: EdgeInsets.all(5),
@@ -125,7 +96,7 @@ class Tracked extends StatelessWidget{
             width: 8,
             height: 84,
             decoration: BoxDecoration(
-              color: UsingColor,
+              color: Colors.amber,
               borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5))
             ),
           ),
@@ -138,7 +109,7 @@ class Tracked extends StatelessWidget{
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                createAntiLabel(group, UsingColor),
+                createAntiLabel(group),
                 SizedBox(height: 1,),
                 Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                 SizedBox(height: 1,),
@@ -174,10 +145,10 @@ class Tracked extends StatelessWidget{
 
 // 標示反白的標籤
 // event/missions屬於來自哪裡的那個標籤
-Container createAntiLabel(String group, Color UsingColor){
+Container createAntiLabel(String group){
   return Container(
     decoration: BoxDecoration(
-      color: UsingColor,
+      color: Colors.amber,
       borderRadius: BorderRadius.circular(10)
     ),
     child: RichText(
