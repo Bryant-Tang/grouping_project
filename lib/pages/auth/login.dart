@@ -134,10 +134,16 @@ class LoginPage extends StatefulWidget {
   }
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LogInState createState() => _LogInState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LogInState extends State<LogIn> {
+  final AuthService _authService = AuthService();
+
+  String error = '';
+  String email = '';
+  String password = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,25 +179,24 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 15),
-                        child: MaterialButton(
-                          onPressed: () {},
-                          shape: const RoundedRectangleBorder(
-                              side: BorderSide(color: Colors.amber, width: 2),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20))),
-                          child: const Text(
-                            "Continue with email",
-                            style: TextStyle(
-                                color: Colors.amber,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold),
+                  TextFormField(
+                    decoration: InputDecoration(
+                        labelText: 'Password',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(50.0),
+                          borderSide: BorderSide(
+                            width: 4,
+                            color: Color.fromARGB(255, 133, 168, 196),
                           ),
                         )),
+                    validator: (value) => value!.length < 6
+                        ? 'Enter password longer than 5'
+                        : null,
+                    onChanged: (value) {
+                      setState(() {
+                        password = value;
+                      });
+                    },
                   ),
                 ],
               ),
