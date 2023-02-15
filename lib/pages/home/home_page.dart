@@ -22,7 +22,7 @@ class MyHomePage extends StatefulWidget {
 
 class _testPageState extends State<MyHomePage> {
   AuthService _authService = AuthService();
-  var funtionSelect = 3;
+  var funtionSelect = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -162,11 +162,20 @@ List<Widget> DifferentFunctionPage = [
   Expanded(
       child: ListView(
     children: [
-      Upcoming(
+      UpcomingExpand(
           group: 'personal',
           title: 'P+ 籃球會',
           descript: '領航員 vs 富邦勇士',
           date1: '9:00 PM, FEB 2, 2023',
+          date2: '11:00 PM, FEB 2, 2023'),
+      SizedBox(
+        height: 2,
+      ),
+      Upcoming(
+          group: 'flutter 讀書會',
+          title: '例行性讀書會',
+          descript: '討論 UI 設計與狀態儲存',
+          date1: '9:00 PM, FEB2, 2023',
           date2: '11:00 PM, FEB 2, 2023'),
       SizedBox(
         height: 2,
