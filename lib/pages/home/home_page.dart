@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:grouping_project/pages/auth/cover.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
-import 'package:grouping_project/wrapper.dart';
+// import 'package:grouping_project/wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/model/user_model.dart';

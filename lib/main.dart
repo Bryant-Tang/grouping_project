@@ -3,11 +3,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
-import 'package:grouping_project/wrapper.dart';
+// import 'package:grouping_project/wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'firebase_options.dart';
+import './pages/auth/login.dart';
+import './pages/auth/login.dart';
 
 void main() async {
   await Firebase.initializeApp(
@@ -31,8 +33,8 @@ class MyApp extends StatelessWidget {
           fontFamily: 'NotoSansTC'),
       debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
-      //home: Wrapper(),
-      home: MyHomePage(),
+      home: LoginPage(),
+      //home: MyHomePage(),
     );
   }
 }
