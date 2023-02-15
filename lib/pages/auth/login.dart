@@ -1,4 +1,6 @@
-import 'dart:ffi';
+import 'package:grouping_project/model/user_model.dart';
+import 'package:grouping_project/service/auth_service.dart';
+
 import 'package:flutter/material.dart';
 // class LoginPage extends StatefulWidget {
 //   const LoginPage({Key? key}) : super(key: key);
@@ -118,9 +120,9 @@ class LoginPage extends StatefulWidget {
   final headLineText = "登入 / 註冊";
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
-    "Apple": {"fileName": "apple.png", "name": "apple", "onPress": (){}},
-    "Google": {"fileName": "google.png", "name": "google", "onPress": (){}},
-    "Github": {"fileName": "github.png", "name": "github", "onPress": (){}},
+    "Apple": {"fileName": "apple.png", "name": "apple", "onPress": () {}},
+    "Google": {"fileName": "google.png", "name": "google", "onPress": () {}},
+    "Github": {"fileName": "github.png", "name": "github", "onPress": () {}},
   };
   List<Widget> buttonBuilder() {
     List<Widget> authButtonList = [];
@@ -138,6 +140,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  AuthService _authService = AuthService();
+  String _email = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,12 +160,17 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  const SizedBox(
+                  SizedBox(
                     width: double.infinity,
                     child: Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                       child: TextField(
+                        onChanged: (value) {
+                          setState(() {
+                            _email = value;
+                          });
+                        },
                         decoration: InputDecoration(
                             border: OutlineInputBorder(
                                 borderRadius:
@@ -179,7 +189,9 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 15),
                         child: MaterialButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            _authService.setEmail(_email);
+                          },
                           shape: const RoundedRectangleBorder(
                               side: BorderSide(color: Colors.amber, width: 2),
                               borderRadius:
@@ -208,10 +220,12 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class AuthButton extends StatelessWidget {
+  AuthService _authService = AuthService();
+
   final String fileName;
   final String name;
-  final Void? Function() onPressed;
-  const AuthButton({
+  final void Function()? onPressed;
+  AuthButton({
     super.key,
     required this.fileName,
     required this.name,
@@ -222,7 +236,9 @@ class AuthButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
       child: MaterialButton(
-          onPressed: () {},
+          onPressed: () async {
+            _authService.googleLogin();
+          },
           color: Colors.white,
           shape: const RoundedRectangleBorder(
               side: BorderSide(color: Colors.grey, width: 2),
