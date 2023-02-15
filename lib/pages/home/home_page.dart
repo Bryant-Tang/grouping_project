@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:grouping_project/pages/auth/cover.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
-// import 'package:grouping_project/wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/model/user_model.dart';
@@ -13,6 +12,7 @@ import '../../firebase_options.dart';
 import '../../component/business_card.dart';
 import '../../component/card_view.dart';
 import '../../component/message.dart';
+import 'package:grouping_project/pages/auth/login.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -28,12 +28,16 @@ class _testPageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('QUAN 的工作區', style: TextStyle(fontWeight: FontWeight.bold),),
+        title: Text(
+          'QUAN 的工作區',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
               onPressed: () {
                 print('switch to personal Intro.');
-                Navigator.push(context, MaterialPageRoute(builder: (context) => CardEditDone()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => CardEditDone()));
               },
               icon: Icon(Icons.circle)),
           IconButton(
@@ -42,7 +46,7 @@ class _testPageState extends State<MyHomePage> {
                 _authService.signOut();
                 _authService.googleSignOut();
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => new Wrapper()));
+                    MaterialPageRoute(builder: (context) => new LoginPage()));
               },
               icon: Icon(Icons.logout_outlined)),
         ],

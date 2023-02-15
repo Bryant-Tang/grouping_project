@@ -9,7 +9,6 @@ import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'firebase_options.dart';
 import './pages/auth/login.dart';
-import './pages/auth/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

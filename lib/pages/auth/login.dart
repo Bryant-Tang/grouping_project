@@ -1,126 +1,15 @@
 import 'dart:ffi';
 import 'package:flutter/material.dart';
-// class LoginPage extends StatefulWidget {
-//   const LoginPage({Key? key}) : super(key: key);
-//   @override
-//   _LoginPageState createState() => _LoginPageState();
-// }
-// class _LoginPageState extends State<LoginPage> {
-//   final AuthService _authService = AuthService();
-//   String error = '';
-//   String email = '';
-//   String password = '';
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//         appBar: AppBar(
-//           elevation: 0.0,
-//           title: const Text('Sign in to Test'),
-//           actions: <Widget>[
-//             IconButton(
-//               onPressed: () => Navigator.pushReplacement(context,
-//                   MaterialPageRoute(builder: (context) => new CoverPage())),
-//               icon: Icon(
-//                 Icons.logout_outlined,
-//               ),
-//             )
-//           ],
-//         ),
-//         body: Column(
-//           children: <Widget>[
-//             Padding(
-//               padding:
-//                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 50.0),
-//               child: Column(
-//                 children: [
-//                   TextFormField(
-//                     decoration: InputDecoration(
-//                         labelText: 'Email',
-//                         border: OutlineInputBorder(
-//                             borderRadius: BorderRadius.circular(50.0),
-//                             borderSide: BorderSide(
-//                                 width: 4,
-//                                 color: Color.fromARGB(255, 133, 168, 196)))),
-//                     validator: (value) =>
-//                         value!.isEmpty ? 'Enter your email' : null,
-//                     onChanged: (value) {
-//                       setState(() {
-//                         email = value;
-//                       });
-//                     },
-//                   ),
-//                   TextFormField(
-//                     decoration: InputDecoration(
-//                         labelText: 'Password',
-//                         border: OutlineInputBorder(
-//                           borderRadius: BorderRadius.circular(50.0),
-//                           borderSide: BorderSide(
-//                             width: 4,
-//                             color: Color.fromARGB(255, 133, 168, 196),
-//                           ),
-//                         )),
-//                     validator: (value) => value!.length < 6
-//                         ? 'Enter password longer than 5'
-//                         : null,
-//                     onChanged: (value) {
-//                       setState(() {
-//                         password = value;
-//                       });
-//                     },
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             Container(
-//               padding: const EdgeInsets.symmetric(horizontal: 50.0),
-//               child: ElevatedButton(
-//                 child: Text(
-//                   "Email sign in",
-//                   style: TextStyle(color: Colors.white),
-//                 ),
-//                 onPressed: () async {
-//                   dynamic result =
-//                       await _authService.emailLogIn(email, password);
-//                   if (result != null) {
-//                     Navigator.pushReplacement(
-//                         context,
-//                         MaterialPageRoute(
-//                             builder: (context) => new MyHomePage()));
-//                   }
-//                 },
-//               ),
-//             ),
-//             Container(
-//               padding: const EdgeInsets.symmetric(horizontal: 50.0),
-//               child: TextButton.icon(
-//                 label: Text("Gmail"),
-//                 icon: Icon(
-//                   Icons.account_circle_outlined,
-//                 ),
-//                 onPressed: () async {
-//                   dynamic result = await _authService.googleLogin();
-//                   if (result != null) {
-//                     Navigator.pushReplacement(
-//                         context,
-//                         MaterialPageRoute(
-//                             builder: (context) => new MyHomePage()));
-//                   }
-//                 },
-//               ),
-//             )
-//           ],
-//         ));
-//   }
-// }
+import 'package:grouping_project/service/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
   final headLineText = "登入 / 註冊";
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
-    "Apple": {"fileName": "apple.png", "name": "apple", "onPress": (){}},
-    "Google": {"fileName": "google.png", "name": "google", "onPress": (){}},
-    "Github": {"fileName": "github.png", "name": "github", "onPress": (){}},
+    "Apple": {"fileName": "apple.png", "name": "apple", "onPress": () {}},
+    "Google": {"fileName": "google.png", "name": "google", "onPress": () {}},
+    "Github": {"fileName": "github.png", "name": "github", "onPress": () {}},
   };
   List<Widget> buttonBuilder() {
     List<Widget> authButtonList = [];
@@ -134,10 +23,10 @@ class LoginPage extends StatefulWidget {
   }
 
   @override
-  _LogInState createState() => _LogInState();
+  LogInState createState() => LogInState();
 }
 
-class _LogInState extends State<LogIn> {
+class LogInState extends State<LoginPage> {
   final AuthService _authService = AuthService();
 
   String error = '';
@@ -184,7 +73,7 @@ class _LogInState extends State<LogIn> {
                         labelText: 'Password',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(50.0),
-                          borderSide: BorderSide(
+                          borderSide: const BorderSide(
                             width: 4,
                             color: Color.fromARGB(255, 133, 168, 196),
                           ),

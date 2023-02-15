@@ -1,8 +1,9 @@
+import 'package:grouping_project/pages/auth/login.dart';
+import 'package:grouping_project/pages/auth/sign_up.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:grouping_project/pages/auth/login.dart';
-import 'package:grouping_project/pages/auth/sign_up.dart';
 
 class CoverPage extends StatelessWidget {
   const CoverPage({super.key});
