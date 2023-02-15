@@ -38,7 +38,7 @@ class CoverPage extends StatelessWidget {
                       borderRadius: BorderRadius.all(Radius.circular(20.0))),
                   onPressed: () {
                     Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => const LoginPage()));
+                        MaterialPageRoute(builder: (context) => new LogIn()));
                   },
                   child: const Padding(
                     padding:
