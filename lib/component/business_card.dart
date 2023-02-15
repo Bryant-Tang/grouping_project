@@ -131,7 +131,6 @@ Container createPersonalCard(){
           ],
         )
       );
-  }
 }
 
 // 建立小組專區的 component

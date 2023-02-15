@@ -67,7 +67,6 @@ Container createUpcoming(String group, String title, String descript, String dat
       ],
     )
   );
-  }
 }
 
 
@@ -140,7 +139,6 @@ Container createTracked(String group, String title, String descript, String date
       ],
     )
   );
-  }
 }
 
 // 標示反白的標籤
