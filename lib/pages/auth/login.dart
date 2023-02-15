@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:grouping_project/pages/auth/cover.dart';
@@ -118,7 +120,22 @@ import 'package:flutter/material.dart';
 // }
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  LoginPage({Key? key}) : super(key: key);
+  final buttonUI = {
+    "Apple": {"fileName": "apple.png", "name": "apple", "onPress": () {}},
+    "Google": {"fileName": "google.png", "name": "google", "onPress": () {}},
+    "Github": {"fileName": "github.png", "name": "github", "onPress": () {}},
+  };
+  List<Widget> buttonBuilder() {
+    List<Widget> authButtonList = [];
+    for (dynamic button in buttonUI.values) {
+      authButtonList.add(AuthButton(
+          fileName: button["fileName"],
+          name: button["name"],
+          onPressed: button["onPress"]));
+    }
+    return authButtonList;
+  }
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -129,10 +146,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 150, horizontal: 30),
+      body: Container(
+        padding: const EdgeInsets.symmetric(vertical: 150, horizontal: 30),
+        child: SingleChildScrollView(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               const SizedBox(
                 // head line
@@ -249,13 +268,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(
                   width: double.infinity,
-                  child: Column(
-                    children: const <Widget>[
-                      LogoButton(),
-                      LogoButton(),
-                      LogoButton(),
-                    ],
-                  ))
+                  child: Column(children: widget.buttonBuilder()))
             ],
           ),
         ),
@@ -264,23 +277,30 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class LogoButton extends StatefulWidget {
-  const LogoButton({Key? key}) : super(key: key);
-
+class AuthButton extends StatefulWidget {
+  final String fileName;
+  final String name;
+  final Void Function() onPressed;
+  const AuthButton({
+    super.key,
+    required this.fileName,
+    required this.name,
+    required this.onPressed,
+  });
   @override
-  _LogoButtonState createState() => _LogoButtonState();
+  _AuthButtonState createState() => _AuthButtonState();
 }
 
 // TODO
 // pass the name / icon parameters
 // make the layout prettier
-class _LogoButtonState extends State<LogoButton> {
+class _AuthButtonState extends State<AuthButton> {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
       child: MaterialButton(
-          onPressed: () {},
+          onPressed: widget.onPressed,
           color: Colors.white,
           shape: const RoundedRectangleBorder(
               side: BorderSide(color: Colors.grey, width: 2),
@@ -288,12 +308,12 @@ class _LogoButtonState extends State<LogoButton> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
-            children: const <Widget>[
-              Icon(Icons.question_mark),
-              SizedBox(width: 10),
+            children: <Widget>[
+              Image.asset("assets/images/${widget.fileName}"),
+              const SizedBox(width: 10),
               Text(
-                "Login with google account",
-                style: TextStyle(
+                "login with ${widget.name} account",
+                style: const TextStyle(
                     color: Colors.black,
                     fontSize: 12,
                     fontWeight: FontWeight.bold),
