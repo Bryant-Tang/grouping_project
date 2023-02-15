@@ -8,14 +8,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
 
-List<Color> randomColor = [Colors.amber, Colors.redAccent, Colors.lightBlue, Colors.greenAccent,
-          Colors.orangeAccent, Colors.pinkAccent, Colors.purple];
-
-// 建立 home page 上面的 card component
-class PersonalCard extends StatelessWidget{
-  @override
-  Widget build(BuildContext context){
-    return Container(
+// 建立主頁面的名片
+Container createPersonalCard(){
+  return Container(
         margin: EdgeInsets.all(5),
         width: 340,
         height: 90,
@@ -49,7 +44,7 @@ class PersonalCard extends StatelessWidget{
             ),
             // 創造頭貼空間的邊框
             Positioned(
-              top: 18.75,
+              top: 13.75,
               left: 38.75,
               // 創造六角形的空間
               child: ClipPath(
@@ -63,7 +58,7 @@ class PersonalCard extends StatelessWidget{
             ),
             // 創造頭貼的空間
             Positioned(
-              top: 20,
+              top: 15,
               left: 40,
               child: ClipPath(
                 clipper: hexagon(),
@@ -136,19 +131,11 @@ class PersonalCard extends StatelessWidget{
           ],
         )
       );
-  }
 }
 
 // 建立小組專區的 component
-class GroupCard extends StatelessWidget{
-  GroupCard({super.key, required this.title, required this.descript});
-  final String title;
-  final String descript;
-  /// 隨機選擇使用的顏色
-  Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
-  @override
-  Widget build(BuildContext context){
-    return Container(
+Container createGroupCardView(String title, String descript){
+  return Container(
         margin: EdgeInsets.all(5),
         width: 340,
         height: 90,
@@ -173,7 +160,7 @@ class GroupCard extends StatelessWidget{
                 width: 80,
                 height: double.infinity,
                 decoration: BoxDecoration(
-                  color: UsingColor,
+                  color: Colors.amber,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)
                   )
@@ -182,7 +169,7 @@ class GroupCard extends StatelessWidget{
             ),
             // 創造頭貼空間的邊框
             Positioned(
-              top: 18.75,
+              top: 13.75,
               left: 38.75,
               // 創造六角形的空間
               child: ClipPath(
@@ -196,7 +183,7 @@ class GroupCard extends StatelessWidget{
             ),
             // 創造頭貼的空間
             Positioned(
-              top: 20,
+              top: 15,
               left: 40,
               child: ClipPath(
                 clipper: hexagon(),
@@ -257,7 +244,6 @@ class GroupCard extends StatelessWidget{
           ],
         )
       );
-  }
 }
 
 // 將長方形裁剪出左方的五角形
