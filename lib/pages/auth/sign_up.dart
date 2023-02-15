@@ -109,7 +109,7 @@ class _SignUpState extends State<SignUp> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => new MyHomePage()));
+                              builder: (context) => const MyHomePage()));
                     }
                   }
                 },
