@@ -2,7 +2,6 @@ import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/service/auth_service.dart';
 
 import 'package:flutter/material.dart';
-import 'package:grouping_project/service/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -10,7 +9,14 @@ class LoginPage extends StatefulWidget {
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
     "Apple": {"fileName": "apple.png", "name": "apple", "onPress": () {}},
-    "Google": {"fileName": "google.png", "name": "google", "onPress": () {}},
+    "Google": {
+      "fileName": "google.png",
+      "name": "google",
+      "onPress": () async {
+        AuthService _authService = AuthService();
+        await _authService.googleLogin();
+      }
+    },
     "Github": {"fileName": "github.png", "name": "github", "onPress": () {}},
   };
   List<Widget> buttonBuilder() {
@@ -31,9 +37,9 @@ class LoginPage extends StatefulWidget {
 class LogInState extends State<LoginPage> {
   final AuthService _authService = AuthService();
 
-  String error = '';
-  String email = '';
-  String password = '';
+  String _error = '';
+  String _email = '';
+  String _password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +69,7 @@ class LogInState extends State<LoginPage> {
                             _email = value;
                           });
                         },
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                             border: OutlineInputBorder(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(30.0))),
@@ -81,7 +87,9 @@ class LogInState extends State<LoginPage> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 10, horizontal: 15),
                         child: MaterialButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            _authService.setEmail(_email);
+                          },
                           shape: const RoundedRectangleBorder(
                               side: BorderSide(color: Colors.amber, width: 2),
                               borderRadius:
@@ -94,14 +102,6 @@ class LogInState extends State<LoginPage> {
                                 fontWeight: FontWeight.bold),
                           ),
                         )),
-                    validator: (value) => value!.length < 6
-                        ? 'Enter password longer than 5'
-                        : null,
-                    onChanged: (value) {
-                      setState(() {
-                        password = value;
-                      });
-                    },
                   ),
                 ],
               ),
@@ -134,9 +134,7 @@ class AuthButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
       child: MaterialButton(
-          onPressed: () async {
-            _authService.googleLogin();
-          },
+          onPressed: () {},
           color: Colors.white,
           shape: const RoundedRectangleBorder(
               side: BorderSide(color: Colors.grey, width: 2),
