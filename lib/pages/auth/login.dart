@@ -118,9 +118,9 @@ class LoginPage extends StatefulWidget {
   final headLineText = "登入 / 註冊";
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
-    "Apple": {"fileName": "apple.png", "name": "apple", "onPress": () {}},
-    "Google": {"fileName": "google.png", "name": "google", "onPress": () {}},
-    "Github": {"fileName": "github.png", "name": "github", "onPress": () {}},
+    "Apple": {"fileName": "apple.png", "name": "apple", "onPress": (){}},
+    "Google": {"fileName": "google.png", "name": "google", "onPress": (){}},
+    "Github": {"fileName": "github.png", "name": "github", "onPress": (){}},
   };
   List<Widget> buttonBuilder() {
     List<Widget> authButtonList = [];
@@ -149,51 +149,52 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              HeadlineWithContent(headLineText: widget.headLineText, content: widget.content),
-              // Column(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   mainAxisSize: MainAxisSize.min,
-              //   children: <Widget>[
-              //     const SizedBox(
-              //       width: double.infinity,
-              //       child: Padding(
-              //         padding:
-              //             EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-              //         child: TextField(
-              //           decoration: InputDecoration(
-              //               border: OutlineInputBorder(
-              //                   borderRadius:
-              //                       BorderRadius.all(Radius.circular(30.0))),
-              //               label: Text("EMAIL / 電子郵件",
-              //                   style: TextStyle(
-              //                       fontSize: 12, fontWeight: FontWeight.bold)),
-              //               prefix: Icon(Icons.email),
-              //               constraints: BoxConstraints(maxHeight: 45)),
-              //         ),
-              //       ),
-              //     ),
-              //     SizedBox(
-              //       width: double.infinity,
-              //       child: Padding(
-              //           padding: const EdgeInsets.symmetric(
-              //               vertical: 10, horizontal: 15),
-              //           child: MaterialButton(
-              //             onPressed: () {},
-              //             shape: const RoundedRectangleBorder(
-              //                 side: BorderSide(color: Colors.amber, width: 2),
-              //                 borderRadius:
-              //                     BorderRadius.all(Radius.circular(20))),
-              //             child: const Text(
-              //               "Continue with email",
-              //               style: TextStyle(
-              //                   color: Colors.amber,
-              //                   fontSize: 12,
-              //                   fontWeight: FontWeight.bold),
-              //             ),
-              //           )),
-              //     ),
-              //   ],
-              // ),
+              HeadlineWithContent(
+                  headLineText: widget.headLineText, content: widget.content),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 15),
+                      child: TextField(
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30.0))),
+                            label: Text("EMAIL / 電子郵件",
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.bold)),
+                            prefix: Icon(Icons.email),
+                            constraints: BoxConstraints(maxHeight: 45)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 15),
+                        child: MaterialButton(
+                          onPressed: () {},
+                          shape: const RoundedRectangleBorder(
+                              side: BorderSide(color: Colors.amber, width: 2),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          child: const Text(
+                            "Continue with email",
+                            style: TextStyle(
+                                color: Colors.amber,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )),
+                  ),
+                ],
+              ),
               const HintTextWithLine(),
               SizedBox(
                   width: double.infinity,
@@ -209,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
 class AuthButton extends StatelessWidget {
   final String fileName;
   final String name;
-  final Void Function() onPressed;
+  final Void? Function() onPressed;
   const AuthButton({
     super.key,
     required this.fileName,
@@ -221,7 +222,7 @@ class AuthButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
       child: MaterialButton(
-          onPressed: onPressed,
+          onPressed: () {},
           color: Colors.white,
           shape: const RoundedRectangleBorder(
               side: BorderSide(color: Colors.grey, width: 2),
@@ -244,6 +245,7 @@ class AuthButton extends StatelessWidget {
     );
   }
 }
+
 class HeadlineWithContent extends StatelessWidget {
   final String headLineText;
   final String content;
