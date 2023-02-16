@@ -34,13 +34,8 @@ class MyApp extends StatelessWidget {
           fontFamily: 'NotoSansTC'),
       debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
-<<<<<<< HEAD
-      //home: LoginPage(),
-      home: MyHomePage(),
-=======
       home: const CoverPage(),
       //home: MyHomePage(),
->>>>>>> upstream/master
     );
   }
 }
