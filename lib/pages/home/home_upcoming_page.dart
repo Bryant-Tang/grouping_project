@@ -187,7 +187,7 @@ Future<void> addUpcoming() async {
         // title tmp
         Upcoming(
             group: 'personal',
-            title: upcoming!.title,
+            title: upcoming.title,
             descript: upcoming.introduction,
             date1:
                 '${startTime.hour >= 12 ? startTime.hour - 12 : startTime.hour}:${startTime.minute} ${startTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[startTime.month]} ${startTime.day}, ${startTime.year}',

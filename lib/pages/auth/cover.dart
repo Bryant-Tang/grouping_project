@@ -1,3 +1,4 @@
+import 'package:grouping_project/components/grouping_logo.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 
@@ -38,10 +39,7 @@ class _CoverPageState extends State<CoverPage> {
       child: Column(
         children: [
           const SizedBox(width: 10, height: 315),
-          SvgPicture.asset(
-            "assets/images/logo.svg",
-            semanticsLabel: 'Acme Logo',
-          ),
+          const GroupingLogo(),
           const SizedBox(width: 10, height: 210),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 60),
@@ -56,16 +54,16 @@ class _CoverPageState extends State<CoverPage> {
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context) => LoginPage()));
                     }),
-                FlowButton(
-                    buttonText: "註冊 SIGNUP",
-                    backgroundColor: Colors.white,
-                    textColor: Colors.grey[600],
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SignUpPage()));
-                    }),
+                // FlowButton(
+                //     buttonText: "註冊 SIGNUP",
+                //     backgroundColor: Colors.white,
+                //     textColor: Colors.grey[600],
+                //     onPressed: () {
+                //       Navigator.pushReplacement(
+                //           context,
+                //           MaterialPageRoute(
+                //               builder: (context) => const SignUpPage()));
+                //     }),
               ],
             ),
           )

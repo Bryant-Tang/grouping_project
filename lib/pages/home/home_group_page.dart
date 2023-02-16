@@ -1,4 +1,4 @@
-import 'package:grouping_project/component/business_card.dart';
+import 'package:grouping_project/components/business_card.dart';
 
 import 'package:flutter/material.dart';
 
