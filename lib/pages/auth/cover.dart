@@ -64,7 +64,7 @@ class _CoverPageState extends State<CoverPage> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const SignUp()));
+                              builder: (context) => const SignUpPage()));
                     }),
               ],
             ),
