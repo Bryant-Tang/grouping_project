@@ -1,18 +1,18 @@
-import 'package:grouping_project/component/business_card.dart';
+import 'package:grouping_project/component/card_view.dart';
 
 import 'package:flutter/material.dart';
 
-class GroupPage extends StatefulWidget{
-  GroupPage({super.key});
+class TrackedPage extends StatefulWidget{
+  TrackedPage({super.key});
   @override
-  State<GroupPage> createState() => groupPageState();
+  State<TrackedPage> createState() => TrackedPageState();
 }
 
-List<Widget> groups = [];
+List<Widget> trackedCards = [];
 
-class groupPageState extends State<GroupPage>{
+class TrackedPageState extends State<TrackedPage>{
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext content){
     return SizedBox(
       width: MediaQuery.of(context).size.width - 20,
       height: MediaQuery.of(context).size.height - 80,
@@ -20,10 +20,10 @@ class groupPageState extends State<GroupPage>{
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.center ,
-            children: groups + <Widget>[
+            children: trackedCards + <Widget>[
               TextButton(onPressed: (){
                 setState(() {
-                  addGroup();
+                  addUpcoming();
                 });
               }, child: Container(
                 width: MediaQuery.of(context).size.width - 20,
@@ -42,11 +42,18 @@ class groupPageState extends State<GroupPage>{
   }
 }
 
-void addGroup(){
-  groups.add(
-    SizedBox(height: 2,)
+void addUpcoming(){
+  trackedCards.add(
+    const SizedBox(height: 2,)
   );
-  groups.add(
-    GroupCard(title: 'add new title', descript: 'add new descript')
+  trackedCards.add(
+      Tracked(
+        group: 'flutter 讀書會',
+        title: '例行性讀書會',
+        descript: '討論 UI 設計與狀態儲存',
+        date1: '9:00 PM, FEB2, 2023',
+        date2: '11:00 PM, FEB 2, 2023',
+        state: 0,
+      ),
   );
 }

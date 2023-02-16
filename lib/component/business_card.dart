@@ -160,7 +160,7 @@ class GroupCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         margin: EdgeInsets.all(5),
-        width: 340,
+        width: MediaQuery.of(context).size.width - 20,
         height: 90,
         decoration: BoxDecoration(
             color: Colors.white,

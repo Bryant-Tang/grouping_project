@@ -12,7 +12,10 @@ import 'package:grouping_project/component/business_card.dart';
 import 'package:grouping_project/component/card_view.dart';
 import 'package:grouping_project/component/message.dart';
 import 'package:grouping_project/pages/auth/login.dart';
+
 import 'package:grouping_project/pages/home/home_group_page.dart';
+import 'package:grouping_project/pages/home/home_upcoming_page.dart';
+import 'package:grouping_project/pages/home/home_tracked_mission_page.dart';
 
 import 'package:flutter/material.dart';
 
@@ -112,7 +115,7 @@ class _testPageState extends State<MyHomePage> {
             height: 3,
           ),
           // 顯示該功能的列表
-          DifferentFunctionPage[funtionSelect]
+          differentFunctionPage[funtionSelect]
         ]),
       ),
       floatingActionButton: FloatingActionButton(
@@ -137,86 +140,29 @@ class _testPageState extends State<MyHomePage> {
   }
 }
 
-List<Widget> DifferentFunctionPage = [
+List<Widget> differentFunctionPage = [
   Expanded(
-      child: ListView(
+    child: ListView(
     children: [
-      // GroupCard(title: 'Group 1', descript: 'this is a test 1'),
-      // SizedBox(
-      //   height: 2,
-      // ),
-      // GroupCard(title: 'group 2', descript: 'this is a test 2'),
-      // SizedBox(
-      //   height: 2,
-      // ),
-      // GroupCard(title: 'group 3', descript: 'this is a test 3'),
-      // SizedBox(
-      //   height: 2,
-      // ),
-      // GroupCard(title: 'group 4', descript: 'this is a test 4'),
-      // SizedBox(
-      //   height: 2,
-      // ),
-      // GroupCard(title: 'group 5', descript: 'this is a test 5'),
-      // SizedBox(
-      //   height: 2,
-      // ),
-      // GroupCard(title: 'group 6', descript: 'this is a test 6'),
-      // 按下加會同時新增 SizedBox(height: 2,), 跟 createGroupCardView(title, short description)
       GroupPage()
     ],
   )),
   Expanded(
-      child: ListView(
+    child: ListView(
     children: [
-      UpcomingExpand(
-          group: 'personal',
-          title: 'P+ 籃球會',
-          descript: '領航員 vs 富邦勇士',
-          date1: '9:00 PM, FEB 2, 2023',
-          date2: '11:00 PM, FEB 2, 2023'),
-      SizedBox(
-        height: 2,
-      ),
-      Upcoming(
-          group: 'flutter 讀書會',
-          title: '例行性讀書會',
-          descript: '討論 UI 設計與狀態儲存',
-          date1: '9:00 PM, FEB2, 2023',
-          date2: '11:00 PM, FEB 2, 2023'),
-      SizedBox(
-        height: 2,
-      ),
-      Upcoming(
-          group: 'flutter 讀書會',
-          title: '例行性讀書會',
-          descript: '討論 UI 設計與狀態儲存',
-          date1: '9:00 PM, FEB2, 2023',
-          date2: '11:00 PM, FEB 2, 2023')
+      // UpcomingExpand(
+      //     group: 'personal',
+      //     title: 'P+ 籃球會',
+      //     descript: '領航員 vs 富邦勇士',
+      //     date1: '9:00 PM, FEB 2, 2023',
+      //     date2: '11:00 PM, FEB 2, 2023'),
+      UpcomingPage()
     ],
   )),
   Expanded(
-      child: ListView(
-    shrinkWrap: true,
-    physics: NeverScrollableScrollPhysics(),
+    child: ListView(
     children: [
-      Tracked(
-          group: 'personal',
-          title: '寒假規劃表進度',
-          descript: '年後 ~ 開學的規劃進度',
-          date1: '9:00 PM, FEB 2, 2023',
-          date2: '11:00 PM, FEB 2, 2023',
-          state: 0),
-      SizedBox(
-        height: 2,
-      ),
-      Tracked(
-          group: 'flutter 讀書會',
-          title: '例行性讀書會',
-          descript: '討論 UI 設計與狀態儲存',
-          date1: '9:00 PM, FEB2, 2023',
-          date2: '11:00 PM, FEB 2, 2023',
-          state: 1)
+      TrackedPage()
     ],
   )),
   Expanded(
@@ -224,11 +170,3 @@ List<Widget> DifferentFunctionPage = [
     children: [Message(messageNumber: 1)],
   ))
 ];
-
-
-List<Widget> addGroup(){
-  return [
-    SizedBox(height: 2,),
-    GroupCard(title: 'user input title', descript: 'user input descript')
-  ];
-}
