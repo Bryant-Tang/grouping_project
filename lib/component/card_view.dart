@@ -183,7 +183,7 @@ class Upcoming extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return Container(
-    width: 338,
+    width: MediaQuery.of(context).size.width - 20,
     height: 84,
     margin: EdgeInsets.all(5),
     decoration: BoxDecoration(
@@ -263,13 +263,13 @@ class Tracked extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return Container(
-    width: 338,
+    width: MediaQuery.of(context).size.width - 20,
     height: 84,
-    margin: EdgeInsets.all(5),
+    margin: const EdgeInsets.all(5),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(5),
-      boxShadow: [
+      boxShadow: const [
         BoxShadow(
           color: Colors.black45,
           spreadRadius:0.5,
