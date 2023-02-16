@@ -39,7 +39,6 @@ class LogInState extends State<LoginPage> {
 
   String _error = '';
   String _email = '';
-  String _password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -57,57 +56,6 @@ class LogInState extends State<LoginPage> {
               const SizedBox(height: 50),
               const EmailForm(),
               const SizedBox(height: 50),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(
-                    width: double.infinity,
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-                      child: TextField(
-                        onChanged: (value) {
-                          setState(() {
-                            _email = value;
-                          });
-                        },
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(30.0))),
-                            label: Text("EMAIL / 電子郵件",
-                                style: TextStyle(
-                                    fontSize: 12, fontWeight: FontWeight.bold)),
-                            prefix: Icon(Icons.email),
-                            constraints: BoxConstraints(maxHeight: 45)),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 15),
-                        child: MaterialButton(
-                          onPressed: () {
-                            _authService.setEmail(_email);
-                          },
-                          shape: const RoundedRectangleBorder(
-                              side: BorderSide(color: Colors.amber, width: 2),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20))),
-                          child: const Text(
-                            "Continue with email",
-                            style: TextStyle(
-                                color: Colors.amber,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        )),
-                  ),
-                ],
-              ),
               const HintTextWithLine(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -130,28 +78,76 @@ class EmailForm extends StatefulWidget {
 
 class _EmailFormState extends State<EmailForm> {
   final _formKey = GlobalKey<FormState>();
+  final textController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    // Start listening to changes.
+    textController
+        .addListener(() => print("input box: ${textController.text}"));
+  }
+
+  @override
+  void dispose() {
+    textController.dispose();
+    super.dispose();
+  }
+
+  void _onSubmit() {
+    print("input box: ${textController.text}");
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Form(
-      child: Column(
-        children: <Widget>[
-          TextFormField(
-            validator: (value) {
-              print(value);
-              if (value == "quan" || value!.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          ),
-          MaterialButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //   const SnackBar(content: Text('Processing Data')),
-                // );
-              }
-            },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+          child: TextField(
+              controller: textController,
+              decoration: InputDecoration(
+                  border: const OutlineInputBorder(
+                      gapPadding: 1.0,
+                      borderRadius: BorderRadius.all(Radius.circular(30))),
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      const Icon(Icons.mail),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "電子郵件 GMAIL",
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontFamily: "NotoSansTC",
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      )
+                    ],
+                  ))),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+          child: MaterialButton(
+            onPressed: () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                      title: const Text('帳號登入'),
+                      content: Text('使用${textController.text}進行登入嗎'),
+                      actions: <Widget>[
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'Cancel'),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, 'OK'),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    )),
             shape: const RoundedRectangleBorder(
                 side: BorderSide(color: Colors.amber, width: 2),
                 borderRadius: BorderRadius.all(Radius.circular(20))),
@@ -159,43 +155,15 @@ class _EmailFormState extends State<EmailForm> {
               "Continue with email",
               style: TextStyle(
                   color: Colors.amber,
-                  fontSize: 12,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold),
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
 }
-
-// class EmailTextField extends StatefulWidget {
-//   const EmailTextField({super.key});
-
-//   @override
-//   State<EmailTextField> createState() => _EmailTextFieldState();
-// }
-
-// class _EmailTextFieldState extends State<EmailTextField> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       crossAxisAlignment: CrossAxisAlignment.stretch,
-//       mainAxisSize: MainAxisSize.max,
-//       children: <Widget>[
-//         Padding(
-//           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-//           child: TextFormField(),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-//           child:
-//         ),
-//       ],
-//     );
-//   }
-// }
 
 class AuthButton extends StatelessWidget {
   AuthService _authService = AuthService();
@@ -288,11 +256,11 @@ class HintTextWithLine extends StatelessWidget {
         const Expanded(
           flex: 3,
           child: Text(
-            "OR CONNECT WITH",
+            "連接其他帳號",
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Color(0xff707070),
-              fontSize: 12,
+              fontSize: 14,
               fontFamily: "Noto Sans TC",
               fontWeight: FontWeight.w700,
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:grouping_project/pages/auth/cover.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 // import 'package:grouping_project/wrapper.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'NotoSansTC'),
       debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
-      home: LoginPage(),
+      home: const CoverPage(),
       //home: MyHomePage(),
     );
   }
