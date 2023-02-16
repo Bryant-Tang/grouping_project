@@ -9,6 +9,9 @@ import 'package:grouping_project/model/user_model.dart';
 import 'firebase_options.dart';
 import './pages/auth/login.dart';
 
+// 繞過登入直接進入(測試用library)
+import 'package:grouping_project/pages/home/home_page.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
       home: const CoverPage(),
-      //home: const CoverPage(),
+      //home: MyHomePage(),
     );
   }
 }
