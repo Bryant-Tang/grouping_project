@@ -1,18 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:grouping_project/pages/auth/cover.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:grouping_project/pages/auth/cover.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/model/user_model.dart';
-import '../../firebase_options.dart';
+// import 'package:grouping_project/model/user_model.dart';
+// import 'package:grouping_project/firebase_options.dart';
 
-import '../../component/business_card.dart';
-import '../../component/card_view.dart';
-import '../../component/message.dart';
+import 'package:grouping_project/component/business_card.dart';
+import 'package:grouping_project/component/card_view.dart';
+import 'package:grouping_project/component/message.dart';
 import 'package:grouping_project/pages/auth/login.dart';
+import 'package:grouping_project/pages/home/home_group_page.dart';
+
+import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -22,7 +24,7 @@ class MyHomePage extends StatefulWidget {
 
 class _testPageState extends State<MyHomePage> {
   AuthService _authService = AuthService();
-  var funtionSelect = 1;
+  var funtionSelect = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -86,12 +88,12 @@ class _testPageState extends State<MyHomePage> {
                         });
                       },
                       icon: (index == 0
-                          ? Icon(Icons.group)
+                          ? const Icon(Icons.group)
                           : index == 1
-                              ? Icon(Icons.calendar_today)
+                              ? const Icon(Icons.calendar_today)
                               : index == 2
-                                  ? Icon(Icons.list)
-                                  : Icon(Icons.message)),
+                                  ? const Icon(Icons.list)
+                                  : const Icon(Icons.message)),
                       label: Text(
                         index == 0
                             ? 'WORKSPACE\n小組專區'
@@ -106,7 +108,7 @@ class _testPageState extends State<MyHomePage> {
                   );
                 })),
           ),
-          SizedBox(
+          const SizedBox(
             height: 3,
           ),
           // 顯示該功能的列表
@@ -117,11 +119,11 @@ class _testPageState extends State<MyHomePage> {
         onPressed: () {
           print('add new event');
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.house), label: 'house'),
           BottomNavigationBarItem(
               icon: Icon(Icons.calendar_month), label: 'calendar'),
@@ -139,28 +141,29 @@ List<Widget> DifferentFunctionPage = [
   Expanded(
       child: ListView(
     children: [
-      GroupCard(title: 'Group 1', descript: 'this is a test 1'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 2', descript: 'this is a test 2'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 3', descript: 'this is a test 3'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 4', descript: 'this is a test 4'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 5', descript: 'this is a test 5'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 6', descript: 'this is a test 6'),
+      // GroupCard(title: 'Group 1', descript: 'this is a test 1'),
+      // SizedBox(
+      //   height: 2,
+      // ),
+      // GroupCard(title: 'group 2', descript: 'this is a test 2'),
+      // SizedBox(
+      //   height: 2,
+      // ),
+      // GroupCard(title: 'group 3', descript: 'this is a test 3'),
+      // SizedBox(
+      //   height: 2,
+      // ),
+      // GroupCard(title: 'group 4', descript: 'this is a test 4'),
+      // SizedBox(
+      //   height: 2,
+      // ),
+      // GroupCard(title: 'group 5', descript: 'this is a test 5'),
+      // SizedBox(
+      //   height: 2,
+      // ),
+      // GroupCard(title: 'group 6', descript: 'this is a test 6'),
       // 按下加會同時新增 SizedBox(height: 2,), 跟 createGroupCardView(title, short description)
+      GroupPage()
     ],
   )),
   Expanded(
@@ -221,3 +224,11 @@ List<Widget> DifferentFunctionPage = [
     children: [Message(messageNumber: 1)],
   ))
 ];
+
+
+List<Widget> addGroup(){
+  return [
+    SizedBox(height: 2,),
+    GroupCard(title: 'user input title', descript: 'user input descript')
+  ];
+}
