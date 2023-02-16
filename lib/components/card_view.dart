@@ -30,7 +30,7 @@ class UpcomingExpand extends StatelessWidget{
   final DateTime endTime;
 
   /// 隨機選擇使用的顏色
-  Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
+  Color usingColor = randomColor[Random().nextInt(randomColor.length)];
 
   @override
   Widget build(BuildContext context){
@@ -38,7 +38,7 @@ class UpcomingExpand extends StatelessWidget{
     String date2 = '${intFixed(endTime.hour >= 12 ? endTime.hour - 12 : endTime.hour, 2)}:${intFixed(endTime.minute, 2)} ${endTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[endTime.month]} ${endTime.day}, ${endTime.year}';
 
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 5),
       height: 400,
       decoration: const BoxDecoration(
           color: Colors.white,
@@ -56,7 +56,7 @@ class UpcomingExpand extends StatelessWidget{
           Positioned(
               child: Container(
                 height: 20,
-                decoration: BoxDecoration(color: UsingColor, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+                decoration: BoxDecoration(color: usingColor, borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
               ),
             ),
           Positioned(
@@ -64,7 +64,7 @@ class UpcomingExpand extends StatelessWidget{
             left: 0,
             right: 0,
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               width: MediaQuery.of(context).size.width,
               height: 500,
               child: Column(
@@ -74,7 +74,7 @@ class UpcomingExpand extends StatelessWidget{
                   Container(
                     width: MediaQuery.of(context).size.width,
                     child: Stack(
-                      children: [
+                      children: const [
                         Positioned(child: Icon(Icons.arrow_back, size: 15,)),
                         Positioned(right: 25, child: Icon(Icons.edit, size: 15,),),
                         Positioned(right: 5,child: Icon(Icons.notifications, size: 15,))
@@ -83,7 +83,7 @@ class UpcomingExpand extends StatelessWidget{
                   ),
                   // 分隔線
                   SizedBox(height: 7, child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 2),
+                    margin: const EdgeInsets.symmetric(vertical: 2),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
                       color: Colors.black12
@@ -93,18 +93,18 @@ class UpcomingExpand extends StatelessWidget{
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:[
-                      SizedBox(height: 1,),
-                      createAntiLabel(group, UsingColor),
-                      SizedBox(height: 1),
-                      Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                      SizedBox(height: 1,),
+                      const SizedBox(height: 1,),
+                      createAntiLabel(group, usingColor),
+                      const SizedBox(height: 1),
+                      Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                      const SizedBox(height: 1,),
                       Container(
                       child: RichText(
                         text: TextSpan(
                           children: [
-                            TextSpan(text: date1, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                            TextSpan(text: date1, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                             WidgetSpan(child: Icon(Icons.arrow_right_alt, size: 20, color: Colors.amber,), alignment: PlaceholderAlignment.top),
-                            TextSpan(text: date2, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
+                            TextSpan(text: date2, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
                           ]
                           ),
                         )
@@ -113,27 +113,43 @@ class UpcomingExpand extends StatelessWidget{
                     )
                   ),
                   Container(color: Colors.grey,),
-                  SizedBox(height: 1,),
+                  const SizedBox(height: 1,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('描述', style: TextStyle(fontSize: 12, color: Colors.grey),),
+                      const Text('描述', style: TextStyle(fontSize: 12, color: Colors.grey),),
                       // 分隔線
                       SizedBox(height: 7, child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 2),
+                        margin: const EdgeInsets.symmetric(vertical: 2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           color: Colors.black12
                         ),
                       ),),
-                      Text('年後的開學計畫', softWrap: true, maxLines: 2, overflow: TextOverflow.fade,)
+                      const Text('年後的開學計畫', softWrap: true, maxLines: 2, overflow: TextOverflow.fade,)
                     ],
                   ),
-                  SizedBox(height: 1,),
+                  const SizedBox(height: 1,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('相關事件', style: TextStyle(fontSize: 12, color: Colors.grey),),
+                      const Text('相關事件', style: TextStyle(fontSize: 12, color: Colors.grey),),
+                      // 分隔線
+                      SizedBox(height: 7, child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 2),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Colors.black12
+                        ),
+                      ),),
+                      Container(height: 50, decoration: BoxDecoration(border: Border.all(color: Colors.black26)),)
+                    ],
+                  ),
+                  const SizedBox(height: 1,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('相關共筆', style: TextStyle(fontSize: 12, color: Colors.grey),),
                       // 分隔線
                       SizedBox(height: 7, child: Container(
                         margin: EdgeInsets.symmetric(vertical: 2),
@@ -145,30 +161,14 @@ class UpcomingExpand extends StatelessWidget{
                       Container(height: 50, decoration: BoxDecoration(border: Border.all(color: Colors.black26)),)
                     ],
                   ),
-                  SizedBox(height: 1,),
+                  const SizedBox(height: 1,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('相關共筆', style: TextStyle(fontSize: 12, color: Colors.grey),),
+                      const Text('相關議題', style: TextStyle(fontSize: 12, color: Colors.grey),),
                       // 分隔線
                       SizedBox(height: 7, child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 2),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.black12
-                        ),
-                      ),),
-                      Container(height: 50, decoration: BoxDecoration(border: Border.all(color: Colors.black26)),)
-                    ],
-                  ),
-                  SizedBox(height: 1,),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('相關議題', style: TextStyle(fontSize: 12, color: Colors.grey),),
-                      // 分隔線
-                      SizedBox(height: 7, child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 2),
+                        margin: const EdgeInsets.symmetric(vertical: 2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           color: Colors.black12
