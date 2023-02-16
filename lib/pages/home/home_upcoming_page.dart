@@ -1,4 +1,4 @@
-import 'package:grouping_project/component/card_view.dart';
+import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/service/event_service.dart';
 
 import 'package:flutter/material.dart';
@@ -49,6 +49,7 @@ class UpcomingPageState extends State<UpcomingPage> {
   String upcomingTitle = "default";
   String upcomingDescript = "default";
   _inquireInputDialog(BuildContext context) {
+    
     StatefulBuilder dialogStateful() {
       return StatefulBuilder(builder: (context, StateSetter setState) {
         return AlertDialog(
@@ -95,6 +96,8 @@ class UpcomingPageState extends State<UpcomingPage> {
             TextButton(
                 onPressed: () {
                   setState(() {
+                    upcomingTitle = "default";
+                    upcomingDescript = "default";
                     Navigator.pop(context);
                   });
                 },
@@ -139,19 +142,35 @@ class UpcomingPageState extends State<UpcomingPage> {
 
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   void doneEvent() async {
-    await createEventData(
-        userOrGroupId: 'personal',
-        eventId: 'test',
-        title: upcomingTitle,
-        introduction: upcomingDescript,
-        startTime: DateTime.now(),
-        endTime: DateTime.now());
-    await addUpcoming();
-    setState(
-      () {
-        Navigator.pop(context);
-      },
-    );
+    if(upcomingTitle == "default" || upcomingDescript == "default"){
+      upcomingTitle = upcomingTitle == "default" ? '' : upcomingTitle;
+      upcomingDescript = upcomingDescript == "default" ? '' : upcomingDescript;
+      setState(() {
+      });
+    }
+    if(upcomingTitle.isEmpty || upcomingDescript.isEmpty){
+      upcomingTitle = upcomingTitle.isEmpty ? '' : upcomingTitle;
+      upcomingDescript = upcomingDescript.isEmpty ? '' : upcomingDescript;
+      setState(() {
+      });
+    }
+    else{
+      await createEventData(
+          userOrGroupId: 'personal',
+          eventId: 'test',
+          title: upcomingTitle,
+          introduction: upcomingDescript,
+          startTime: DateTime.now(),
+          endTime: DateTime.now());
+      await addUpcoming();
+      setState(
+        () {
+          Navigator.pop(context);
+        },
+      );
+      upcomingTitle = "default";
+      upcomingDescript = "default";
+    }
   }
 }
 
