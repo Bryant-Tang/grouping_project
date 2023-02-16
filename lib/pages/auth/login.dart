@@ -1,4 +1,6 @@
+import 'package:grouping_project/components/headline_with_content.dart';
 import 'package:grouping_project/model/user_model.dart';
+import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/service/auth_service.dart';
 
 import 'package:flutter/material.dart';
@@ -71,6 +73,7 @@ class EmailForm extends StatefulWidget {
   bool inputEmailLogin = false;
   String userInputMail = "";
   String userInputAuthCode = "";
+  List<String> userAccounts = [];
   // final registered = false;
   @override
   State<EmailForm> createState() => _EmailFormState();
@@ -110,17 +113,19 @@ class _EmailFormState extends State<EmailForm> {
         String firebaseAuthCode = getFirebaseAuthCode();
         if (widget.userInputAuthCode == firebaseAuthCode) {
           showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                    title: const Text('認證成功'),
-                    content: Text('使用${widget.userInputMail}進行登入'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ));
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+                  title: const Text('認證成功'),
+                  content: Text('使用${widget.userInputMail}進行登入'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'OK'),
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ));
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => const SignUpPage()));
         } else {
           showDialog<String>(
               context: context,
@@ -288,8 +293,7 @@ class _EmailFormState extends State<EmailForm> {
 }
 
 class AuthButton extends StatelessWidget {
-  AuthService _authService = AuthService();
-
+  final AuthService _authService = AuthService();
   final String fileName;
   final String name;
   final void Function()? onPressed;
@@ -328,28 +332,6 @@ class AuthButton extends StatelessWidget {
               ],
             ),
           )),
-    );
-  }
-}
-
-class HeadlineWithContent extends StatelessWidget {
-  final String headLineText;
-  final String content;
-  final TextStyle headLineStyle = const TextStyle(
-      fontSize: 24, fontWeight: FontWeight.bold, color: Color(0Xff1E1E1E));
-  final TextStyle contentStyle = const TextStyle(
-      fontSize: 16, fontWeight: FontWeight.bold, color: Color(0Xff717171));
-  const HeadlineWithContent(
-      {super.key, required this.headLineText, required this.content});
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(headLineText, style: headLineStyle),
-        Text(content, style: contentStyle),
-      ],
     );
   }
 }

@@ -8,9 +8,9 @@ import 'package:grouping_project/service/auth_service.dart';
 // import 'package:grouping_project/model/user_model.dart';
 // import 'package:grouping_project/firebase_options.dart';
 
-import 'package:grouping_project/component/business_card.dart';
-import 'package:grouping_project/component/card_view.dart';
-import 'package:grouping_project/component/message.dart';
+import 'package:grouping_project/components/business_card.dart';
+import 'package:grouping_project/components/card_view.dart';
+import 'package:grouping_project/components/message.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 
 import 'package:grouping_project/pages/home/home_group_page.dart';
