@@ -1,5 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:grouping_project/model/user_model.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 //For all service, you need an AuthService instance
@@ -113,5 +116,24 @@ class AuthService {
       print(e.toString());
       return null;
     }
+  }
+
+  //a function determine a user is logging in for the first time or not.
+  //if the user have logging before, return true; otherwise, return false.
+  Future<bool> haveEverLoginBefore(String userId) async {
+    final clientLocation =
+        FirebaseFirestore.instance.collection('client_properties').doc(userId);
+    bool ans = false;
+    await clientLocation.get().then(
+      (DocumentSnapshot doc) {
+        ans = true;
+      },
+      onError: (e) {
+        debugPrint(
+            '[Notification] this client is logging in for the first time.');
+        ans = false;
+      },
+    );
+    return ans;
   }
 }

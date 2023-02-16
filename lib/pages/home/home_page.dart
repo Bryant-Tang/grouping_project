@@ -1,18 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:grouping_project/pages/auth/cover.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:grouping_project/pages/auth/cover.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/model/user_model.dart';
-import '../../firebase_options.dart';
+// import 'package:grouping_project/model/user_model.dart';
+// import 'package:grouping_project/firebase_options.dart';
 
-import '../../component/business_card.dart';
-import '../../component/card_view.dart';
-import '../../component/message.dart';
+import 'package:grouping_project/component/business_card.dart';
+import 'package:grouping_project/component/card_view.dart';
+import 'package:grouping_project/component/message.dart';
 import 'package:grouping_project/pages/auth/login.dart';
+
+import 'package:grouping_project/pages/home/home_group_page.dart';
+import 'package:grouping_project/pages/home/home_upcoming_page.dart';
+import 'package:grouping_project/pages/home/home_tracked_mission_page.dart';
+
+import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -22,7 +27,7 @@ class MyHomePage extends StatefulWidget {
 
 class _testPageState extends State<MyHomePage> {
   AuthService _authService = AuthService();
-  var funtionSelect = 1;
+  var funtionSelect = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -86,12 +91,12 @@ class _testPageState extends State<MyHomePage> {
                         });
                       },
                       icon: (index == 0
-                          ? Icon(Icons.group)
+                          ? const Icon(Icons.group)
                           : index == 1
-                              ? Icon(Icons.calendar_today)
+                              ? const Icon(Icons.calendar_today)
                               : index == 2
-                                  ? Icon(Icons.list)
-                                  : Icon(Icons.message)),
+                                  ? const Icon(Icons.list)
+                                  : const Icon(Icons.message)),
                       label: Text(
                         index == 0
                             ? 'WORKSPACE\n小組專區'
@@ -106,22 +111,22 @@ class _testPageState extends State<MyHomePage> {
                   );
                 })),
           ),
-          SizedBox(
+          const SizedBox(
             height: 3,
           ),
           // 顯示該功能的列表
-          DifferentFunctionPage[funtionSelect]
+          differentFunctionPage[funtionSelect]
         ]),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           print('add new event');
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.house), label: 'house'),
           BottomNavigationBarItem(
               icon: Icon(Icons.calendar_month), label: 'calendar'),
@@ -135,85 +140,29 @@ class _testPageState extends State<MyHomePage> {
   }
 }
 
-List<Widget> DifferentFunctionPage = [
+List<Widget> differentFunctionPage = [
   Expanded(
-      child: ListView(
+    child: ListView(
     children: [
-      GroupCard(title: 'Group 1', descript: 'this is a test 1'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 2', descript: 'this is a test 2'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 3', descript: 'this is a test 3'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 4', descript: 'this is a test 4'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 5', descript: 'this is a test 5'),
-      SizedBox(
-        height: 2,
-      ),
-      GroupCard(title: 'group 6', descript: 'this is a test 6'),
-      // 按下加會同時新增 SizedBox(height: 2,), 跟 createGroupCardView(title, short description)
+      GroupPage()
     ],
   )),
   Expanded(
-      child: ListView(
+    child: ListView(
     children: [
-      UpcomingExpand(
-          group: 'personal',
-          title: 'P+ 籃球會',
-          descript: '領航員 vs 富邦勇士',
-          date1: '9:00 PM, FEB 2, 2023',
-          date2: '11:00 PM, FEB 2, 2023'),
-      SizedBox(
-        height: 2,
-      ),
-      Upcoming(
-          group: 'flutter 讀書會',
-          title: '例行性讀書會',
-          descript: '討論 UI 設計與狀態儲存',
-          date1: '9:00 PM, FEB2, 2023',
-          date2: '11:00 PM, FEB 2, 2023'),
-      SizedBox(
-        height: 2,
-      ),
-      Upcoming(
-          group: 'flutter 讀書會',
-          title: '例行性讀書會',
-          descript: '討論 UI 設計與狀態儲存',
-          date1: '9:00 PM, FEB2, 2023',
-          date2: '11:00 PM, FEB 2, 2023')
+      // UpcomingExpand(
+      //     group: 'personal',
+      //     title: 'P+ 籃球會',
+      //     descript: '領航員 vs 富邦勇士',
+      //     date1: '9:00 PM, FEB 2, 2023',
+      //     date2: '11:00 PM, FEB 2, 2023'),
+      UpcomingPage()
     ],
   )),
   Expanded(
-      child: ListView(
-    shrinkWrap: true,
-    physics: NeverScrollableScrollPhysics(),
+    child: ListView(
     children: [
-      Tracked(
-          group: 'personal',
-          title: '寒假規劃表進度',
-          descript: '年後 ~ 開學的規劃進度',
-          date1: '9:00 PM, FEB 2, 2023',
-          date2: '11:00 PM, FEB 2, 2023',
-          state: 0),
-      SizedBox(
-        height: 2,
-      ),
-      Tracked(
-          group: 'flutter 讀書會',
-          title: '例行性讀書會',
-          descript: '討論 UI 設計與狀態儲存',
-          date1: '9:00 PM, FEB2, 2023',
-          date2: '11:00 PM, FEB 2, 2023',
-          state: 1)
+      TrackedPage()
     ],
   )),
   Expanded(
