@@ -1,4 +1,4 @@
-import 'package:grouping_project/component/card_view.dart';
+import 'package:grouping_project/components/card_view.dart';
 
 import 'package:flutter/material.dart';
 
