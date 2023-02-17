@@ -239,10 +239,10 @@ Container createName() {
                     child: Container(
                       width: 150,
                       height: 75 * sqrt(3),
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           color: Colors.cyanAccent,
                           image: DecorationImage(
-                              image: AssetImage('../../assets/groupTest.png'),
+                              image: AssetImage('groupTest.png'),
                               fit: BoxFit.contain)),
                     ),
                   ))
