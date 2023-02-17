@@ -125,13 +125,13 @@ class _EmailFormState extends State<EmailForm> {
                   ],
                 ));
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const SignUpPage()));
+              MaterialPageRoute(builder: (context) => SignUpPage(email: widget.userInputMail)));
         } else {
           showDialog<String>(
               context: context,
               builder: (BuildContext context) => AlertDialog(
                     title: const Text('認證失敗'),
-                    content: Text('驗證碼不匹配'),
+                    content: const Text('驗證碼不匹配'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context, 'OK'),
