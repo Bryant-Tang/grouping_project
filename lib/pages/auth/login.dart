@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:grouping_project/components/headline_with_content.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
@@ -102,6 +104,8 @@ class _EmailFormState extends State<EmailForm> {
 
   String getFirebaseAuthCode() {
     String code = "123456";
+    //String code = (Random().nextInt(99999) + 100000).toString();
+    _authService.sendCode(code);
     return code;
   }
 
@@ -116,6 +120,7 @@ class _EmailFormState extends State<EmailForm> {
         // fix this function
         widget.userInputAuthCode = textController.text;
         String firebaseAuthCode = getFirebaseAuthCode();
+        print(firebaseAuthCode);
         if (widget.userInputAuthCode == firebaseAuthCode) {
           showDialog<String>(
               context: context,
@@ -162,7 +167,12 @@ class _EmailFormState extends State<EmailForm> {
                   child: const Text('Cancel'),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.pop(context, 'OK'),
+                  onPressed: () {
+                    Navigator.pop(context, 'OK');
+                    setState(() {
+                      _authService.setEmail(textController.text);
+                    });
+                  },
                   child: const Text('OK'),
                 ),
               ],
