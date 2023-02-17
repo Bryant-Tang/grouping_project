@@ -134,8 +134,11 @@ class _EmailFormState extends State<EmailForm> {
                       ),
                     ],
                   ));
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => SignUpPage(email: widget.userInputMail)));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      SignUpPage(email: widget.userInputMail)));
         } else {
           showDialog<String>(
               context: context,
