@@ -1,11 +1,7 @@
-import 'dart:math';
-
 import 'package:grouping_project/components/headline_with_content.dart';
-import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/service/profile_service.dart';
 
 import 'package:flutter/material.dart';
 
@@ -19,8 +15,8 @@ class LoginPage extends StatefulWidget {
       "fileName": "google.png",
       "name": "google",
       "onPress": () async {
-        AuthService _authService = AuthService();
-        await _authService.googleLogin();
+        AuthService authService = AuthService();
+        await authService.googleLogin();
       }
     },
     "Github": {"fileName": "github.png", "name": "github", "onPress": () {}},
@@ -41,10 +37,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class LogInState extends State<LoginPage> {
-  final AuthService _authService = AuthService();
+  final AuthService authService = AuthService();
 
-  String _error = '';
-  String _email = '';
+  final String _error = '';
+  final String _email = '';
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +84,7 @@ class EmailForm extends StatefulWidget {
 
 class _EmailFormState extends State<EmailForm> {
   final textController = TextEditingController();
-  final AuthService _authService = AuthService();
+  final AuthService authService = AuthService();
 
   @override
   void initState() {
@@ -107,7 +103,7 @@ class _EmailFormState extends State<EmailForm> {
   String getFirebaseAuthCode() {
     String code = "123456";
     //String code = (Random().nextInt(99999) + 100000).toString();
-    _authService.sendCode(code);
+    authService.sendCode(code);
     return code;
   }
 
@@ -140,14 +136,18 @@ class _EmailFormState extends State<EmailForm> {
           if (await authService.emailLogIn(
                   widget.userInputMail, widget.userInputMail) !=
               null) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => MyHomePage()));
+            if (context.mounted) {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const MyHomePage()));
+            }
           } else {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        SignUpPage(email: widget.userInputMail)));
+            if (context.mounted) {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SignUpPage(email: widget.userInputMail)));
+            }
           }
         } else {
           showDialog<String>(
@@ -183,7 +183,7 @@ class _EmailFormState extends State<EmailForm> {
                   onPressed: () {
                     Navigator.pop(context, 'OK');
                     setState(() {
-                      _authService.setEmail(textController.text);
+                      authService.setEmail(textController.text);
                     });
                   },
                   child: const Text('OK'),
@@ -204,7 +204,7 @@ class _EmailFormState extends State<EmailForm> {
                 controller: textController,
                 decoration: InputDecoration(
                     // isDense 為必要, contentPadding 越大，則 textfield 越大
-                    contentPadding: EdgeInsets.all(15),
+                    contentPadding: const EdgeInsets.all(15),
                     isDense: true,
                     border: const OutlineInputBorder(
                         gapPadding: 1.0,
@@ -324,7 +324,7 @@ class _EmailFormState extends State<EmailForm> {
 }
 
 class AuthButton extends StatelessWidget {
-  final AuthService _authService = AuthService();
+  final AuthService authService = AuthService();
   final String fileName;
   final String name;
   final void Function()? onPressed;
