@@ -45,6 +45,10 @@ class AuthService {
     _email = email;
   }
 
+  Future<void>? setPassword(User user, String password) {
+    user.updatePassword(password);
+  }
+
   Future<void> sendCode(String code) async {
     print(_email);
     final Email email = Email(
@@ -81,7 +85,7 @@ class AuthService {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       User user = result.user!;
-      user.sendEmailVerification();
+      setPassword(user, user.uid);
       _email = '';
 
       return _userModelFromAuth(user);
