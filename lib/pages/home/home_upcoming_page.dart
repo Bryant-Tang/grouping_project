@@ -1,3 +1,4 @@
+import 'package:grouping_project/components/business_card.dart';
 import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/service/event_service.dart';
 
@@ -189,9 +190,31 @@ Future<void> addUpcoming() async {
     upcomingCards.add(const SizedBox(
       height: 2,
     ));
+
     // pass Datatime
     DateTime startTime = upcoming!.startTime;
     DateTime endTime = upcoming.endTime;
+    Widget useCard = Upcoming(
+        group: 'personal',
+        title: upcoming.title,
+        descript: upcoming.introduction,
+        startTime: startTime,
+        endTime: endTime);
+    // upcomingCards.add(Ink(
+    //   width: 100,
+    //   height: 50,
+    //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
+    //   child: InkWell(
+    //     onTap: () {
+    //       //upcomingCards.elementAt(upcomingCards.indexOf());
+    //     },
+    //     splashColor: Colors.black12,
+    //     onLongPress: () {},
+    //     highlightColor: Colors.black26,
+    //     child: useCard,
+    //   ),
+    // ));
+
     upcomingCards.add(
         // title tmp
         Upcoming(
