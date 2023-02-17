@@ -46,24 +46,24 @@ dynamic _convertMissionState(dynamic state) {
 }
 
 class MissionData {
-  final String title;
-  final DateTime startTime;
-  final DateTime endTime;
+  final String? title;
+  final DateTime? startTime;
+  final DateTime? endTime;
   final List<UserModel>? contributors;
-  final String introduction;
-  final MissionState state;
+  final String? introduction;
+  final MissionState? state;
   final List<String>? tags;
   final List<DateTime>? notifications;
   String belong = 'unknown';
   String id = '';
 
   MissionData(
-      {required this.title,
-      required this.startTime,
-      required this.endTime,
+      {this.title,
+      this.startTime,
+      this.endTime,
       this.contributors,
-      this.introduction = '',
-      this.state = MissionState.inProgress,
+      this.introduction,
+      this.state,
       this.tags,
       this.notifications});
 
@@ -94,7 +94,7 @@ class MissionData {
       contributors: fromFireContributors,
       introduction: data?['introduction'],
       state: _convertMissionState(data?['state']),
-      tags: data?['tags'] is Iterable ? List.from(data?['tags']) : null,
+      tags: data?['tags'] is Iterable ? List.from(data?['tags']) : const [],
       notifications: fromFireNotifications,
     );
   }
@@ -111,14 +111,14 @@ class MissionData {
     });
 
     return {
-      "title": title,
-      "start_time": Timestamp.fromDate(startTime),
-      "end_time": Timestamp.fromDate(endTime),
-      "contributors": toFireContributors,
-      "introduction": introduction,
-      "state": _convertMissionState(state),
-      "tags": tags,
-      "notifications": toFireNotifications,
+      if (title != null) "title": title,
+      if (startTime != null) "start_time": Timestamp.fromDate(startTime!),
+      if (endTime != null) "end_time": Timestamp.fromDate(endTime!),
+      if (contributors != null) "contributors": toFireContributors,
+      if (introduction != null) "introduction": introduction,
+      if (state != null) "state": _convertMissionState(state),
+      if (tags != null) "tags": tags,
+      if (notifications != null) "notifications": toFireNotifications,
     };
   }
 }
@@ -128,11 +128,11 @@ Future<void> createMissionData(
     required String title,
     required DateTime startTime,
     required DateTime endTime,
-    List<UserModel>? contributors,
+    List<UserModel> contributors = const [],
     String introduction = '',
     MissionState state = MissionState.inProgress,
-    List<String>? tags,
-    List<DateTime>? notifications}) async {
+    List<String> tags = const [],
+    List<DateTime> notifications = const []}) async {
   final newMission = MissionData(
     title: title,
     startTime: startTime,
@@ -153,6 +153,40 @@ Future<void> createMissionData(
         toFirestore: (MissionData mission, options) => mission.toFirestore(),
       );
   await newMissionLocation.set(newMission);
+  return;
+}
+
+Future<void> updateMissionData(
+    {required String userOrGroupId,
+    required String missionId,
+    String? title,
+    DateTime? startTime,
+    DateTime? endTime,
+    List<UserModel>? contributors,
+    String? introduction,
+    MissionState? state,
+    List<String>? tags,
+    List<DateTime>? notifications}) async {
+  final newMission = MissionData(
+    title: title,
+    startTime: startTime,
+    endTime: endTime,
+    contributors: contributors,
+    introduction: introduction,
+    state: state,
+    tags: tags,
+    notifications: notifications,
+  );
+  final newMissionLocation = FirebaseFirestore.instance
+      .collection("client_properties")
+      .doc(userOrGroupId)
+      .collection("missions")
+      .doc('test_mission_1')
+      .withConverter(
+        fromFirestore: MissionData.fromFirestore,
+        toFirestore: (MissionData mission, options) => mission.toFirestore(),
+      );
+  await newMissionLocation.set(newMission, SetOptions(merge: true));
   return;
 }
 

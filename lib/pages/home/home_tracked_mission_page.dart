@@ -1,5 +1,5 @@
 import 'package:grouping_project/components/card_view.dart';
-import 'package:grouping_project/service/event_service.dart';
+import 'package:grouping_project/service/mission_service.dart';
 
 import 'package:flutter/material.dart';
 
@@ -165,8 +165,8 @@ class TrackedPageState extends State<TrackedPage> {
 
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
-    await createEventData(
-        userOrGroupId: 'test_user_2',
+    await createMissionData(
+        userOrGroupId: 'test_user_1',
         title: trackedTitle,
         introduction: trackedDescript,
         startTime: DateTime.now(),
@@ -182,25 +182,25 @@ class TrackedPageState extends State<TrackedPage> {
 
 Future<void> addTracked() async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllEventData(userOrGroupId: 'test_user_2');
+  var allDatas = await getAllMissionData(userOrGroupId: 'test_user_1');
   trackedCards = [];
   for (int index = 0; index < allDatas.length; index++) {
     var tracked = allDatas[index];
     trackedCards.add(const SizedBox(
       height: 2,
     ));
-    // pass Datatime
-    DateTime startTime = tracked!.startTime;
-    DateTime endTime = tracked.endTime;
+    // // pass Datatime
+    // DateTime startTime = tracked.startTime!;
+    // DateTime endTime = tracked.endTime!;
     trackedCards.add(
         // title tmp
         Tracked(
-      group: 'personal',
-      title: tracked.title,
-      descript: tracked.introduction,
-      startTime: startTime,
-      endTime: endTime,
-      state: tracked.state.index,
+      group: tracked.belong,
+      title: tracked.title ?? 'unknown',
+      descript: tracked.introduction ?? 'unknown',
+      startTime: tracked.startTime ?? DateTime(0),
+      endTime: tracked.endTime ?? DateTime(0),
+      state: tracked.state?.index ?? 1,
     ));
   }
 }
