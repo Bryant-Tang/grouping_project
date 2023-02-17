@@ -1,6 +1,7 @@
 import 'package:grouping_project/components/business_card.dart';
 import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/model/user_model.dart';
+import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/service/event_service.dart';
 
 import 'package:flutter/material.dart';
@@ -166,7 +167,8 @@ class UpcomingPageState extends State<UpcomingPage> {
 
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
-    String userId = Provider.of<UserModel>(context).uid;
+    final AuthService _authService = AuthService();
+    String userId = _authService.getUid();
     await createEventData(
         userOrGroupId: userId,
         title: upcomingTitle,
