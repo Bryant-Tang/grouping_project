@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserProfile {
   final String email;
-  final String username;
+  final String userName;
 
-  UserProfile({this.email = 'unknown', this.username = 'unknown'});
+  UserProfile({this.email = 'unknown', this.userName = 'unknown'});
 
   factory UserProfile.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -14,14 +14,14 @@ class UserProfile {
 
     return UserProfile(
       email: data?['email'],
-      username: data?['name'],
+      userName: data?['name'],
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
       "email": email,
-      "name": username,
+      "name": userName,
     };
   }
 }

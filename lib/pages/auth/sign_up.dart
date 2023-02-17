@@ -1,14 +1,16 @@
+import 'package:grouping_project/components/grouping_logo.dart';
+import 'package:grouping_project/components/headline_with_content.dart';
+import 'package:grouping_project/components/navigation_toggle_bar.dart';
+import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
+import 'package:grouping_project/pages/home/home_page.dart';
+import 'package:grouping_project/service/profile_service.dart';
+
 import 'package:flutter_svg/svg.dart';
 // import 'package:grouping_project/pages/auth/cover.dart';
 // import 'package:grouping_project/pages/home/home_page.dart';
 // import 'package:grouping_project/service/auth_service.dart';
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/grouping_logo.dart';
-import 'package:grouping_project/components/headline_with_content.dart';
-import 'package:grouping_project/components/navigation_toggle_bar.dart';
-import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
-import 'package:grouping_project/pages/home/home_page.dart';
 
 class SignUpPage extends StatefulWidget {
   final String email;
@@ -215,8 +217,11 @@ class _SignUpPageFive extends StatelessWidget {
         goBackButtonHandler: () {
           Navigator.pop(context);
         },
-        goToNextButtonHandler: () {
-          print('註冊信箱： $email\n使用者名稱$userName');
+        goToNextButtonHandler: () async {
+          await setProfile(
+              newProfile: UserProfile(email: email, userName: userName),
+              userId: 'test_user_1');
+          // print('註冊信箱： $email\n使用者名稱$userName');
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => MyHomePage()));
         },
