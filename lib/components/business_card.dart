@@ -16,6 +16,8 @@ List<Color> randomColor = [
 
 // 建立 home page 上面的 card component
 class PersonalCard extends StatelessWidget {
+  const PersonalCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,8 +27,8 @@ class PersonalCard extends StatelessWidget {
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(5),
-            boxShadow: [
-              const BoxShadow(
+            boxShadow: const [
+              BoxShadow(
                 color: Colors.black45,
                 spreadRadius: 0.5,
                 blurRadius: 2,
@@ -41,7 +43,7 @@ class PersonalCard extends StatelessWidget {
               child: Container(
                 width: 80,
                 height: double.infinity,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: Colors.amber,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(5),
@@ -54,7 +56,7 @@ class PersonalCard extends StatelessWidget {
                 left: 38.75,
                 // 創造六角形的空間
                 child: ClipPath(
-                  clipper: hexagon(),
+                  clipper: Hexagon(),
                   child: Container(
                     width: 53,
                     height: 26.5 * sqrt(3),
@@ -66,11 +68,11 @@ class PersonalCard extends StatelessWidget {
                 top: 20,
                 left: 40,
                 child: ClipPath(
-                  clipper: hexagon(),
+                  clipper: Hexagon(),
                   child: Container(
                     width: 50,
                     height: 25 * sqrt(3),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         color: Colors.greenAccent,
                         image: DecorationImage(
                             image: AssetImage('groupTest.png'),
@@ -80,7 +82,7 @@ class PersonalCard extends StatelessWidget {
             Positioned(
                 right: 0,
                 top: 10,
-                child: Container(
+                child: SizedBox(
                     width: 240,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -88,14 +90,16 @@ class PersonalCard extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('即將到來', style: TextStyle(fontSize: 10)),
-                            Text('UPCOMING', style: TextStyle(fontSize: 10)),
+                            const Text('即將到來', style: TextStyle(fontSize: 10)),
+                            const Text('UPCOMING',
+                                style: TextStyle(fontSize: 10)),
                             Container(
-                                padding: EdgeInsets.symmetric(vertical: 2),
-                                child: Text('5',
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 2),
+                                child: const Text('5',
                                     style: TextStyle(
                                         color: Colors.amber, fontSize: 20))),
-                            Text('EVENTS', style: TextStyle(fontSize: 10))
+                            const Text('EVENTS', style: TextStyle(fontSize: 10))
                           ],
                         ),
                         //Text('5', style: TextStyle(fontSize: 15),),
@@ -109,14 +113,17 @@ class PersonalCard extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('追蹤中', style: TextStyle(fontSize: 10)),
-                            Text('TRACKED', style: TextStyle(fontSize: 10)),
+                            const Text('追蹤中', style: TextStyle(fontSize: 10)),
+                            const Text('TRACKED',
+                                style: TextStyle(fontSize: 10)),
                             Container(
-                                padding: EdgeInsets.symmetric(vertical: 2),
-                                child: Text('3',
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 2),
+                                child: const Text('3',
                                     style: TextStyle(
                                         color: Colors.amber, fontSize: 20))),
-                            Text('MISSIONS', style: TextStyle(fontSize: 10))
+                            const Text('MISSIONS',
+                                style: TextStyle(fontSize: 10))
                           ],
                         ),
                         //Text('3', style: TextStyle(fontSize: 15),),
@@ -130,14 +137,17 @@ class PersonalCard extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('待回復', style: TextStyle(fontSize: 10)),
-                            Text('TAGGED', style: TextStyle(fontSize: 10)),
+                            const Text('待回復', style: TextStyle(fontSize: 10)),
+                            const Text('TAGGED',
+                                style: TextStyle(fontSize: 10)),
                             Container(
-                                padding: EdgeInsets.symmetric(vertical: 2),
-                                child: Text('7',
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 2),
+                                child: const Text('7',
                                     style: TextStyle(
                                         color: Colors.amber, fontSize: 20))),
-                            Text('MESSAGES', style: TextStyle(fontSize: 10))
+                            const Text('MESSAGES',
+                                style: TextStyle(fontSize: 10))
                           ],
                         ),
                         //Text('7', style: TextStyle(fontSize: 15),)
@@ -155,11 +165,11 @@ class GroupCard extends StatelessWidget {
   final String descript;
 
   /// 隨機選擇使用的顏色
-  Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
+  final Color usingColor = randomColor[Random().nextInt(randomColor.length)];
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.all(5),
+        margin: const EdgeInsets.all(5),
         width: MediaQuery.of(context).size.width - 20,
         height: 90,
         decoration: BoxDecoration(
@@ -182,8 +192,8 @@ class GroupCard extends StatelessWidget {
                 width: 80,
                 height: double.infinity,
                 decoration: BoxDecoration(
-                    color: UsingColor,
-                    borderRadius: BorderRadius.only(
+                    color: usingColor,
+                    borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(5),
                         bottomLeft: Radius.circular(5))),
               ),
@@ -194,7 +204,7 @@ class GroupCard extends StatelessWidget {
                 left: 38.75,
                 // 創造六角形的空間
                 child: ClipPath(
-                  clipper: hexagon(),
+                  clipper: Hexagon(),
                   child: Container(
                     width: 53,
                     height: 26.5 * sqrt(3),
@@ -206,11 +216,11 @@ class GroupCard extends StatelessWidget {
                 top: 20,
                 left: 40,
                 child: ClipPath(
-                  clipper: hexagon(),
+                  clipper: Hexagon(),
                   child: Container(
                     width: 50,
                     height: 25 * sqrt(3),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                         color: Colors.greenAccent,
                         image: DecorationImage(
                             image: AssetImage('groupTest.png'),
@@ -223,14 +233,15 @@ class GroupCard extends StatelessWidget {
               left: 120,
               child: Text(
                 title,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
             // 短敘述
             Positioned(
                 top: 30,
                 left: 120,
-                child: Container(
+                child: SizedBox(
                     width: 220,
                     height: 50,
                     child: Column(
@@ -239,7 +250,7 @@ class GroupCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               descript,
-                              style: TextStyle(fontSize: 14),
+                              style: const TextStyle(fontSize: 14),
                               softWrap: false,
                               maxLines: 2,
                               overflow: TextOverflow.fade,
@@ -253,7 +264,7 @@ class GroupCard extends StatelessWidget {
               child: Row(
                 children: [
                   createLabel('Flutter'),
-                  SizedBox(
+                  const SizedBox(
                     width: 5,
                   ),
                   createLabel('Figma')
@@ -278,12 +289,12 @@ class CardCustomClipPath extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldclip) => false;
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
 // 將長方形裁剪出六角形
 // https://educity.app/flutter/custom-clipper-in-flutter
-class hexagon extends CustomClipper<Path> {
+class Hexagon extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
@@ -297,7 +308,7 @@ class hexagon extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldclip) => false;
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
 // 建立標籤
@@ -309,8 +320,8 @@ Container createLabel(String label) {
         border: Border.all(color: Colors.amber),
         borderRadius: BorderRadius.circular(10)),
     child: Text(
-      ' #' + label + ' ',
-      style: TextStyle(color: Colors.amber, fontSize: 10),
+      ' #$label ',
+      style: const TextStyle(color: Colors.amber, fontSize: 10),
     ),
   );
 }

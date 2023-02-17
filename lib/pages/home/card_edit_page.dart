@@ -1,19 +1,13 @@
-import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/model/user_model.dart';
-import 'package:grouping_project/pages/auth/cover.dart';
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'dart:math';
 
 class CardEditDone extends StatefulWidget {
-  CardEditDone({super.key});
+  const CardEditDone({super.key});
   @override
-  State<CardEditDone> createState() => _cardEditDoneState();
+  State<CardEditDone> createState() => CardEditDoneState();
 }
 
-class _cardEditDoneState extends State<CardEditDone> {
+class CardEditDoneState extends State<CardEditDone> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
