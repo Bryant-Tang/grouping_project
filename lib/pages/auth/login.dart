@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:grouping_project/components/headline_with_content.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
+import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
+import 'package:grouping_project/service/profile_service.dart';
 
 import 'package:flutter/material.dart';
 
@@ -110,7 +112,7 @@ class _EmailFormState extends State<EmailForm> {
   }
 
   void _onSubmit() {
-    setState(() {
+    setState(() async {
       if (widget.inputEmailLogin == false) {
         widget.inputEmailLogin = true;
         widget.userInputMail = textController.text;
@@ -134,11 +136,19 @@ class _EmailFormState extends State<EmailForm> {
                       ),
                     ],
                   ));
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      SignUpPage(email: widget.userInputMail)));
+          final AuthService authService = AuthService();
+          if (await authService.emailLogIn(
+                  widget.userInputMail, widget.userInputMail) !=
+              null) {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => MyHomePage()));
+          } else {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        SignUpPage(email: widget.userInputMail)));
+          }
         } else {
           showDialog<String>(
               context: context,

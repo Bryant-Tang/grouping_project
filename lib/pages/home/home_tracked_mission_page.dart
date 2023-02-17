@@ -1,10 +1,12 @@
 import 'package:grouping_project/components/card_view.dart';
+import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/service/mission_service.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TrackedPage extends StatefulWidget {
-  TrackedPage({super.key});
+  const TrackedPage({super.key});
   @override
   State<TrackedPage> createState() => TrackedPageState();
 }
@@ -13,7 +15,7 @@ List<Widget> trackedCards = [];
 
 class TrackedPageState extends State<TrackedPage> {
   @override
-  Widget build(BuildContext content) {
+  Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width - 20,
       height: MediaQuery.of(context).size.height - 80,
@@ -165,13 +167,14 @@ class TrackedPageState extends State<TrackedPage> {
 
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
+    String userId = Provider.of<UserModel>(context).uid;
     await createMissionData(
-        userOrGroupId: 'test_user_1',
+        userOrGroupId: userId,
         title: trackedTitle,
         introduction: trackedDescript,
         startTime: DateTime.now(),
         endTime: DateTime.now());
-    await addTracked();
+    await addTracked(userId: userId);
     setState(
       () {
         Navigator.pop(context);
@@ -180,9 +183,9 @@ class TrackedPageState extends State<TrackedPage> {
   }
 }
 
-Future<void> addTracked() async {
+Future<void> addTracked({required String userId}) async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllMissionData(userOrGroupId: 'test_user_1');
+  var allDatas = await getAllMissionData(userOrGroupId: userId);
   trackedCards = [];
   for (int index = 0; index < allDatas.length; index++) {
     var tracked = allDatas[index];

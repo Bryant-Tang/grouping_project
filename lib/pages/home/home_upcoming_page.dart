@@ -1,8 +1,10 @@
 import 'package:grouping_project/components/business_card.dart';
 import 'package:grouping_project/components/card_view.dart';
+import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/service/event_service.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UpcomingPage extends StatefulWidget {
   UpcomingPage({super.key});
@@ -164,13 +166,14 @@ class UpcomingPageState extends State<UpcomingPage> {
 
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
+    String userId = Provider.of<UserModel>(context).uid;
     await createEventData(
-        userOrGroupId: 'test_user_1',
+        userOrGroupId: userId,
         title: upcomingTitle,
         introduction: upcomingDescript,
         startTime: DateTime.now(),
         endTime: DateTime.now());
-    await addUpcoming();
+    await addUpcoming(userId: userId);
     setState(
       () {
         Navigator.pop(context);
@@ -179,9 +182,9 @@ class UpcomingPageState extends State<UpcomingPage> {
   }
 }
 
-Future<void> addUpcoming() async {
+Future<void> addUpcoming({required String userId}) async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllEventData(userOrGroupId: 'test_user_1');
+  var allDatas = await getAllEventData(userOrGroupId: userId);
 
   upcomingCards = [];
   for (int index = 0; index < allDatas.length; index++) {

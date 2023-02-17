@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/user_model.dart';
+import 'package:provider/provider.dart';
 import '../service/event_service.dart';
 
 class EventDataTestPage extends StatefulWidget {
@@ -17,16 +18,20 @@ class _TestPageState extends State<EventDataTestPage> {
   String? _counter = '0';
 
   void _incrementCounter() async {
+    String userId = Provider.of<UserModel>(context).uid;
     await createEventData(
-      userOrGroupId: 'test_user_1',
+      userOrGroupId: userId,
       title: 'test_title_1',
       startTime: DateTime.now(),
       endTime: DateTime.now().add(const Duration(days: 3)),
       // notifications: [DateTime(2024, 2)],
       contributors: [UserModel(uid: 'test123')],
     );
-    // final testEvent = await getOneEventData(userOrGroupId: 'test_user_1',eventId: 'test_event_1');
-    // _counter = "title:${testEvent?.belong}\nstart time:${testEvent?.startTime}\n";
+    final testEvent = await getOneEventData(
+        userOrGroupId: userId,
+        eventId: 'test_event_1');
+    _counter =
+        "title:${testEvent?.belong}\nstart time:${testEvent?.startTime}\n";
     // "state:${testEvent[0].state}\nnotifications:${testEvent[0].notifications}\n"
     // "contributors:${testEvent[0].contributors}";
     setState(() {});
