@@ -8,9 +8,8 @@ import 'package:grouping_project/service/auth_service.dart';
 // import 'package:grouping_project/model/user_model.dart';
 // import 'package:grouping_project/firebase_options.dart';
 
-import 'package:grouping_project/component/business_card.dart';
-import 'package:grouping_project/component/card_view.dart';
-import 'package:grouping_project/component/message.dart';
+import 'package:grouping_project/components/business_card.dart';
+import 'package:grouping_project/components/message.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 
 import 'package:grouping_project/pages/home/home_group_page.dart';
@@ -33,18 +32,19 @@ class _testPageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
+          // 讀取使用者或團體名字 !!!!!!!!!!!!
           'QUAN 的工作區',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
               onPressed: () {
-                print('switch to personal Intro.');
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => CardEditDone()));
               },
-              icon: Icon(Icons.circle)),
+              // 改變成使用者或團體的頭像 !!!!!!!!!!!
+              icon: const Icon(Icons.circle)),
           IconButton(
               //temp remove async for quick test
               onPressed: () async {
@@ -53,7 +53,7 @@ class _testPageState extends State<MyHomePage> {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => new LoginPage()));
               },
-              icon: Icon(Icons.logout_outlined)),
+              icon: const Icon(Icons.logout_outlined)),
         ],
         backgroundColor: Colors.white,
       ),
@@ -61,7 +61,7 @@ class _testPageState extends State<MyHomePage> {
         child: Column(children: [
           // 名片位置
           PersonalCard(),
-          SizedBox(
+          const SizedBox(
             height: 3,
           ),
           // 功能選擇區
@@ -69,7 +69,7 @@ class _testPageState extends State<MyHomePage> {
             height: 80,
             width: 325,
             child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2, childAspectRatio: 4),
                 itemCount: 4,
                 itemBuilder: ((context, index) {
@@ -105,7 +105,7 @@ class _testPageState extends State<MyHomePage> {
                                 : index == 2
                                     ? 'TRACKED MISSION\n任務追蹤'
                                     : 'TAGGED MESSAGE\n待回覆',
-                        style: TextStyle(color: Colors.black, fontSize: 12),
+                        style: const TextStyle(color: Colors.black, fontSize: 12),
                       ),
                     ),
                   );

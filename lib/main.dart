@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:grouping_project/pages/auth/cover.dart';
-import 'package:grouping_project/pages/home/home_page.dart';
-// import 'package:grouping_project/wrapper.dart';
+import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'firebase_options.dart';
 import './pages/auth/login.dart';
+
+// 繞過登入直接進入(測試用library)
+import 'package:grouping_project/pages/home/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,8 +35,8 @@ class MyApp extends StatelessWidget {
           fontFamily: 'NotoSansTC'),
       debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
-      //home: const CoverPage(),
-      home: LoginPage(),
+      home: const CoverPage(),
+      //home: MyHomePage(),
     );
   }
 }
