@@ -73,7 +73,7 @@ class PersonalCard extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: Colors.greenAccent,
                         image: DecorationImage(
-                            image: AssetImage('../assets/groupTest.png'),
+                            image: AssetImage('groupTest.png'),
                             fit: BoxFit.contain)),
                   ),
                 )),
@@ -165,7 +165,7 @@ class GroupCard extends StatelessWidget {
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(5),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black45,
                 spreadRadius: 0.5,
@@ -213,7 +213,7 @@ class GroupCard extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: Colors.greenAccent,
                         image: DecorationImage(
-                            image: AssetImage('../assets/groupTest.png'),
+                            image: AssetImage('groupTest.png'),
                             fit: BoxFit.contain)),
                   ),
                 )),

@@ -125,13 +125,13 @@ class _EmailFormState extends State<EmailForm> {
                   ],
                 ));
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const SignUpPage()));
+              MaterialPageRoute(builder: (context) => SignUpPage(email: widget.userInputMail)));
         } else {
           showDialog<String>(
               context: context,
               builder: (BuildContext context) => AlertDialog(
                     title: const Text('認證失敗'),
-                    content: Text('驗證碼不匹配'),
+                    content: const Text('驗證碼不匹配'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context, 'OK'),
@@ -175,6 +175,9 @@ class _EmailFormState extends State<EmailForm> {
             child: TextField(
                 controller: textController,
                 decoration: InputDecoration(
+                    // isDense 為必要, contentPadding 越大，則 textfield 越大
+                    contentPadding: EdgeInsets.all(15),
+                    isDense: true,
                     border: const OutlineInputBorder(
                         gapPadding: 1.0,
                         borderRadius: BorderRadius.all(Radius.circular(30))),
