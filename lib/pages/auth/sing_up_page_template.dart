@@ -13,7 +13,7 @@ class SignUpPageTemplate extends StatefulWidget {
     required this.toggleBar,
   });
   @override
-  _SignUpPageTemplateState createState() => _SignUpPageTemplateState();
+  State<SignUpPageTemplate> createState() => _SignUpPageTemplateState();
 }
 
 class _SignUpPageTemplateState extends State<SignUpPageTemplate> {

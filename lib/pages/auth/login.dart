@@ -34,10 +34,10 @@ class LoginPage extends StatefulWidget {
   }
 
   @override
-  LogInState createState() => LogInState();
+  State<LoginPage> createState() => _LogInState();
 }
 
-class LogInState extends State<LoginPage> {
+class _LogInState extends State<LoginPage> {
   final AuthService authService = AuthService();
 
   final String _error = '';
@@ -57,7 +57,7 @@ class LogInState extends State<LoginPage> {
               HeadlineWithContent(
                   headLineText: widget.headLineText, content: widget.content),
               const SizedBox(height: 50),
-              EmailForm(),
+              _EmailForm(),
               const SizedBox(height: 50),
               const HintTextWithLine(),
               Padding(
@@ -72,20 +72,19 @@ class LogInState extends State<LoginPage> {
   }
 }
 
-class EmailForm extends StatefulWidget {
-  EmailForm({super.key});
+class _EmailForm extends StatefulWidget {
+  // final registered = false;
+  @override
+  State<_EmailForm> createState() => _EmailFormState();
+}
+
+class _EmailFormState extends State<_EmailForm> {
+  final textController = TextEditingController();
+  final AuthService authService = AuthService();
   bool inputEmailLogin = false;
   String userInputMail = "";
   String userInputAuthCode = "";
   List<String> userAccounts = [];
-  // final registered = false;
-  @override
-  State<EmailForm> createState() => _EmailFormState();
-}
-
-class _EmailFormState extends State<EmailForm> {
-  final textController = TextEditingController();
-  final AuthService authService = AuthService();
 
   @override
   void initState() {
@@ -109,26 +108,25 @@ class _EmailFormState extends State<EmailForm> {
   }
 
   void _onSubmit() async {
-    final AuthService authService = AuthService();
-    final UserModel? userModel = await authService.emailLogIn(
-        widget.userInputMail, widget.userInputMail);
+    final UserModel? userModel =
+        await authService.emailLogIn(userInputMail, userInputMail);
     setState(() {
-      if (widget.inputEmailLogin == false) {
-        widget.inputEmailLogin = true;
-        widget.userInputMail = textController.text;
+      if (inputEmailLogin == false) {
+        inputEmailLogin = true;
+        userInputMail = textController.text;
         textController.clear();
-        print("input box: ${widget.userInputMail}");
+        print("input box: $userInputMail");
       } else {
         // fix this function
-        widget.userInputAuthCode = textController.text;
+        userInputAuthCode = textController.text;
         String firebaseAuthCode = getFirebaseAuthCode();
         print(firebaseAuthCode);
-        if (widget.userInputAuthCode == firebaseAuthCode) {
+        if (userInputAuthCode == firebaseAuthCode) {
           showDialog<String>(
               context: context,
               builder: (BuildContext context) => AlertDialog(
                     title: const Text('認證成功'),
-                    content: Text('使用${widget.userInputMail}進行登入'),
+                    content: Text('使用$userInputMail進行登入'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context, 'OK'),
@@ -143,8 +141,7 @@ class _EmailFormState extends State<EmailForm> {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        SignUpPage(email: widget.userInputMail)));
+                    builder: (context) => SignUpPage(email: userInputMail)));
           }
         } else {
           showDialog<String>(
@@ -191,7 +188,7 @@ class _EmailFormState extends State<EmailForm> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.inputEmailLogin == false) {
+    if (inputEmailLogin == false) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -254,7 +251,7 @@ class _EmailFormState extends State<EmailForm> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
             child: Text(
-              "Welcome ${widget.userInputMail}",
+              "Welcome $userInputMail",
               style: const TextStyle(
                   fontSize: 16,
                   color: Colors.black,
@@ -290,7 +287,7 @@ class _EmailFormState extends State<EmailForm> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
             child: Text(
-              "已經寄送驗證碼到信箱 ${widget.userInputMail}",
+              "已經寄送驗證碼到信箱 $userInputMail",
               style: const TextStyle(
                 fontSize: 12,
                 color: Colors.blueGrey,
