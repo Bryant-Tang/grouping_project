@@ -171,8 +171,8 @@ Future<EventData?> getOneEventData(
   EventData? event = eventSnap.data();
 
   UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
-  if (belongSnap?.username != null) {
-    event?.belong = belongSnap?.username as String;
+  if (belongSnap?.userName != null) {
+    event?.belong = belongSnap?.userName as String;
   } else {
     event?.belong = 'unknown';
   }
@@ -195,8 +195,8 @@ Future<List<EventData>> getAllEventData({required String userOrGroupId}) async {
   List<EventData> eventDataList = [];
   for (var eventSnap in eventListSnap.docs) {
     EventData event = eventSnap.data();
-    if (belongSnap?.username != null) {
-      event.belong = belongSnap?.username as String;
+    if (belongSnap?.userName != null) {
+      event.belong = belongSnap?.userName as String;
     } else {
       event.belong = 'unknown';
     }
