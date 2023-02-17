@@ -56,6 +56,7 @@ class _testPageState extends State<MyHomePage> {
               icon: const Icon(Icons.logout_outlined)),
         ],
         backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
       ),
       body: Container(
         child: Column(children: [
