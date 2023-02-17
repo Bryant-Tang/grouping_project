@@ -1,4 +1,6 @@
 import 'package:grouping_project/model/user_model.dart';
+import 'profile_service.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum EventState { upComing, inProgress, finish }
@@ -50,8 +52,10 @@ class EventData {
   final List<UserModel>? contributors;
   final String introduction;
   final EventState state;
-  final List<String>? tags;
+  final List<String> tags;
   final List<DateTime>? notifications;
+  String belong = 'unknown';
+  String id = '';
 
   EventData(
       {required this.title,
@@ -60,7 +64,7 @@ class EventData {
       this.contributors,
       this.introduction = '',
       this.state = EventState.inProgress,
-      this.tags,
+      this.tags = const [],
       this.notifications});
 
   factory EventData.fromFirestore(
@@ -90,7 +94,7 @@ class EventData {
       contributors: fromFireContributors,
       introduction: data?['introduction'],
       state: _convertEventState(data?['state']),
-      tags: data?['tags'] is Iterable ? List.from(data?['tags']) : null,
+      tags: List.from(data?['tags']),
       notifications: fromFireNotifications,
     );
   }
@@ -107,28 +111,27 @@ class EventData {
     });
 
     return {
-      "title": title,
-      "start_time": Timestamp.fromDate(startTime),
-      "end_time": Timestamp.fromDate(endTime),
-      "contributors": toFireContributors,
-      "introduction": introduction,
-      "state": _convertEventState(state),
-      "tags": tags,
-      "notifications": toFireNotifications,
+      if (title != null) "title": title,
+      if (startTime != null) "start_time": Timestamp.fromDate(startTime),
+      if (endTime != null) "end_time": Timestamp.fromDate(endTime),
+      if (toFireContributors.isNotEmpty) "contributors": toFireContributors,
+      if (introduction != '') "introduction": introduction,
+      if (state != null) "state": _convertEventState(state),
+      if (tags.isNotEmpty) "tags": tags,
+      if (toFireNotifications.isNotEmpty) "notifications": toFireNotifications,
     };
   }
 }
 
 Future<void> createEventData(
     {required String userOrGroupId,
-    required String eventId,
     required String title,
     required DateTime startTime,
     required DateTime endTime,
     List<UserModel>? contributors,
     String introduction = '',
     EventState state = EventState.inProgress,
-    List<String>? tags,
+    List<String> tags = const [],
     List<DateTime>? notifications}) async {
   final newEvent = EventData(
     title: title,
@@ -144,12 +147,12 @@ Future<void> createEventData(
       .collection("client_properties")
       .doc(userOrGroupId)
       .collection("events")
-      .doc(eventId)
+      .doc('test_event_1')
       .withConverter(
         fromFirestore: EventData.fromFirestore,
         toFirestore: (EventData event, options) => event.toFirestore(),
       );
-  await newEventLocation.set(newEvent);
+  await newEventLocation.set(newEvent, SetOptions(merge: true));
   return;
 }
 
@@ -165,11 +168,19 @@ Future<EventData?> getOneEventData(
         toFirestore: (EventData event, options) => event.toFirestore(),
       );
   final eventSnap = await eventLocation.get();
-  return eventSnap.data();
+  EventData? event = eventSnap.data();
+
+  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+  if (belongSnap?.userName != null) {
+    event?.belong = belongSnap?.userName as String;
+  } else {
+    event?.belong = 'unknown';
+  }
+
+  return event;
 }
 
-Future<List<EventData?>> getAllEventData(
-    {required String userOrGroupId}) async {
+Future<List<EventData>> getAllEventData({required String userOrGroupId}) async {
   final eventLocation = FirebaseFirestore.instance
       .collection("client_properties")
       .doc(userOrGroupId)
@@ -179,9 +190,19 @@ Future<List<EventData?>> getAllEventData(
         toFirestore: (EventData event, options) => event.toFirestore(),
       );
   final eventListSnap = await eventLocation.get();
-  List<EventData?> eventDataList = [];
+  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+
+  List<EventData> eventDataList = [];
   for (var eventSnap in eventListSnap.docs) {
-    eventDataList.add(eventSnap.data());
+    EventData event = eventSnap.data();
+    event.id = eventSnap.id;
+    if (belongSnap?.userName != null) {
+      event.belong = belongSnap?.userName as String;
+    } else {
+      event.belong = 'unknown';
+    }
+    eventDataList.add(event);
   }
+
   return eventDataList;
 }

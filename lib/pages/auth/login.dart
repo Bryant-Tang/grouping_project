@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:grouping_project/components/headline_with_content.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
@@ -38,6 +40,9 @@ class LoginPage extends StatefulWidget {
 
 class LogInState extends State<LoginPage> {
   final AuthService _authService = AuthService();
+
+  String _error = '';
+  String _email = '';
 
   @override
   Widget build(BuildContext context) {
@@ -81,6 +86,8 @@ class EmailForm extends StatefulWidget {
 
 class _EmailFormState extends State<EmailForm> {
   final textController = TextEditingController();
+  final AuthService _authService = AuthService();
+
   @override
   void initState() {
     super.initState();
@@ -97,6 +104,8 @@ class _EmailFormState extends State<EmailForm> {
 
   String getFirebaseAuthCode() {
     String code = "123456";
+    //String code = (Random().nextInt(99999) + 100000).toString();
+    _authService.sendCode(code);
     return code;
   }
 
@@ -111,21 +120,25 @@ class _EmailFormState extends State<EmailForm> {
         // fix this function
         widget.userInputAuthCode = textController.text;
         String firebaseAuthCode = getFirebaseAuthCode();
+        print(firebaseAuthCode);
         if (widget.userInputAuthCode == firebaseAuthCode) {
           showDialog<String>(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-                  title: const Text('認證成功'),
-                  content: Text('使用${widget.userInputMail}進行登入'),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, 'OK'),
-                      child: const Text('OK'),
-                    ),
-                  ],
-                ));
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => SignUpPage(email: widget.userInputMail)));
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                    title: const Text('認證成功'),
+                    content: Text('使用${widget.userInputMail}進行登入'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, 'OK'),
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      SignUpPage(email: widget.userInputMail)));
         } else {
           showDialog<String>(
               context: context,
@@ -157,7 +170,12 @@ class _EmailFormState extends State<EmailForm> {
                   child: const Text('Cancel'),
                 ),
                 TextButton(
-                  onPressed: () => Navigator.pop(context, 'OK'),
+                  onPressed: () {
+                    Navigator.pop(context, 'OK');
+                    setState(() {
+                      _authService.setEmail(textController.text);
+                    });
+                  },
                   child: const Text('OK'),
                 ),
               ],

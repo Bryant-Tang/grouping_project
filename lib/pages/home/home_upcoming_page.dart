@@ -166,7 +166,6 @@ class UpcomingPageState extends State<UpcomingPage> {
   Future<void> passDataAndCreate() async {
     await createEventData(
         userOrGroupId: 'test_user_1',
-        eventId: 'test',
         title: upcomingTitle,
         introduction: upcomingDescript,
         startTime: DateTime.now(),
