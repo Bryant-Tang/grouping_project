@@ -11,13 +11,22 @@ import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+  final String email;
+  const SignUpPage({Key? key, required this.email}) : super(key: key);
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
 
+class _SignUpPageState extends State<SignUpPage> {
+  @override
+  Widget build(BuildContext context) {
+    return _SignUpPageOne(email: widget.email);
+  }
+}
+
 class _SignUpPageOne extends StatelessWidget {
-  const _SignUpPageOne({super.key});
+  final String email;
+  const _SignUpPageOne({super.key, required this.email});
   final headLineText = "歡迎加入 Grouping";
   final content = "此信箱還未被註冊過\n用此信箱註冊一個新的帳號？\n選擇其他帳號登入?";
   @override
@@ -33,8 +42,12 @@ class _SignUpPageOne extends StatelessWidget {
           Navigator.pop(context);
         },
         goToNextButtonHandler: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const _SignUpPageTwo()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => _SignUpPageTwo(
+                        email: email,
+                      )));
         },
       ),
     );
@@ -42,7 +55,8 @@ class _SignUpPageOne extends StatelessWidget {
 }
 
 class _SignUpPageTwo extends StatefulWidget {
-  const _SignUpPageTwo({super.key});
+  final String email;
+  const _SignUpPageTwo({super.key, required this.email});
 
   @override
   State<_SignUpPageTwo> createState() => _SignUpPageTwoState();
@@ -112,7 +126,8 @@ class _SignUpPageTwoState extends State<_SignUpPageTwo> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const _SignUpPageThree()));
+                  builder: (context) => _SignUpPageThree(
+                      email: widget.email, userName: textController.text)));
         },
       ),
     );
@@ -120,7 +135,10 @@ class _SignUpPageTwoState extends State<_SignUpPageTwo> {
 }
 
 class _SignUpPageThree extends StatelessWidget {
-  const _SignUpPageThree({super.key});
+  final String email;
+  final String userName;
+  const _SignUpPageThree(
+      {super.key, required this.email, required this.userName});
   final headLineText = "名片資訊設定";
   final content = "Grouping 提供精美的名片功能，讓你的小組員能更快認識你，了解你。";
   @override
@@ -136,8 +154,11 @@ class _SignUpPageThree extends StatelessWidget {
           Navigator.pop(context);
         },
         goToNextButtonHandler: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const _SignUpPageFour()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      _SignUpPageFour(email: email, userName: userName)));
         },
       ),
     );
@@ -145,7 +166,10 @@ class _SignUpPageThree extends StatelessWidget {
 }
 
 class _SignUpPageFour extends StatelessWidget {
-  const _SignUpPageFour({super.key});
+  final String email;
+  final String userName;
+  const _SignUpPageFour(
+      {super.key, required this.email, required this.userName});
   final headLineText = "創建新的小組";
   final content = "已經有要加入的Group了嗎，透過連結加入小組，或是設立新的Group";
   @override
@@ -161,8 +185,11 @@ class _SignUpPageFour extends StatelessWidget {
           Navigator.pop(context);
         },
         goToNextButtonHandler: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const _SignUpPageFive()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      _SignUpPageFive(email: email, userName: userName)));
         },
       ),
     );
@@ -170,7 +197,10 @@ class _SignUpPageFour extends StatelessWidget {
 }
 
 class _SignUpPageFive extends StatelessWidget {
-  const _SignUpPageFive({super.key});
+  final String email;
+  final String userName;
+  const _SignUpPageFive(
+      {super.key, required this.email, required this.userName});
   final headLineText = "帳號創建完成!";
   final content = "歡迎加入 Grouping 一起與夥伴創造冒險吧";
   @override
@@ -186,17 +216,11 @@ class _SignUpPageFive extends StatelessWidget {
           Navigator.pop(context);
         },
         goToNextButtonHandler: () {
+          print('註冊信箱： $email\n使用者名稱$userName');
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => MyHomePage()));
         },
       ),
     );
-  }
-}
-
-class _SignUpPageState extends State<SignUpPage> {
-  @override
-  Widget build(BuildContext context) {
-    return const _SignUpPageOne();
   }
 }
