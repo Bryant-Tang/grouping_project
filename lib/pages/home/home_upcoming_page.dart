@@ -165,7 +165,7 @@ class UpcomingPageState extends State<UpcomingPage> {
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
     await createEventData(
-        userOrGroupId: 'personalUpcoming',
+        userOrGroupId: 'test_user_1',
         title: upcomingTitle,
         introduction: upcomingDescript,
         startTime: DateTime.now(),
@@ -181,7 +181,7 @@ class UpcomingPageState extends State<UpcomingPage> {
 
 Future<void> addUpcoming() async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllEventData(userOrGroupId: 'personalUpcoming');
+  var allDatas = await getAllEventData(userOrGroupId: 'test_user_1');
 
   upcomingCards = [];
   for (int index = 0; index < allDatas.length; index++) {
@@ -190,15 +190,15 @@ Future<void> addUpcoming() async {
       height: 2,
     ));
 
-    // pass Datatime
-    DateTime startTime = upcoming!.startTime;
-    DateTime endTime = upcoming.endTime;
+    // // pass Datatime
+    // DateTime startTime = upcoming!.startTime;
+    // DateTime endTime = upcoming.endTime;
     Widget useCard = Upcoming(
-        group: 'personal',
-        title: upcoming.title,
-        descript: upcoming.introduction,
-        startTime: startTime,
-        endTime: endTime);
+        group: upcoming.belong,
+        title: upcoming.title ?? 'unknown',
+        descript: upcoming.introduction ?? 'unknown',
+        startTime: upcoming.startTime ?? DateTime(0),
+        endTime: upcoming.endTime ?? DateTime(0));
     // upcomingCards.add(Ink(
     //   width: 100,
     //   height: 50,
@@ -217,10 +217,10 @@ Future<void> addUpcoming() async {
     upcomingCards.add(
         // title tmp
         Upcoming(
-            group: 'personal',
-            title: upcoming.title,
-            descript: upcoming.introduction,
-            startTime: startTime,
-            endTime: endTime));
+            group: upcoming.belong,
+            title: upcoming.title ?? 'unknown',
+            descript: upcoming.introduction ?? 'unknown',
+            startTime: upcoming.startTime ?? DateTime(0),
+            endTime: upcoming.endTime ?? DateTime(0)));
   }
 }

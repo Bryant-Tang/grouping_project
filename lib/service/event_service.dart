@@ -46,25 +46,25 @@ dynamic _convertEventState(dynamic state) {
 }
 
 class EventData {
-  final String title;
-  final DateTime startTime;
-  final DateTime endTime;
+  final String? title;
+  final DateTime? startTime;
+  final DateTime? endTime;
   final List<UserModel>? contributors;
-  final String introduction;
-  final EventState state;
-  final List<String> tags;
+  final String? introduction;
+  final EventState? state;
+  final List<String>? tags;
   final List<DateTime>? notifications;
   String belong = 'unknown';
   String id = '';
 
   EventData(
-      {required this.title,
-      required this.startTime,
-      required this.endTime,
+      {this.title,
+      this.startTime,
+      this.endTime,
       this.contributors,
-      this.introduction = '',
-      this.state = EventState.inProgress,
-      this.tags = const [],
+      this.introduction,
+      this.state,
+      this.tags,
       this.notifications});
 
   factory EventData.fromFirestore(
@@ -94,7 +94,7 @@ class EventData {
       contributors: fromFireContributors,
       introduction: data?['introduction'],
       state: _convertEventState(data?['state']),
-      tags: List.from(data?['tags']),
+      tags: data?['tags'] is Iterable ? List.from(data?['tags']) : const [],
       notifications: fromFireNotifications,
     );
   }
@@ -112,13 +112,13 @@ class EventData {
 
     return {
       if (title != null) "title": title,
-      if (startTime != null) "start_time": Timestamp.fromDate(startTime),
-      if (endTime != null) "end_time": Timestamp.fromDate(endTime),
-      if (toFireContributors.isNotEmpty) "contributors": toFireContributors,
-      if (introduction != '') "introduction": introduction,
+      if (startTime != null) "start_time": Timestamp.fromDate(startTime!),
+      if (endTime != null) "end_time": Timestamp.fromDate(endTime!),
+      if (contributors != null) "contributors": toFireContributors,
+      if (introduction != null) "introduction": introduction,
       if (state != null) "state": _convertEventState(state),
-      if (tags.isNotEmpty) "tags": tags,
-      if (toFireNotifications.isNotEmpty) "notifications": toFireNotifications,
+      if (tags != null) "tags": tags,
+      if (notifications != null) "notifications": toFireNotifications,
     };
   }
 }
@@ -128,10 +128,44 @@ Future<void> createEventData(
     required String title,
     required DateTime startTime,
     required DateTime endTime,
-    List<UserModel>? contributors,
+    List<UserModel> contributors = const [],
     String introduction = '',
     EventState state = EventState.inProgress,
     List<String> tags = const [],
+    List<DateTime> notifications = const []}) async {
+  final newEvent = EventData(
+    title: title,
+    startTime: startTime,
+    endTime: endTime,
+    contributors: contributors,
+    introduction: introduction,
+    state: state,
+    tags: tags,
+    notifications: notifications,
+  );
+  final newEventLocation = FirebaseFirestore.instance
+      .collection("client_properties")
+      .doc(userOrGroupId)
+      .collection("events")
+      .doc('test_event_1')
+      .withConverter(
+        fromFirestore: EventData.fromFirestore,
+        toFirestore: (EventData event, options) => event.toFirestore(),
+      );
+  await newEventLocation.set(newEvent);
+  return;
+}
+
+Future<void> updateEventData(
+    {required String userOrGroupId,
+    required String eventId,
+    String? title,
+    DateTime? startTime,
+    DateTime? endTime,
+    List<UserModel>? contributors,
+    String? introduction,
+    EventState? state,
+    List<String>? tags,
     List<DateTime>? notifications}) async {
   final newEvent = EventData(
     title: title,
