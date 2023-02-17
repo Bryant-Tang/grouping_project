@@ -55,6 +55,7 @@ class EventData {
   final List<String>? tags;
   final List<DateTime>? notifications;
   String belong = 'unknown';
+  String id = '';
 
   EventData(
       {required this.title,
@@ -124,7 +125,6 @@ class EventData {
 
 Future<void> createEventData(
     {required String userOrGroupId,
-    required String eventId,
     required String title,
     required DateTime startTime,
     required DateTime endTime,
@@ -147,7 +147,7 @@ Future<void> createEventData(
       .collection("client_properties")
       .doc(userOrGroupId)
       .collection("events")
-      .doc(eventId)
+      .doc()
       .withConverter(
         fromFirestore: EventData.fromFirestore,
         toFirestore: (EventData event, options) => event.toFirestore(),
@@ -195,6 +195,7 @@ Future<List<EventData>> getAllEventData({required String userOrGroupId}) async {
   List<EventData> eventDataList = [];
   for (var eventSnap in eventListSnap.docs) {
     EventData event = eventSnap.data();
+    event.id = eventSnap.id;
     if (belongSnap?.userName != null) {
       event.belong = belongSnap?.userName as String;
     } else {
