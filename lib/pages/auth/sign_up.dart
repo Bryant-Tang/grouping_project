@@ -223,7 +223,8 @@ class _SignUpPageFive extends StatelessWidget {
           final UserModel userModel =
               await authService.emailSignUp(email, email);
           await setProfile(
-              newProfile: UserProfile(email: email, userName: userName),
+              newProfile: UserProfile(
+                  email: email, userName: userName, userId: userModel.uid),
               userId: userModel.uid);
           // print('註冊信箱： $email\n使用者名稱$userName');
           Navigator.push(
