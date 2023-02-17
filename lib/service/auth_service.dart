@@ -39,6 +39,11 @@ class AuthService {
     }
   }
 
+  String getUid() {
+    String cur = _auth.currentUser!.uid;
+    return cur;
+  }
+
 //These 3 func. are for two step Login/SignUp
 //For using it, pass email and password in two step
   Future<void>? setEmail(String email) {
