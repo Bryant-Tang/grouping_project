@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:grouping_project/model/user_model.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,14 +45,19 @@ class AuthService {
     _email = email;
   }
 
-//This is for SignUp
-  Future<void>? setPassword(String password) {
-    emailSignUp(_email, password);
-  }
-
-//This is for login
-  Future<void>? varifyPassword(String password) {
-    emailLogIn(_email, password);
+  Future<void> sendCode(String code) async {
+    print(_email);
+    final Email email = Email(
+      body:
+          'Hello!\nPlease enter following code for your email login:\n{$code}\nIf you didn’t ask to login, you can ignore this email.\nThanks,\nYour Grouping team',
+      subject: 'Login code for GROUPING!',
+      recipients: [_email],
+      cc: [''],
+      bcc: [''],
+      attachmentPaths: [''],
+      isHTML: false,
+    );
+    await FlutterEmailSender.send(email);
   }
 
 //Login with email & password (with all the information)

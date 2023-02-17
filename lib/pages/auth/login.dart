@@ -1,4 +1,5 @@
 import 'package:grouping_project/model/user_model.dart';
+import 'package:grouping_project/pages/auth/verify_code.dart';
 import 'package:grouping_project/service/auth_service.dart';
 
 import 'package:flutter/material.dart';
@@ -35,11 +36,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class LogInState extends State<LoginPage> {
-  final AuthService _authService = AuthService();
-
-  String _error = '';
-  String _email = '';
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,8 +73,9 @@ class EmailForm extends StatefulWidget {
 }
 
 class _EmailFormState extends State<EmailForm> {
-  final _formKey = GlobalKey<FormState>();
   final textController = TextEditingController();
+  final AuthService _authService = AuthService();
+
   @override
   void initState() {
     super.initState();
@@ -143,7 +140,14 @@ class _EmailFormState extends State<EmailForm> {
                           child: const Text('Cancel'),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.pop(context, 'OK'),
+                          onPressed: () {
+                            _authService.setEmail(textController.text);
+                            Navigator.pop(context, 'OK');
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const VerifyCode()));
+                          },
                           child: const Text('OK'),
                         ),
                       ],

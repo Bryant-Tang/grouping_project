@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
       //home: const CoverPage(),
-      home: MyHomePage(),
+      home: LoginPage(),
     );
   }
 }
