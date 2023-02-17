@@ -175,6 +175,9 @@ class _EmailFormState extends State<EmailForm> {
             child: TextField(
                 controller: textController,
                 decoration: InputDecoration(
+                    // isDense 為必要, contentPadding 越大，則 textfield 越大
+                    contentPadding: EdgeInsets.all(15),
+                    isDense: true,
                     border: const OutlineInputBorder(
                         gapPadding: 1.0,
                         borderRadius: BorderRadius.all(Radius.circular(30))),
