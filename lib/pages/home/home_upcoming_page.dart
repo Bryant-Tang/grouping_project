@@ -49,9 +49,29 @@ class UpcomingPageState extends State<UpcomingPage> {
   String upcomingTitle = "default";
   String upcomingDescript = "default";
   _inquireInputDialog(BuildContext context) {
-    
     StatefulBuilder dialogStateful() {
       return StatefulBuilder(builder: (context, StateSetter setState) {
+        // 將創建資料拉到外面執行
+        void doneEvent() async {
+          // 檢查是否為不合理輸入
+          if (upcomingTitle == "default" || upcomingDescript == "default") {
+            upcomingTitle = upcomingTitle == "default" ? '' : upcomingTitle;
+            upcomingDescript =
+                upcomingDescript == "default" ? '' : upcomingDescript;
+            setState(() {});
+          }
+          if (upcomingTitle.isEmpty || upcomingDescript.isEmpty) {
+            upcomingTitle = upcomingTitle.isEmpty ? '' : upcomingTitle;
+            upcomingDescript = upcomingDescript.isEmpty ? '' : upcomingDescript;
+            setState(() {});
+          } else {
+            await passDataAndCreate();
+            upcomingTitle = "default";
+            upcomingDescript = "default";
+          }
+        }
+
+        // 創造小視窗
         return AlertDialog(
           title: Text(
             'Create New Upcoming',
@@ -88,7 +108,8 @@ class UpcomingPageState extends State<UpcomingPage> {
                         borderRadius: BorderRadius.circular(100)),
                     contentPadding: EdgeInsets.all(10),
                     isDense: true,
-                    errorText: upcomingDescript.isEmpty ? "Can't be empty" : null),
+                    errorText:
+                        upcomingDescript.isEmpty ? "Can't be empty" : null),
               ),
             ],
           ),
@@ -141,57 +162,26 @@ class UpcomingPageState extends State<UpcomingPage> {
   }
 
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
-  void doneEvent() async {
-    if(upcomingTitle == "default" || upcomingDescript == "default"){
-      upcomingTitle = upcomingTitle == "default" ? '' : upcomingTitle;
-      upcomingDescript = upcomingDescript == "default" ? '' : upcomingDescript;
-      setState(() {
-      });
-    }
-    if(upcomingTitle.isEmpty || upcomingDescript.isEmpty){
-      upcomingTitle = upcomingTitle.isEmpty ? '' : upcomingTitle;
-      upcomingDescript = upcomingDescript.isEmpty ? '' : upcomingDescript;
-      setState(() {
-      });
-    }
-    else{
-      await createEventData(
-          userOrGroupId: 'personal',
-          eventId: 'test',
-          title: upcomingTitle,
-          introduction: upcomingDescript,
-          startTime: DateTime.now(),
-          endTime: DateTime.now());
-      await addUpcoming();
-      setState(
-        () {
-          Navigator.pop(context);
-        },
-      );
-      upcomingTitle = "default";
-      upcomingDescript = "default";
-    }
+  Future<void> passDataAndCreate() async {
+    await createEventData(
+        userOrGroupId: 'personalUpcoming',
+        eventId: 'test',
+        title: upcomingTitle,
+        introduction: upcomingDescript,
+        startTime: DateTime.now(),
+        endTime: DateTime.now());
+    await addUpcoming();
+    setState(
+      () {
+        Navigator.pop(context);
+      },
+    );
   }
 }
 
-Map monthDigitToLetter = <int, String>{
-  1: "JAN",
-  2: "FEB",
-  3: "MAR",
-  4: "APR",
-  5: "MAY",
-  6: "JUN",
-  7: "JUL",
-  8: "AUG",
-  9: "SEP",
-  10: "OCT",
-  11: "NOV",
-  12: "DEC"
-};
-
 Future<void> addUpcoming() async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllEventData(userOrGroupId: 'personal');
+  var allDatas = await getAllEventData(userOrGroupId: 'personalUpcoming');
 
   upcomingCards = [];
   for (int index = 0; index < allDatas.length; index++) {
@@ -208,9 +198,7 @@ Future<void> addUpcoming() async {
             group: 'personal',
             title: upcoming.title,
             descript: upcoming.introduction,
-            date1:
-                '${startTime.hour >= 12 ? startTime.hour - 12 : startTime.hour}:${startTime.minute} ${startTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[startTime.month]} ${startTime.day}, ${startTime.year}',
-            date2:
-                '${endTime.hour >= 12 ? endTime.hour - 12 : endTime.hour}:${endTime.minute} ${endTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[endTime.month]} ${endTime.day}, ${endTime.year}'));
+            startTime: startTime,
+            endTime: endTime));
   }
 }

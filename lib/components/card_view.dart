@@ -4,21 +4,41 @@ import 'dart:math';
 List<Color> randomColor = [Colors.amber, Colors.redAccent, Colors.lightBlue, Colors.greenAccent,
           Colors.orangeAccent, Colors.pinkAccent, Colors.purple];
 
+Map monthDigitToLetter = <int, String>{
+  1: "JAN",
+  2: "FEB",
+  3: "MAR",
+  4: "APR",
+  5: "MAY",
+  6: "JUN",
+  7: "JUL",
+  8: "AUG",
+  9: "SEP",
+  10: "OCT",
+  11: "NOV",
+  12: "DEC"
+};
+
+String intFixed(int n, int count) => n.toString().padLeft(count, "0");
+
 class UpcomingExpand extends StatelessWidget{
-  UpcomingExpand({super.key, required this.group, required this.title, required this.descript, required this.date1, required this.date2});
+  UpcomingExpand({super.key, required this.group, required this.title, required this.descript, required this.startTime, required this.endTime});
   final String group;
   final String title;
   final String descript;
-  final String date1;
-  final String date2;
+  final DateTime startTime;
+  final DateTime endTime;
 
   /// 隨機選擇使用的顏色
-  Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
+  Color usingColor = randomColor[Random().nextInt(randomColor.length)];
 
   @override
   Widget build(BuildContext context){
+    String date1 = '${intFixed(startTime.hour >= 12 ? startTime.hour - 12 : startTime.hour, 2)}:${intFixed(startTime.minute, 2)} ${startTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[startTime.month]} ${startTime.day}, ${startTime.year}';
+    String date2 = '${intFixed(endTime.hour >= 12 ? endTime.hour - 12 : endTime.hour, 2)}:${intFixed(endTime.minute, 2)} ${endTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[endTime.month]} ${endTime.day}, ${endTime.year}';
+
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 5),
       height: 400,
       decoration: const BoxDecoration(
           color: Colors.white,
@@ -36,7 +56,7 @@ class UpcomingExpand extends StatelessWidget{
           Positioned(
               child: Container(
                 height: 20,
-                decoration: BoxDecoration(color: UsingColor, borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+                decoration: BoxDecoration(color: usingColor, borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))),
               ),
             ),
           Positioned(
@@ -44,7 +64,7 @@ class UpcomingExpand extends StatelessWidget{
             left: 0,
             right: 0,
             child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 20),
+              margin: const EdgeInsets.symmetric(horizontal: 20),
               width: MediaQuery.of(context).size.width,
               height: 500,
               child: Column(
@@ -54,7 +74,7 @@ class UpcomingExpand extends StatelessWidget{
                   Container(
                     width: MediaQuery.of(context).size.width,
                     child: Stack(
-                      children: [
+                      children: const [
                         Positioned(child: Icon(Icons.arrow_back, size: 15,)),
                         Positioned(right: 25, child: Icon(Icons.edit, size: 15,),),
                         Positioned(right: 5,child: Icon(Icons.notifications, size: 15,))
@@ -63,7 +83,7 @@ class UpcomingExpand extends StatelessWidget{
                   ),
                   // 分隔線
                   SizedBox(height: 7, child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 2),
+                    margin: const EdgeInsets.symmetric(vertical: 2),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
                       color: Colors.black12
@@ -73,18 +93,18 @@ class UpcomingExpand extends StatelessWidget{
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children:[
-                      SizedBox(height: 1,),
-                      createAntiLabel(group, UsingColor),
-                      SizedBox(height: 1),
-                      Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                      SizedBox(height: 1,),
+                      const SizedBox(height: 1,),
+                      createAntiLabel(group, usingColor),
+                      const SizedBox(height: 1),
+                      Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                      const SizedBox(height: 1,),
                       Container(
                       child: RichText(
                         text: TextSpan(
                           children: [
-                            TextSpan(text: date1, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                            TextSpan(text: date1, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                             WidgetSpan(child: Icon(Icons.arrow_right_alt, size: 20, color: Colors.amber,), alignment: PlaceholderAlignment.top),
-                            TextSpan(text: date2, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
+                            TextSpan(text: date2, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
                           ]
                           ),
                         )
@@ -93,27 +113,43 @@ class UpcomingExpand extends StatelessWidget{
                     )
                   ),
                   Container(color: Colors.grey,),
-                  SizedBox(height: 1,),
+                  const SizedBox(height: 1,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('描述', style: TextStyle(fontSize: 12, color: Colors.grey),),
+                      const Text('描述', style: TextStyle(fontSize: 12, color: Colors.grey),),
                       // 分隔線
                       SizedBox(height: 7, child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 2),
+                        margin: const EdgeInsets.symmetric(vertical: 2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           color: Colors.black12
                         ),
                       ),),
-                      Text('年後的開學計畫', softWrap: true, maxLines: 2, overflow: TextOverflow.fade,)
+                      const Text('年後的開學計畫', softWrap: true, maxLines: 2, overflow: TextOverflow.fade,)
                     ],
                   ),
-                  SizedBox(height: 1,),
+                  const SizedBox(height: 1,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('相關事件', style: TextStyle(fontSize: 12, color: Colors.grey),),
+                      const Text('相關事件', style: TextStyle(fontSize: 12, color: Colors.grey),),
+                      // 分隔線
+                      SizedBox(height: 7, child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 2),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Colors.black12
+                        ),
+                      ),),
+                      Container(height: 50, decoration: BoxDecoration(border: Border.all(color: Colors.black26)),)
+                    ],
+                  ),
+                  const SizedBox(height: 1,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('相關共筆', style: TextStyle(fontSize: 12, color: Colors.grey),),
                       // 分隔線
                       SizedBox(height: 7, child: Container(
                         margin: EdgeInsets.symmetric(vertical: 2),
@@ -125,30 +161,14 @@ class UpcomingExpand extends StatelessWidget{
                       Container(height: 50, decoration: BoxDecoration(border: Border.all(color: Colors.black26)),)
                     ],
                   ),
-                  SizedBox(height: 1,),
+                  const SizedBox(height: 1,),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('相關共筆', style: TextStyle(fontSize: 12, color: Colors.grey),),
+                      const Text('相關議題', style: TextStyle(fontSize: 12, color: Colors.grey),),
                       // 分隔線
                       SizedBox(height: 7, child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 2),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.black12
-                        ),
-                      ),),
-                      Container(height: 50, decoration: BoxDecoration(border: Border.all(color: Colors.black26)),)
-                    ],
-                  ),
-                  SizedBox(height: 1,),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('相關議題', style: TextStyle(fontSize: 12, color: Colors.grey),),
-                      // 分隔線
-                      SizedBox(height: 7, child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 2),
+                        margin: const EdgeInsets.symmetric(vertical: 2),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(5),
                           color: Colors.black12
@@ -171,17 +191,21 @@ class UpcomingExpand extends StatelessWidget{
 
 // 建立 upcoming component
 class Upcoming extends StatelessWidget{
-  Upcoming({super.key, required this.group, required this.title, required this.descript, required this.date1, required this.date2});
+  Upcoming({super.key, required this.group, required this.title, required this.descript, required this.startTime, required this.endTime});
   final String group;
   final String title;
   final String descript;
-  final String date1;
-  final String date2;
+  final DateTime startTime;
+  final DateTime endTime;
+
 
   /// 隨機選擇使用的顏色
   Color UsingColor = randomColor[Random().nextInt(randomColor.length)];
   @override
   Widget build(BuildContext context){
+    String date1 = '${intFixed(startTime.hour >= 12 ? startTime.hour - 12 : startTime.hour, 2)}:${intFixed(startTime.minute, 2)} ${startTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[startTime.month]} ${startTime.day}, ${startTime.year}';
+    String date2 = '${intFixed(endTime.hour >= 12 ? endTime.hour - 12 : endTime.hour, 2)}:${intFixed(endTime.minute, 2)} ${endTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[endTime.month]} ${endTime.day}, ${endTime.year}';
+
     return Container(
     width: MediaQuery.of(context).size.width - 20,
     height: 84,
@@ -249,12 +273,12 @@ class Upcoming extends StatelessWidget{
 
 // 建立track component
 class Tracked extends StatelessWidget{
-  Tracked({super.key, required this.group, required this.title, required this.descript, required this.date1, required this.date2, required this.state});
+  Tracked({super.key, required this.group, required this.title, required this.descript, required this.startTime, required this.endTime, required this.state});
   final String group;
   final String title;
   final String descript;
-  final String date1;
-  final String date2;
+  final DateTime startTime;
+  final DateTime endTime;
   final int state;
 
   /// 隨機選擇使用的顏色
@@ -262,6 +286,9 @@ class Tracked extends StatelessWidget{
 
   @override
   Widget build(BuildContext context){
+    String date1 = '${intFixed(startTime.hour >= 12 ? startTime.hour - 12 : startTime.hour, 2)}:${intFixed(startTime.minute, 2)} ${startTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[startTime.month]} ${startTime.day}, ${startTime.year}';
+    String date2 = '${intFixed(endTime.hour >= 12 ? endTime.hour - 12 : endTime.hour, 2)}:${intFixed(endTime.minute, 2)} ${endTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[endTime.month]} ${endTime.day}, ${endTime.year}';
+
     return Container(
     width: MediaQuery.of(context).size.width - 20,
     height: 84,
@@ -358,7 +385,7 @@ Container createAntiLabel(String group, Color UsingColor){
 // 尚未完工
 Container createState(int state){
   Color stateColor = (state == 0 ? Colors.grey : state == 1 ? Colors.lightBlueAccent : Colors.greenAccent);
-  String stateName = (state == 0 ? 'Not Start 未開始' : state == 1 ? 'In progress 進行中' : 'Done 完成');
+  String stateName = (state == 0 ? 'Upcoming 未開始' : state == 1 ? 'In progress 進行中' : 'Finish 完成');
   
   return Container(
     decoration: BoxDecoration(
