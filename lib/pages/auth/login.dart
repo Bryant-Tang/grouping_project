@@ -1,4 +1,5 @@
 import 'package:grouping_project/components/headline_with_content.dart';
+import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
@@ -107,8 +108,11 @@ class _EmailFormState extends State<EmailForm> {
     return code;
   }
 
-  void _onSubmit() {
-    setState(() async {
+  void _onSubmit() async {
+    final AuthService authService = AuthService();
+    final UserModel? userModel = await authService.emailLogIn(
+        widget.userInputMail, widget.userInputMail);
+    setState(() {
       if (widget.inputEmailLogin == false) {
         widget.inputEmailLogin = true;
         widget.userInputMail = textController.text;
@@ -132,22 +136,15 @@ class _EmailFormState extends State<EmailForm> {
                       ),
                     ],
                   ));
-          final AuthService authService = AuthService();
-          if (await authService.emailLogIn(
-                  widget.userInputMail, widget.userInputMail) !=
-              null) {
-            if (context.mounted) {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const MyHomePage()));
-            }
+          if (userModel != null) {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const MyHomePage()));
           } else {
-            if (context.mounted) {
-              Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SignUpPage(email: widget.userInputMail)));
-            }
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        SignUpPage(email: widget.userInputMail)));
           }
         } else {
           showDialog<String>(
