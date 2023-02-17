@@ -165,7 +165,7 @@ class UpcomingPageState extends State<UpcomingPage> {
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
     await createEventData(
-        userOrGroupId: 'user_test_1',
+        userOrGroupId: 'test_user_1',
         eventId: 'test',
         title: upcomingTitle,
         introduction: upcomingDescript,
@@ -182,7 +182,7 @@ class UpcomingPageState extends State<UpcomingPage> {
 
 Future<void> addUpcoming() async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllEventData(userOrGroupId: 'user_test_1');
+  var allDatas = await getAllEventData(userOrGroupId: 'test_user_1');
 
   upcomingCards = [];
   for (int index = 0; index < allDatas.length; index++) {
