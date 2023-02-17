@@ -7,18 +7,13 @@ import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/service/profile_service.dart';
 
-import 'package:flutter_svg/svg.dart';
-// import 'package:grouping_project/pages/auth/cover.dart';
-// import 'package:grouping_project/pages/home/home_page.dart';
-// import 'package:grouping_project/service/auth_service.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignUpPage extends StatefulWidget {
   final String email;
   const SignUpPage({Key? key, required this.email}) : super(key: key);
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
@@ -30,7 +25,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
 class _SignUpPageOne extends StatelessWidget {
   final String email;
-  const _SignUpPageOne({super.key, required this.email});
+  const _SignUpPageOne({required this.email});
   final headLineText = "歡迎加入 Grouping";
   final content = "此信箱還未被註冊過\n用此信箱註冊一個新的帳號？\n選擇其他帳號登入?";
   @override
@@ -60,7 +55,7 @@ class _SignUpPageOne extends StatelessWidget {
 
 class _SignUpPageTwo extends StatefulWidget {
   final String email;
-  const _SignUpPageTwo({super.key, required this.email});
+  const _SignUpPageTwo({required this.email});
 
   @override
   State<_SignUpPageTwo> createState() => _SignUpPageTwoState();
@@ -141,8 +136,7 @@ class _SignUpPageTwoState extends State<_SignUpPageTwo> {
 class _SignUpPageThree extends StatelessWidget {
   final String email;
   final String userName;
-  const _SignUpPageThree(
-      {super.key, required this.email, required this.userName});
+  const _SignUpPageThree({required this.email, required this.userName});
   final headLineText = "名片資訊設定";
   final content = "Grouping 提供精美的名片功能，讓你的小組員能更快認識你，了解你。";
   @override
@@ -172,8 +166,7 @@ class _SignUpPageThree extends StatelessWidget {
 class _SignUpPageFour extends StatelessWidget {
   final String email;
   final String userName;
-  const _SignUpPageFour(
-      {super.key, required this.email, required this.userName});
+  const _SignUpPageFour({required this.email, required this.userName});
   final headLineText = "創建新的小組";
   final content = "已經有要加入的Group了嗎，透過連結加入小組，或是設立新的Group";
   @override
@@ -203,7 +196,7 @@ class _SignUpPageFour extends StatelessWidget {
 class _SignUpPageFive extends StatelessWidget {
   final String email;
   final String userName;
-  _SignUpPageFive({super.key, required this.email, required this.userName});
+  const _SignUpPageFive({required this.email, required this.userName});
   final headLineText = "帳號創建完成!";
   final content = "歡迎加入 Grouping 一起與夥伴創造冒險吧";
   @override
@@ -227,8 +220,10 @@ class _SignUpPageFive extends StatelessWidget {
                   email: email, userName: userName, userId: userModel.uid),
               userId: userModel.uid);
           // print('註冊信箱： $email\n使用者名稱$userName');
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => MyHomePage()));
+          if (context.mounted) {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const MyHomePage()));
+          }
         },
       ),
     );
