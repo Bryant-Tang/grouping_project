@@ -166,7 +166,7 @@ class TrackedPageState extends State<TrackedPage> {
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
     await createEventData(
-        userOrGroupId: 'personalUpcoming',
+        userOrGroupId: 'user_test_2',
         eventId: 'test',
         title: trackedTitle,
         introduction: trackedDescript,
@@ -183,7 +183,7 @@ class TrackedPageState extends State<TrackedPage> {
 
 Future<void> addTracked() async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllEventData(userOrGroupId: 'personalUpcoming');
+  var allDatas = await getAllEventData(userOrGroupId: 'user_test_2');
   trackedCards = [];
   for (int index = 0; index < allDatas.length; index++) {
     var tracked = allDatas[index];
