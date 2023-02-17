@@ -1,4 +1,6 @@
 import 'package:grouping_project/model/user_model.dart';
+import 'profile_service.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum EventState { upComing, inProgress, finish }
@@ -52,6 +54,7 @@ class EventData {
   final EventState state;
   final List<String>? tags;
   final List<DateTime>? notifications;
+  String belong = 'unknown';
 
   EventData(
       {required this.title,
@@ -165,11 +168,19 @@ Future<EventData?> getOneEventData(
         toFirestore: (EventData event, options) => event.toFirestore(),
       );
   final eventSnap = await eventLocation.get();
-  return eventSnap.data();
+  EventData? event = eventSnap.data();
+
+  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+  if (belongSnap?.username != null) {
+    event?.belong = belongSnap?.username as String;
+  } else {
+    event?.belong = 'unknown';
+  }
+
+  return event;
 }
 
-Future<List<EventData?>> getAllEventData(
-    {required String userOrGroupId}) async {
+Future<List<EventData>> getAllEventData({required String userOrGroupId}) async {
   final eventLocation = FirebaseFirestore.instance
       .collection("client_properties")
       .doc(userOrGroupId)
@@ -179,9 +190,18 @@ Future<List<EventData?>> getAllEventData(
         toFirestore: (EventData event, options) => event.toFirestore(),
       );
   final eventListSnap = await eventLocation.get();
-  List<EventData?> eventDataList = [];
+  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+
+  List<EventData> eventDataList = [];
   for (var eventSnap in eventListSnap.docs) {
-    eventDataList.add(eventSnap.data());
+    EventData event = eventSnap.data();
+    if (belongSnap?.username != null) {
+      event.belong = belongSnap?.username as String;
+    } else {
+      event.belong = 'unknown';
+    }
+    eventDataList.add(event);
   }
+
   return eventDataList;
 }
