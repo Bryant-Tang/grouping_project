@@ -219,7 +219,8 @@ class _SignUpPageFive extends StatelessWidget {
         },
         goToNextButtonHandler: () async {
           await setProfile(
-              newProfile: UserProfile(email: email, userName: userName),
+              newProfile: UserProfile(
+                  email: email, userName: userName, userId: 'test_user_1'),
               userId: 'test_user_1');
           // print('註冊信箱： $email\n使用者名稱$userName');
           Navigator.push(

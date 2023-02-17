@@ -167,7 +167,6 @@ class TrackedPageState extends State<TrackedPage> {
   Future<void> passDataAndCreate() async {
     await createEventData(
         userOrGroupId: 'personalUpcoming',
-        eventId: 'test',
         title: trackedTitle,
         introduction: trackedDescript,
         startTime: DateTime.now(),

@@ -52,7 +52,7 @@ class EventData {
   final List<UserModel>? contributors;
   final String introduction;
   final EventState state;
-  final List<String>? tags;
+  final List<String> tags;
   final List<DateTime>? notifications;
   String belong = 'unknown';
   String id = '';
@@ -64,7 +64,7 @@ class EventData {
       this.contributors,
       this.introduction = '',
       this.state = EventState.inProgress,
-      this.tags,
+      this.tags = const [],
       this.notifications});
 
   factory EventData.fromFirestore(
@@ -94,7 +94,7 @@ class EventData {
       contributors: fromFireContributors,
       introduction: data?['introduction'],
       state: _convertEventState(data?['state']),
-      tags: data?['tags'] is Iterable ? List.from(data?['tags']) : null,
+      tags: List.from(data?['tags']),
       notifications: fromFireNotifications,
     );
   }
@@ -111,14 +111,14 @@ class EventData {
     });
 
     return {
-      "title": title,
-      "start_time": Timestamp.fromDate(startTime),
-      "end_time": Timestamp.fromDate(endTime),
-      "contributors": toFireContributors,
-      "introduction": introduction,
-      "state": _convertEventState(state),
-      "tags": tags,
-      "notifications": toFireNotifications,
+      if (title != null) "title": title,
+      if (startTime != null) "start_time": Timestamp.fromDate(startTime),
+      if (endTime != null) "end_time": Timestamp.fromDate(endTime),
+      if (toFireContributors.isNotEmpty) "contributors": toFireContributors,
+      if (introduction != '') "introduction": introduction,
+      if (state != null) "state": _convertEventState(state),
+      if (tags.isNotEmpty) "tags": tags,
+      if (toFireNotifications.isNotEmpty) "notifications": toFireNotifications,
     };
   }
 }
@@ -131,7 +131,7 @@ Future<void> createEventData(
     List<UserModel>? contributors,
     String introduction = '',
     EventState state = EventState.inProgress,
-    List<String>? tags,
+    List<String> tags = const [],
     List<DateTime>? notifications}) async {
   final newEvent = EventData(
     title: title,
@@ -147,12 +147,12 @@ Future<void> createEventData(
       .collection("client_properties")
       .doc(userOrGroupId)
       .collection("events")
-      .doc()
+      .doc('test_event_1')
       .withConverter(
         fromFirestore: EventData.fromFirestore,
         toFirestore: (EventData event, options) => event.toFirestore(),
       );
-  await newEventLocation.set(newEvent);
+  await newEventLocation.set(newEvent, SetOptions(merge: true));
   return;
 }
 

@@ -1,4 +1,6 @@
 import 'package:grouping_project/model/user_model.dart';
+import 'profile_service.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum MissionState { upComing, inProgress, finish }
@@ -52,6 +54,8 @@ class MissionData {
   final MissionState state;
   final List<String>? tags;
   final List<DateTime>? notifications;
+  String belong = 'unknown';
+  String id = '';
 
   MissionData(
       {required this.title,
@@ -121,7 +125,6 @@ class MissionData {
 
 Future<void> createMissionData(
     {required String userOrGroupId,
-    required String missionId,
     required String title,
     required DateTime startTime,
     required DateTime endTime,
@@ -144,7 +147,7 @@ Future<void> createMissionData(
       .collection("client_properties")
       .doc(userOrGroupId)
       .collection("missions")
-      .doc(missionId)
+      .doc()
       .withConverter(
         fromFirestore: MissionData.fromFirestore,
         toFirestore: (MissionData mission, options) => mission.toFirestore(),
@@ -165,10 +168,19 @@ Future<MissionData?> getOneMissionData(
         toFirestore: (MissionData mission, options) => mission.toFirestore(),
       );
   final missionSnap = await missionLocation.get();
-  return missionSnap.data();
+  MissionData? mission = missionSnap.data();
+
+  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+  if (belongSnap?.userName != null) {
+    mission?.belong = belongSnap?.userName as String;
+  } else {
+    mission?.belong = 'unknown';
+  }
+
+  return mission;
 }
 
-Future<List<MissionData?>> getAllMissionData(
+Future<List<MissionData>> getAllMissionData(
     {required String userOrGroupId}) async {
   final missionLocation = FirebaseFirestore.instance
       .collection("client_properties")
@@ -179,9 +191,19 @@ Future<List<MissionData?>> getAllMissionData(
         toFirestore: (MissionData mission, options) => mission.toFirestore(),
       );
   final missionListSnap = await missionLocation.get();
-  List<MissionData?> missionDataList = [];
+  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+
+  List<MissionData> missionDataList = [];
   for (var missionSnap in missionListSnap.docs) {
-    missionDataList.add(missionSnap.data());
+    MissionData mission = missionSnap.data();
+    mission.id = missionSnap.id;
+    if (belongSnap?.userName != null) {
+      mission.belong = belongSnap?.userName as String;
+    } else {
+      mission.belong = 'unknown';
+    }
+    missionDataList.add(mission);
   }
+
   return missionDataList;
 }
