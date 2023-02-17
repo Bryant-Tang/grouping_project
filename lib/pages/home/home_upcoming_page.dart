@@ -193,34 +193,36 @@ Future<void> addUpcoming() async {
     // pass Datatime
     DateTime startTime = upcoming!.startTime;
     DateTime endTime = upcoming.endTime;
-    Widget useCard = Upcoming(
+    Upcoming useCard = Upcoming(
         group: 'personal',
         title: upcoming.title,
+        eventId: upcoming.id,
         descript: upcoming.introduction,
         startTime: startTime,
         endTime: endTime);
-    // upcomingCards.add(Ink(
-    //   width: 100,
-    //   height: 50,
-    //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
-    //   child: InkWell(
-    //     onTap: () {
-    //       //upcomingCards.elementAt(upcomingCards.indexOf());
-    //     },
-    //     splashColor: Colors.black12,
-    //     onLongPress: () {},
-    //     highlightColor: Colors.black26,
-    //     child: useCard,
-    //   ),
-    // ));
+    upcomingCards.add(Ink(
+      width: 100,
+      height: 50,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
+      child: InkWell(
+        onTap: () {
+          //useCard = UpcomingExpand(group: useCard.group, title: useCard.title, descript: useCard.descript, startTime: useCard.startTime, useCard.endTime: endTime)
+        },
+        splashColor: Colors.black12,
+        onLongPress: () {},
+        highlightColor: Colors.black26,
+        child: useCard,
+      ),
+    ));
 
-    upcomingCards.add(
-        // title tmp
-        Upcoming(
-            group: 'personal',
-            title: upcoming.title,
-            descript: upcoming.introduction,
-            startTime: startTime,
-            endTime: endTime));
+    // upcomingCards.add(
+    //     // title tmp
+    //     Upcoming(
+    //         group: 'personal',
+    //         title: upcoming.title,
+    //         descript: upcoming.introduction,
+    //         eventId: upcoming.id,
+    //         startTime: startTime,
+    //         endTime: endTime));
   }
 }

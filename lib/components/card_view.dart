@@ -191,12 +191,17 @@ class UpcomingExpand extends StatelessWidget{
 
 // 建立 upcoming component
 class Upcoming extends StatelessWidget{
-  Upcoming({super.key, required this.group, required this.title, required this.descript, required this.startTime, required this.endTime});
+  Upcoming({super.key, required this.group, required this.title, required this.descript, required this.eventId, required this.startTime, required this.endTime});
   final String group;
   final String title;
   final String descript;
   final DateTime startTime;
   final DateTime endTime;
+  final String eventId;
+
+  String getEventId(){
+    return eventId;
+  }
 
 
   /// 隨機選擇使用的顏色
