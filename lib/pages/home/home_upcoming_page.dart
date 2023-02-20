@@ -166,8 +166,7 @@ class UpcomingPageState extends State<UpcomingPage> {
   Future<void> passDataAndCreate() async {
     final AuthService authService = AuthService();
     String userId = authService.getUid();
-    await createEventData(
-        userOrGroupId: userId,
+    await createEventDataPersonal(
         title: upcomingTitle,
         introduction: upcomingDescript,
         startTime: DateTime.now(),
