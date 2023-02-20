@@ -1,14 +1,11 @@
-import 'package:grouping_project/components/business_card.dart';
 import 'package:grouping_project/components/card_view.dart';
-import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/service/event_service.dart';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class UpcomingPage extends StatefulWidget {
-  UpcomingPage({super.key});
+  const UpcomingPage({super.key});
   @override
   State<UpcomingPage> createState() => UpcomingPageState();
 }
@@ -17,7 +14,7 @@ List<Widget> upcomingCards = [];
 
 class UpcomingPageState extends State<UpcomingPage> {
   @override
-  Widget build(BuildContext content) {
+  Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width - 20,
       height: MediaQuery.of(context).size.height - 80,
@@ -77,7 +74,7 @@ class UpcomingPageState extends State<UpcomingPage> {
 
         // 創造小視窗
         return AlertDialog(
-          title: Text(
+          title: const Text(
             'Create New Upcoming',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
@@ -90,14 +87,14 @@ class UpcomingPageState extends State<UpcomingPage> {
                   });
                 },
                 decoration: InputDecoration(
-                    label: Text('Title'),
+                    label: const Text('Title'),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100)),
-                    contentPadding: EdgeInsets.all(10),
+                    contentPadding: const EdgeInsets.all(10),
                     isDense: true,
                     errorText: upcomingTitle.isEmpty ? "Can't be empty" : null),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               TextField(
@@ -107,10 +104,10 @@ class UpcomingPageState extends State<UpcomingPage> {
                   });
                 },
                 decoration: InputDecoration(
-                    label: Text('Introduction'),
+                    label: const Text('Introduction'),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(100)),
-                    contentPadding: EdgeInsets.all(10),
+                    contentPadding: const EdgeInsets.all(10),
                     isDense: true,
                     errorText:
                         upcomingDescript.isEmpty ? "Can't be empty" : null),
@@ -127,10 +124,10 @@ class UpcomingPageState extends State<UpcomingPage> {
                   });
                 },
                 style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(Colors.red),
+                    backgroundColor: const MaterialStatePropertyAll(Colors.red),
                     shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: Colors.redAccent)))),
+                        side: const BorderSide(color: Colors.redAccent)))),
                 child: const Text(
                   'Cancel',
                   style: TextStyle(
@@ -144,7 +141,7 @@ class UpcomingPageState extends State<UpcomingPage> {
                     backgroundColor: MaterialStateProperty.all(Colors.green),
                     shape: MaterialStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: Colors.greenAccent)))),
+                        side: const BorderSide(color: Colors.greenAccent)))),
                 child: const Text(
                   'Done',
                   style: TextStyle(
@@ -167,8 +164,8 @@ class UpcomingPageState extends State<UpcomingPage> {
 
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
-    final AuthService _authService = AuthService();
-    String userId = _authService.getUid();
+    final AuthService authService = AuthService();
+    String userId = authService.getUid();
     await createEventData(
         userOrGroupId: userId,
         title: upcomingTitle,

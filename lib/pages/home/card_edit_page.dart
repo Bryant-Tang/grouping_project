@@ -12,7 +12,7 @@ class CardEditDoneState extends State<CardEditDone> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             'QUAN 的工作區',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
@@ -22,7 +22,7 @@ class CardEditDoneState extends State<CardEditDone> {
                 print('switch to personal Intro.');
                 Navigator.pop(context);
               },
-              icon: Icon(Icons.circle),
+              icon: const Icon(Icons.circle),
               // pop back to home_page.dart
             ),
           ],
@@ -33,7 +33,7 @@ class CardEditDoneState extends State<CardEditDone> {
           Expanded(
             flex: 10,
             child: Container(
-              margin: EdgeInsets.all(5),
+              margin: const EdgeInsets.all(5),
               width: 380,
               //height: 150,
               decoration: const BoxDecoration(
@@ -58,7 +58,7 @@ class CardEditDoneState extends State<CardEditDone> {
                               topRight: Radius.circular(10))),
                     ),
                   ),
-                  Positioned(
+                  const Positioned(
                     top: 25,
                     right: 5,
                     child: Icon(Icons.edit_document),
@@ -66,7 +66,7 @@ class CardEditDoneState extends State<CardEditDone> {
                   Positioned(
                       top: 20,
                       child: Container(
-                        margin: EdgeInsets.only(top: 10),
+                        margin: const EdgeInsets.only(top: 10),
                         width: 380,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -75,7 +75,8 @@ class CardEditDoneState extends State<CardEditDone> {
                             SizedBox(
                               height: 3,
                               child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                     color: Colors.black12),
@@ -85,7 +86,8 @@ class CardEditDoneState extends State<CardEditDone> {
                             SizedBox(
                               height: 3,
                               child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                     color: Colors.black12),
@@ -95,7 +97,8 @@ class CardEditDoneState extends State<CardEditDone> {
                             SizedBox(
                               height: 3,
                               child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                     color: Colors.black12),
@@ -105,7 +108,8 @@ class CardEditDoneState extends State<CardEditDone> {
                             SizedBox(
                               height: 3,
                               child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                     color: Colors.black12),
@@ -115,7 +119,8 @@ class CardEditDoneState extends State<CardEditDone> {
                             SizedBox(
                               height: 3,
                               child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                     color: Colors.black12),
@@ -125,7 +130,8 @@ class CardEditDoneState extends State<CardEditDone> {
                             SizedBox(
                               height: 3,
                               child: Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 20),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(5),
                                     color: Colors.black12),
@@ -158,37 +164,37 @@ class CardEditDoneState extends State<CardEditDone> {
                     onPressed: () {
                       print('share');
                     },
-                    child: Text(
-                      'SHARE',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
                     style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
+                    child: const Text(
+                      'SHARE',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   TextButton(
                     onPressed: () {
                       print('edit');
                     },
-                    child: Text(
-                      'EDIT',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
                     style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
+                    child: const Text(
+                      'EDIT',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   TextButton(
                     onPressed: () {
                       print('theme');
                     },
-                    child: Text(
-                      'THEME',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
                     style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
+                    child: const Text(
+                      'THEME',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ))
@@ -196,21 +202,21 @@ class CardEditDoneState extends State<CardEditDone> {
   }
 }
 
-Container createName() {
-  return Container(
+SizedBox createName() {
+  return SizedBox(
     width: 340,
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Column(
-            children: [
+            children: const [
               Text(
                 'QUEN',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Text(
-                'a.k.a ' + 'QU',
+                'a.k.a QU',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
               )
             ],
@@ -218,7 +224,7 @@ Container createName() {
           Stack(
             children: [
               ClipPath(
-                clipper: hexagon(),
+                clipper: Hexagon(),
                 child: Container(
                   width: 153,
                   height: 76.5 * sqrt(3),
@@ -229,7 +235,7 @@ Container createName() {
                   left: 1,
                   top: 1,
                   child: ClipPath(
-                    clipper: hexagon(),
+                    clipper: Hexagon(),
                     child: Container(
                       width: 150,
                       height: 75 * sqrt(3),
@@ -249,17 +255,17 @@ Container createName() {
         children: [
           Transform.rotate(
             angle: 180 * pi / 180,
-            child: Icon(
+            child: const Icon(
               Icons.format_quote,
               size: 15,
               color: Colors.amber,
             ),
           ),
-          Text(
+          const Text(
             '今日事今日畢',
             style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
           ),
-          Icon(
+          const Icon(
             Icons.format_quote,
             size: 15,
             color: Colors.amber,
@@ -272,7 +278,7 @@ Container createName() {
 
 // 將長方形裁剪出六角形
 // https://educity.app/flutter/custom-clipper-in-flutter
-class hexagon extends CustomClipper<Path> {
+class Hexagon extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     Path path = Path();
@@ -286,16 +292,16 @@ class hexagon extends CustomClipper<Path> {
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldclip) => false;
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
 Container createMyself() {
   return Container(
     width: 340,
-    padding: EdgeInsets.symmetric(vertical: 1),
+    padding: const EdgeInsets.symmetric(vertical: 1),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: const [
         Text('自我介紹',
             style: TextStyle(
                 color: Colors.amber, fontSize: 9, fontWeight: FontWeight.bold)),
@@ -316,10 +322,10 @@ Container createMyself() {
 Container createGrade() {
   return Container(
     width: 340,
-    padding: EdgeInsets.symmetric(vertical: 1),
+    padding: const EdgeInsets.symmetric(vertical: 1),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: const [
         Text('系級',
             style: TextStyle(
                 color: Colors.amber, fontSize: 9, fontWeight: FontWeight.bold)),
@@ -338,10 +344,10 @@ Container createGrade() {
 Container createEmail() {
   return Container(
     width: 340,
-    padding: EdgeInsets.symmetric(vertical: 1),
+    padding: const EdgeInsets.symmetric(vertical: 1),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: const [
         Text('工作郵件',
             style: TextStyle(
                 color: Colors.amber, fontSize: 9, fontWeight: FontWeight.bold)),
@@ -360,10 +366,10 @@ Container createEmail() {
 Container createPhone() {
   return Container(
     width: 340,
-    padding: EdgeInsets.symmetric(vertical: 1),
+    padding: const EdgeInsets.symmetric(vertical: 1),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: const [
         Text('連絡電話',
             style: TextStyle(
                 color: Colors.amber, fontSize: 9, fontWeight: FontWeight.bold)),
@@ -382,10 +388,10 @@ Container createPhone() {
 Container createGithub() {
   return Container(
     width: 340,
-    padding: EdgeInsets.symmetric(vertical: 1),
+    padding: const EdgeInsets.symmetric(vertical: 1),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: const [
         Text('GITHUB',
             style: TextStyle(
                 color: Colors.amber, fontSize: 9, fontWeight: FontWeight.bold)),
@@ -404,10 +410,10 @@ Container createGithub() {
 Container createSkill() {
   return Container(
     width: 340,
-    padding: EdgeInsets.symmetric(vertical: 1),
+    padding: const EdgeInsets.symmetric(vertical: 1),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: const [
         Text('專長',
             style: TextStyle(
                 color: Colors.amber, fontSize: 9, fontWeight: FontWeight.bold)),
