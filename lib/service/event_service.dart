@@ -1,4 +1,5 @@
 import 'package:grouping_project/model/user_model.dart';
+import 'auth_service.dart';
 import 'profile_service.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -123,9 +124,8 @@ class EventData {
   }
 }
 
-Future<void> createEventData(
-    {required String userOrGroupId,
-    required String title,
+Future<void> createEventDataPersonal(
+    {required String title,
     required DateTime startTime,
     required DateTime endTime,
     List<UserModel> contributors = const [],
@@ -133,6 +133,7 @@ Future<void> createEventData(
     EventState state = EventState.inProgress,
     List<String> tags = const [],
     List<DateTime> notifications = const []}) async {
+  final String userId = AuthService().getUid();
   final newEvent = EventData(
     title: title,
     startTime: startTime,
@@ -145,7 +146,7 @@ Future<void> createEventData(
   );
   final newEventLocation = FirebaseFirestore.instance
       .collection("client_properties")
-      .doc(userOrGroupId)
+      .doc(userId)
       .collection("events")
       .doc('test_event_1')
       .withConverter(
