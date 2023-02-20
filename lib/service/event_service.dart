@@ -124,7 +124,7 @@ class EventData {
   }
 }
 
-Future<void> createEventDataPersonal(
+Future<void> createEventDataForPerson(
     {required String title,
     required DateTime startTime,
     required DateTime endTime,
@@ -148,7 +148,40 @@ Future<void> createEventDataPersonal(
       .collection("client_properties")
       .doc(userId)
       .collection("events")
-      .doc('test_event_1')
+      .doc()
+      .withConverter(
+        fromFirestore: EventData.fromFirestore,
+        toFirestore: (EventData event, options) => event.toFirestore(),
+      );
+  await newEventLocation.set(newEvent);
+  return;
+}
+
+Future<void> createEventDataForGroup(
+    {required String groupId,
+    required String title,
+    required DateTime startTime,
+    required DateTime endTime,
+    List<UserModel> contributors = const [],
+    String introduction = '',
+    EventState state = EventState.inProgress,
+    List<String> tags = const [],
+    List<DateTime> notifications = const []}) async {
+  final newEvent = EventData(
+    title: title,
+    startTime: startTime,
+    endTime: endTime,
+    contributors: contributors,
+    introduction: introduction,
+    state: state,
+    tags: tags,
+    notifications: notifications,
+  );
+  final newEventLocation = FirebaseFirestore.instance
+      .collection("group_properties")
+      .doc(groupId)
+      .collection("events")
+      .doc()
       .withConverter(
         fromFirestore: EventData.fromFirestore,
         toFirestore: (EventData event, options) => event.toFirestore(),
@@ -182,7 +215,7 @@ Future<void> updateEventData(
       .collection("client_properties")
       .doc(userOrGroupId)
       .collection("events")
-      .doc('test_event_1')
+      .doc()
       .withConverter(
         fromFirestore: EventData.fromFirestore,
         toFirestore: (EventData event, options) => event.toFirestore(),
@@ -205,7 +238,7 @@ Future<EventData?> getOneEventData(
   final eventSnap = await eventLocation.get();
   EventData? event = eventSnap.data();
 
-  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+  UserProfile? belongSnap = await getProfileForPerson(userId: userOrGroupId);
   if (belongSnap?.userName != null) {
     event?.belong = belongSnap?.userName as String;
   } else {
@@ -215,17 +248,18 @@ Future<EventData?> getOneEventData(
   return event;
 }
 
-Future<List<EventData>> getAllEventData({required String userOrGroupId}) async {
+Future<List<EventData>> getAllEventDataForGroup(
+    {required String groupId}) async {
   final eventLocation = FirebaseFirestore.instance
-      .collection("client_properties")
-      .doc(userOrGroupId)
-      .collection("events")
+      .collection('group_properties')
+      .doc(groupId)
+      .collection('events')
       .withConverter(
         fromFirestore: EventData.fromFirestore,
         toFirestore: (EventData event, options) => event.toFirestore(),
       );
   final eventListSnap = await eventLocation.get();
-  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+  GroupProfile? belongSnap = await getProfileForGroup(groupId: groupId);
 
   List<EventData> eventDataList = [];
   for (var eventSnap in eventListSnap.docs) {
@@ -239,5 +273,40 @@ Future<List<EventData>> getAllEventData({required String userOrGroupId}) async {
     eventDataList.add(event);
   }
 
+  return eventDataList;
+}
+
+Future<List<EventData>> getAllEventDataForPerson(
+    {required String userId}) async {
+  final eventLocation = FirebaseFirestore.instance
+      .collection("client_properties")
+      .doc(userId)
+      .collection("events")
+      .withConverter(
+        fromFirestore: EventData.fromFirestore,
+        toFirestore: (EventData event, options) => event.toFirestore(),
+      );
+  final eventListSnap = await eventLocation.get();
+  UserProfile? belongSnap = await getProfileForPerson(userId: userId);
+
+  List<EventData> eventDataList = [];
+  for (var eventSnap in eventListSnap.docs) {
+    EventData event = eventSnap.data();
+    event.id = eventSnap.id;
+    if (belongSnap?.userName != null) {
+      event.belong = belongSnap?.userName as String;
+    } else {
+      event.belong = 'unknown';
+    }
+    eventDataList.add(event);
+  }
+
+  final Map<String, String> groupList = await getGroupList(userId: userId);
+  for (var groupId in groupList.keys) {
+    List<EventData> tempGroupEventList =
+        await getAllEventDataForGroup(groupId: groupId);
+    eventDataList.addAll(tempGroupEventList);
+  }
+  
   return eventDataList;
 }

@@ -19,7 +19,7 @@ class _TestPageState extends State<EventDataTestPage> {
 
   void _incrementCounter() async {
     String userId = Provider.of<UserModel>(context).uid;
-    await createEventDataPersonal(
+    await createEventDataForPerson(
       title: 'test_title_1',
       startTime: DateTime.now(),
       endTime: DateTime.now().add(const Duration(days: 3)),

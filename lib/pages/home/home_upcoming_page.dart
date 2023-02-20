@@ -166,7 +166,7 @@ class UpcomingPageState extends State<UpcomingPage> {
   Future<void> passDataAndCreate() async {
     final AuthService authService = AuthService();
     String userId = authService.getUid();
-    await createEventDataPersonal(
+    await createEventDataForPerson(
         title: upcomingTitle,
         introduction: upcomingDescript,
         startTime: DateTime.now(),
@@ -182,7 +182,7 @@ class UpcomingPageState extends State<UpcomingPage> {
 
 Future<void> addUpcoming({required String userId}) async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllEventData(userOrGroupId: userId);
+  var allDatas = await getAllEventDataForPerson(userId: userId);
 
   upcomingCards = [];
   for (int index = 0; index < allDatas.length; index++) {
