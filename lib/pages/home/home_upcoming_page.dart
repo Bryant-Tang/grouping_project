@@ -198,6 +198,7 @@ Future<void> addUpcoming({required String userId}) async {
         group: upcoming.belong,
         title: upcoming.title ?? 'unknown',
         descript: upcoming.introduction ?? 'unknown',
+        eventId: upcoming.id,
         startTime: upcoming.startTime ?? DateTime(0),
         endTime: upcoming.endTime ?? DateTime(0));
     // upcomingCards.add(Ink(
@@ -221,6 +222,7 @@ Future<void> addUpcoming({required String userId}) async {
             group: upcoming.belong,
             title: upcoming.title ?? 'unknown',
             descript: upcoming.introduction ?? 'unknown',
+            eventId: upcoming.id,
             startTime: upcoming.startTime ?? DateTime(0),
             endTime: upcoming.endTime ?? DateTime(0)));
   }

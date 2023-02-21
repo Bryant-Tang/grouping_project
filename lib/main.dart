@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'NotoSansTC'),
       debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
-      home: const CoverPage(),
+       home: const CoverPage(),
       // home: MyHomePage(),
       // home: EventDataTestPage(),
     );

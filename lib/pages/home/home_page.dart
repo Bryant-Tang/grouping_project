@@ -16,6 +16,10 @@ import 'package:grouping_project/pages/home/home_group_page.dart';
 import 'package:grouping_project/pages/home/home_upcoming_page.dart';
 import 'package:grouping_project/pages/home/home_tracked_mission_page.dart';
 
+// 測試新功能用，尚未完工，請勿使用或刪除
+import 'package:grouping_project/components/card_view/card_view_template.dart';
+import 'package:grouping_project/pages/home/empty.dart';
+
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -148,14 +152,15 @@ List<Widget> differentFunctionPage = [
   )),
   Expanded(
       child: ListView(
-    children: const [
+    children: [
       // UpcomingExpand(
       //     group: 'personal',
       //     title: 'P+ 籃球會',
       //     descript: '領航員 vs 富邦勇士',
       //     date1: '9:00 PM, FEB 2, 2023',
       //     date2: '11:00 PM, FEB 2, 2023'),
-      UpcomingPage()
+      //UpcomingPage()
+      CardViewTemplate(detail: EmptyWidget(),)
     ],
   )),
   Expanded(
