@@ -19,6 +19,7 @@ import 'package:grouping_project/pages/home/home_tracked_mission_page.dart';
 // 測試新功能用，尚未完工，請勿使用或刪除
 import 'package:grouping_project/components/card_view/card_view_template.dart';
 import 'package:grouping_project/pages/home/empty.dart';
+import 'package:grouping_project/components/card_view/information.dart';
 
 import 'package:flutter/material.dart';
 
@@ -160,7 +161,16 @@ List<Widget> differentFunctionPage = [
       //     date1: '9:00 PM, FEB 2, 2023',
       //     date2: '11:00 PM, FEB 2, 2023'),
       //UpcomingPage()
-      CardViewTemplate(detail: EmptyWidget(),)
+      CardViewTemplate(
+        detail: Information(
+          group: 'flutter',
+          title: '討論下學期',
+          descript: '每個月應該要做甚麼',
+          startTime: DateTime.now(),
+          endTime: DateTime.now(),
+          state: 1,
+        ),
+      )
     ],
   )),
   Expanded(
