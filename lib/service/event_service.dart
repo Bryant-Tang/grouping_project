@@ -4,58 +4,16 @@ import 'profile_service.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-enum EventState { upComing, inProgress, finish }
-
-dynamic _convertEventState(dynamic state) {
-  if (state.runtimeType == int) {
-    switch (state) {
-      case 0:
-        {
-          return EventState.upComing;
-        }
-
-      case 1:
-        {
-          return EventState.inProgress;
-        }
-
-      case 2:
-        {
-          return EventState.finish;
-        }
-    }
-  } else if (state.runtimeType == EventState) {
-    switch (state) {
-      case EventState.upComing:
-        {
-          return 0;
-        }
-
-      case EventState.inProgress:
-        {
-          return 1;
-        }
-
-      case EventState.finish:
-        {
-          return 2;
-        }
-    }
-  } else {
-    return null;
-  }
-}
-
 class EventData {
   final String? title;
   final DateTime? startTime;
   final DateTime? endTime;
   final List<UserModel>? contributors;
   final String? introduction;
-  final EventState? state;
   final List<String>? tags;
   final List<DateTime>? notifications;
-  String belong = 'unknown';
+  String belongName = 'unknown';
+  String belongColor = '0xFFFCBF49';
   String id = '';
 
   EventData(
@@ -64,7 +22,6 @@ class EventData {
       this.endTime,
       this.contributors,
       this.introduction,
-      this.state,
       this.tags,
       this.notifications});
 
@@ -94,7 +51,6 @@ class EventData {
       endTime: data?['end_time'].toDate(),
       contributors: fromFireContributors,
       introduction: data?['introduction'],
-      state: _convertEventState(data?['state']),
       tags: data?['tags'] is Iterable ? List.from(data?['tags']) : const [],
       notifications: fromFireNotifications,
     );
@@ -117,7 +73,6 @@ class EventData {
       if (endTime != null) "end_time": Timestamp.fromDate(endTime!),
       if (contributors != null) "contributors": toFireContributors,
       if (introduction != null) "introduction": introduction,
-      if (state != null) "state": _convertEventState(state),
       if (tags != null) "tags": tags,
       if (notifications != null) "notifications": toFireNotifications,
     };
@@ -130,7 +85,6 @@ Future<void> createEventDataForPerson(
     required DateTime endTime,
     List<UserModel> contributors = const [],
     String introduction = '',
-    EventState state = EventState.inProgress,
     List<String> tags = const [],
     List<DateTime> notifications = const []}) async {
   final String userId = AuthService().getUid();
@@ -140,7 +94,6 @@ Future<void> createEventDataForPerson(
     endTime: endTime,
     contributors: contributors,
     introduction: introduction,
-    state: state,
     tags: tags,
     notifications: notifications,
   );
@@ -164,7 +117,6 @@ Future<void> createEventDataForGroup(
     required DateTime endTime,
     List<UserModel> contributors = const [],
     String introduction = '',
-    EventState state = EventState.inProgress,
     List<String> tags = const [],
     List<DateTime> notifications = const []}) async {
   final newEvent = EventData(
@@ -173,7 +125,6 @@ Future<void> createEventDataForGroup(
     endTime: endTime,
     contributors: contributors,
     introduction: introduction,
-    state: state,
     tags: tags,
     notifications: notifications,
   );
@@ -198,7 +149,6 @@ Future<void> updateEventData(
     DateTime? endTime,
     List<UserModel>? contributors,
     String? introduction,
-    EventState? state,
     List<String>? tags,
     List<DateTime>? notifications}) async {
   final newEvent = EventData(
@@ -207,7 +157,6 @@ Future<void> updateEventData(
     endTime: endTime,
     contributors: contributors,
     introduction: introduction,
-    state: state,
     tags: tags,
     notifications: notifications,
   );
@@ -239,12 +188,9 @@ Future<EventData?> getOneEventData(
   EventData? event = eventSnap.data();
 
   UserProfile? belongSnap = await getProfileForPerson(userId: userOrGroupId);
-  if (belongSnap?.userName != null) {
-    event?.belong = belongSnap?.userName as String;
-  } else {
-    event?.belong = 'unknown';
-  }
-
+  event?.belongName = belongSnap?.userName ?? 'unknown';
+  event?.belongColor = belongSnap?.color ?? '0xFFFCBF49';
+  
   return event;
 }
 
@@ -265,11 +211,8 @@ Future<List<EventData>> getAllEventDataForGroup(
   for (var eventSnap in eventListSnap.docs) {
     EventData event = eventSnap.data();
     event.id = eventSnap.id;
-    if (belongSnap?.userName != null) {
-      event.belong = belongSnap?.userName as String;
-    } else {
-      event.belong = 'unknown';
-    }
+    event?.belongName = belongSnap?.userName ?? 'unknown';
+    event?.belongColor = belongSnap?.color ?? '0xFFFCBF49';
     eventDataList.add(event);
   }
 
@@ -293,11 +236,8 @@ Future<List<EventData>> getAllEventDataForPerson(
   for (var eventSnap in eventListSnap.docs) {
     EventData event = eventSnap.data();
     event.id = eventSnap.id;
-    if (belongSnap?.userName != null) {
-      event.belong = belongSnap?.userName as String;
-    } else {
-      event.belong = 'unknown';
-    }
+    event?.belongName = belongSnap?.userName ?? 'unknown';
+    event?.belongColor = belongSnap?.color ?? '0xFFFCBF49';
     eventDataList.add(event);
   }
 
