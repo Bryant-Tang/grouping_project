@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-List<Color> randomColor = [
-  Colors.amber,
-  Colors.redAccent,
-  Colors.lightBlue,
-  Colors.greenAccent,
-  Colors.orangeAccent,
-  Colors.pinkAccent,
-  Colors.purple
+List<Color> randomColor = const [
+  // 顏色固定用色碼
+  Color(0xFFFCBF49),
+  Color(0xFFFF5252),
+  Color(0xFF03A9F4),
+  Color(0xFF69F0AE),
+  Color(0xFFFFAB40),
+  Color(0xFFFF4081),
+  Color(0xFF972CB0)
 ];
 
 class CardViewTemplate extends StatefulWidget {
-  const CardViewTemplate({super.key, required this.detail});
+  const CardViewTemplate({super.key, required this.detailShrink, required this.detailEnlarge});
 
-  final StatelessWidget detail;
+  final StatelessWidget detailShrink;
+  final StatelessWidget detailEnlarge;
 
   @override
   State<CardViewTemplate> createState() => _CardViewTemplateState();
@@ -32,7 +34,8 @@ class _CardViewTemplateState extends State<CardViewTemplate> {
   @override
   void initState() {
     super.initState();
-    detail = widget.detail;
+    // ~~~~~~~
+    detail = widget.detailShrink;
     show = _shrink(
       detail: detail,
       usingColor: usingColor,
@@ -150,7 +153,7 @@ class _enlarge extends StatelessWidget {
             // 上方的矩形方塊
             Positioned(
               child: Container(
-                height: 20,
+                height: 15,
                 decoration: BoxDecoration(
                     color: usingColor,
                     borderRadius: const BorderRadius.only(
