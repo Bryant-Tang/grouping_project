@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 List<Color> randomColor = const [
-  // 顏色固定用色碼
+  /// 顏色固定用色碼
   Color(0xFFFCBF49),
   Color(0xFFFF5252),
   Color(0xFF03A9F4),
@@ -13,6 +13,10 @@ List<Color> randomColor = const [
 ];
 
 class CardViewTemplate extends StatefulWidget {
+  /// 這個 class 將會創立一個點擊能放大的 card view template，再點擊則能縮小
+  /// 因此要使用這個 widget 必須要給予實現縮小的 widget (也就是 shrink) 
+  /// 以及放大的 widget (也就是 enlarge)
+  /// 
   const CardViewTemplate({super.key, required this.detailShrink, required this.detailEnlarge});
 
   final StatelessWidget detailShrink;

@@ -23,6 +23,9 @@ String intFixed(int n, int count) => n.toString().padLeft(count, "0");
 // anti-label pass color data?
 // this is for shrink card
 class EventInformationShrink extends StatelessWidget {
+  /// 這個 class 實現了 event 縮小時要展現的資訊
+  /// 藉由創建時得到的資料來回傳一個 Container 回去
+  /// ps. 需與 cardViewTemplate 一起使用
   const EventInformationShrink(
       {super.key,
       required this.group,
@@ -98,6 +101,10 @@ class EventInformationShrink extends StatelessWidget {
 }
 
 class EventInformationEnlarge extends StatelessWidget{
+  /// (未完成!!)
+  /// 這個 class 實現了 event 放大時要展現的資訊
+  /// 藉由創建時得到的資料來回傳一個 Container 回去
+  /// ps. 需與 cardViewTemplate 一起使用
   const EventInformationEnlarge(
       {super.key,
       required this.group,
