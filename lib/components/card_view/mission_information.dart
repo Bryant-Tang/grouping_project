@@ -20,22 +20,22 @@ String intFixed(int n, int count) => n.toString().padLeft(count, "0");
 
 // anti-label pass color data?
 // this is for shrink card
-class EventInformationShrink extends StatelessWidget {
-  const EventInformationShrink(
+class MissionInformationShrink extends StatelessWidget {
+  const MissionInformationShrink(
       {super.key,
       required this.group,
       required this.title,
       required this.descript,
       required this.startTime,
-      required this.endTime,});
+      required this.endTime,
+      required this.state});
 
   final String group;
   final String title;
   final String descript;
   final DateTime startTime;
   final DateTime endTime;
-  // when state = -1, it's mean null, and it's for upcoming
-  final int state = -1;
+  final EventState state;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,7 @@ class EventInformationShrink extends StatelessWidget {
                 )
               ],
             ),
-            CurrentEventState(
+            CurrentState(
               state: state,
             )
           ])
@@ -115,17 +115,12 @@ class AntiLabel extends StatelessWidget {
   }
 }
 
-class CurrentEventState extends StatelessWidget {
-  const CurrentEventState({super.key, required this.state});
-  final int state;
+class CurrentState extends StatelessWidget {
+  const CurrentState({super.key, required this.state});
+  final EventState state;
 
   @override
   Widget build(BuildContext context) {
-    if (state == -1) {
-      return const SizedBox.shrink();
-    }
-
-    // 帶修改
     Color stateColor = (state == EventState.upComing
         ? Colors.grey
         : state == EventState.inProgress
