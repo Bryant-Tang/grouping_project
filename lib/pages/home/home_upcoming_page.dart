@@ -1,6 +1,8 @@
-import 'package:grouping_project/components/card_view.dart';
+//import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/service/event_service.dart';
+import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/components/card_view/card_view_template.dart';
 
 import 'package:flutter/material.dart';
 
@@ -191,39 +193,15 @@ Future<void> addUpcoming({required String userId}) async {
       height: 2,
     ));
 
-    // // pass Datatime
-    // DateTime startTime = upcoming!.startTime;
-    // DateTime endTime = upcoming.endTime;
-    Widget useCard = Upcoming(
-        group: upcoming.belong,
-        title: upcoming.title ?? 'unknown',
-        descript: upcoming.introduction ?? 'unknown',
-        eventId: upcoming.id,
-        startTime: upcoming.startTime ?? DateTime(0),
-        endTime: upcoming.endTime ?? DateTime(0));
-    // upcomingCards.add(Ink(
-    //   width: 100,
-    //   height: 50,
-    //   decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
-    //   child: InkWell(
-    //     onTap: () {
-    //       //upcomingCards.elementAt(upcomingCards.indexOf());
-    //     },
-    //     splashColor: Colors.black12,
-    //     onLongPress: () {},
-    //     highlightColor: Colors.black26,
-    //     child: useCard,
-    //   ),
-    // ));
+    EventInformationShrink shrink = EventInformationShrink(group: upcoming.belong,
+    title: upcoming.title ?? 'unknown',
+    descript: upcoming.introduction ?? 'unknown',
+    eventId: upcoming.id,
+    startTime: upcoming.startTime ?? DateTime(0),
+    endTime: upcoming.endTime ?? DateTime(0),);
 
     upcomingCards.add(
-        // title tmp
-        Upcoming(
-            group: upcoming.belong,
-            title: upcoming.title ?? 'unknown',
-            descript: upcoming.introduction ?? 'unknown',
-            eventId: upcoming.id,
-            startTime: upcoming.startTime ?? DateTime(0),
-            endTime: upcoming.endTime ?? DateTime(0)));
+      CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)
+    );
   }
 }
