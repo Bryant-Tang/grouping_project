@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserProfile {
-  final String email;
-  final String userName;
-  final String userId;
+  final String? email;
+  final String? userName;
+  final String? userColor;
+  String userId = '';
 
   UserProfile({
-    this.userId = '',
-    this.email = 'unknown',
-    this.userName = 'unknown',
+    this.email,
+    this.userName,
+    this.userColor,
   });
 
   factory UserProfile.fromFirestore(
@@ -20,26 +21,27 @@ class UserProfile {
     return UserProfile(
       email: data?['email'],
       userName: data?['name'],
-      userId: data?['id'],
+      userColor: data?['color'],
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      if (email != 'unknown') "email": email,
-      if (userName != 'unknown') "name": userName,
-      if (userId != '') "id": userId,
+      if (email != null) 'email': email,
+      if (userName != null) 'name': userName,
+      if (userColor != null) 'color': userColor,
     };
   }
 }
 
 class GroupProfile {
-  final String userName;
-  final String userId;
+  final String? groupName;
+  final String? groupColor;
+  String groupId = '';
 
   GroupProfile({
-    this.userId = '',
-    this.userName = 'unknown',
+    this.groupName,
+    this.groupColor,
   });
 
   factory GroupProfile.fromFirestore(
@@ -49,15 +51,15 @@ class GroupProfile {
     final data = snapshot.data();
 
     return GroupProfile(
-      userName: data?['name'],
-      userId: data?['id'],
+      groupName: data?['name'],
+      groupColor: data?['color'],
     );
   }
 
   Map<String, dynamic> toFirestore() {
     return {
-      if (userName != 'unknown') "name": userName,
-      if (userId != '') "id": userId,
+      if (groupName != null) 'name': groupName,
+      if (groupColor != null) 'color': groupColor,
     };
   }
 }
@@ -65,9 +67,9 @@ class GroupProfile {
 Future<void> setProfileForPerson(
     {required UserProfile newProfile, required String userId}) async {
   final profileLocation = FirebaseFirestore.instance
-      .collection("client_properties")
+      .collection('client_properties')
       .doc(userId)
-      .collection("profile")
+      .collection('profile')
       .doc('profile')
       .withConverter(
         fromFirestore: UserProfile.fromFirestore,
@@ -80,9 +82,9 @@ Future<void> setProfileForPerson(
 Future<void> setProfileForGroup(
     {required GroupProfile newProfile, required String groupId}) async {
   final profileLocation = FirebaseFirestore.instance
-      .collection("client_properties")
+      .collection('client_properties')
       .doc(groupId)
-      .collection("profile")
+      .collection('profile')
       .doc('profile')
       .withConverter(
         fromFirestore: GroupProfile.fromFirestore,
@@ -92,37 +94,44 @@ Future<void> setProfileForGroup(
   return;
 }
 
-Future<UserProfile?> getProfileForPerson({required String userId}) async {
+Future<UserProfile> getProfileForPerson({required String userId}) async {
   final profileLocation = FirebaseFirestore.instance
-      .collection("client_properties")
+      .collection('client_properties')
       .doc(userId)
-      .collection("profile")
+      .collection('profile')
       .doc('profile')
       .withConverter(
         fromFirestore: UserProfile.fromFirestore,
         toFirestore: (UserProfile profile, options) => profile.toFirestore(),
       );
   final profileSnap = await profileLocation.get();
-  return profileSnap.data();
+  UserProfile profile = profileSnap.data() ??
+      UserProfile(
+          email: 'unknown', userName: 'unknown', userColor: '0xFFFCBF49');
+  profile.userId = profileSnap.id;
+  return profile;
 }
 
-Future<GroupProfile?> getProfileForGroup({required String groupId}) async {
+Future<GroupProfile> getProfileForGroup({required String groupId}) async {
   final profileLocation = FirebaseFirestore.instance
-      .collection("client_properties")
+      .collection('client_properties')
       .doc(groupId)
-      .collection("profile")
+      .collection('profile')
       .doc('profile')
       .withConverter(
         fromFirestore: GroupProfile.fromFirestore,
         toFirestore: (GroupProfile profile, options) => profile.toFirestore(),
       );
   final profileSnap = await profileLocation.get();
-  return profileSnap.data();
+  GroupProfile profile = profileSnap.data() ??
+      GroupProfile(groupName: 'unknown', groupColor: '0xFFFCBF49');
+  profile.groupId = profileSnap.id;
+  return profile;
 }
 
 // Future<String?> getUserId({required String email}) async {
 //   final profileLocation = FirebaseFirestore.instance
-//       .collectionGroup("profile")
+//       .collectionGroup('profile')
 //       .where('email', isEqualTo: email)
 //       .withConverter(
 //         fromFirestore: UserProfile.fromFirestore,
@@ -144,8 +153,7 @@ Future<Map<String, String>> getGroupList({required String userId}) async {
   final groupListSnap = await groupsLocation.get();
   Map<String, String> groupList = {};
   for (var groupSnap in groupListSnap.docs) {
-    groupList.addAll(
-        {groupSnap.id: groupSnap.data()['name'] as String});
+    groupList.addAll({groupSnap.id: groupSnap.data()['name'] as String});
   }
   return groupList;
 }

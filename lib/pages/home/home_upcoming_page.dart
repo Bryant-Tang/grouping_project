@@ -195,7 +195,7 @@ Future<void> addUpcoming({required String userId}) async {
     // DateTime startTime = upcoming!.startTime;
     // DateTime endTime = upcoming.endTime;
     Widget useCard = Upcoming(
-        group: upcoming.belong,
+        group: upcoming.belongName,
         title: upcoming.title ?? 'unknown',
         descript: upcoming.introduction ?? 'unknown',
         eventId: upcoming.id,
@@ -219,7 +219,7 @@ Future<void> addUpcoming({required String userId}) async {
     upcomingCards.add(
         // title tmp
         Upcoming(
-            group: upcoming.belong,
+            group: upcoming.belongName,
             title: upcoming.title ?? 'unknown',
             descript: upcoming.introduction ?? 'unknown',
             eventId: upcoming.id,

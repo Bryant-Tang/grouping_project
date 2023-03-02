@@ -173,8 +173,8 @@ Future<void> updateEventData(
   return;
 }
 
-Future<EventData?> getOneEventData(
-    {required String userOrGroupId, required String eventId}) async {
+Future<EventData> getOneEventDataForPerson(
+    {required String userId, required String eventId}) async {
   final eventLocation = FirebaseFirestore.instance
       .collection("client_properties")
       .doc(userOrGroupId)
@@ -185,12 +185,12 @@ Future<EventData?> getOneEventData(
         toFirestore: (EventData event, options) => event.toFirestore(),
       );
   final eventSnap = await eventLocation.get();
-  EventData? event = eventSnap.data();
+  EventData event = eventSnap.data() ?? EventData();
 
-  UserProfile? belongSnap = await getProfileForPerson(userId: userOrGroupId);
+  UserProfile belongSnap = await getProfileForPerson(userId: userId);
   event?.belongName = belongSnap?.userName ?? 'unknown';
   event?.belongColor = belongSnap?.color ?? '0xFFFCBF49';
-  
+
   return event;
 }
 
@@ -247,6 +247,6 @@ Future<List<EventData>> getAllEventDataForPerson(
         await getAllEventDataForGroup(groupId: groupId);
     eventDataList.addAll(tempGroupEventList);
   }
-  
+
   return eventDataList;
 }
