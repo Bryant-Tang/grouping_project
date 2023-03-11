@@ -29,7 +29,7 @@ class _TestPageState extends State<EventDataTestPage> {
     final testEvent =
         await getOneEventData(userOrGroupId: userId, eventId: 'test_event_1');
     _counter =
-        "title:${testEvent?.belong}\nstart time:${testEvent?.startTime}\n";
+        "title:${testEvent?.belongName}\nstart time:${testEvent?.startTime}\n";
     // "state:${testEvent[0].state}\nnotifications:${testEvent[0].notifications}\n"
     // "contributors:${testEvent[0].contributors}";
     setState(() {});
