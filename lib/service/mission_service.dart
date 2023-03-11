@@ -204,7 +204,7 @@ Future<MissionData?> getOneMissionData(
   final missionSnap = await missionLocation.get();
   MissionData? mission = missionSnap.data();
 
-  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+  UserProfile? belongSnap = await getProfileForPerson(userId: userOrGroupId);
   if (belongSnap?.userName != null) {
     mission?.belong = belongSnap?.userName as String;
   } else {
@@ -225,7 +225,7 @@ Future<List<MissionData>> getAllMissionData(
         toFirestore: (MissionData mission, options) => mission.toFirestore(),
       );
   final missionListSnap = await missionLocation.get();
-  UserProfile? belongSnap = await getProfile(userId: userOrGroupId);
+  UserProfile? belongSnap = await getProfileForPerson(userId: userOrGroupId);
 
   List<MissionData> missionDataList = [];
   for (var missionSnap in missionListSnap.docs) {

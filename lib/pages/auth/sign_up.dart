@@ -215,7 +215,7 @@ class _SignUpPageFive extends StatelessWidget {
           final AuthService authService = AuthService();
           final UserModel userModel =
               await authService.emailSignUp(email, email);
-          await setProfile(
+          await setProfileForPerson(
               newProfile: UserProfile(
                   email: email, userName: userName, userId: userModel.uid),
               userId: userModel.uid);

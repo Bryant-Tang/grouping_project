@@ -9,7 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 //For all service, you need an AuthService instance
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  GoogleSignIn _googleSignIn = GoogleSignIn(
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId:
         '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
     scopes: <String>['email'],
@@ -46,12 +46,12 @@ class AuthService {
 
 //These 3 func. are for two step Login/SignUp
 //For using it, pass email and password in two step
-  Future<void>? setEmail(String email) {
+  Future<void> setEmail(String email) async {
     _email = email;
   }
 
-  Future<void>? setPassword(User user, String password) {
-    user.updatePassword(password);
+  Future<void> setPassword(User user, String password) async {
+    await user.updatePassword(password);
   }
 
   Future<void> sendCode(String code) async {

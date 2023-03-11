@@ -16,16 +16,21 @@ import 'package:grouping_project/pages/home/home_group_page.dart';
 import 'package:grouping_project/pages/home/home_upcoming_page.dart';
 import 'package:grouping_project/pages/home/home_tracked_mission_page.dart';
 
+// 測試新功能用，尚未完工，請勿使用或刪除
+import 'package:grouping_project/components/card_view/card_view_template.dart';
+import 'package:grouping_project/pages/home/empty.dart';
+import 'package:grouping_project/components/card_view/event_information.dart';
+
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
   @override
-  State<MyHomePage> createState() => _testPageState();
+  State<MyHomePage> createState() => _TestPageState();
 }
 
-class _testPageState extends State<MyHomePage> {
-  AuthService _authService = AuthService();
+class _TestPageState extends State<MyHomePage> {
+  final AuthService _authService = AuthService();
   var funtionSelect = 0;
 
   @override
@@ -40,8 +45,10 @@ class _testPageState extends State<MyHomePage> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => CardEditDone()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CardEditDone()));
               },
               // 改變成使用者或團體的頭像 !!!!!!!!!!!
               icon: const Icon(Icons.circle)),
@@ -51,77 +58,75 @@ class _testPageState extends State<MyHomePage> {
                 _authService.signOut();
                 _authService.googleSignOut();
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => new LoginPage()));
+                    MaterialPageRoute(builder: (context) => LoginPage()));
               },
               icon: const Icon(Icons.logout_outlined)),
         ],
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
       ),
-      body: Container(
-        child: Column(children: [
-          // 名片位置
-          PersonalCard(),
-          const SizedBox(
-            height: 3,
-          ),
-          // 功能選擇區
-          Container(
-            height: 80,
-            width: 325,
-            child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, childAspectRatio: 4),
-                itemCount: 4,
-                itemBuilder: ((context, index) {
-                  return Container(
-                    width: 150,
-                    margin: EdgeInsets.all(1),
-                    alignment: Alignment.centerLeft,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: funtionSelect == index
-                              ? Colors.black
-                              : Colors.grey),
-                    ),
-                    child: TextButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          funtionSelect = index;
-                        });
-                      },
-                      icon: (index == 0
-                          ? const Icon(Icons.group)
+      body: Column(children: [
+        // 名片位置
+        const PersonalCard(),
+        const SizedBox(
+          height: 3,
+        ),
+        // 功能選擇區
+        SizedBox(
+          height: 80,
+          width: 325,
+          child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, childAspectRatio: 4),
+              itemCount: 4,
+              itemBuilder: ((context, index) {
+                return Container(
+                  width: 150,
+                  margin: const EdgeInsets.all(1),
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                        color: funtionSelect == index
+                            ? Colors.black
+                            : Colors.grey),
+                  ),
+                  child: TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        funtionSelect = index;
+                      });
+                    },
+                    icon: (index == 0
+                        ? const Icon(Icons.group)
+                        : index == 1
+                            ? const Icon(Icons.calendar_today)
+                            : index == 2
+                                ? const Icon(Icons.list)
+                                : const Icon(Icons.message)),
+                    label: Text(
+                      index == 0
+                          ? 'WORKSPACE\n小組專區'
                           : index == 1
-                              ? const Icon(Icons.calendar_today)
+                              ? 'UPCOMING EVENT\n即將來臨'
                               : index == 2
-                                  ? const Icon(Icons.list)
-                                  : const Icon(Icons.message)),
-                      label: Text(
-                        index == 0
-                            ? 'WORKSPACE\n小組專區'
-                            : index == 1
-                                ? 'UPCOMING EVENT\n即將來臨'
-                                : index == 2
-                                    ? 'TRACKED MISSION\n任務追蹤'
-                                    : 'TAGGED MESSAGE\n待回覆',
-                        style: const TextStyle(color: Colors.black, fontSize: 12),
-                      ),
+                                  ? 'TRACKED MISSION\n任務追蹤'
+                                  : 'TAGGED MESSAGE\n待回覆',
+                      style: const TextStyle(color: Colors.black, fontSize: 12),
                     ),
-                  );
-                })),
-          ),
-          const SizedBox(
-            height: 3,
-          ),
-          // 顯示該功能的列表
-          differentFunctionPage[funtionSelect]
-        ]),
-      ),
+                  ),
+                );
+              })),
+        ),
+        const SizedBox(
+          height: 3,
+        ),
+        // 顯示該功能的列表
+        differentFunctionPage[funtionSelect]
+      ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('add new event');
+          debugPrint('add new event');
         },
         child: const Icon(Icons.add),
       ),
@@ -143,14 +148,12 @@ class _testPageState extends State<MyHomePage> {
 
 List<Widget> differentFunctionPage = [
   Expanded(
-    child: ListView(
-    children: [
-      GroupPage()
-    ],
+      child: ListView(
+    children: const [GroupPage()],
   )),
   Expanded(
-    child: ListView(
-    children: [
+      child: ListView(
+    children: const [
       // UpcomingExpand(
       //     group: 'personal',
       //     title: 'P+ 籃球會',
@@ -161,10 +164,8 @@ List<Widget> differentFunctionPage = [
     ],
   )),
   Expanded(
-    child: ListView(
-    children: [
-      TrackedPage()
-    ],
+      child: ListView(
+    children: const [TrackedPage()],
   )),
   Expanded(
       child: ListView(
