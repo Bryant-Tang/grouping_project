@@ -1,4 +1,4 @@
-import 'package:grouping_project/model_lib.dart';
+import 'data_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -12,14 +12,23 @@ class ProfileTag {
 class ProfileModel extends DataModel {
   String? name;
   String? email;
-  String? color;
+  int? color;
   String? nickname;
   String? slogan;
   String? introduction;
   List<ProfileTag>? tags;
   Image? photo;
 
-  ProfileModel({this.name, this.email, this.color}) : super(id: '') {
+  ProfileModel(
+      {this.name,
+      this.email,
+      this.color,
+      this.nickname,
+      this.slogan,
+      this.introduction,
+      this.tags,
+      this.photo})
+      : super(id: '') {
     super.typeForPath = 'profile';
   }
 
@@ -29,15 +38,35 @@ class ProfileModel extends DataModel {
       SnapshotOptions? options) async {
     final data = snapshot.data();
 
+    List<ProfileTag> fromFirestoreTags = [];
+    for (String tag in List.from(data['tag'])) {
+      fromFirestoreTags.add(ProfileTag(tag: tag, content: ''));
+    }
+    int i = 0;
+    for (String content in List.from(data['tag_content'])) {
+      fromFirestoreTags[i].content = content;
+    }
+
     return ProfileModel(
       name: data['name'],
       email: data['email'],
       color: data['color'],
+      nickname: data['nickname'],
+      slogan: data['slogan'],
+      introduction: data['introduction'],
+      tags: fromFirestoreTags,
     );
   }
 
   @override
   Map<String, dynamic> toFirestore() {
+    List<String> toFirestoreTags = [];
+    List<String> toFirestoreTagContents = [];
+    for (ProfileTag tag in tags ?? []) {
+      toFirestoreTags.add(tag.tag);
+      toFirestoreTagContents.add(tag.content);
+    }
+
     return {
       if (name != null) 'name': name,
       if (email != null) 'email': email,
@@ -45,7 +74,8 @@ class ProfileModel extends DataModel {
       if (nickname != null) 'nickname': nickname,
       if (slogan != null) 'slogan': slogan,
       if (introduction != null) 'introduction': introduction,
-      
+      if (tags != null) 'tag': toFirestoreTags,
+      if (tags != null) 'tag_content': toFirestoreTagContents,
     };
   }
 
