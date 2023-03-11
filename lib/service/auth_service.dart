@@ -55,8 +55,8 @@ class AuthService {
     }
   }
 
-  Future<void>? setPassword(User user, String password) {
-    user.updatePassword(password);
+  Future<void> setPassword(User user, String password) async {
+    await user.updatePassword(password);
   }
 
 //Login with email & password (with all the information)
