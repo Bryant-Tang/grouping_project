@@ -5,7 +5,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:provider/provider.dart';
-import '../service/event_service.dart';
 
 class EventDataTestPage extends StatefulWidget {
   const EventDataTestPage({super.key});

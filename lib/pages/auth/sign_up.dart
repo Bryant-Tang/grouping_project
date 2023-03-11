@@ -5,7 +5,6 @@ import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/service/profile_service.dart';
 
 import 'package:flutter/material.dart';
 

@@ -1,6 +1,7 @@
 //import 'package:grouping_project/components/card_view.dart';
+import 'package:googleapis/people/v1.dart';
+import 'package:grouping_project/model/event_model.dart';
 import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/service/event_service.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/card_view/card_view_template.dart';
 
@@ -166,13 +167,21 @@ class UpcomingPageState extends State<UpcomingPage> {
 
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
-    final AuthService authService = AuthService();
-    String userId = authService.getUid();
-    await createEventDataForPerson(
-        title: upcomingTitle,
-        introduction: upcomingDescript,
-        startTime: DateTime.now(),
-        endTime: DateTime.now());
+      // final AuthService authService = AuthService();
+      // String userId = authService.getUid();
+      // await createEventDataForPerson(
+      //     title: upcomingTitle,
+      //     introduction: upcomingDescript,
+      //     startTime: DateTime.now(),
+      //     endTime: DateTime.now());
+      
+    // 給予要創建的資料(當前還存在本地端)
+    EventModel eventModel = EventModel(
+      title: upcomingTitle,
+      introduction: upcomingDescript,
+      startTime: DateTime.now(),
+      endTime: DateTime.now()
+    );
     await addUpcoming(userId: userId);
     setState(
       () {

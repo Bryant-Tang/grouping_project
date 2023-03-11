@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/service/mission_service.dart';
+import 'package:grouping_project/model/mission_model.dart';
 import 'package:grouping_project/components/card_view/information_fragment_enlarge.dart';
 
 Map monthDigitToLetter = <int, String>{

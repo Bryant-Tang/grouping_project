@@ -1,10 +1,10 @@
 //import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/components/card_view/mission_information.dart';
 import 'package:grouping_project/components/card_view/card_view_template.dart';
-import 'package:grouping_project/service/mission_service.dart';
 import 'package:grouping_project/model/user_model.dart';
 
 import 'package:flutter/material.dart';
+import 'package:grouping_project/model_lib.dart';
 import 'package:provider/provider.dart';
 
 class TrackedPage extends StatefulWidget {
@@ -169,13 +169,20 @@ class TrackedPageState extends State<TrackedPage> {
 
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
-    String userId = Provider.of<UserModel>(context).uid;
-    await createMissionData(
-        userOrGroupId: userId,
-        title: trackedTitle,
-        introduction: trackedDescript,
-        startTime: DateTime.now(),
-        endTime: DateTime.now());
+    // String userId = Provider.of<UserModel>(context).uid;
+    // await createMissionData(
+    //     userOrGroupId: userId,
+    //     title: trackedTitle,
+    //     introduction: trackedDescript,
+    //     startTime: DateTime.now(),
+    //     endTime: DateTime.now());
+    MissionModel missionModel = MissionModel(
+      title: trackedTitle,
+      introduction: trackedDescript,
+      startTime: DateTime.now(),
+      endTime: DateTime.now(),
+      state: MissionState.inProgress
+    );
     await addTracked(userId: userId);
     setState(
       () {
