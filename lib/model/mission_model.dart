@@ -143,4 +143,16 @@ class MissionModel extends DataModel {
       if (notifications != null) "notifications": toFireNotifications,
     };
   }
+
+  @override
+  Future<void> set({String? groupId}) async {
+    await DataController(groupId: groupId).setMethod(processData: this);
+  }
+
+  @override
+  Future<List<MissionModel>> getAll({String? groupId}) async {
+    List<MissionModel> processData = await DataController(groupId: groupId)
+        .getAllMethod(dataTypeToGet: this) as dynamic;
+    return processData;
+  }
 }
