@@ -1,4 +1,6 @@
-import 'package:grouping_project/model_lib.dart';
+import 'data_model.dart';
+import 'profile_model.dart';
+import 'user_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -14,7 +16,7 @@ class MissionModel extends DataModel {
   List<String>? tags;
   List<DateTime>? notifications;
   String ownerName = 'unknown';
-  String color = '0xFFFCBF49';
+  int color = 0xFFFCBF49;
 
   MissionModel(
       {super.id = '',
@@ -114,7 +116,7 @@ class MissionModel extends DataModel {
       processData.ownerName = ownerProfile.name as String;
     }
     if (ownerProfile.color != null) {
-      processData.ownerName = ownerProfile.color as String;
+      processData.color = ownerProfile.color as int;
     }
 
     return processData;
