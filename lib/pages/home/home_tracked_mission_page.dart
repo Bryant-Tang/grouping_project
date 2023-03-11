@@ -206,7 +206,7 @@ Future<void> addTracked() async {
     
     MissionInformationShrink shrink = MissionInformationShrink(
       group: tracked.ownerName,
-      color: Color(int.parse(tracked.color)),
+      color: Color(tracked.color),
       contributors: tracked.contributors ?? [],
       title: tracked.title ?? 'unknown',
       descript: tracked.introduction ?? 'unknown',

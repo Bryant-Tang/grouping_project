@@ -206,7 +206,7 @@ Future<void> addUpcoming() async {
     ));
     EventInformationShrink shrink = EventInformationShrink(
       group: upcoming.ownerName,
-      color: Color(int.parse(upcoming.color)),
+      color: Color(upcoming.color),
       contributors: upcoming.contributors ?? [],
       title: upcoming.title ?? 'unknown',
       descript: upcoming.introduction ?? 'unknown',
