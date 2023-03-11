@@ -1,9 +1,10 @@
+import 'dart:math';
+
 import 'package:grouping_project/components/headline_with_content.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
-
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,6 +17,7 @@ class LoginPage extends StatefulWidget {
       "fileName": "google.png",
       "name": "google",
       "onPress": () async {
+        // debugPrint("press");
         AuthService authService = AuthService();
         await authService.googleLogin();
       }
@@ -91,7 +93,7 @@ class _EmailFormState extends State<_EmailForm> {
     super.initState();
     // Start listening to changes.
     textController
-        .addListener(() => print("input box: ${textController.text}"));
+        .addListener(() => debugPrint("input box: ${textController.text}"));
   }
 
   @override
@@ -101,8 +103,8 @@ class _EmailFormState extends State<_EmailForm> {
   }
 
   String getFirebaseAuthCode() {
-    String code = "123456";
-    //String code = (Random().nextInt(99999) + 100000).toString();
+    // String code = "123456";
+    String code = (Random().nextInt(99999) + 100000).toString();
     authService.sendCode(code);
     return code;
   }
@@ -188,132 +190,80 @@ class _EmailFormState extends State<_EmailForm> {
 
   @override
   Widget build(BuildContext context) {
-    if (inputEmailLogin == false) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: TextField(
-                controller: textController,
-                decoration: InputDecoration(
-                    // isDense 為必要, contentPadding 越大，則 textfield 越大
-                    contentPadding: const EdgeInsets.all(15),
-                    isDense: true,
-                    border: const OutlineInputBorder(
-                        gapPadding: 1.0,
-                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const Icon(
-                          Icons.mail,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "電子郵件 GMAIL",
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontFamily: "NotoSansTC",
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        )
-                      ],
-                    ))),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: MaterialButton(
-              onPressed: _onSubmit,
-              shape: const RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.amber, width: 2),
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
-              child: const Text(
-                "Continue with email",
-                style: TextStyle(
-                    color: Colors.amber,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: inputEmailLogin == false
+          ? <Widget>[
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+                child: TextField(
+                    controller: textController,
+                    decoration: InputDecoration(
+                        // isDense 為必要, contentPadding 越大，則 textfield 越大
+                        contentPadding: const EdgeInsets.all(15),
+                        isDense: true,
+                        border: const OutlineInputBorder(
+                            gapPadding: 1.0,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(30))),
+                        label: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            const Icon(
+                              Icons.mail,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "電子郵件 GMAIL",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontFamily: "NotoSansTC",
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                              ),
+                            )
+                          ],
+                        ))),
               ),
-            ),
-          )
-        ],
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: Text(
-              "Welcome $userInputMail",
-              style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: TextField(
-                controller: textController,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(
-                        gapPadding: 1.0,
-                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const Icon(Icons.password, color: Colors.grey),
-                        const SizedBox(width: 10),
-                        Text(
-                          "驗證碼 auth token",
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontFamily: "NotoSansTC",
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        )
-                      ],
-                    ))),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: Text(
-              "已經寄送驗證碼到信箱 $userInputMail",
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.blueGrey,
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+                child: MaterialButton(
+                  onPressed: _onSubmit,
+                  shape: const RoundedRectangleBorder(
+                      side: BorderSide(color: Colors.amber, width: 2),
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
+                  child: const Text(
+                    "Continue with email",
+                    style: TextStyle(
+                        color: Colors.amber,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )
+            ]
+          : <Widget>[
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+                child: Text(
+                  "已經寄送驗證碼到信箱 $userInputMail\n請點選信箱連結來做登入驗證。",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: MaterialButton(
-              onPressed: _onSubmit,
-              shape: const RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.amber, width: 2),
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
-              child: const Text(
-                "確認驗證碼",
-                style: TextStyle(
-                    color: Colors.amber,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          )
-        ],
-      );
-    }
+            ],
+    );
   }
 }
 

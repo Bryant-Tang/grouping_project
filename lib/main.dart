@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
           brightness: Brightness.light,
-          primarySwatch: Colors.orange,
+          primarySwatch: Colors.amber,
           // 將 NotoSansTC 設為 default font family
           fontFamily: 'NotoSansTC'),
       debugShowCheckedModeBanner: false,
