@@ -57,13 +57,13 @@ class _CardViewTemplateState extends State<CardViewTemplate> {
           onTap: () {
             if (state == 0) {
               show = _enlarge(
-                detail: detail,
+                detail: widget.detailEnlarge,
                 usingColor: usingColor,
               );
               state = 1;
             } else {
               show = _shrink(
-                detail: detail,
+                detail: widget.detailShrink,
                 usingColor: usingColor,
               );
               state = 0;
@@ -134,7 +134,7 @@ class _enlarge extends StatelessWidget {
   final Color usingColor;
 
   // height should vary according to detailed of differet card(Upcoming, mission, message)
-  var height = 84.0;
+  var height = 405.0;
 
   @override
   Widget build(BuildContext context) {
@@ -166,8 +166,8 @@ class _enlarge extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 15,
-              top: 3,
+              left: 10,
+              top: 18,
               // 放入各個 card view descript
               child: detail,
             )

@@ -146,10 +146,30 @@ class _TestPageState extends State<MyHomePage> {
   }
 }
 
+// this is test, don't delete it
+EventInformationShrink shrink = EventInformationShrink(group: "personal",
+title: "test title",
+descript: "test information",
+eventId: "123456",
+startTime: DateTime(0),
+endTime: DateTime.now(),);
+
+EventInformationEnlarge enlarge = EventInformationEnlarge(group: "personal",
+title: "test title",
+descript: "test information",
+eventId: "123456",
+startTime: DateTime(0),
+endTime: DateTime.now(),);
+
 List<Widget> differentFunctionPage = [
   Expanded(
       child: ListView(
-    children: const [GroupPage()],
+    // children: const [
+    children: [
+      //GroupPage()
+
+      CardViewTemplate(detailShrink: shrink, detailEnlarge: enlarge)
+    ],
   )),
   Expanded(
       child: ListView(
