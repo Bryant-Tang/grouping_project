@@ -35,7 +35,6 @@ class AuthService {
 
   UserModel? _userModelFromAuth(User? user) {
     if (user != null) {
-      print(user.uid);
       return UserModel(uid: user.uid);
     } else {
       return null;
