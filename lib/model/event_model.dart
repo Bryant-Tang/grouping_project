@@ -91,4 +91,16 @@ class EventModel extends DataModel {
       if (notifications != null) "notifications": toFireNotifications,
     };
   }
+
+  @override
+  Future<void> set({String? groupId}) async {
+    await DataController(groupId: groupId).setMethod(processData: this);
+  }
+
+  @override
+  Future<List<EventModel>> getAll({String? groupId}) async {
+    List<EventModel> processData = await DataController(groupId: groupId)
+        .getAllMethod(dataTypeToGet: this) as dynamic;
+    return processData;
+  }
 }

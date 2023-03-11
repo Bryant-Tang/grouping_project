@@ -2,31 +2,35 @@ import 'package:grouping_project/service/auth_service.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-///!! NOTICE !!
-///this is a super class of every data in database,
+/// !! NOTICE !!
+/// this is a super class of every data in database,
 /// can only use as POLYMORPHISM
 abstract class DataModel {
   final String id;
   String typeForPath = 'unknown_data_type_should_not_appear';
 
-  ///!! NOTICE !!
-  ///every subclass should return id to this superclass,
+  /// !! NOTICE !!
+  /// every subclass should return id to this superclass,
   /// either get it or set a value to it in constructor
   DataModel({required this.id});
 
-  ///!! NOTICE !!
-  ///every subclass should override this method
+  /// !! NOTICE !!
+  /// every subclass should override this method
   Future<DataModel> fromFirestore(
     QueryDocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   );
 
-  ///!! NOTICE !!
-  ///every subclass should override this method
+  /// !! NOTICE !!
+  /// every subclass should override this method
   Map<String, dynamic> toFirestore();
+
+  Future<void> set({String? groupId});
+
+  Future getAll({String? groupId});
 }
 
-///to get any data from database, you need a DataController
+/// to get any data from database, you need a DataController
 class DataController {
   String? userId;
   String? groupId;
@@ -46,9 +50,9 @@ class DataController {
     }
   }
 
-  ///to upload any data to database, use this method and pass the data to it.
+  /// to upload any data to database, use this method and pass the data to it.
   ///
-  ///remember to use await in front of this method.
+  /// remember to use await in front of this method.
   Future<void> setMethod({required DataModel processData}) async {
     DocumentReference dataPath;
     if (processData.id != '') {
@@ -65,14 +69,15 @@ class DataController {
     return;
   }
 
-  ///to get any data from database, use this method and pass an empty object in the type you want.
+  /// to get any data from database,
+  /// use this method and pass an empty object in the type you want.
   ///
-  ///retrun a list of the type you specify.
+  /// retrun a list of the type you specify.
   ///
-  ///remember to use await in front of this method.
+  /// remember to use await in front of this method.
   ///
-  ///!! special case for ProfileModel !!
-  ///if you want to get ProfileModel, theoretically,
+  /// !! special case for ProfileModel !!
+  /// if you want to get ProfileModel, theoretically,
   /// this method will only return one ProfileModel in the list,
   /// unless the uploader done something wrong.
   Future<List<DataModel>> getAllMethod(
