@@ -4,6 +4,12 @@ import 'user_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// to create a EventModel use EventModel()
+/// and pass all things you want to add
+///
+/// to upload a EventModel use .set() method
+///
+/// to get all EventModel of a user/group use EventModel().getAll()
 class EventModel extends DataModel {
   String? title;
   DateTime? startTime;
@@ -94,11 +100,17 @@ class EventModel extends DataModel {
     };
   }
 
+  /// if it is a group event, remember to pass group id
+  /// 
+  /// remember to add await
   @override
   Future<void> set({String? groupId}) async {
     await DataController(groupId: groupId).setMethod(processData: this);
   }
 
+  /// if it is a group event, remember to pass group id
+  /// 
+  /// remember to add await
   @override
   Future<List<EventModel>> getAll({String? groupId}) async {
     List<EventModel> processData = await DataController(groupId: groupId)
