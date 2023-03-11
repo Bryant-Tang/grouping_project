@@ -1,6 +1,8 @@
-import 'package:grouping_project/components/card_view.dart';
-import 'package:grouping_project/model/user_model.dart';
+//import 'package:grouping_project/components/card_view.dart';
+import 'package:grouping_project/components/card_view/mission_information.dart';
+import 'package:grouping_project/components/card_view/card_view_template.dart';
 import 'package:grouping_project/service/mission_service.dart';
+import 'package:grouping_project/model/user_model.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -192,18 +194,18 @@ Future<void> addTracked({required String userId}) async {
     trackedCards.add(const SizedBox(
       height: 2,
     ));
-    // // pass Datatime
-    // DateTime startTime = tracked.startTime!;
-    // DateTime endTime = tracked.endTime!;
+
+    
+    MissionInformationShrink shrink = MissionInformationShrink(group: tracked.belong,
+    title: tracked.title ?? 'unknown',
+    descript: tracked.introduction ?? 'unknown',
+    eventId: tracked.id,
+    startTime: tracked.startTime ?? DateTime(0),
+    endTime: tracked.endTime ?? DateTime(0),
+    state: MissionState.inProgress,);
+
     trackedCards.add(
-        // title tmp
-        Tracked(
-      group: tracked.belong,
-      title: tracked.title ?? 'unknown',
-      descript: tracked.introduction ?? 'unknown',
-      startTime: tracked.startTime ?? DateTime(0),
-      endTime: tracked.endTime ?? DateTime(0),
-      state: tracked.state?.index ?? 1,
-    ));
+      CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)
+    );
   }
 }

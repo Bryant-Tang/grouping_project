@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/service/event_service.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/service/profile_service.dart';

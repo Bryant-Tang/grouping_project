@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/service/event_service.dart';
+import 'package:grouping_project/service/mission_service.dart';
+import 'package:grouping_project/components/card_view/information_fragment_enlarge.dart';
 
 Map monthDigitToLetter = <int, String>{
   1: "JAN",
@@ -28,14 +29,16 @@ class MissionInformationShrink extends StatelessWidget {
       required this.descript,
       required this.startTime,
       required this.endTime,
-      required this.state});
+      required this.state,
+      required this.eventId});
 
   final String group;
   final String title;
   final String descript;
   final DateTime startTime;
   final DateTime endTime;
-  final EventState state;
+  final MissionState state;
+  final String eventId;
 
   @override
   Widget build(BuildContext context) {
@@ -98,37 +101,20 @@ class MissionInformationShrink extends StatelessWidget {
   }
 }
 
-class AntiLabel extends StatelessWidget {
-  const AntiLabel({super.key, required this.group});
-  final String group;
-  final Color usingColor = Colors.black12;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-            color: usingColor, borderRadius: BorderRadius.circular(10)),
-        child: Text(
-          ' •$group ',
-          style: const TextStyle(color: Colors.white, fontSize: 10),
-        ));
-  }
-}
-
 class CurrentState extends StatelessWidget {
   const CurrentState({super.key, required this.state});
-  final EventState state;
+  final MissionState state;
 
   @override
   Widget build(BuildContext context) {
-    Color stateColor = (state == EventState.upComing
+    Color stateColor = (state == MissionState.upComing
         ? Colors.grey
-        : state == EventState.inProgress
+        : state == MissionState.inProgress
             ? Colors.lightBlueAccent
             : Colors.greenAccent);
-    String stateName = (state == EventState.upComing
+    String stateName = (state == MissionState.upComing
         ? 'Upcoming 未開始'
-        : state == EventState.inProgress
+        : state == MissionState.inProgress
             ? 'In progress 進行中'
             : 'Finish 完成');
     return Container(

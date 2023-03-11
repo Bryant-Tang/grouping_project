@@ -124,24 +124,37 @@ class _TestPageState extends State<MyHomePage> {
         // 顯示該功能的列表
         differentFunctionPage[funtionSelect]
       ]),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          debugPrint('add new event');
-        },
-        child: const Icon(Icons.add),
+      // 利用 extendBody: true 以及 BottomAppBar 的 shape, clipBehavior
+      // 可以使得 bottom navigation bar 給 FAB 空間
+      // ps. https://stackoverflow.com/questions/59455684/how-to-make-bottomnavigationbar-notch-transparent
+      extendBody: true,
+      floatingActionButton: Container(
+        width: 50,
+        height: 50,
+        child: FloatingActionButton(
+          onPressed: () {
+            debugPrint('add new event');
+          },
+          child: const Icon(Icons.add, color: Color(0xFFFFFFFF), size: 30,),
+        ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.house), label: 'house'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.calendar_month), label: 'calendar'),
-          BottomNavigationBarItem(icon: Icon(Icons.note), label: 'note'),
-          BottomNavigationBarItem(icon: Icon(Icons.message), label: 'message')
-        ],
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        clipBehavior: Clip.antiAlias,
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.house), label: 'house'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_month), label: 'calendar'),
+            BottomNavigationBarItem(icon: Icon(Icons.note), label: 'note'),
+            BottomNavigationBarItem(icon: Icon(Icons.message), label: 'message')
+          ],
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.grey,
+        ),
+      )
     );
   }
 }
@@ -173,7 +186,7 @@ List<Widget> differentFunctionPage = [
   )),
   Expanded(
       child: ListView(
-    children: [
+    children: const [
       // UpcomingExpand(
       //     group: 'personal',
       //     title: 'P+ 籃球會',
