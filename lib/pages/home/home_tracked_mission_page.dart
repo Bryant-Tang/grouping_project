@@ -183,7 +183,8 @@ class TrackedPageState extends State<TrackedPage> {
       endTime: DateTime.now(),
       state: MissionState.inProgress
     );
-    await addTracked(userId: userId);
+    await missionModel.set();
+    await addTracked();
     setState(
       () {
         Navigator.pop(context);
@@ -192,9 +193,9 @@ class TrackedPageState extends State<TrackedPage> {
   }
 }
 
-Future<void> addTracked({required String userId}) async {
+Future<void> addTracked() async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllMissionData(userOrGroupId: userId);
+  var allDatas = await MissionModel().getAll();
   trackedCards = [];
   for (int index = 0; index < allDatas.length; index++) {
     var tracked = allDatas[index];
@@ -203,13 +204,16 @@ Future<void> addTracked({required String userId}) async {
     ));
 
     
-    MissionInformationShrink shrink = MissionInformationShrink(group: tracked.belong,
-    title: tracked.title ?? 'unknown',
-    descript: tracked.introduction ?? 'unknown',
-    eventId: tracked.id,
-    startTime: tracked.startTime ?? DateTime(0),
-    endTime: tracked.endTime ?? DateTime(0),
-    state: MissionState.inProgress,);
+    MissionInformationShrink shrink = MissionInformationShrink(
+      group: tracked.ownerName,
+      color: Color(int.parse(tracked.color)),
+      contributors: tracked.contributors ?? [],
+      title: tracked.title ?? 'unknown',
+      descript: tracked.introduction ?? 'unknown',
+      eventId: tracked.id,
+      startTime: tracked.startTime ?? DateTime(0),
+      endTime: tracked.endTime ?? DateTime(0),
+      state: MissionState.inProgress,);
 
     trackedCards.add(
       CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)

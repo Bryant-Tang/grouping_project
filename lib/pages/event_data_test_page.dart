@@ -1,7 +1,7 @@
 //
 //  just a testing page to test event service.
 //
-
+/*
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:provider/provider.dart';
@@ -62,3 +62,4 @@ class _TestPageState extends State<EventDataTestPage> {
     );
   }
 }
+*/

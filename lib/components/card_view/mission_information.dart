@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/mission_model.dart';
 import 'package:grouping_project/components/card_view/information_fragment_enlarge.dart';
+import 'package:grouping_project/model/user_model.dart';
 
 Map monthDigitToLetter = <int, String>{
   1: "JAN",
@@ -29,6 +30,8 @@ class MissionInformationShrink extends StatelessWidget {
       required this.descript,
       required this.startTime,
       required this.endTime,
+      required this.contributors,
+      required this.color,
       required this.state,
       required this.eventId});
 
@@ -37,6 +40,8 @@ class MissionInformationShrink extends StatelessWidget {
   final String descript;
   final DateTime startTime;
   final DateTime endTime;
+  final List<UserModel> contributors;
+  final Color color;
   final MissionState state;
   final String eventId;
 

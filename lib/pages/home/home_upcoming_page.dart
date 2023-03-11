@@ -182,7 +182,9 @@ class UpcomingPageState extends State<UpcomingPage> {
       startTime: DateTime.now(),
       endTime: DateTime.now()
     );
-    await addUpcoming(userId: userId);
+    // for user, we don't need id; for group, we need group id
+    await eventModel.set();
+    await addUpcoming();
     setState(
       () {
         Navigator.pop(context);
@@ -191,9 +193,10 @@ class UpcomingPageState extends State<UpcomingPage> {
   }
 }
 
-Future<void> addUpcoming({required String userId}) async {
+Future<void> addUpcoming() async {
   // userOrGroupId : personal ID
-  var allDatas = await getAllEventDataForPerson(userId: userId);
+  // var allDatas = await getAllEventDataForPerson(userId: userId);
+  var allDatas = await EventModel().getAll();
 
   upcomingCards = [];
   for (int index = 0; index < allDatas.length; index++) {
@@ -201,13 +204,15 @@ Future<void> addUpcoming({required String userId}) async {
     upcomingCards.add(const SizedBox(
       height: 2,
     ));
-
-    EventInformationShrink shrink = EventInformationShrink(group: upcoming.belong,
-    title: upcoming.title ?? 'unknown',
-    descript: upcoming.introduction ?? 'unknown',
-    eventId: upcoming.id,
-    startTime: upcoming.startTime ?? DateTime(0),
-    endTime: upcoming.endTime ?? DateTime(0),);
+    EventInformationShrink shrink = EventInformationShrink(
+      group: upcoming.ownerName,
+      color: Color(int.parse(upcoming.color)),
+      contributors: upcoming.contributors ?? [],
+      title: upcoming.title ?? 'unknown',
+      descript: upcoming.introduction ?? 'unknown',
+      eventId: upcoming.id,
+      startTime: upcoming.startTime ?? DateTime(0),
+      endTime: upcoming.endTime ?? DateTime(0),);
 
     upcomingCards.add(
       CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/service/auth_service.dart';
 
 class AntiLabel extends StatelessWidget {
@@ -24,9 +25,9 @@ class Contributors extends StatelessWidget{
   /// 參與的所有使用者
   
   const Contributors({super.key, required this.contributors});
-  final List<UserProfile> contributors;
+  final List<UserModel> contributors;
 
-  Container createHeadShot(UserProfile person){
+  Container createHeadShot(UserModel person){
     /// 回傳 contributor 的頭貼
     return Container(
       height: 15,

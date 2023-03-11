@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/information_fragment_enlarge.dart';
 import 'package:grouping_project/model/event_model.dart';
+import 'package:grouping_project/model/user_model.dart';
 
 Map monthDigitToLetter = <int, String>{
   1: "JAN",
@@ -32,6 +33,8 @@ class EventInformationShrink extends StatelessWidget {
       required this.descript,
       required this.startTime,
       required this.endTime,
+      required this.contributors,
+      required this.color,
       required this.eventId});
 
   final String group;
@@ -39,6 +42,8 @@ class EventInformationShrink extends StatelessWidget {
   final String descript;
   final DateTime startTime;
   final DateTime endTime;
+  final List<UserModel> contributors;
+  final Color color;
   final String eventId;
 
   @override
@@ -111,6 +116,8 @@ class EventInformationEnlarge extends StatelessWidget {
       required this.descript,
       required this.startTime,
       required this.endTime,
+      required this.contributors,
+      required this.color,
       required this.eventId});
 
   final String group;
@@ -118,6 +125,8 @@ class EventInformationEnlarge extends StatelessWidget {
   final String descript;
   final DateTime startTime;
   final DateTime endTime;
+  final List<UserModel> contributors;
+  final Color color;
   final String eventId;
 
   //Color usingColor;
@@ -129,7 +138,7 @@ class EventInformationEnlarge extends StatelessWidget {
     String date2 =
         '${intFixed(endTime.hour >= 12 ? endTime.hour - 12 : endTime.hour, 2)}:${intFixed(endTime.minute, 2)} ${endTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[endTime.month]} ${endTime.day}, ${endTime.year}';
 
-    List<UserProfile> emptyTest = [];
+    List<UserModel> emptyTest = [];
 
     return Container(
       width: MediaQuery.of(context).size.width - 30,

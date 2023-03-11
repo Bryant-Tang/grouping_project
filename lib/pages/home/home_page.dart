@@ -163,6 +163,8 @@ class _TestPageState extends State<MyHomePage> {
 EventInformationShrink shrink = EventInformationShrink(group: "personal",
 title: "test title",
 descript: "test information",
+color: Color(0xFFFFc953),
+contributors: [],
 eventId: "123456",
 startTime: DateTime(0),
 endTime: DateTime.now(),);
@@ -170,6 +172,8 @@ endTime: DateTime.now(),);
 EventInformationEnlarge enlarge = EventInformationEnlarge(group: "personal",
 title: "test title",
 descript: "test information",
+color: Color(0xFFFFc953),
+contributors: [],
 eventId: "123456",
 startTime: DateTime(0),
 endTime: DateTime.now(),);
