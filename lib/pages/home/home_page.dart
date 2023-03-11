@@ -106,7 +106,8 @@ class _testPageState extends State<MyHomePage> {
                                 : index == 2
                                     ? 'TRACKED MISSION\n任務追蹤'
                                     : 'TAGGED MESSAGE\n待回覆',
-                        style: const TextStyle(color: Colors.black, fontSize: 12),
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 12),
                       ),
                     ),
                   );
@@ -143,13 +144,11 @@ class _testPageState extends State<MyHomePage> {
 
 List<Widget> differentFunctionPage = [
   Expanded(
-    child: ListView(
-    children: [
-      GroupPage()
-    ],
+      child: ListView(
+    children: [GroupPage()],
   )),
   Expanded(
-    child: ListView(
+      child: ListView(
     children: [
       // UpcomingExpand(
       //     group: 'personal',
@@ -161,10 +160,8 @@ List<Widget> differentFunctionPage = [
     ],
   )),
   Expanded(
-    child: ListView(
-    children: [
-      TrackedPage()
-    ],
+      child: ListView(
+    children: [TrackedPage()],
   )),
   Expanded(
       child: ListView(

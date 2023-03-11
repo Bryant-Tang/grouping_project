@@ -30,8 +30,12 @@ class MyApp extends StatelessWidget {
           // 將 NotoSansTC 設為 default font family
           fontFamily: 'NotoSansTC'),
       debugShowCheckedModeBanner: false,
-      // 呼叫 home_page.dart
+      // 呼叫 cover_page.dart
       home: const CoverPage(),
+
+      //home: const Test(),
+      // For debuging
+
       // home: MyHomePage(),
       // home: EventDataTestPage(),
     );
