@@ -1,17 +1,27 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:grouping_project/model/user_model.dart';
 
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis/people/v1.dart';
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 
 //For all service, you need an AuthService instance
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
+  //kIsWeb => Web
+  //Platform.isIos / Platform.isAndroid => IOS ? Android;
+  // Change scopes parameter for different scope
+  final GoogleSignIn _googleSignInWeb = GoogleSignIn(
     clientId:
         '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
+    scopes: <String>['email'],
+  );
+  final GoogleSignIn _googleSignInIos = GoogleSignIn(
+    clientId:
+        '784990691438-q9ni6tteu6336u58fcdlf9opdm6cvtok.apps.googleusercontent.com',
     scopes: <String>['email'],
   );
 
@@ -31,14 +41,6 @@ class AuthService {
     }
   }
 
-  UserModel? _userModelFromGAuth(GoogleSignInAccount? user) {
-    if (user != null) {
-      return UserModel(uid: user.id);
-    } else {
-      return null;
-    }
-  }
-
   String getUid() {
     String cur = _auth.currentUser!.uid;
     return cur;
@@ -46,27 +48,14 @@ class AuthService {
 
 //These 3 func. are for two step Login/SignUp
 //For using it, pass email and password in two step
-  Future<void> setEmail(String email) async {
-    _email = email;
+  Future<void>? setEmail(String? email) {
+    if (email != null) {
+      _email = email;
+    }
   }
 
   Future<void> setPassword(User user, String password) async {
     await user.updatePassword(password);
-  }
-
-  Future<void> sendCode(String code) async {
-    print(_email);
-    final Email email = Email(
-      body:
-          'Hello!\nPlease enter following code for your email login:\n{$code}\nIf you didn’t ask to login, you can ignore this email.\nThanks,\nYour Grouping team',
-      subject: 'Login code for GROUPING!',
-      recipients: [_email],
-      cc: [''],
-      bcc: [''],
-      attachmentPaths: [''],
-      isHTML: false,
-    );
-    await FlutterEmailSender.send(email);
   }
 
 //Login with email & password (with all the information)
@@ -100,10 +89,76 @@ class AuthService {
     }
   }
 
+  Future<UserModel?> thridPartyLogin(String provider) async {
+    switch (provider) {
+      case "apple":
+        //apple login
+        break;
+      case "google":
+        return await googleLogin();
+      case "gitub":
+        //github login
+        break;
+      default:
+    }
+  }
+
 //Google Login
   Future googleLogin() async {
+    bool kisweb;
     try {
-      return _userModelFromGAuth(await _googleSignIn.signIn());
+      if (Platform.isAndroid || Platform.isIOS) {
+        kisweb = false;
+      } else {
+        kisweb = true;
+      }
+    } catch (e) {
+      kisweb = true;
+    }
+    try {
+      if (kisweb) {
+        //var httpClient = (await _googleSignInWeb.authenticatedClient())!;
+        //var peopleApi = PeopleServiceApi(httpClient);
+        //var email = peopleApi.people.get("people/me");
+        await _googleSignInWeb.signInSilently();
+        GoogleSignInAccount? googleUser = await _googleSignInWeb.signIn();
+        if (googleUser == null) {
+          return false;
+        }
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        UserCredential result = await _auth.signInWithCredential(credential);
+        if (result.user!.providerData[0].email != null) {
+          setEmail(result.user!.providerData[0].email);
+        }
+
+        return _userModelFromAuth(result.user);
+      }
+      if (Platform.isIOS) {
+        //var httpClient = (await _googleSignInIos.authenticatedClient())!;
+        //var peopleApi = PeopleServiceApi(httpClient);
+        //var email = peopleApi.people.get("people/me");
+        GoogleSignInAccount? googleUser = await _googleSignInIos.signIn();
+        if (googleUser == null) {
+          return false;
+        }
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        UserCredential result = await _auth.signInWithCredential(credential);
+        if (result.user!.providerData[0].email != null) {
+          setEmail(result.user!.providerData[0].email);
+        }
+
+        return _userModelFromAuth(result.user);
+      }
     } catch (e) {
       print(e);
     }
@@ -111,7 +166,12 @@ class AuthService {
 
 //Google Log out
   Future<void> googleSignOut() async {
-    _googleSignIn.disconnect();
+    if (kIsWeb) {
+      _googleSignInWeb.disconnect();
+    }
+    if (Platform.isIOS) {
+      await _googleSignInIos.disconnect();
+    }
   }
 
 //  Future signInAnon() async {

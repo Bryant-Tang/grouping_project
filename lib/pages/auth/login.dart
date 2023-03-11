@@ -11,16 +11,9 @@ class LoginPage extends StatefulWidget {
   final headLineText = "登入";
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
-    "Apple": {"fileName": "apple.png", "name": "apple", "onPress": () {}},
-    "Google": {
-      "fileName": "google.png",
-      "name": "google",
-      "onPress": () async {
-        AuthService authService = AuthService();
-        await authService.googleLogin();
-      }
-    },
-    "Github": {"fileName": "github.png", "name": "github", "onPress": () {}},
+    "Apple": {"fileName": "apple.png", "name": "apple"},
+    "Google": {"fileName": "google.png", "name": "google"},
+    "Github": {"fileName": "github.png", "name": "github"},
   };
   List<Widget> buttonBuilder() {
     List<Widget> authButtonList = [];
@@ -28,7 +21,11 @@ class LoginPage extends StatefulWidget {
       authButtonList.add(AuthButton(
           fileName: button["fileName"],
           name: button["name"],
-          onPressed: button["onPress"]));
+          onPressed: () async {
+            AuthService authService = AuthService();
+            UserModel? _userModel =
+                await authService.thridPartyLogin(button["name"]);
+          }));
     }
     return authButtonList;
   }
@@ -91,7 +88,7 @@ class _EmailFormState extends State<_EmailForm> {
     super.initState();
     // Start listening to changes.
     textController
-        .addListener(() => print("input box: ${textController.text}"));
+        .addListener(() => debugPrint("input box: ${textController.text}"));
   }
 
   @override
@@ -103,7 +100,6 @@ class _EmailFormState extends State<_EmailForm> {
   String getFirebaseAuthCode() {
     String code = "123456";
     //String code = (Random().nextInt(99999) + 100000).toString();
-    authService.sendCode(code);
     return code;
   }
 
@@ -115,12 +111,12 @@ class _EmailFormState extends State<_EmailForm> {
         inputEmailLogin = true;
         userInputMail = textController.text;
         textController.clear();
-        print("input box: $userInputMail");
+        debugPrint("input box: $userInputMail");
       } else {
         // fix this function
         userInputAuthCode = textController.text;
         String firebaseAuthCode = getFirebaseAuthCode();
-        print(firebaseAuthCode);
+        debugPrint(firebaseAuthCode);
         if (userInputAuthCode == firebaseAuthCode) {
           showDialog<String>(
               context: context,
@@ -157,7 +153,7 @@ class _EmailFormState extends State<_EmailForm> {
                     ],
                   ));
         }
-        // print("input box: ${widget.userInputAuthCode}");
+        // debugPrint("input box: ${widget.userInputAuthCode}");
       }
     });
   }
@@ -321,7 +317,7 @@ class AuthButton extends StatelessWidget {
   final AuthService authService = AuthService();
   final String fileName;
   final String name;
-  final void Function()? onPressed;
+  final void Function() onPressed;
   AuthButton({
     super.key,
     required this.fileName,
@@ -333,7 +329,9 @@ class AuthButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
       child: MaterialButton(
-          onPressed: () {},
+          onPressed: () {
+            onPressed();
+          },
           color: Colors.white,
           shape: const RoundedRectangleBorder(
               side: BorderSide(color: Colors.grey, width: 2),
