@@ -10,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// to upload a EventModel use .set() method
 ///
 /// to get all EventModel of a user/group use EventModel().getAll()
-class EventModel extends DataModel {
+class EventModel extends DataModel<EventModel> {
   String? title;
   DateTime? startTime;
   DateTime? endTime;
@@ -65,8 +65,7 @@ class EventModel extends DataModel {
       notifications: fromFireNotifications,
     );
 
-    ProfileModel ownerProfile = (await DataController()
-        .getAllMethod(dataTypeToGet: ProfileModel()))[0] as ProfileModel;
+    ProfileModel ownerProfile = await ProfileModel().get();
     if (ownerProfile.name != null) {
       processData.ownerName = ownerProfile.name as String;
     }
@@ -98,23 +97,5 @@ class EventModel extends DataModel {
       if (tags != null) "tags": tags,
       if (notifications != null) "notifications": toFireNotifications,
     };
-  }
-
-  /// if it is a group event, remember to pass group id
-  /// 
-  /// remember to add await
-  @override
-  Future<void> set({String? groupId}) async {
-    await DataController(groupId: groupId).setMethod(processData: this);
-  }
-
-  /// if it is a group event, remember to pass group id
-  /// 
-  /// remember to add await
-  @override
-  Future<List<EventModel>> getAll({String? groupId}) async {
-    List<EventModel> processData = await DataController(groupId: groupId)
-        .getAllMethod(dataTypeToGet: this) as dynamic;
-    return processData;
   }
 }

@@ -15,7 +15,7 @@ enum MissionState { upComing, inProgress, finish }
 /// to upload a MissionModel use .set() method
 ///
 /// to get all MissionModel of a user/group use MissionModel().getAll()
-class MissionModel extends DataModel {
+class MissionModel extends DataModel<MissionModel> {
   String? title;
   DateTime? startTime;
   DateTime? endTime;
@@ -119,8 +119,7 @@ class MissionModel extends DataModel {
       notifications: fromFireNotifications,
     );
 
-    ProfileModel ownerProfile = (await DataController()
-        .getAllMethod(dataTypeToGet: ProfileModel()))[0] as ProfileModel;
+    ProfileModel ownerProfile = await ProfileModel().get();
     if (ownerProfile.name != null) {
       processData.ownerName = ownerProfile.name as String;
     }
@@ -153,23 +152,5 @@ class MissionModel extends DataModel {
       if (tags != null) "tags": tags,
       if (notifications != null) "notifications": toFireNotifications,
     };
-  }
-
-  /// if it is a group mission, remember to pass group id
-  /// 
-  /// remember to add await
-  @override
-  Future<void> set({String? groupId}) async {
-    await DataController(groupId: groupId).setMethod(processData: this);
-  }
-
-  /// if it is a group mission, remember to pass group id
-  /// 
-  /// remember to add await
-  @override
-  Future<List<MissionModel>> getAll({String? groupId}) async {
-    List<MissionModel> processData = await DataController(groupId: groupId)
-        .getAllMethod(dataTypeToGet: this) as dynamic;
-    return processData;
   }
 }

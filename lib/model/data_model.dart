@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// !! NOTICE !!
 /// this is a super class of every data in database,
 /// can only use as POLYMORPHISM
-abstract class DataModel {
+abstract class DataModel<T extends DataModel<T>> {
   final String id;
   String typeForPath = 'unknown_data_type_should_not_appear';
 
@@ -16,7 +16,7 @@ abstract class DataModel {
 
   /// !! NOTICE !!
   /// every subclass should override this method
-  Future<DataModel> fromFirestore(
+  Future<T> fromFirestore(
     QueryDocumentSnapshot<Map<String, dynamic>> snapshot,
     SnapshotOptions? options,
   );
@@ -25,9 +25,21 @@ abstract class DataModel {
   /// every subclass should override this method
   Map<String, dynamic> toFirestore();
 
-  Future<void> set({String? groupId});
+  /// if it is a group data, remember to pass group id
+  ///
+  /// remember to add await
+  Future<void> set({String? groupId}) async {
+    await DataController(groupId: groupId).setMethod(processData: this);
+  }
 
-  Future getAll({String? groupId});
+  /// if it is a group data, remember to pass group id
+  ///
+  /// remember to add await
+  Future<List<T>> getAll({String? groupId}) async {
+    List<T> processData = await DataController(groupId: groupId)
+        .getAllMethod<T>(dataTypeToGet: this as T);
+    return processData;
+  }
 }
 
 /// to get any data from database, you need a DataController
@@ -80,21 +92,21 @@ class DataController {
   /// if you want to get ProfileModel, theoretically,
   /// this method will only return one ProfileModel in the list,
   /// unless the uploader done something wrong.
-  Future<List<DataModel>> getAllMethod(
-      {required DataModel dataTypeToGet}) async {
+  Future<List<T>> getAllMethod<T extends DataModel<T>>(
+      {required T dataTypeToGet}) async {
     CollectionReference dataPath =
         ownerPath.collection(dataTypeToGet.typeForPath);
 
-    List<DataModel> processData = [];
+    List<T> processData = [];
     for (var dataSnap in (await dataPath.get()).docs) {
-      DataModel temp = await dataTypeToGet.fromFirestore(
+      T temp = await dataTypeToGet.fromFirestore(
           dataSnap as QueryDocumentSnapshot<Map<String, dynamic>>, null);
       processData.add(temp);
     }
     if (userId != null) {
       for (var groupSnap in (await ownerPath.collection('groups').get()).docs) {
         processData.addAll(await DataController(groupId: groupSnap.id)
-            .getAllMethod(dataTypeToGet: dataTypeToGet));
+            .getAllMethod<T>(dataTypeToGet: dataTypeToGet));
       }
     }
 

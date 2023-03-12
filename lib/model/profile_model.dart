@@ -17,7 +17,7 @@ class ProfileTag {
 /// to upload a ProfileModel use .set() method
 ///
 /// to get a ProfileModel use .getAll() method
-class ProfileModel extends DataModel {
+class ProfileModel extends DataModel<ProfileModel> {
   String? name;
   String? email;
   int? color;
@@ -98,10 +98,9 @@ class ProfileModel extends DataModel {
   /// if it is a group profile, remember to pass group id
   /// 
   /// remember to add await
-  @override
-  Future<ProfileModel> getAll({String? groupId}) async {
+  Future<ProfileModel> get({String? groupId}) async {
     ProfileModel processData = (await DataController(groupId: groupId)
-        .getAllMethod(dataTypeToGet: this))[0] as dynamic;
+        .getAllMethod<ProfileModel>(dataTypeToGet: this))[0];
     return processData;
   }
 }
