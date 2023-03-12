@@ -1,9 +1,20 @@
-import 'package:grouping_project/model_lib.dart';
+import 'data_model.dart';
+import 'profile_model.dart';
+import 'user_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// to create a MissionState use such like this
+///
+/// MissionState state = MissionState.upComing;
 enum MissionState { upComing, inProgress, finish }
 
+/// to create a MissionModel use MissionModel()
+/// and pass all things you want to add
+///
+/// to upload a MissionModel use .set() method
+///
+/// to get all MissionModel of a user/group use MissionModel().getAll()
 class MissionModel extends DataModel {
   String? title;
   DateTime? startTime;
@@ -14,7 +25,7 @@ class MissionModel extends DataModel {
   List<String>? tags;
   List<DateTime>? notifications;
   String ownerName = 'unknown';
-  String color = '0xFFFCBF49';
+  int color = 0xFFFCBF49;
 
   MissionModel(
       {super.id = '',
@@ -114,7 +125,7 @@ class MissionModel extends DataModel {
       processData.ownerName = ownerProfile.name as String;
     }
     if (ownerProfile.color != null) {
-      processData.ownerName = ownerProfile.color as String;
+      processData.color = ownerProfile.color as int;
     }
 
     return processData;
@@ -144,11 +155,17 @@ class MissionModel extends DataModel {
     };
   }
 
+  /// if it is a group mission, remember to pass group id
+  /// 
+  /// remember to add await
   @override
   Future<void> set({String? groupId}) async {
     await DataController(groupId: groupId).setMethod(processData: this);
   }
 
+  /// if it is a group mission, remember to pass group id
+  /// 
+  /// remember to add await
   @override
   Future<List<MissionModel>> getAll({String? groupId}) async {
     List<MissionModel> processData = await DataController(groupId: groupId)

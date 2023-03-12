@@ -1,7 +1,15 @@
-import 'package:grouping_project/model_lib.dart';
+import 'data_model.dart';
+import 'profile_model.dart';
+import 'user_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// to create a EventModel use EventModel()
+/// and pass all things you want to add
+///
+/// to upload a EventModel use .set() method
+///
+/// to get all EventModel of a user/group use EventModel().getAll()
 class EventModel extends DataModel {
   String? title;
   DateTime? startTime;
@@ -11,7 +19,7 @@ class EventModel extends DataModel {
   List<String>? tags;
   List<DateTime>? notifications;
   String ownerName = 'unknown';
-  String color = '0xFFFCBF49';
+  int color = 0xFFFCBF49;
 
   EventModel(
       {super.id = '',
@@ -63,7 +71,7 @@ class EventModel extends DataModel {
       processData.ownerName = ownerProfile.name as String;
     }
     if (ownerProfile.color != null) {
-      processData.ownerName = ownerProfile.color as String;
+      processData.color = ownerProfile.color as int;
     }
 
     return processData;
@@ -92,11 +100,17 @@ class EventModel extends DataModel {
     };
   }
 
+  /// if it is a group event, remember to pass group id
+  /// 
+  /// remember to add await
   @override
   Future<void> set({String? groupId}) async {
     await DataController(groupId: groupId).setMethod(processData: this);
   }
 
+  /// if it is a group event, remember to pass group id
+  /// 
+  /// remember to add await
   @override
   Future<List<EventModel>> getAll({String? groupId}) async {
     List<EventModel> processData = await DataController(groupId: groupId)
