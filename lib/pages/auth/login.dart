@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:grouping_project/components/headline_with_content.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
@@ -12,23 +10,9 @@ class LoginPage extends StatefulWidget {
   final headLineText = "登入";
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
-<<<<<<< HEAD
-    "Apple": {"fileName": "apple.png", "name": "apple", "onPress": () {}},
-    "Google": {
-      "fileName": "google.png",
-      "name": "google",
-      "onPress": () async {
-        // debugPrint("press");
-        AuthService authService = AuthService();
-        await authService.googleLogin();
-      }
-    },
-    "Github": {"fileName": "github.png", "name": "github", "onPress": () {}},
-=======
     "Apple": {"fileName": "apple.png", "name": "apple"},
     "Google": {"fileName": "google.png", "name": "google"},
     "Github": {"fileName": "github.png", "name": "github"},
->>>>>>> 3eed154496c710e58eda1bd15f11d3e0fd5a4a04
   };
   List<Widget> buttonBuilder() {
     List<Widget> authButtonList = [];

@@ -3,7 +3,7 @@ import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/services.dart';
-
+import 'package:grouping_project/model_lib.dart';
 import 'package:flutter/material.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -210,13 +210,17 @@ class _SignUpPageFive extends StatelessWidget {
         },
         goToNextButtonHandler: () async {
           final AuthService authService = AuthService();
-          final UserModel userModel =
-              await authService.emailSignUp(email, email);
-          await setProfileForPerson(
-              newProfile: UserProfile(
-                  email: email, userName: userName, userId: userModel.uid),
-              userId: userModel.uid);
+          //final UserModel userModel =
+          await authService.emailSignUp(email, email);
+          // await setProfileForPerson(
+          //     newProfile: UserProfile(
+          //         email: email, userName: userName, userId: userModel.uid),
+          //     userId: userModel.uid);
           // print('註冊信箱： $email\n使用者名稱$userName');
+          ProfileModel profile =
+              ProfileModel(name: userName, email: email, color: "0xFFFCBF49");
+          await profile.set();
+
           if (context.mounted) {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const MyHomePage()));
