@@ -1,10 +1,9 @@
-import 'package:grouping_project/components/headline_with_content.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
-import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
-
+// import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:grouping_project/components/component_lib.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -36,9 +35,6 @@ class LoginPage extends StatefulWidget {
 
 class _LogInState extends State<LoginPage> {
   final AuthService authService = AuthService();
-
-  final String _error = '';
-  final String _email = '';
 
   @override
   Widget build(BuildContext context) {
@@ -76,240 +72,64 @@ class _EmailForm extends StatefulWidget {
 }
 
 class _EmailFormState extends State<_EmailForm> {
-  final textController = TextEditingController();
   final AuthService authService = AuthService();
-  bool inputEmailLogin = false;
-  String userInputMail = "";
-  String userInputAuthCode = "";
-  List<String> userAccounts = [];
-
-  @override
-  void initState() {
-    super.initState();
-    // Start listening to changes.
-    textController
-        .addListener(() => debugPrint("input box: ${textController.text}"));
-  }
-
-  @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
-  }
-
-  String getFirebaseAuthCode() {
-    String code = "123456";
-    //String code = (Random().nextInt(99999) + 100000).toString();
-    return code;
-  }
-
-  void _onSubmit() async {
-    final UserModel? userModel =
-        await authService.emailLogIn(userInputMail, userInputMail);
+  final emailInputBox = GroupingInputField(
+      labelText: "Email", boxIcon: Icons.mail, boxColor: Colors.grey);
+  final passwordInputBox = GroupingInputField(
+      labelText: "password", boxIcon: Icons.password, boxColor: Colors.grey);
+  String userInputEmail = "";
+  String userInputPassword = "";
+  UserModel? user;
+  void updateState() async {
     setState(() {
-      if (inputEmailLogin == false) {
-        inputEmailLogin = true;
-        userInputMail = textController.text;
-        textController.clear();
-        debugPrint("input box: $userInputMail");
-      } else {
-        // fix this function
-        userInputAuthCode = textController.text;
-        String firebaseAuthCode = getFirebaseAuthCode();
-        debugPrint(firebaseAuthCode);
-        if (userInputAuthCode == firebaseAuthCode) {
-          showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                    title: const Text('認證成功'),
-                    content: Text('使用$userInputMail進行登入'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ));
-          if (userModel != null) {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const MyHomePage()));
-          } else {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => SignUpPage(email: userInputMail)));
-          }
-        } else {
-          showDialog<String>(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                    title: const Text('認證失敗'),
-                    content: const Text('驗證碼不匹配'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, 'OK'),
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ));
-        }
-        // debugPrint("input box: ${widget.userInputAuthCode}");
-      }
+      debugPrint("登入測試");
+      userInputEmail = emailInputBox.inputText;
+      userInputPassword = passwordInputBox.inputText;
+      debugPrint("Email: $userInputEmail , Password: $userInputPassword");
     });
+    user = await authService.emailLogIn(userInputEmail, userInputPassword);
   }
 
-  void dialog() {
-    showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: const Text('帳號登入'),
-              content: Text('使用${textController.text}進行登入嗎'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'Cancel'),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, 'OK');
-                    setState(() {
-                      authService.setEmail(textController.text);
-                    });
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            ));
+  void _onSubmit() {
+    updateState();
+    // debugPrint(user.runtimeType.toString());
+    if (user != null) {
+      debugPrint("Login Successfully");
+    } else {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => SignUpPage(
+                email: userInputEmail,
+                  )));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (inputEmailLogin == false) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: TextField(
-                controller: textController,
-                decoration: InputDecoration(
-                    // isDense 為必要, contentPadding 越大，則 textfield 越大
-                    contentPadding: const EdgeInsets.all(15),
-                    isDense: true,
-                    border: const OutlineInputBorder(
-                        gapPadding: 1.0,
-                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const Icon(
-                          Icons.mail,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "電子郵件 GMAIL",
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontFamily: "NotoSansTC",
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        )
-                      ],
-                    ))),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: MaterialButton(
-              onPressed: _onSubmit,
-              shape: const RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.amber, width: 2),
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
-              child: const Text(
-                "Continue with email",
-                style: TextStyle(
-                    color: Colors.amber,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          )
-        ],
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: Text(
-              "Welcome $userInputMail",
-              style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        emailInputBox,
+        passwordInputBox,
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+          child: MaterialButton(
+            onPressed: _onSubmit,
+            shape: const RoundedRectangleBorder(
+                side: BorderSide(color: Colors.amber, width: 2),
+                borderRadius: BorderRadius.all(Radius.circular(20))),
+            child: const Text(
+              "Continue with email",
+              style: TextStyle(
+                  color: Colors.amber,
+                  fontSize: 14,
                   fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: TextField(
-                controller: textController,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(
-                        gapPadding: 1.0,
-                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const Icon(Icons.password, color: Colors.grey),
-                        const SizedBox(width: 10),
-                        Text(
-                          "驗證碼 auth token",
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontFamily: "NotoSansTC",
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
-                          ),
-                        )
-                      ],
-                    ))),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: Text(
-              "已經寄送驗證碼到信箱 $userInputMail",
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.blueGrey,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: MaterialButton(
-              onPressed: _onSubmit,
-              shape: const RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.amber, width: 2),
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
-              child: const Text(
-                "確認驗證碼",
-                style: TextStyle(
-                    color: Colors.amber,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          )
-        ],
-      );
-    }
+        )
+      ],
+    );
   }
 }
 
@@ -358,6 +178,7 @@ class AuthButton extends StatelessWidget {
     );
   }
 }
+
 
 class HintTextWithLine extends StatelessWidget {
   const HintTextWithLine({super.key});
