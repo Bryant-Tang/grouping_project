@@ -4,6 +4,7 @@ import 'package:grouping_project/model_lib.dart';
 // import 'package:grouping_project/service/event_service.dart';
 // import 'package:grouping_project/service/profile_service.dart';
 
+
 Map monthDigitToLetter = <int, String>{
   1: "JAN",
   2: "FEB",
@@ -129,7 +130,7 @@ class EventInformationEnlarge extends StatelessWidget{
     String date2 =
         '${intFixed(endTime.hour >= 12 ? endTime.hour - 12 : endTime.hour, 2)}:${intFixed(endTime.minute, 2)} ${endTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[endTime.month]} ${endTime.day}, ${endTime.year}';
 
-    List<UserProfile> emptyTest = [];
+    // List<UserProfile> emptyTest = [];
 
     return Container(
       width: MediaQuery.of(context).size.width - 30,
@@ -172,7 +173,7 @@ class EventInformationEnlarge extends StatelessWidget{
             ],
           ),
 
-          Contributors(contributors: emptyTest),
+          // Contributors(contributors: emptyTest),
 
           Text('敘述', style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 121, 121, 121)),),
           const Divider(),

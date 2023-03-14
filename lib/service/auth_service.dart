@@ -68,7 +68,7 @@ class AuthService {
 
       return _userModelFromAuth(user);
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       return null;
     }
   }
