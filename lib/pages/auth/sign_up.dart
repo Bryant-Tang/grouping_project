@@ -218,7 +218,7 @@ class _SignUpPageFive extends StatelessWidget {
           //     userId: userModel.uid);
           // print('註冊信箱： $email\n使用者名稱$userName');
           ProfileModel profile =
-              ProfileModel(name: userName, email: email, color: "0xFFFCBF49");
+              ProfileModel(name: userName, email: email, color: 0xFFFCBF49);
           await profile.set();
 
           if (context.mounted) {

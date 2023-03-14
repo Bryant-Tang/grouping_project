@@ -1,6 +1,5 @@
 //import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/service/event_service.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/card_view/card_view_template.dart';
 
