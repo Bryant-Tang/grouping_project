@@ -1,15 +1,31 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:grouping_project/components/grouping_logo.dart';
 import 'package:grouping_project/pages/auth/login.dart';
-import 'package:grouping_project/pages/auth/sign_up.dart';
 
-class CoverPage extends StatelessWidget {
+import 'package:flutter/material.dart';
+
+class CoverPage extends StatefulWidget {
   const CoverPage({super.key});
+
+  @override
+  State<CoverPage> createState() => _CoverPageState();
+}
+
+class _CoverPageState extends State<CoverPage> {
+  // _onLogin() {
+  //   Navigator.pushReplacement(
+  //       context, MaterialPageRoute(builder: (context) => LoginPage()));
+  // }
+
+  // _onSignUp() {
+  //   Navigator.pushReplacement(
+  //       context, MaterialPageRoute(builder: (context) => const SignUp()));
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints.expand(),
+      width: double.infinity,
+      height: double.infinity,
       decoration: BoxDecoration(
           color: Colors.white,
           image: DecorationImage(
@@ -20,74 +36,76 @@ class CoverPage extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(width: 10, height: 315),
-          SvgPicture.asset(
-            "assets/images/logo.svg",
-            semanticsLabel: 'Acme Logo',
-          ),
+          const GroupingLogo(),
           const SizedBox(width: 10, height: 210),
-          Column(
-            children: [
-              PhysicalModel(
-                color: Colors.black12.withOpacity(0.0),
-                shadowColor: Colors.grey.withOpacity(0.4),
-                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                elevation: 8.0,
-                child: MaterialButton(
-                  color: Colors.amber,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => new LogIn()));
-                  },
-                  child: const Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 40.0, vertical: 5.0),
-                    child: Text(
-                      "已經有帳號了 Login",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: "NotoSansTC",
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              PhysicalModel(
-                color: Colors.black12.withOpacity(0.0),
-                shadowColor: Colors.grey.withOpacity(0.4),
-                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                elevation: 8.0,
-                child: MaterialButton(
-                  color: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                    //side: BorderSide(width: 1, color: Color(0xFF979797),),
-                  ),
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => new SignUp()));
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40.0, vertical: 5.0),
-                    child: Text(
-                      "還沒有帳號 Sign Up",
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontFamily: "NotoSansTC",
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 60),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FlowButton(
+                    buttonText: "登入 LOGIN",
+                    onPressed: () {
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => LoginPage()));
+                    }),
+                // FlowButton(
+                //     buttonText: "註冊 SIGNUP",
+                //     backgroundColor: Colors.white,
+                //     textColor: Colors.grey[600],
+                //     onPressed: () {
+                //       Navigator.pushReplacement(
+                //           context,
+                //           MaterialPageRoute(
+                //               builder: (context) => const SignUpPage()));
+                //     }),
+              ],
+            ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class FlowButton extends StatelessWidget {
+  final String buttonText;
+  final Color? textColor;
+  final Color? backgroundColor;
+  final void Function()? onPressed;
+  const FlowButton(
+      {super.key,
+      required this.onPressed,
+      this.buttonText = "button",
+      this.textColor = Colors.white,
+      this.backgroundColor = Colors.amber});
+
+  @override
+  Widget build(BuildContext context) {
+    return PhysicalModel(
+      color: Colors.black12.withOpacity(0.0),
+      shadowColor: Colors.grey.withOpacity(0.4),
+      borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+      elevation: 8.0,
+      child: MaterialButton(
+        color: backgroundColor,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        onPressed: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Text(
+            buttonText,
+            style: TextStyle(
+              color: textColor,
+              fontFamily: "NotoSansTC",
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+        ),
       ),
     );
   }
