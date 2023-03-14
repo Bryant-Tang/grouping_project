@@ -160,12 +160,14 @@ List<Widget> differentFunctionPage = [
       //     descript: '領航員 vs 富邦勇士',
       //     date1: '9:00 PM, FEB 2, 2023',
       //     date2: '11:00 PM, FEB 2, 2023'),
-      UpcomingPage()
+      //UpcomingPage()
+      const Placeholder()
     ],
   )),
   Expanded(
       child: ListView(
-    children: const [TrackedPage()],
+    // children: const [TrackedPage()],
+    children: [const Placeholder()],
   )),
   Expanded(
       child: ListView(

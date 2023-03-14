@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/headline_with_content.dart';
-import 'package:grouping_project/components/navigation_toggle_bar.dart';
+import 'package:grouping_project/components/auth_view/headline_with_content.dart';
+import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart';
 
 class SignUpPageTemplate extends StatefulWidget {
   final HeadlineWithContent titleWithContent;

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view.dart';
-import 'package:grouping_project/service/event_service.dart';
 import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/service/profile_service.dart';
 
 class AntiLabel extends StatelessWidget {
   /// 標籤反白的 group
@@ -24,7 +22,7 @@ class AntiLabel extends StatelessWidget {
 }
 
 class Contributors extends StatelessWidget{
-  /// 參與的所有使用者
+  //參與的所有使用者
   
   const Contributors({super.key, required this.contributors});
   final List<UserProfile> contributors;
