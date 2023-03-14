@@ -1,3 +1,4 @@
+
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model_lib.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
@@ -260,6 +261,7 @@ class _SignUpFinishPage extends StatelessWidget {
           //         email: email, userName: userName, userId: userModel.uid),
           //     userId: userModel.uid);
           debugPrint('註冊信箱： $email\n使用者名稱$userName');
+
           if (context.mounted) {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const MyHomePage()));

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:grouping_project/service/event_service.dart';
 
 Map monthDigitToLetter = <int, String>{
   1: "JAN",
