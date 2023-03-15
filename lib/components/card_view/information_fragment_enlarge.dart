@@ -22,7 +22,7 @@ class AntiLabel extends StatelessWidget {
 }
 
 class Contributors extends StatelessWidget{
-  /// 參與的所有使用者
+  //參與的所有使用者
   
   const Contributors({super.key, required this.contributors});
   final List<UserModel> contributors;

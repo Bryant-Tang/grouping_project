@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/information_fragment_enlarge.dart';
 import 'package:grouping_project/model/event_model.dart';
 import 'package:grouping_project/model/user_model.dart';
+import 'package:grouping_project/model_lib.dart';
+
 
 Map monthDigitToLetter = <int, String>{
   1: "JAN",

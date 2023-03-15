@@ -3,12 +3,20 @@ import 'data_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+/// to create a ProfileTag use ProfileTag()
+/// and pass all things you want to add
 class ProfileTag {
   String tag;
   String content;
   ProfileTag({required this.tag, required this.content});
 }
 
+/// to create a ProfileModel use ProfileModel()
+/// and pass all things you want to add
+///
+/// to upload a ProfileModel use .set() method
+///
+/// to get a ProfileModel use .getAll() method
 class ProfileModel extends DataModel {
   String? name;
   String? email;
@@ -79,11 +87,17 @@ class ProfileModel extends DataModel {
     };
   }
 
+  /// if it is a group profile, remember to pass group id
+  /// 
+  /// remember to add await
   @override
   Future<void> set({String? groupId}) async {
     await DataController(groupId: groupId).setMethod(processData: this);
   }
 
+  /// if it is a group profile, remember to pass group id
+  /// 
+  /// remember to add await
   @override
   Future<ProfileModel> getAll({String? groupId}) async {
     ProfileModel processData = (await DataController(groupId: groupId)

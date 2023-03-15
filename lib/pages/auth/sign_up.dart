@@ -1,11 +1,9 @@
-import 'package:grouping_project/components/grouping_logo.dart';
-import 'package:grouping_project/components/headline_with_content.dart';
-import 'package:grouping_project/components/navigation_toggle_bar.dart';
-import 'package:grouping_project/model/user_model.dart';
+
+import 'package:grouping_project/components/component_lib.dart';
+import 'package:grouping_project/model_lib.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
-
 import 'package:flutter/material.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -18,13 +16,13 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
-    return _SignUpPageOne(email: widget.email);
+    return _SignUpHomePage(email: widget.email);
   }
 }
 
-class _SignUpPageOne extends StatelessWidget {
+class _SignUpHomePage extends StatelessWidget {
   final String email;
-  const _SignUpPageOne({required this.email});
+  const _SignUpHomePage({required this.email});
   final headLineText = "歡迎加入 Grouping";
   final content = "此信箱還未被註冊過\n用此信箱註冊一個新的帳號？\n選擇其他帳號登入?";
   @override
@@ -43,7 +41,7 @@ class _SignUpPageOne extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => _SignUpPageTwo(
+                  builder: (context) => _UserNameRegisterPage(
                         email: email,
                       )));
         },
@@ -52,67 +50,29 @@ class _SignUpPageOne extends StatelessWidget {
   }
 }
 
-class _SignUpPageTwo extends StatefulWidget {
+class _UserNameRegisterPage extends StatefulWidget {
   final String email;
-  const _SignUpPageTwo({required this.email});
+  const _UserNameRegisterPage({required this.email});
 
   @override
-  State<_SignUpPageTwo> createState() => _SignUpPageTwoState();
+  State<_UserNameRegisterPage> createState() => _UserNameRegisterPageState();
 }
 
-class _SignUpPageTwoState extends State<_SignUpPageTwo> {
+class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
   final headLineText = "使用者名稱";
   final content = "請輸入此帳號的使用者名稱";
-  final textController = TextEditingController();
-  @override
-  void initState() {
-    super.initState();
-    // Start listening to changes.
-    textController
-        .addListener(() => print("input box: ${textController.text}"));
-  }
-
-  @override
-  void dispose() {
-    textController.dispose();
-    super.dispose();
-  }
+  final inputBox = GroupingInputField(
+    labelText: "USERNAME 使用者名稱",
+    boxIcon: Icons.people,
+    boxColor: Colors.grey,
+  );
 
   @override
   Widget build(BuildContext context) {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-        child: TextField(
-            controller: textController,
-            decoration: InputDecoration(
-                border: const OutlineInputBorder(
-                    gapPadding: 1.0,
-                    borderRadius: BorderRadius.all(Radius.circular(30))),
-                label: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const Icon(
-                      Icons.person,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "USERNAME /  使用者名稱",
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontFamily: "NotoSansTC",
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    )
-                  ],
-                ))),
-      ),
+      body: inputBox,
       toggleBar: NavigationToggleBar(
         goBackButtonText: "上一步",
         goToNextButtonText: "下一步",
@@ -124,78 +84,161 @@ class _SignUpPageTwoState extends State<_SignUpPageTwo> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => _SignUpPageThree(
-                      email: widget.email, userName: textController.text)));
+                  builder: (context) => _UserPasswordRegisterPage(
+                      email: widget.email, userName: inputBox.inputText)));
         },
       ),
     );
   }
 }
 
-class _SignUpPageThree extends StatelessWidget {
+class _UserPasswordRegisterPage extends StatefulWidget {
   final String email;
   final String userName;
-  const _SignUpPageThree({required this.email, required this.userName});
-  final headLineText = "名片資訊設定";
-  final content = "Grouping 提供精美的名片功能，讓你的小組員能更快認識你，了解你。";
+  const _UserPasswordRegisterPage(
+      {required this.email, required this.userName});
+
+  @override
+  State<_UserPasswordRegisterPage> createState() =>
+      _UserPasswordRegisterPageState();
+}
+
+class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
+  final headLineText = "使用者密碼";
+  final content = "請輸入此帳號的使用者密碼";
+  final password1 = GroupingInputField(
+    labelText: "PASSWORD 使用者密碼",
+    boxIcon: Icons.password,
+    boxColor: Colors.grey,
+  );
+  final password2 = GroupingInputField(
+    labelText: "再次輸入密碼",
+    boxIcon: Icons.password,
+    boxColor: Colors.grey,
+  );
+  void dialog() {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: const Text('兩次輸入不相符'),
+              content: const Text('請確認兩次輸入的密碼是否相同'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('關閉'),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: const Placeholder(),
-      toggleBar: NavigationToggleBar(
-        goBackButtonText: "稍後設定",
-        goToNextButtonText: "設定名片",
-        goBackButtonHandler: () {
-          Navigator.pop(context);
-        },
-        goToNextButtonHandler: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      _SignUpPageFour(email: email, userName: userName)));
-        },
+      body: Column(
+        children: <Widget>[
+          password1,
+          const SizedBox(
+            height: 25,
+          ),
+          password2,
+        ],
       ),
+      toggleBar: NavigationToggleBar(
+          goBackButtonText: "上一步",
+          goToNextButtonText: "下一步",
+          goBackButtonHandler: () {
+            Navigator.pop(context);
+          },
+          goToNextButtonHandler: () {
+            String passwordText = password1.inputText;
+            String passwordConfirmText = password2.inputText;
+            if (passwordText == passwordConfirmText) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => _SignUpFinishPage(
+                          email: widget.email,
+                          userName: widget.userName,
+                          password: passwordText)));
+            } else {
+              debugPrint("password does not match");
+              dialog();
+            }
+          }),
     );
   }
 }
 
-class _SignUpPageFour extends StatelessWidget {
-  final String email;
-  final String userName;
-  const _SignUpPageFour({required this.email, required this.userName});
-  final headLineText = "創建新的小組";
-  final content = "已經有要加入的Group了嗎，透過連結加入小組，或是設立新的Group";
-  @override
-  Widget build(BuildContext context) {
-    return SignUpPageTemplate(
-      titleWithContent:
-          HeadlineWithContent(headLineText: headLineText, content: content),
-      body: const Placeholder(),
-      toggleBar: NavigationToggleBar(
-        goBackButtonText: "稍後設定",
-        goToNextButtonText: "創建我的小組",
-        goBackButtonHandler: () {
-          Navigator.pop(context);
-        },
-        goToNextButtonHandler: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      _SignUpPageFive(email: email, userName: userName)));
-        },
-      ),
-    );
-  }
-}
+// class _SignUpPageThree extends StatelessWidget {
+//   final String email;
+//   final String userName;
+//   const _SignUpPageThree({required this.email, required this.userName});
+//   final headLineText = "名片資訊設定";
+//   final content = "Grouping 提供精美的名片功能，讓你的小組員能更快認識你，了解你。";
+//   @override
+//   Widget build(BuildContext context) {
+//     return SignUpPageTemplate(
+//       titleWithContent:
+//           HeadlineWithContent(headLineText: headLineText, content: content),
+//       body: const Placeholder(),
+//       toggleBar: NavigationToggleBar(
+//         goBackButtonText: "稍後設定",
+//         goToNextButtonText: "設定名片",
+//         goBackButtonHandler: () {
+//           Navigator.pop(context);
+//         },
+//         goToNextButtonHandler: () {
+//           Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                   builder: (context) =>
+//                       _SignUpPageFour(email: email, userName: userName)));
+//         },
+//       ),
+//     );
+//   }
+// }
 
-class _SignUpPageFive extends StatelessWidget {
+// class _SignUpPageFour extends StatelessWidget {
+//   final String email;
+//   final String userName;
+//   const _SignUpPageFour({required this.email, required this.userName,});
+//   final headLineText = "創建新的小組";
+//   final content = "已經有要加入的Group了嗎，透過連結加入小組，或是設立新的Group";
+//   @override
+//   Widget build(BuildContext context) {
+//     return SignUpPageTemplate(
+//       titleWithContent:
+//           HeadlineWithContent(headLineText: headLineText, content: content),
+//       body: const Placeholder(),
+//       toggleBar: NavigationToggleBar(
+//         goBackButtonText: "稍後設定",
+//         goToNextButtonText: "創建我的小組",
+//         goBackButtonHandler: () {
+//           Navigator.pop(context);
+//         },
+//         goToNextButtonHandler: () {
+//           Navigator.push(
+//               context,
+//               MaterialPageRoute(
+//                   builder: (context) =>
+//                       _SignUpPageFive(email: email, userName: userName)));
+//         },
+//       ),
+//     );
+//   }
+// }
+
+class _SignUpFinishPage extends StatelessWidget {
   final String email;
   final String userName;
-  const _SignUpPageFive({required this.email, required this.userName});
+  final String password;
+  const _SignUpFinishPage(
+      {required this.email, required this.userName, required this.password});
   final headLineText = "帳號創建完成!";
   final content = "歡迎加入 Grouping 一起與夥伴創造冒險吧";
   @override
@@ -212,13 +255,13 @@ class _SignUpPageFive extends StatelessWidget {
         },
         goToNextButtonHandler: () async {
           final AuthService authService = AuthService();
-          final UserModel userModel =
-              await authService.emailSignUp(email, email);
+          final UserModel user = await authService.emailSignUp(email, password);
           // await setProfileForPerson(
           //     newProfile: UserProfile(
           //         email: email, userName: userName, userId: userModel.uid),
           //     userId: userModel.uid);
-          // print('註冊信箱： $email\n使用者名稱$userName');
+          debugPrint('註冊信箱： $email\n使用者名稱$userName');
+
           if (context.mounted) {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const MyHomePage()));
