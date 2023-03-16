@@ -22,7 +22,7 @@ class EventModel extends DataModel<EventModel> {
   int color = 0xFFFCBF49;
 
   EventModel(
-      {super.id = '',
+      {super.id,
       this.title,
       this.startTime,
       this.endTime,

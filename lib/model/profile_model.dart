@@ -13,10 +13,6 @@ class ProfileTag {
 
 /// to create a ProfileModel use ProfileModel()
 /// and pass all things you want to add
-///
-/// to upload a ProfileModel use .set() method
-///
-/// to get a ProfileModel use .getAll() method
 class ProfileModel extends DataModel<ProfileModel> {
   String? name;
   String? email;
@@ -36,7 +32,7 @@ class ProfileModel extends DataModel<ProfileModel> {
       this.introduction,
       this.tags,
       this.photo})
-      : super(id: '') {
+      : super(id: 'profile') {
     super.databasePath = 'profile';
   }
 

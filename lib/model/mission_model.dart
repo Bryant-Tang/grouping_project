@@ -28,7 +28,7 @@ class MissionModel extends DataModel<MissionModel> {
   int color = 0xFFFCBF49;
 
   MissionModel(
-      {super.id = '',
+      {super.id,
       this.title,
       this.startTime,
       this.endTime,

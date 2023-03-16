@@ -2,7 +2,7 @@
 /// this is a super class of every data in database,
 /// can only use as POLYMORPHISM
 abstract class DataModel<T extends DataModel<T>> {
-  final String id;
+  final String? id;
   String databasePath = 'unknown';
   bool firestoreRequired = false;
   bool storageRequired = false;
