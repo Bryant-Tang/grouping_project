@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/information_fragment_enlarge.dart';
-import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/model_lib.dart';
 // import 'package:grouping_project/service/event_service.dart';
 // import 'package:grouping_project/service/profile_service.dart';
+
 
 Map monthDigitToLetter = <int, String>{
   1: "JAN",
@@ -101,20 +102,19 @@ class EventInformationShrink extends StatelessWidget {
   }
 }
 
-class EventInformationEnlarge extends StatelessWidget {
+class EventInformationEnlarge extends StatelessWidget{
   /// (未完成!!)
   /// 這個 class 實現了 event 放大時要展現的資訊
   /// 藉由創建時得到的資料來回傳一個 Container 回去
   /// ps. 需與 cardViewTemplate 一起使用
-  const EventInformationEnlarge({
-    super.key,
-    required this.group,
-    required this.title,
-    required this.descript,
-    required this.startTime,
-    required this.endTime,
-  });
-
+  const EventInformationEnlarge(
+      {super.key,
+      required this.group,
+      required this.title,
+      required this.descript,
+      required this.startTime,
+      required this.endTime,});
+  
   final String group;
   final String title;
   final String descript;
@@ -124,7 +124,7 @@ class EventInformationEnlarge extends StatelessWidget {
   //Color usingColor;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     String date1 =
         '${intFixed(startTime.hour >= 12 ? startTime.hour - 12 : startTime.hour, 2)}:${intFixed(startTime.minute, 2)} ${startTime.hour >= 12 ? "PM" : "AM"}, ${monthDigitToLetter[startTime.month]} ${startTime.day}, ${startTime.year}';
     String date2 =
@@ -139,40 +139,18 @@ class EventInformationEnlarge extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(fontSize: 13),
-              ),
-              Row(
-                children: const [
-                  Icon(
-                    Icons.edit,
-                    size: 10,
-                  ),
-                  Icon(
-                    Icons.notifications,
-                    size: 10,
-                  )
-                ],
-              )
-            ],
-          ),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text(title, style: const TextStyle(fontSize: 13),),
+            Row(children: const [Icon(Icons.edit, size: 10,), Icon(Icons.notifications, size: 10,)],)
+          ],),
 
           const Divider(),
-
+          
           Column(
             children: [
               // !!!!!!!!!!!!!!!!!
-              AntiLabel(
-                group: title,
-              ),
-              Text(
-                title,
-                style: const TextStyle(fontSize: 15),
-              ),
+              AntiLabel(group: title,),
+              Text(title, style: const TextStyle(fontSize: 15),),
               Row(
                 children: [
                   Text(
@@ -197,14 +175,13 @@ class EventInformationEnlarge extends StatelessWidget {
 
           // Contributors(contributors: emptyTest),
 
-          Text(
-            '敘述',
-            style: TextStyle(
-                fontSize: 15, color: Color.fromARGB(255, 121, 121, 121)),
-          ),
+          Text('敘述', style: TextStyle(fontSize: 15, color: Color.fromARGB(255, 121, 121, 121)),),
           const Divider(),
+
+
         ],
       ),
     );
   }
 }
+
