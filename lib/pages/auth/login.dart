@@ -101,7 +101,7 @@ class _EmailFormState extends State<_EmailForm> {
   String userInputPassword = "";
   bool isInputFormatCorrect = true;
   UserModel? user;
-  void onPress() async {
+  void _onPress() async {
     setState(() {
       // when user press continue with email button, program first check the vaildation of input by calling all the validator in the form
       // next call user input to check input or not
@@ -149,7 +149,7 @@ class _EmailFormState extends State<_EmailForm> {
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
             child: MaterialButton(
               onPressed: () {
-                updateState();
+                _onPress();
                 debugPrint(user.runtimeType.toString());
                 if (user != null) {
                   debugPrint("Login Successfully");
