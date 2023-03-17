@@ -1,3 +1,5 @@
+import 'profile_model.dart';
+
 /// !! NOTICE !!
 /// this is a super class of every data in database,
 /// can only use as POLYMORPHISM
@@ -6,7 +8,7 @@ abstract class DataModel<T extends DataModel<T>> {
   String databasePath = 'unknown';
   bool firestoreRequired = false;
   bool storageRequired = false;
-  bool getOwner = false;
+  bool setOwnerRequired = false;
 
   /// !! NOTICE !!
   /// every subclass should return id to this superclass,
@@ -15,7 +17,7 @@ abstract class DataModel<T extends DataModel<T>> {
 
   /// !! NOTICE !!
   /// every subclass should override this method
-  T makeInstance();
+  T makeEmptyInstance();
 
   /// !! NOTICE !!
   /// every subclass should override this method
@@ -27,5 +29,5 @@ abstract class DataModel<T extends DataModel<T>> {
 
   /// !! NOTICE !!
   /// every subclass should override this method
-  void setOwner(Map<String, dynamic> data);
+  void setOwner(ProfileModel ownerProfile);
 }

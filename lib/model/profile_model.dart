@@ -1,6 +1,5 @@
 import 'data_model.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 /// to create a ProfileTag use ProfileTag()
@@ -22,6 +21,7 @@ class ProfileModel extends DataModel<ProfileModel> {
   String? introduction;
   List<ProfileTag>? tags;
   Image? photo;
+  List<String> groupIdList = [];
 
   ProfileModel(
       {this.name,
@@ -37,7 +37,7 @@ class ProfileModel extends DataModel<ProfileModel> {
   }
 
   @override
-  ProfileModel makeInstance() {
+  ProfileModel makeEmptyInstance() {
     // TODO: implement makeInstance
     throw UnimplementedError();
   }
@@ -54,7 +54,7 @@ class ProfileModel extends DataModel<ProfileModel> {
   }
 
   @override
-  void setOwner(Map<String, dynamic> data) {
+  void setOwner(ProfileModel ownerProfile) {
     // TODO: implement setOwner
   }
 

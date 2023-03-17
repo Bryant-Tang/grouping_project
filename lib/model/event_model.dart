@@ -2,8 +2,6 @@ import 'data_model.dart';
 import 'profile_model.dart';
 import 'user_model.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 /// to create a EventModel use EventModel()
 /// and pass all things you want to add
 ///
@@ -34,7 +32,7 @@ class EventModel extends DataModel<EventModel> {
   }
 
   @override
-  EventModel makeInstance() {
+  EventModel makeEmptyInstance() {
     // TODO: implement makeInstance
     throw UnimplementedError();
   }
@@ -51,7 +49,7 @@ class EventModel extends DataModel<EventModel> {
   }
 
   @override
-  void setOwner(Map<String, dynamic> data) {
+  void setOwner(ProfileModel ownerProfile) {
     // TODO: implement setOwner
   }
 
