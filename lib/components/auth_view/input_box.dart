@@ -4,12 +4,14 @@ class GroupingInputField extends StatefulWidget {
   final String labelText;
   final IconData boxIcon;
   final Color boxColor;
+  final String? Function(String? value) validator;
   String inputText = "";
   GroupingInputField({
     super.key,
     required this.labelText,
     required this.boxIcon,
     required this.boxColor,
+    required this.validator,
   });
 
   @override
@@ -40,8 +42,9 @@ class _GroupingInputFieldState extends State<GroupingInputField> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-      child: TextField(
+      child: TextFormField(
           controller: textController,
+          validator: widget.validator,
           decoration: InputDecoration(
               // isDense 為必要, contentPadding 越大，則 textfield 越大
               contentPadding: const EdgeInsets.all(15),

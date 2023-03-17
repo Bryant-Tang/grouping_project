@@ -71,63 +71,112 @@ class _EmailForm extends StatefulWidget {
 }
 
 class _EmailFormState extends State<_EmailForm> {
+  final _formKey = GlobalKey<FormState>();
   final AuthService authService = AuthService();
   final emailInputBox = GroupingInputField(
-      labelText: "Email", boxIcon: Icons.mail, boxColor: Colors.grey);
+    labelText: "Email", 
+    boxIcon: Icons.mail, 
+    boxColor: Colors.grey,
+    validator: (value){
+      if(value == null || value.isEmpty){
+        return "Enail不得為空";
+      }else {
+        return null;
+      }
+    },
+  );
   final passwordInputBox = GroupingInputField(
-      labelText: "password", boxIcon: Icons.password, boxColor: Colors.grey);
+      labelText: "password",
+      boxIcon: Icons.password, 
+      boxColor: Colors.grey,
+      validator:(value){
+      if(value == null || value.isEmpty){
+        return "密碼請勿留空";
+      }else {
+        return null;
+      }
+    },
+  );
   String userInputEmail = "";
   String userInputPassword = "";
+  bool isInputFormatCorrect = true;
   UserModel? user;
-  void updateState() async {
+  void onPress() async {
     setState(() {
-      debugPrint("登入測試");
-      userInputEmail = emailInputBox.inputText;
-      userInputPassword = passwordInputBox.inputText;
-      debugPrint("Email: $userInputEmail , Password: $userInputPassword");
+      // when user press continue with email button, program first check the vaildation of input by calling all the validator in the form
+      // next call user input to check input or not
+      isInputFormatCorrect = _formKey.currentState!.validate();
+      if (isInputFormatCorrect) {
+        // debugPrint("登入測試");
+        userInputEmail = emailInputBox.inputText;
+        userInputPassword = passwordInputBox.inputText;
+        // debugPrint("Email: $userInputEmail , Password: $userInputPassword");
+      }
     });
+    if (isInputFormatCorrect) {
+      
+    }
+  }
+  void checkUserInput(String email, String password) async{
     user = await authService.emailLogIn(userInputEmail, userInputPassword);
   }
 
-  void _onSubmit() {
-    updateState();
-    // debugPrint(user.runtimeType.toString());
-    if (user != null) {
-      debugPrint("Login Successfully");
-    } else {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => SignUpPage(
-                email: userInputEmail,
-                  )));
-    }
-  }
+  // _onSubmit(BuildContext context) {
+  //   updateState();
+  //   debugPrint(user.runtimeType.toString());
+  //   if (user != null) {
+  //     debugPrint("Login Successfully");
+  //   } else {
+  //     Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(
+  //             builder: (context) => SignUpPage(
+  //                   email: userInputEmail,
+  //                 )));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        emailInputBox,
-        passwordInputBox,
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-          child: MaterialButton(
-            onPressed: _onSubmit,
-            shape: const RoundedRectangleBorder(
-                side: BorderSide(color: Colors.amber, width: 2),
-                borderRadius: BorderRadius.all(Radius.circular(20))),
-            child: const Text(
-              "Continue with email",
-              style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold),
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          emailInputBox,
+          passwordInputBox,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+            child: MaterialButton(
+              onPressed: () {
+                updateState();
+                debugPrint(user.runtimeType.toString());
+                if (user != null) {
+                  debugPrint("Login Successfully");
+                } else {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SignUpPage(
+                                email: userInputEmail,
+                              )));
+                }
+              },
+              color: Colors.amber,
+              shape: const RoundedRectangleBorder(
+                  side: BorderSide(color: Colors.amber, width: 2),
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              child: const Text(
+                "Continue with email",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }
@@ -177,7 +226,6 @@ class AuthButton extends StatelessWidget {
     );
   }
 }
-
 
 class HintTextWithLine extends StatelessWidget {
   const HintTextWithLine({super.key});

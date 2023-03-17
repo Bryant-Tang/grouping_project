@@ -1,6 +1,5 @@
-
 import 'package:grouping_project/components/component_lib.dart';
-import 'package:grouping_project/model_lib.dart';
+import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
@@ -59,6 +58,7 @@ class _UserNameRegisterPage extends StatefulWidget {
 }
 
 class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
+  final _formKey = GlobalKey<FormState>();
   final headLineText = "使用者名稱";
   final content = "請輸入此帳號的使用者名稱";
   final inputBox = GroupingInputField(
@@ -72,20 +72,27 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: inputBox,
+      body: Form(key: _formKey, child: inputBox),
       toggleBar: NavigationToggleBar(
         goBackButtonText: "上一步",
         goToNextButtonText: "下一步",
         goBackButtonHandler: () {
           Navigator.pop(context);
+          
         },
         goToNextButtonHandler: () {
           // print("input box: ${textController.text}\n");
-          Navigator.push(
-              context,
+          if (_formKey.currentState!.validate()) {
+            Navigator.push(context,
               MaterialPageRoute(
-                  builder: (context) => _UserPasswordRegisterPage(
-                      email: widget.email, userName: inputBox.inputText)));
+                builder: (context) => _UserPasswordRegisterPage(
+                  email: widget.email, 
+                  userName: inputBox.inputText
+                )
+              )
+            );
+          }
+          
         },
       ),
     );
