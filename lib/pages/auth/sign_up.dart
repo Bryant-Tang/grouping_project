@@ -65,6 +65,13 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
     labelText: "USERNAME 使用者名稱",
     boxIcon: Icons.people,
     boxColor: Colors.grey,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return "使用者名稱請勿留空";
+      } else {
+        return null;
+      }
+    },
   );
 
   @override
@@ -78,21 +85,16 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
         goToNextButtonText: "下一步",
         goBackButtonHandler: () {
           Navigator.pop(context);
-          
         },
         goToNextButtonHandler: () {
           // print("input box: ${textController.text}\n");
           if (_formKey.currentState!.validate()) {
-            Navigator.push(context,
-              MaterialPageRoute(
-                builder: (context) => _UserPasswordRegisterPage(
-                  email: widget.email, 
-                  userName: inputBox.inputText
-                )
-              )
-            );
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => _UserPasswordRegisterPage(
+                        email: widget.email, userName: inputBox.inputText)));
           }
-          
         },
       ),
     );
@@ -111,18 +113,37 @@ class _UserPasswordRegisterPage extends StatefulWidget {
 }
 
 class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
+  final _formKey = GlobalKey<FormState>();
   final headLineText = "使用者密碼";
   final content = "請輸入此帳號的使用者密碼";
-  final password1 = GroupingInputField(
+  String password = "";
+  String confirmedPassword = "";
+  final passwordField = GroupingInputField(
     labelText: "PASSWORD 使用者密碼",
     boxIcon: Icons.password,
     boxColor: Colors.grey,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return "密碼請勿留空";
+      } else if (value.length <= 6) {
+        return "密碼長度必須大於6個字元";
+      }
+      return null;
+    },
   );
-  final password2 = GroupingInputField(
+  final passwordConfirmField = GroupingInputField(
     labelText: "再次輸入密碼",
     boxIcon: Icons.password,
     boxColor: Colors.grey,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return "確認欄位請勿留空";
+      } else {
+        return null;
+      }
+    },
   );
+
   void dialog() {
     showDialog<String>(
         context: context,
@@ -145,14 +166,17 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: Column(
-        children: <Widget>[
-          password1,
-          const SizedBox(
-            height: 25,
-          ),
-          password2,
-        ],
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            passwordField,
+            const SizedBox(
+              height: 15,
+            ),
+            passwordConfirmField
+          ],
+        ),
       ),
       toggleBar: NavigationToggleBar(
           goBackButtonText: "上一步",
@@ -161,19 +185,24 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
             Navigator.pop(context);
           },
           goToNextButtonHandler: () {
-            String passwordText = password1.inputText;
-            String passwordConfirmText = password2.inputText;
-            if (passwordText == passwordConfirmText) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => _SignUpFinishPage(
-                          email: widget.email,
-                          userName: widget.userName,
-                          password: passwordText)));
-            } else {
-              debugPrint("password does not match");
-              dialog();
+            setState(() {
+              password = passwordField.inputText;
+              confirmedPassword = passwordConfirmField.inputText;
+            });
+            if (_formKey.currentState!.validate()) {
+              // debugPrint('check');
+              if (password == confirmedPassword) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => _SignUpFinishPage(
+                            email: widget.email,
+                            userName: widget.userName,
+                            password: password)));
+              } else {
+                debugPrint("password does not match");
+                dialog();
+              }
             }
           }),
     );
@@ -262,13 +291,11 @@ class _SignUpFinishPage extends StatelessWidget {
         },
         goToNextButtonHandler: () async {
           final AuthService authService = AuthService();
-          final UserModel user = await authService.emailSignUp(email, password);
-          // await setProfileForPerson(
-          //     newProfile: UserProfile(
-          //         email: email, userName: userName, userId: userModel.uid),
-          //     userId: userModel.uid);
+          await authService
+                .emailSignUp(email, password)
+                .then((value) => debugPrint("Sign Up Successfully"))
+                .onError((error, stackTrace) => null);
           debugPrint('註冊信箱： $email\n使用者名稱$userName');
-
           if (context.mounted) {
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) => const MyHomePage()));

@@ -14,6 +14,10 @@ class GroupingInputField extends StatefulWidget {
     required this.validator,
   });
 
+  set validator(String? Function(String? value) validator) {
+    this.validator = validator;
+  }
+
   @override
   State<GroupingInputField> createState() => _GroupingInputFieldState();
 }

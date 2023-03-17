@@ -1,5 +1,6 @@
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
+import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -74,25 +75,25 @@ class _EmailFormState extends State<_EmailForm> {
   final _formKey = GlobalKey<FormState>();
   final AuthService authService = AuthService();
   final emailInputBox = GroupingInputField(
-    labelText: "Email", 
-    boxIcon: Icons.mail, 
+    labelText: "Email",
+    boxIcon: Icons.mail,
     boxColor: Colors.grey,
-    validator: (value){
-      if(value == null || value.isEmpty){
-        return "Enail不得為空";
-      }else {
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return "Email不得為空";
+      } else {
         return null;
       }
     },
   );
   final passwordInputBox = GroupingInputField(
-      labelText: "password",
-      boxIcon: Icons.password, 
-      boxColor: Colors.grey,
-      validator:(value){
-      if(value == null || value.isEmpty){
+    labelText: "password",
+    boxIcon: Icons.password,
+    boxColor: Colors.grey,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
         return "密碼請勿留空";
-      }else {
+      } else {
         return null;
       }
     },
@@ -101,10 +102,10 @@ class _EmailFormState extends State<_EmailForm> {
   String userInputPassword = "";
   bool isInputFormatCorrect = true;
   UserModel? user;
-  void _onPress() async {
+  void _onPress(){
     setState(() {
       // when user press continue with email button, program first check the vaildation of input by calling all the validator in the form
-      // next call user input to check input or not
+      // next call call userLogin from service API
       isInputFormatCorrect = _formKey.currentState!.validate();
       if (isInputFormatCorrect) {
         // debugPrint("登入測試");
@@ -113,28 +114,33 @@ class _EmailFormState extends State<_EmailForm> {
         // debugPrint("Email: $userInputEmail , Password: $userInputPassword");
       }
     });
-    if (isInputFormatCorrect) {
-      
-    }
-  }
-  void checkUserInput(String email, String password) async{
-    user = await authService.emailLogIn(userInputEmail, userInputPassword);
   }
 
-  // _onSubmit(BuildContext context) {
-  //   updateState();
-  //   debugPrint(user.runtimeType.toString());
-  //   if (user != null) {
-  //     debugPrint("Login Successfully");
-  //   } else {
-  //     Navigator.pushReplacement(
-  //         context,
-  //         MaterialPageRoute(
-  //             builder: (context) => SignUpPage(
-  //                   email: userInputEmail,
-  //                 )));
-  //   }
-  // }
+  void checkUserInput(String email, String password) async {
+    await authService
+        .emailLogIn(userInputEmail, userInputPassword)
+        .then((value) => debugPrint("Success"))
+        .catchError((error) {
+      // debugPrint(error.toString());
+      switch (error.code) {
+        case 'invalid-email':
+          debugPrint('invalid-email');
+          
+          break;
+        case 'user-disabled':
+          debugPrint('user-disabled');
+          break;
+        case 'user-not-found':
+          debugPrint('user-not-found');
+          break;
+        case 'wrong-password':
+          debugPrint('wrong-password');
+          break;
+        default:
+          debugPrint(error.toString());
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,18 +154,56 @@ class _EmailFormState extends State<_EmailForm> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
             child: MaterialButton(
-              onPressed: () {
+              onPressed: () async{
                 _onPress();
-                debugPrint(user.runtimeType.toString());
-                if (user != null) {
-                  debugPrint("Login Successfully");
-                } else {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SignUpPage(
-                                email: userInputEmail,
-                              )));
+                // debugPrint(user.runtimeType.toString());
+                if (isInputFormatCorrect) {
+                  await authService
+                      .emailLogIn(userInputEmail, userInputPassword)
+                      .then((value){
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MyHomePage()));
+                      })
+                      .catchError((error) {
+                    // debugPrint(error.toString());
+                    switch (error.code) {
+                      case 'invalid-email':
+                        debugPrint('invalid-email');
+                        break;
+                      case 'user-disabled':
+                        debugPrint('user-disabled');
+                        break;
+                      case 'user-not-found':
+                        debugPrint('user-not-found');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SignUpPage(
+                                      email: userInputEmail,
+                                    )));
+                        break;
+                      case 'wrong-password':
+                        showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                                  title: const Text('密碼錯誤'),
+                                  content: Text('登入帳戶 $userInputEmail\n請確認輸入的密碼是否相同\n'),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('重新輸入'),
+                                    ),
+                                  ],
+                                ));
+                        break;
+                      default:
+                        debugPrint(error.toString());
+                    }
+                  });
                 }
               },
               color: Colors.amber,

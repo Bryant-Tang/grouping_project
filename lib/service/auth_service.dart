@@ -12,8 +12,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 /// flutter run --web-hostname localhost --web-port 5000
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  //kIsWeb => Web
-  //Platform.isIos / Platform.isAndroid => IOS ? Android;
+  // kIsWeb => Web
+  // Platform.isIos / Platform.isAndroid => IOS ? Android;
   // Change scopes parameter for different scope
   final GoogleSignIn _googleSignInWeb = GoogleSignIn(
     clientId:
