@@ -86,7 +86,9 @@ class _EmailFormState extends State<_EmailForm> {
       userInputPassword = passwordInputBox.inputText;
       debugPrint("Email: $userInputEmail , Password: $userInputPassword");
     });
-    user = await authService.emailLogIn(userInputEmail, userInputPassword);
+    user = await authService
+        .emailLogIn(userInputEmail, userInputPassword)
+        .onError((error, stackTrace) => throw UnimplementedError());
   }
 
   void _onSubmit() {
@@ -99,7 +101,7 @@ class _EmailFormState extends State<_EmailForm> {
           context,
           MaterialPageRoute(
               builder: (context) => SignUpPage(
-                email: userInputEmail,
+                    email: userInputEmail,
                   )));
     }
   }
@@ -177,7 +179,6 @@ class AuthButton extends StatelessWidget {
     );
   }
 }
-
 
 class HintTextWithLine extends StatelessWidget {
   const HintTextWithLine({super.key});

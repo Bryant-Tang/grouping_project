@@ -1,6 +1,5 @@
-
 import 'package:grouping_project/components/component_lib.dart';
-import 'package:grouping_project/model_lib.dart';
+import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';

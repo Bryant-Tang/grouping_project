@@ -2,7 +2,7 @@ import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:grouping_project/model_lib.dart';
+import 'package:grouping_project/model/model_lib.dart';
 
 class TrackedPage extends StatefulWidget {
   const TrackedPage({super.key});
