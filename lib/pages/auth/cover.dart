@@ -10,16 +10,35 @@ class CoverPage extends StatefulWidget {
   State<CoverPage> createState() => _CoverPageState();
 }
 
-class _CoverPageState extends State<CoverPage> {
-  // _onLogin() {
-  //   Navigator.pushReplacement(
-  //       context, MaterialPageRoute(builder: (context) => LoginPage()));
-  // }
+class _CoverPageState extends State<CoverPage> with TickerProviderStateMixin {
+  late AnimationController controller;
+  @override
+  void initState() {
+    controller = AnimationController(
+      /// [AnimationController]s can be created with `vsync: this` because of
+      /// [TickerProviderStateMixin].
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..addListener(() {
+        setState(() {
+          if (controller.isCompleted) {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => LoginPage()));
+          }
+        });
+      });
+    controller.forward();
+    // Navigator.pushReplacement(context,
+    //       MaterialPageRoute(builder: (context) => LoginPage()));
+    // controller.repeat(reverse: true, period: const Duration(seconds: 3));
+    super.initState();
+  }
 
-  // _onSignUp() {
-  //   Navigator.pushReplacement(
-  //       context, MaterialPageRoute(builder: (context) => const SignUp()));
-  // }
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,21 +64,16 @@ class _CoverPageState extends State<CoverPage> {
               mainAxisSize: MainAxisSize.max,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                FlowButton(
-                    buttonText: "登入 LOGIN",
-                    onPressed: () {
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => LoginPage()));
-                    }),
+                LinearProgressIndicator(
+                  value: controller.value,
+                  minHeight: 8,
+                  semanticsLabel: 'Linear progress indicator',
+                ),
                 // FlowButton(
-                //     buttonText: "註冊 SIGNUP",
-                //     backgroundColor: Colors.white,
-                //     textColor: Colors.grey[600],
+                //     buttonText: "登入 LOGIN",
                 //     onPressed: () {
-                //       Navigator.pushReplacement(
-                //           context,
-                //           MaterialPageRoute(
-                //               builder: (context) => const SignUpPage()));
+                //       Navigator.pushReplacement(context,
+                //           MaterialPageRoute(builder: (context) => LoginPage()));
                 //     }),
               ],
             ),
