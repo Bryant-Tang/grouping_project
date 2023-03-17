@@ -55,11 +55,16 @@ class AuthService {
   /// Login with email & password
   ///
   /// return userModel if succeed., return error code if FireAuthException catched.
+  ///
   /// Error codes are:
-  /// * invalid-email
-  /// * user-disabled
-  /// * user-not-found
-  /// * wrong-password
+  /// * **invalid-email:**
+  /// * Thrown if the email address is not valid.
+  /// * **user-disabled:**
+  /// * Thrown if the user corresponding to the given email has been disabled.
+  /// * **user-not-found:**
+  /// * Thrown if there is no user corresponding to the given email.
+  /// * **wrong-password:**
+  /// * Thrown if the password is invalid for the given email, or the account corresponding to the email does not have a password set.
   Future emailLogIn(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
@@ -77,6 +82,16 @@ class AuthService {
   /// sing up with email & password
   ///
   /// return userModel if succeed, return null if any error catched.
+  ///
+  /// Error codes are:
+  /// * **email-already-in-use:**
+  /// * Thrown if there already exists an account with the given email address.
+  /// * **invalid-email:**
+  /// * Thrown if the email address is not valid.
+  /// * **operation-not-allowed:**
+  /// * Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
+  /// * **weak-password:**
+  /// * Thrown if the password is not strong enough.
   Future emailSignUp(String email, String password) async {
     try {
       UserCredential result = await _auth.createUserWithEmailAndPassword(
@@ -84,6 +99,8 @@ class AuthService {
       User user = result.user!;
 
       return _userModelFromAuth(user);
+    } on FirebaseAuthException catch (error) {
+      rethrow;
     } catch (e) {
       debugPrint(e.toString());
       return null;
@@ -194,25 +211,5 @@ class AuthService {
       debugPrint(e.toString());
       return null;
     }
-  }
-
-  /// a function determine a user is logging in for the first time or not.
-  ///
-  /// if the user have logging before, return true; otherwise, return false.
-  Future<bool> haveEverLoginBefore(String userId) async {
-    final clientLocation =
-        FirebaseFirestore.instance.collection('client_properties').doc(userId);
-    bool ans = false;
-    await clientLocation.get().then(
-      (DocumentSnapshot doc) {
-        ans = true;
-      },
-      onError: (e) {
-        debugPrint(
-            '[Notification] this client is logging in for the first time.');
-        ans = false;
-      },
-    );
-    return ans;
   }
 }
