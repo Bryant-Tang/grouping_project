@@ -22,8 +22,7 @@ class LoginPage extends StatefulWidget {
           name: button["name"],
           onPressed: () async {
             AuthService authService = AuthService();
-            UserModel? _userModel =
-                await authService.thridPartyLogin(button["name"]);
+            await authService.thridPartyLogin(button["name"]);
           }));
     }
     return authButtonList;
@@ -102,7 +101,7 @@ class _EmailFormState extends State<_EmailForm> {
   String userInputPassword = "";
   bool isInputFormatCorrect = true;
   UserModel? user;
-  void _onPress(){
+  void _onPress() async{
     setState(() {
       // when user press continue with email button, program first check the vaildation of input by calling all the validator in the form
       // next call call userLogin from service API
@@ -114,32 +113,61 @@ class _EmailFormState extends State<_EmailForm> {
         // debugPrint("Email: $userInputEmail , Password: $userInputPassword");
       }
     });
+    if(isInputFormatCorrect){
+      checkUserInput(userInputEmail, userInputPassword);
+    }
   }
 
   void checkUserInput(String email, String password) async {
     await authService
         .emailLogIn(userInputEmail, userInputPassword)
-        .then((value) => debugPrint("Success"))
-        .catchError((error) {
+        .then((value) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+    }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {
         case 'invalid-email':
           debugPrint('invalid-email');
-          
+          showErrorDialog('信箱格式錯誤', '請使用正確的信箱登入');
           break;
         case 'user-disabled':
           debugPrint('user-disabled');
+          showErrorDialog('帳號認證錯誤', '無法使用$userInputEmail登入Grouping服務');
           break;
         case 'user-not-found':
           debugPrint('user-not-found');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SignUpPage(
+                        email: userInputEmail,
+                      )));
           break;
         case 'wrong-password':
-          debugPrint('wrong-password');
+          showErrorDialog('密碼錯誤', '請確認帳號$userInputEmail密碼是否正確');
           break;
         default:
           debugPrint(error.toString());
       }
     });
+  }
+
+  void showErrorDialog(String errorTitle, String errorMessage) {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text(errorTitle),
+              content: Text(errorMessage),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('確認'),
+                ),
+              ],
+            ));
   }
 
   @override
@@ -154,58 +182,7 @@ class _EmailFormState extends State<_EmailForm> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
             child: MaterialButton(
-              onPressed: () async{
-                _onPress();
-                // debugPrint(user.runtimeType.toString());
-                if (isInputFormatCorrect) {
-                  await authService
-                      .emailLogIn(userInputEmail, userInputPassword)
-                      .then((value){
-                        Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MyHomePage()));
-                      })
-                      .catchError((error) {
-                    // debugPrint(error.toString());
-                    switch (error.code) {
-                      case 'invalid-email':
-                        debugPrint('invalid-email');
-                        break;
-                      case 'user-disabled':
-                        debugPrint('user-disabled');
-                        break;
-                      case 'user-not-found':
-                        debugPrint('user-not-found');
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignUpPage(
-                                      email: userInputEmail,
-                                    )));
-                        break;
-                      case 'wrong-password':
-                        showDialog<String>(
-                            context: context,
-                            builder: (BuildContext context) => AlertDialog(
-                                  title: const Text('密碼錯誤'),
-                                  content: Text('登入帳戶 $userInputEmail\n請確認輸入的密碼是否相同\n'),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('重新輸入'),
-                                    ),
-                                  ],
-                                ));
-                        break;
-                      default:
-                        debugPrint(error.toString());
-                    }
-                  });
-                }
-              },
+              onPressed: _onPress,
               color: Colors.amber,
               shape: const RoundedRectangleBorder(
                   side: BorderSide(color: Colors.amber, width: 2),

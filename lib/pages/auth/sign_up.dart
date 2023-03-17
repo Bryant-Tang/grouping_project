@@ -1,5 +1,7 @@
+// import 'dart:convert';
+
 import 'package:grouping_project/components/component_lib.dart';
-import 'package:grouping_project/model/model_lib.dart';
+// import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
@@ -269,38 +271,76 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
 //   }
 // }
 
-class _SignUpFinishPage extends StatelessWidget {
+class _SignUpFinishPage extends StatefulWidget {
   final String email;
   final String userName;
   final String password;
   const _SignUpFinishPage(
       {required this.email, required this.userName, required this.password});
-  final headLineText = "帳號創建完成!";
+
+  @override
+  State<_SignUpFinishPage> createState() => _SignUpFinishPageState();
+}
+
+class _SignUpFinishPageState extends State<_SignUpFinishPage> {
+  final headLineText = "帳號資訊建立創建完成!";
+
   final content = "歡迎加入 Grouping 一起與夥伴創造冒險吧";
+
+  void showErrorDialog(String errorTitle, String errorMessage) {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text(errorTitle),
+              content: Text(errorMessage),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('確認'),
+                ),
+              ],
+            ));
+  }
+
+  void _onPress() async {
+    AuthService authService = AuthService();
+    await authService
+        .emailSignUp(widget.email, widget.password)
+        .then((value) => debugPrint("Sign Up Successfully"))
+        .catchError((error) {
+      showErrorDialog(error.code, error.toString());
+    });
+    debugPrint('註冊信箱： ${widget.email}\n使用者名稱${widget.userName}');
+    if (context.mounted) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: const GroupingLogo(),
+      body: Column(
+        children: <Widget>[
+          HeadlineWithContent(headLineText: "使用者", content: widget.userName),
+          const Divider(color: Colors.amber),
+          HeadlineWithContent(headLineText: "帳號", content: widget.email),
+          const Divider(color: Colors.amber),
+          HeadlineWithContent(headLineText: "密碼", content: widget.password),
+          const Divider(color: Colors.amber),
+        ],
+      ),
       toggleBar: NavigationToggleBar(
         goBackButtonText: "修改資料",
-        goToNextButtonText: "前往我的主頁",
+        goToNextButtonText: "完成註冊",
         goBackButtonHandler: () {
           Navigator.pop(context);
         },
-        goToNextButtonHandler: () async {
-          final AuthService authService = AuthService();
-          await authService
-                .emailSignUp(email, password)
-                .then((value) => debugPrint("Sign Up Successfully"))
-                .onError((error, stackTrace) => null);
-          debugPrint('註冊信箱： $email\n使用者名稱$userName');
-          if (context.mounted) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const MyHomePage()));
-          }
-        },
+        goToNextButtonHandler: _onPress,
       ),
     );
   }
