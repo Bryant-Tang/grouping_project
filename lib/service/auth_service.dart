@@ -52,20 +52,14 @@ class AuthService {
     await user.updatePassword(password);
   }
 
-  /// If the email had sign up before, this will return true. Vice versa
-  Future<bool> userFound(String email, String password) async {
-    dynamic result = await emailLogIn(email, password);
-    switch (result) {
-      case "user-not-found":
-        return false;
-      default:
-        return true;
-    }
-  }
-
   /// Login with email & password
   ///
   /// return userModel if succeed., return error code if FireAuthException catched.
+  /// Error codes are:
+  /// * invalid-email
+  /// * user-disabled
+  /// * user-not-found
+  /// * wrong-password
   Future emailLogIn(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
@@ -74,7 +68,7 @@ class AuthService {
 
       return _userModelFromAuth(user);
     } on FirebaseAuthException catch (error) {
-      return error.code;
+      rethrow;
     } catch (error) {
       debugPrint(error.toString());
     }
