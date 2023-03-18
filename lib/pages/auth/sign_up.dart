@@ -2,7 +2,7 @@
 
 import 'package:grouping_project/components/component_lib.dart';
 // import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
+import 'package:grouping_project/pages/templates/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -120,31 +120,42 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
   final content = "請輸入此帳號的使用者密碼";
   String password = "";
   String confirmedPassword = "";
-  final passwordField = GroupingInputField(
-    labelText: "PASSWORD 使用者密碼",
-    boxIcon: Icons.password,
-    boxColor: Colors.grey,
-    validator: (value) {
-      if (value == null || value.isEmpty) {
-        return "密碼請勿留空";
-      } else if (value.length <= 6) {
-        return "密碼長度必須大於6個字元";
-      }
-      return null;
-    },
-  );
-  final passwordConfirmField = GroupingInputField(
-    labelText: "再次輸入密碼",
-    boxIcon: Icons.password,
-    boxColor: Colors.grey,
-    validator: (value) {
-      if (value == null || value.isEmpty) {
-        return "確認欄位請勿留空";
-      } else {
-        return null;
-      }
-    },
-  );
+  GroupingInputField? passwordField;
+  GroupingInputField? passwordConfirmField;
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      passwordField = GroupingInputField(
+        labelText: "PASSWORD 使用者密碼",
+        boxIcon: Icons.password,
+        boxColor: Colors.grey,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "密碼請勿留空";
+          } else if (value.length <= 6) {
+            return "密碼長度必須大於6個字元";
+          }
+          return null;
+        },
+      );
+      passwordConfirmField = GroupingInputField(
+        labelText: "再次輸入密碼",
+        boxIcon: Icons.password,
+        boxColor: Colors.grey,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return "確認欄位請勿留空";
+          }
+          if (value!=password) {
+            return "兩次密碼輸入不同";
+          } else {
+            return null;
+          }
+        },
+      );
+    });
+  }
 
   void dialog() {
     showDialog<String>(
@@ -172,11 +183,11 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
         key: _formKey,
         child: Column(
           children: <Widget>[
-            passwordField,
+            passwordField!,
             const SizedBox(
               height: 15,
             ),
-            passwordConfirmField
+            passwordConfirmField!
           ],
         ),
       ),
@@ -188,58 +199,22 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
           },
           goToNextButtonHandler: () {
             setState(() {
-              password = passwordField.inputText;
-              confirmedPassword = passwordConfirmField.inputText;
+              password = passwordField!.inputText;
+              confirmedPassword = passwordConfirmField!.inputText;
             });
             if (_formKey.currentState!.validate()) {
-              // debugPrint('check');
-              if (password == confirmedPassword) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => _SignUpFinishPage(
-                            email: widget.email,
-                            userName: widget.userName,
-                            password: password)));
-              } else {
-                debugPrint("password does not match");
-                dialog();
-              }
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => _SignUpFinishPage(
+                          email: widget.email,
+                          userName: widget.userName,
+                          password: password)));
             }
           }),
     );
   }
 }
-
-// class _SignUpPageThree extends StatelessWidget {
-//   final String email;
-//   final String userName;
-//   const _SignUpPageThree({required this.email, required this.userName});
-//   final headLineText = "名片資訊設定";
-//   final content = "Grouping 提供精美的名片功能，讓你的小組員能更快認識你，了解你。";
-//   @override
-//   Widget build(BuildContext context) {
-//     return SignUpPageTemplate(
-//       titleWithContent:
-//           HeadlineWithContent(headLineText: headLineText, content: content),
-//       body: const Placeholder(),
-//       toggleBar: NavigationToggleBar(
-//         goBackButtonText: "稍後設定",
-//         goToNextButtonText: "設定名片",
-//         goBackButtonHandler: () {
-//           Navigator.pop(context);
-//         },
-//         goToNextButtonHandler: () {
-//           Navigator.push(
-//               context,
-//               MaterialPageRoute(
-//                   builder: (context) =>
-//                       _SignUpPageFour(email: email, userName: userName)));
-//         },
-//       ),
-//     );
-//   }
-// }
 
 // class _SignUpPageFour extends StatelessWidget {
 //   final String email;
