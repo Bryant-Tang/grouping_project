@@ -34,9 +34,12 @@ class MissionModel extends DataModel<MissionModel> {
       this.introduction,
       this.state,
       this.tags,
-      this.notifications}) {
-    super.databasePath = 'missions';
-  }
+      this.notifications})
+      : super(
+            databasePath: 'missions',
+            firestoreRequired: true,
+            storageRequired: false,
+            setOwnerRequired: true);
 
   dynamic _convertMissionState({int? stateCode}) {
     if (stateCode != null) {
@@ -86,8 +89,7 @@ class MissionModel extends DataModel<MissionModel> {
 
   @override
   MissionModel makeEmptyInstance() {
-    // TODO: implement makeInstance
-    throw UnimplementedError();
+    return MissionModel();
   }
 
   @override
@@ -97,7 +99,8 @@ class MissionModel extends DataModel<MissionModel> {
   }
 
   @override
-  void fromFirestore(Map<String, dynamic> data) {
+  void fromFirestore(
+      {required Map<String, dynamic> data, ProfileModel? ownerProfile}) {
     // TODO: implement fromFirestore
   }
 

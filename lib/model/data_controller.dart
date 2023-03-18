@@ -1,7 +1,7 @@
 import 'data_model.dart';
 import 'profile_model.dart';
-import '../service/firestore_service.dart';
-import '../service/auth_service.dart';
+import 'group_model.dart';
+import 'package:grouping_project/service/service_lib.dart';
 
 import 'package:flutter/material.dart';
 
@@ -25,48 +25,82 @@ class DataController {
   /// * if [uploadData.id] exist, would be updating the data, and throw error
   /// if the database does not has the data if the id.
   Future<void> upload<T extends DataModel<T>>({required T uploadData}) async {
-    // !!!!!! unimplement yet !!!!!!
-    // !!!!!! unimplement yet !!!!!!
-    // !!!!!! unimplement yet !!!!!!
-    throw UnimplementedError();
-    // !!!!!! unimplement yet !!!!!!
-    // !!!!!! unimplement yet !!!!!!
-    // !!!!!! unimplement yet !!!!!!
-    uploadData.id == null
-        ? await FirestoreController(forUser: _forUser, ownerId: _ownerId).set(
-            processData: uploadData.toFirestore(),
-            collectionPath: uploadData.databasePath)
-        : await FirestoreController(forUser: _forUser, ownerId: _ownerId)
-            .update(
-                processData: uploadData.toFirestore(),
-                collectionPath: uploadData.databasePath,
-                dataId: uploadData.id!);
+    if (uploadData.firestoreRequired) {
+      uploadData.id == null
+          ? await FirestoreController(forUser: _forUser, ownerId: _ownerId).set(
+              processData: uploadData.toFirestore(),
+              collectionPath: uploadData.databasePath)
+          : await FirestoreController(forUser: _forUser, ownerId: _ownerId)
+              .update(
+                  processData: uploadData.toFirestore(),
+                  collectionPath: uploadData.databasePath,
+                  dataId: uploadData.id!);
+    }
+    if (uploadData.storageRequired) {
+      // !!!!!! unimplement yet !!!!!!
+      // !!!!!! unimplement yet !!!!!!
+      // !!!!!! unimplement yet !!!!!!
+      throw UnimplementedError();
+      // !!!!!! unimplement yet !!!!!!
+      // !!!!!! unimplement yet !!!!!!
+      // !!!!!! unimplement yet !!!!!!
+    }
     return;
   }
 
   /// ## download *"one"* data from database.
   /// * retrun one object of the type you specify.
-  /// * [dataToGet] : the data you want to get
-  /// * [dataId] : the id of the data, recommand to be `dataToGet.id`
+  /// * [dataTypeToGet] : the data type you want to get, suppose to be
+  /// `T<T extends DataModel>().makeEmptyInstance()`
+  /// * [dataId] : the id of the data
   /// ------
   /// **Notice below :**
   /// * remember to use await in front of this method.
-  /// * if you want to get [ProfileModel] , just pass `ProfileModel().id` to [dataId]
+  /// * if you want to get [ProfileModel] , just pass `ProfileModel().id!` to [dataId]
   Future<T> download<T extends DataModel<T>>(
-      {required T dataToGet, required String dataId}) async {
-    var snap = await FirestoreController(forUser: _forUser, ownerId: _ownerId)
-        .get(collectionPath: dataToGet.databasePath, dataId: dataId);
-    if (snap.exists && snap.data() != null) {
-      dataToGet.fromFirestore(snap.data()!);
+      {required T dataTypeToGet, required String dataId}) async {
+    var firestoreSnap = dataTypeToGet.firestoreRequired
+        ? await FirestoreController(forUser: _forUser, ownerId: _ownerId)
+            .get(collectionPath: dataTypeToGet.databasePath, dataId: dataId)
+        : null;
+
+    var storageSnap = dataTypeToGet.storageRequired
+        ? throw UnimplementedError()
+        // !!!!!! unimplement yet !!!!!!
+        // !!!!!! unimplement yet !!!!!!
+        // !!!!!! unimplement yet !!!!!!
+        // !!!!!! unimplement yet !!!!!!
+        // !!!!!! unimplement yet !!!!!!
+        // !!!!!! unimplement yet !!!!!!
+        : null;
+
+    var ownerProfile = dataTypeToGet.setOwnerRequired
+        ? await download(
+            dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
+        : null;
+
+    T processData = dataTypeToGet.makeEmptyInstance();
+
+    if (firestoreSnap != null && firestoreSnap.exists) {
+      processData.fromFirestore(
+          data: firestoreSnap.data() ?? {}, ownerProfile: ownerProfile);
+      if (storageSnap != null) {
+        throw UnimplementedError();
+      }
+    } else if (storageSnap != null) {
+      throw UnimplementedError();
     } else {
       debugPrint("[Error] !!! data does not exist !!!");
     }
-    return dataToGet;
+
+    return processData;
   }
 
-  /// ## download a lot of data from database, which are all same type and belong to same user.
+  /// ## download a lot of data from database, which are all same type
+  /// and belong to same user.
   /// * retrun a list of the type you specify.
-  /// * [dataTypeToGet] : an object of the type you want to get, recommand to be `T<T extends DataModel>.makeEmptyInstance()`
+  /// * [dataTypeToGet] : an object of the type you want to get, suppose to be
+  /// `T<T extends DataModel>.makeEmptyInstance()`
   /// ------
   /// **Notice below :**
   /// * remember to use await in front of this method.
@@ -91,13 +125,14 @@ class DataController {
         : null;
 
     var ownerProfile = dataTypeToGet.setOwnerRequired
-        ? await download(dataToGet: ProfileModel(), dataId: 'profile')
+        ? await download(
+            dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
         : null;
 
     if (firestoreSnapList != null) {
       for (var snap in firestoreSnapList) {
         T temp = dataTypeToGet.makeEmptyInstance();
-        temp.fromFirestore(snap.data());
+        temp.fromFirestore(data: snap.data(), ownerProfile: ownerProfile);
         if (storageSnapList != null) {
           // !!!!!! unimplement yet !!!!!!
           // !!!!!! unimplement yet !!!!!!
@@ -106,9 +141,6 @@ class DataController {
           // !!!!!! unimplement yet !!!!!!
           // !!!!!! unimplement yet !!!!!!
           // !!!!!! unimplement yet !!!!!!
-        }
-        if (ownerProfile != null) {
-          temp.setOwner(ownerProfile);
         }
         dataList.add(temp);
       }
@@ -130,10 +162,10 @@ class DataController {
     }
 
     if (_forUser) {
-      ownerProfile ??=
-          await download(dataToGet: ProfileModel(), dataId: 'profile');
-      for (var groupId in ownerProfile.groupIdList) {
-        var dataListForGroup = await DataController(groupId: groupId)
+      List<GroupModel> groupList =
+          await downloadAll(dataTypeToGet: GroupModel());
+      for (var group in groupList) {
+        var dataListForGroup = await DataController(groupId: group.id)
             .downloadAll(dataTypeToGet: dataTypeToGet.makeEmptyInstance());
         dataList.addAll(dataListForGroup);
       }
