@@ -182,6 +182,7 @@ import 'package:grouping_project/model/model_lib.dart';
 //   }
 // }
 
+<<<<<<< HEAD
 // Future<void> addTracked({required String userId}) async {
 //   // userOrGroupId : personal ID
 //   var allDatas = await getAllMissionData(userOrGroupId: userId);
@@ -206,3 +207,32 @@ import 'package:grouping_project/model/model_lib.dart';
 //     ));
 //   }
 // }
+=======
+Future<void> addTracked() async {
+  // userOrGroupId : personal ID
+  var allDatas = await MissionModel().getAll();
+  trackedCards = [];
+  for (int index = 0; index < allDatas.length; index++) {
+    var tracked = allDatas[index];
+    trackedCards.add(const SizedBox(
+      height: 2,
+    ));
+
+    
+    MissionInformationShrink shrink = MissionInformationShrink(
+      group: tracked.ownerName,
+      color: Color(int.parse(tracked.color)),
+      contributors: tracked.contributors ?? [],
+      title: tracked.title ?? 'unknown',
+      descript: tracked.introduction ?? 'unknown',
+      eventId: tracked.id,
+      startTime: tracked.startTime ?? DateTime(0),
+      endTime: tracked.endTime ?? DateTime(0),
+      state: MissionState.inProgress,);
+
+    trackedCards.add(
+      CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)
+    );
+  }
+}
+>>>>>>> parent of ad179a3 (feats: fix some errors)

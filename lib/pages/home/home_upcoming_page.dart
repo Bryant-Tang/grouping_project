@@ -165,6 +165,7 @@
 //         });
 //   }
 
+<<<<<<< HEAD
 //   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
 //   Future<void> passDataAndCreate() async {
 //     final AuthService authService = AuthService();
@@ -182,6 +183,23 @@
 //     );
 //   }
 // }
+=======
+  upcomingCards = [];
+  for (int index = 0; index < allDatas.length; index++) {
+    var upcoming = allDatas[index];
+    upcomingCards.add(const SizedBox(
+      height: 2,
+    ));
+    EventInformationShrink shrink = EventInformationShrink(
+      group: upcoming.ownerName,
+      color: Color(int.parse(upcoming.color)),
+      contributors: upcoming.contributors ?? [],
+      title: upcoming.title ?? 'unknown',
+      descript: upcoming.introduction ?? 'unknown',
+      eventId: upcoming.id,
+      startTime: upcoming.startTime ?? DateTime(0),
+      endTime: upcoming.endTime ?? DateTime(0),);
+>>>>>>> parent of ad179a3 (feats: fix some errors)
 
 // Future<void> addUpcoming({required String userId}) async {
 //   // userOrGroupId : personal ID
