@@ -169,13 +169,13 @@ class TrackedPageState extends State<TrackedPage> {
   // 創建新event都需要一個自己的eventID，否則會被覆蓋掉(未解決)
   Future<void> passDataAndCreate() async {
     String userId = Provider.of<UserModel>(context).uid;
-    await createMissionData(
-        userOrGroupId: userId,
-        title: trackedTitle,
-        introduction: trackedDescript,
-        startTime: DateTime.now(),
-        endTime: DateTime.now());
-    await addTracked(userId: userId);
+    // await createMissionData(
+    //     userOrGroupId: userId,
+    //     title: trackedTitle,
+    //     introduction: trackedDescript,
+    //     startTime: DateTime.now(),
+    //     endTime: DateTime.now());
+    // await addTracked(userId: userId);
     setState(
       () {
         Navigator.pop(context);
@@ -184,27 +184,27 @@ class TrackedPageState extends State<TrackedPage> {
   }
 }
 
-Future<void> addTracked({required String userId}) async {
-  // userOrGroupId : personal ID
-  var allDatas = await getAllMissionData(userOrGroupId: userId);
-  trackedCards = [];
-  for (int index = 0; index < allDatas.length; index++) {
-    var tracked = allDatas[index];
-    trackedCards.add(const SizedBox(
-      height: 2,
-    ));
-    // // pass Datatime
-    // DateTime startTime = tracked.startTime!;
-    // DateTime endTime = tracked.endTime!;
-    trackedCards.add(
-        // title tmp
-        Tracked(
-      group: tracked.belong,
-      title: tracked.title ?? 'unknown',
-      descript: tracked.introduction ?? 'unknown',
-      startTime: tracked.startTime ?? DateTime(0),
-      endTime: tracked.endTime ?? DateTime(0),
-      state: tracked.state?.index ?? 1,
-    ));
-  }
-}
+// Future<void> addTracked({required String userId}) async {
+//   // userOrGroupId : personal ID
+//   var allDatas = await getAllMissionData(userOrGroupId: userId);
+//   trackedCards = [];
+//   for (int index = 0; index < allDatas.length; index++) {
+//     var tracked = allDatas[index];
+//     trackedCards.add(const SizedBox(
+//       height: 2,
+//     ));
+//     // // pass Datatime
+//     // DateTime startTime = tracked.startTime!;
+//     // DateTime endTime = tracked.endTime!;
+//     trackedCards.add(
+//         // title tmp
+//         Tracked(
+//       group: tracked.belong,
+//       title: tracked.title ?? 'unknown',
+//       descript: tracked.introduction ?? 'unknown',
+//       startTime: tracked.startTime ?? DateTime(0),
+//       endTime: tracked.endTime ?? DateTime(0),
+//       state: tracked.state?.index ?? 1,
+//     ));
+//   }
+// }

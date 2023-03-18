@@ -178,7 +178,7 @@ class UpcomingPageState extends State<UpcomingPage> {
     );
     //await createEventDataForPerson();
     
-    await addUpcoming(userId: userId);
+    // await addUpcoming(userId: userId);
     setState(
       () {
         Navigator.pop(context);
@@ -188,29 +188,29 @@ class UpcomingPageState extends State<UpcomingPage> {
 }
 
 
-Future<void> addUpcoming({required String userId}) async {
-  // userOrGroupId : personal ID
-  var allDatas = await getAllEventDataForPerson(userId: userId);
+// Future<void> addUpcoming({required String userId}) async {
+//   // userOrGroupId : personal ID
+//   var allDatas = await getAllEventDataForPerson(userId: userId);
 
-  upcomingCards = [];
-  for (int index = 0; index < allDatas.length; index++) {
-    var upcoming = allDatas[index];
-    upcomingCards.add(const SizedBox(
-      height: 2,
-    ));
-    EventInformationShrink shrink = EventInformationShrink(
-      group: upcoming.ownerName,
-      color: Color(int.parse(upcoming.color)),
-      contributors: upcoming.contributors ?? [],
-      title: upcoming.title ?? 'unknown',
-      descript: upcoming.introduction ?? 'unknown',
-      eventId: upcoming.id,
-      startTime: upcoming.startTime ?? DateTime(0),
-      endTime: upcoming.endTime ?? DateTime(0),);
+//   upcomingCards = [];
+//   for (int index = 0; index < allDatas.length; index++) {
+//     var upcoming = allDatas[index];
+//     upcomingCards.add(const SizedBox(
+//       height: 2,
+//     ));
+//     EventInformationShrink shrink = EventInformationShrink(
+//       group: upcoming.ownerName,
+//       color: Color(int.parse(upcoming.color)),
+//       contributors: upcoming.contributors ?? [],
+//       title: upcoming.title ?? 'unknown',
+//       descript: upcoming.introduction ?? 'unknown',
+//       eventId: upcoming.id,
+//       startTime: upcoming.startTime ?? DateTime(0),
+//       endTime: upcoming.endTime ?? DateTime(0),);
 
 
-    upcomingCards.add(
-      CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)
-    );
-  }
-}
+//     upcomingCards.add(
+//       CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)
+//     );
+//   }
+// }
