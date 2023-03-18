@@ -590,13 +590,5 @@ packages:
     source: hosted
     version: "6.2.2"
 sdks:
-<<<<<<< HEAD
-<<<<<<< HEAD
   dart: ">=2.19.0 <3.0.0"
-=======
-  dart: ">=2.19.0-0 <3.0.0"
->>>>>>> parent of 4be0e95 (feats: package upgrade)
-=======
-  dart: ">=2.19.0 <4.0.0"
->>>>>>> 067dc52e1b973c27afb33b9eff50250c1fa53539
   flutter: ">=3.7.0-0"
