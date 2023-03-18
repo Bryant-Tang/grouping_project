@@ -71,11 +71,11 @@ class ProfileModel extends DataModel<ProfileModel> {
       required Map<String, dynamic> data,
       ProfileModel? ownerProfile}) {
     List<ProfileTag> fromFirestoreTags = [];
-    for (String tag in List.from(data['tag'])) {
+    for (String tag in List.from(data['tag'] ?? [])) {
       fromFirestoreTags.add(ProfileTag(tag: tag, content: ''));
     }
     int i = 0;
-    for (String content in List.from(data['tag_content'])) {
+    for (String content in List.from(data['tag_content'] ?? [])) {
       fromFirestoreTags[i].content = content;
     }
 
