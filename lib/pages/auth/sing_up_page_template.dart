@@ -24,7 +24,7 @@ class _SignUpPageTemplateState extends State<SignUpPageTemplate> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(30.0, 150.0, 30.0, 150.0),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 150),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,

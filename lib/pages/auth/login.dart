@@ -1,5 +1,6 @@
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
+import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -21,8 +22,7 @@ class LoginPage extends StatefulWidget {
           name: button["name"],
           onPressed: () async {
             AuthService authService = AuthService();
-            UserModel? _userModel =
-                await authService.thridPartyLogin(button["name"]);
+            await authService.thridPartyLogin(button["name"]);
           }));
     }
     return authButtonList;
@@ -71,65 +71,133 @@ class _EmailForm extends StatefulWidget {
 }
 
 class _EmailFormState extends State<_EmailForm> {
+  final _formKey = GlobalKey<FormState>();
   final AuthService authService = AuthService();
   final emailInputBox = GroupingInputField(
-      labelText: "Email", boxIcon: Icons.mail, boxColor: Colors.grey);
+    labelText: "Email",
+    boxIcon: Icons.mail,
+    boxColor: Colors.grey,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return "Email不得為空";
+      } else {
+        return null;
+      }
+    },
+  );
   final passwordInputBox = GroupingInputField(
-      labelText: "password", boxIcon: Icons.password, boxColor: Colors.grey);
+    labelText: "password",
+    boxIcon: Icons.password,
+    boxColor: Colors.grey,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return "密碼請勿留空";
+      } else {
+        return null;
+      }
+    },
+  );
   String userInputEmail = "";
   String userInputPassword = "";
+  bool isInputFormatCorrect = true;
   UserModel? user;
-  void updateState() async {
+  void _onPress() async{
     setState(() {
-      debugPrint("登入測試");
-      userInputEmail = emailInputBox.inputText;
-      userInputPassword = passwordInputBox.inputText;
-      debugPrint("Email: $userInputEmail , Password: $userInputPassword");
+      // when user press continue with email button, program first check the vaildation of input by calling all the validator in the form
+      // next call call userLogin from service API
+      isInputFormatCorrect = _formKey.currentState!.validate();
+      if (isInputFormatCorrect) {
+        // debugPrint("登入測試");
+        userInputEmail = emailInputBox.inputText;
+        userInputPassword = passwordInputBox.inputText;
+        // debugPrint("Email: $userInputEmail , Password: $userInputPassword");
+      }
     });
-    user = await authService
-        .emailLogIn(userInputEmail, userInputPassword)
-        .onError((error, stackTrace) => throw UnimplementedError());
+    if(isInputFormatCorrect){
+      checkUserInput(userInputEmail, userInputPassword);
+    }
   }
 
-  void _onSubmit() {
-    updateState();
-    // debugPrint(user.runtimeType.toString());
-    if (user != null) {
-      debugPrint("Login Successfully");
-    } else {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => SignUpPage(
-                    email: userInputEmail,
-                  )));
-    }
+  void checkUserInput(String email, String password) async {
+    await authService
+        .emailLogIn(userInputEmail, userInputPassword)
+        .then((value) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+    }).catchError((error) {
+      // debugPrint(error.toString());
+      switch (error.code) {
+        case 'invalid-email':
+          debugPrint('invalid-email');
+          showErrorDialog('信箱格式錯誤', '請使用正確的信箱登入');
+          break;
+        case 'user-disabled':
+          debugPrint('user-disabled');
+          showErrorDialog('帳號認證錯誤', '無法使用$userInputEmail登入Grouping服務');
+          break;
+        case 'user-not-found':
+          debugPrint('user-not-found');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SignUpPage(
+                        email: userInputEmail,
+                      )));
+          break;
+        case 'wrong-password':
+          showErrorDialog('密碼錯誤', '請確認帳號$userInputEmail密碼是否正確');
+          break;
+        default:
+          debugPrint(error.toString());
+      }
+    });
+  }
+
+  void showErrorDialog(String errorTitle, String errorMessage) {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text(errorTitle),
+              content: Text(errorMessage),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('確認'),
+                ),
+              ],
+            ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        emailInputBox,
-        passwordInputBox,
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-          child: MaterialButton(
-            onPressed: _onSubmit,
-            shape: const RoundedRectangleBorder(
-                side: BorderSide(color: Colors.amber, width: 2),
-                borderRadius: BorderRadius.all(Radius.circular(20))),
-            child: const Text(
-              "Continue with email",
-              style: TextStyle(
-                  color: Colors.amber,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold),
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          emailInputBox,
+          passwordInputBox,
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
+            child: MaterialButton(
+              onPressed: _onPress,
+              color: Colors.amber,
+              shape: const RoundedRectangleBorder(
+                  side: BorderSide(color: Colors.amber, width: 2),
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              child: const Text(
+                "Continue with email",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
-        )
-      ],
+          )
+        ],
+      ),
     );
   }
 }
