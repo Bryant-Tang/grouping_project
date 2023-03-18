@@ -1,22 +1,11 @@
-// import 'package:google_fonts/google_fonts.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:grouping_project/pages/auth/cover.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
-// import 'package:provider/provider.dart';
 import 'package:grouping_project/service/auth_service.dart';
-// import 'package:grouping_project/model/user_model.dart';
-// import 'package:grouping_project/firebase_options.dart';
-
 import 'package:grouping_project/components/message.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 
-// import 'package:grouping_project/pages/home/home_group_page.dart';
-// import 'package:grouping_project/pages/home/home_page/home_upcoming_page.dart';
-// import 'package:grouping_project/pages/home/home_page/home_tracked_mission_page.dart';
-
 // progress card
 import 'package:grouping_project/components/card_view/progress.dart';
+import 'package:grouping_project/pages/home/home_page/over_view.dart';
 
 // 測試新功能用，尚未完工，請勿使用或刪除
 import 'package:grouping_project/components/card_view/card_view_template.dart';
@@ -68,27 +57,30 @@ class _TestPageState extends State<MyHomePage> {
           automaticallyImplyLeading: false,
         ),
         body: Container(
-          height: MediaQuery.of(context).size.height - 300,
-          child: Column(children: [
-            const Expanded(
-              flex: 3,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height - 120,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const[
+            Expanded(
+              flex: 2,
               child: Progress(),
             ),
             // Progress 位置
-            const SizedBox(
-              height: 3,
-            ),
-            const Expanded(
-              flex: 2,
-              child: RawChip(label: Text('widget')),
-            ),
-            const SizedBox(
+            SizedBox(
               height: 3,
             ),
             Expanded(
               flex: 5,
-              child: differentFunctionPage[funtionSelect],
-            )
+              child: OverView()
+            ),
+            // const SizedBox(
+            //   height: 3,
+            // ),
+            // Expanded(
+            //   flex: 5,
+            //   child: differentFunctionPage[funtionSelect],
+            // )
           ]),
         ),
         // 利用 extendBody: true 以及 BottomAppBar 的 shape, clipBehavior
