@@ -52,15 +52,6 @@ class AuthService {
     return cur;
   }
 
-  String? getProvider() {
-    List<UserInfo>? providerData = _auth.currentUser?.providerData;
-
-    if (providerData!.length < 2) {
-      return providerData[0].providerId;
-    }
-    return null;
-  }
-
   /// Change the password of the target user
   Future<void> setPassword(User user, String password) async {
     await user.updatePassword(password);
