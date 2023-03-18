@@ -1,6 +1,7 @@
+// import 'dart:convert';
 
 import 'package:grouping_project/components/component_lib.dart';
-import 'package:grouping_project/model_lib.dart';
+// import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
@@ -59,12 +60,20 @@ class _UserNameRegisterPage extends StatefulWidget {
 }
 
 class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
+  final _formKey = GlobalKey<FormState>();
   final headLineText = "使用者名稱";
   final content = "請輸入此帳號的使用者名稱";
   final inputBox = GroupingInputField(
     labelText: "USERNAME 使用者名稱",
     boxIcon: Icons.people,
     boxColor: Colors.grey,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return "使用者名稱請勿留空";
+      } else {
+        return null;
+      }
+    },
   );
 
   @override
@@ -72,7 +81,7 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: inputBox,
+      body: Form(key: _formKey, child: inputBox),
       toggleBar: NavigationToggleBar(
         goBackButtonText: "上一步",
         goToNextButtonText: "下一步",
@@ -81,11 +90,13 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
         },
         goToNextButtonHandler: () {
           // print("input box: ${textController.text}\n");
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => _UserPasswordRegisterPage(
-                      email: widget.email, userName: inputBox.inputText)));
+          if (_formKey.currentState!.validate()) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => _UserPasswordRegisterPage(
+                        email: widget.email, userName: inputBox.inputText)));
+          }
         },
       ),
     );
@@ -104,18 +115,37 @@ class _UserPasswordRegisterPage extends StatefulWidget {
 }
 
 class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
+  final _formKey = GlobalKey<FormState>();
   final headLineText = "使用者密碼";
   final content = "請輸入此帳號的使用者密碼";
-  final password1 = GroupingInputField(
+  String password = "";
+  String confirmedPassword = "";
+  final passwordField = GroupingInputField(
     labelText: "PASSWORD 使用者密碼",
     boxIcon: Icons.password,
     boxColor: Colors.grey,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return "密碼請勿留空";
+      } else if (value.length <= 6) {
+        return "密碼長度必須大於6個字元";
+      }
+      return null;
+    },
   );
-  final password2 = GroupingInputField(
+  final passwordConfirmField = GroupingInputField(
     labelText: "再次輸入密碼",
     boxIcon: Icons.password,
     boxColor: Colors.grey,
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return "確認欄位請勿留空";
+      } else {
+        return null;
+      }
+    },
   );
+
   void dialog() {
     showDialog<String>(
         context: context,
@@ -138,14 +168,17 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: Column(
-        children: <Widget>[
-          password1,
-          const SizedBox(
-            height: 25,
-          ),
-          password2,
-        ],
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            passwordField,
+            const SizedBox(
+              height: 15,
+            ),
+            passwordConfirmField
+          ],
+        ),
       ),
       toggleBar: NavigationToggleBar(
           goBackButtonText: "上一步",
@@ -154,19 +187,24 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
             Navigator.pop(context);
           },
           goToNextButtonHandler: () {
-            String passwordText = password1.inputText;
-            String passwordConfirmText = password2.inputText;
-            if (passwordText == passwordConfirmText) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => _SignUpFinishPage(
-                          email: widget.email,
-                          userName: widget.userName,
-                          password: passwordText)));
-            } else {
-              debugPrint("password does not match");
-              dialog();
+            setState(() {
+              password = passwordField.inputText;
+              confirmedPassword = passwordConfirmField.inputText;
+            });
+            if (_formKey.currentState!.validate()) {
+              // debugPrint('check');
+              if (password == confirmedPassword) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => _SignUpFinishPage(
+                            email: widget.email,
+                            userName: widget.userName,
+                            password: password)));
+              } else {
+                debugPrint("password does not match");
+                dialog();
+              }
             }
           }),
     );
@@ -233,40 +271,76 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
 //   }
 // }
 
-class _SignUpFinishPage extends StatelessWidget {
+class _SignUpFinishPage extends StatefulWidget {
   final String email;
   final String userName;
   final String password;
   const _SignUpFinishPage(
       {required this.email, required this.userName, required this.password});
-  final headLineText = "帳號創建完成!";
+
+  @override
+  State<_SignUpFinishPage> createState() => _SignUpFinishPageState();
+}
+
+class _SignUpFinishPageState extends State<_SignUpFinishPage> {
+  final headLineText = "帳號資訊建立創建完成!";
+
   final content = "歡迎加入 Grouping 一起與夥伴創造冒險吧";
+
+  void showErrorDialog(String errorTitle, String errorMessage) {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text(errorTitle),
+              content: Text(errorMessage),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('確認'),
+                ),
+              ],
+            ));
+  }
+
+  void _onPress() async {
+    AuthService authService = AuthService();
+    await authService
+        .emailSignUp(widget.email, widget.password)
+        .then((value) => debugPrint("Sign Up Successfully"))
+        .catchError((error) {
+      showErrorDialog(error.code, error.toString());
+    });
+    debugPrint('註冊信箱： ${widget.email}\n使用者名稱${widget.userName}');
+    if (context.mounted) {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: const GroupingLogo(),
+      body: Column(
+        children: <Widget>[
+          HeadlineWithContent(headLineText: "使用者", content: widget.userName),
+          const Divider(color: Colors.amber),
+          HeadlineWithContent(headLineText: "帳號", content: widget.email),
+          const Divider(color: Colors.amber),
+          HeadlineWithContent(headLineText: "密碼", content: widget.password),
+          const Divider(color: Colors.amber),
+        ],
+      ),
       toggleBar: NavigationToggleBar(
         goBackButtonText: "修改資料",
-        goToNextButtonText: "前往我的主頁",
+        goToNextButtonText: "完成註冊",
         goBackButtonHandler: () {
           Navigator.pop(context);
         },
-        goToNextButtonHandler: () async {
-          final AuthService authService = AuthService();
-          final UserModel user = await authService.emailSignUp(email, password);
-          // await setProfileForPerson(
-          //     newProfile: UserProfile(
-          //         email: email, userName: userName, userId: userModel.uid),
-          //     userId: userModel.uid);
-          debugPrint('註冊信箱： $email\n使用者名稱$userName');
-
-          if (context.mounted) {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const MyHomePage()));
-          }
-        },
+        goToNextButtonHandler: _onPress,
       ),
     );
   }

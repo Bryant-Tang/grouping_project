@@ -5,14 +5,15 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:googleapis/people/v1.dart';
-import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 
-//For all service, you need an AuthService instance
+/// For all auth service, you need an AuthService instance
+///
+/// For google login locol host,
+/// flutter run --web-hostname localhost --web-port 5000
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  //kIsWeb => Web
-  //Platform.isIos / Platform.isAndroid => IOS ? Android;
+  // kIsWeb => Web
+  // Platform.isIos / Platform.isAndroid => IOS ? Android;
   // Change scopes parameter for different scope
   final GoogleSignIn _googleSignInWeb = GoogleSignIn(
     clientId:
@@ -25,14 +26,13 @@ class AuthService {
     scopes: <String>['email'],
   );
 
-  String _email = '';
-
   Stream<UserModel?> get onAuthStateChanged {
     return _auth
         .authStateChanges()
         .map((User? user) => _userModelFromAuth(user));
   }
 
+  /// Change Auth User into UserModel
   UserModel? _userModelFromAuth(User? user) {
     if (user != null) {
       return UserModel(uid: user.uid);
@@ -41,69 +41,104 @@ class AuthService {
     }
   }
 
+  /// Returns the Uid of current user
   String getUid() {
     String cur = _auth.currentUser!.uid;
     return cur;
   }
 
-//These 3 func. are for two step Login/SignUp
-//For using it, pass email and password in two step
-  Future<void>? setEmail(String? email) {
-    if (email != null) {
-      _email = email;
-    }
-  }
-
+  /// Change the password of the target user
   Future<void> setPassword(User user, String password) async {
     await user.updatePassword(password);
   }
 
-//Login with email & password (with all the information)
+  /// Login with email & password
+  ///
+  /// return userModel if succeed., return error code if FireAuthException catched.
+  ///
+  /// Error codes are:
+  /// * **invalid-email:**
+  /// * Thrown if the email address is not valid.
+  /// * **user-disabled:**
+  /// * Thrown if the user corresponding to the given email has been disabled.
+  /// * **user-not-found:**
+  /// * Thrown if there is no user corresponding to the given email.
+  /// * **wrong-password:**
+  /// * Thrown if the password is invalid for the given email, or the account corresponding to the email does not have a password set.
   Future emailLogIn(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User user = result.user!;
-      _email = '';
 
       return _userModelFromAuth(user);
+    } on FirebaseAuthException catch (error) {
+      rethrow;
+    } catch (error) {
+      debugPrint(error.toString());
+    }
+  }
+
+  /// sing up with email & password
+  ///
+  /// return userModel if succeed, return null if any error catched.
+  ///
+  /// Error codes are:
+  /// * **email-already-in-use:**
+  /// * Thrown if there already exists an account with the given email address.
+  /// * **invalid-email:**
+  /// * Thrown if the email address is not valid.
+  /// * **operation-not-allowed:**
+  /// * Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
+  /// * **weak-password:**
+  /// * Thrown if the password is not strong enough.
+  Future emailSignUp(String email, String password) async {
+    try {
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      User user = result.user!;
+
+      return _userModelFromAuth(user);
+    } on FirebaseAuthException catch (error) {
+      rethrow;
     } catch (e) {
       debugPrint(e.toString());
       return null;
     }
   }
 
-//sing up with email & password (with all the information)
-  Future emailSignUp(String email, String password) async {
+  /// Send login email link to target email address
+  /// flutter run --web-hostname localhost --web-port 5000 for easy test
+  ///
+  /// ! onlu 5 mails a day !
+  Future<void> sendEmailLink(String email) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      User user = result.user!;
-      setPassword(user, user.uid);
-      _email = '';
-
-      return _userModelFromAuth(user);
+      ActionCodeSettings actionCodeSettings = ActionCodeSettings(
+          url: "https://127.0.0.1:5000/#/", handleCodeInApp: true);
+      _auth.sendSignInLinkToEmail(
+          email: email, actionCodeSettings: actionCodeSettings);
     } catch (e) {
-      print(e.toString());
-      return null;
+      debugPrint(e.toString());
     }
   }
 
+  /// To handle the email link
+  void handleEmailLink() {}
+
+  /// Thrid party login with provider name as parameter
+  ///
+  /// return UserModel if succeed, return null if provier not suported of implemented.
   Future<UserModel?> thridPartyLogin(String provider) async {
     switch (provider) {
-      case "apple":
-        //apple login
-        break;
       case "google":
         return await googleLogin();
-      case "gitub":
-        //github login
-        break;
       default:
+        return null;
     }
   }
 
-//Google Login
+  /// Google Login
+  /// return UserModel if succeed, no return if failed
   Future googleLogin() async {
     bool kisweb;
     try {
@@ -132,9 +167,6 @@ class AuthService {
           idToken: googleAuth.idToken,
         );
         UserCredential result = await _auth.signInWithCredential(credential);
-        if (result.user!.providerData[0].email != null) {
-          setEmail(result.user!.providerData[0].email);
-        }
 
         return _userModelFromAuth(result.user);
       }
@@ -153,18 +185,15 @@ class AuthService {
           idToken: googleAuth.idToken,
         );
         UserCredential result = await _auth.signInWithCredential(credential);
-        if (result.user!.providerData[0].email != null) {
-          setEmail(result.user!.providerData[0].email);
-        }
 
         return _userModelFromAuth(result.user);
       }
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
-//Google Log out
+  /// Google Log out, no return
   Future<void> googleSignOut() async {
     if (kIsWeb) {
       _googleSignInWeb.disconnect();
@@ -174,41 +203,13 @@ class AuthService {
     }
   }
 
-//  Future signInAnon() async {
-//    try {
-//      UserCredential result = await _auth.signInAnonymously();
-//      User? user = result.user;
-//      return _userModelFromAuth(user);
-//    } catch (e) {
-//      return null;
-//    }
-//  }
-
+  /// Email sign out, no return
   Future signOut() async {
     try {
       return await _auth.signOut();
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       return null;
     }
-  }
-
-  //a function determine a user is logging in for the first time or not.
-  //if the user have logging before, return true; otherwise, return false.
-  Future<bool> haveEverLoginBefore(String userId) async {
-    final clientLocation =
-        FirebaseFirestore.instance.collection('client_properties').doc(userId);
-    bool ans = false;
-    await clientLocation.get().then(
-      (DocumentSnapshot doc) {
-        ans = true;
-      },
-      onError: (e) {
-        debugPrint(
-            '[Notification] this client is logging in for the first time.');
-        ans = false;
-      },
-    );
-    return ans;
   }
 }

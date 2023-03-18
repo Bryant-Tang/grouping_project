@@ -19,7 +19,7 @@ class CardEditDoneState extends State<CardEditDone> {
           actions: [
             IconButton(
               onPressed: () {
-                print('switch to personal Intro.');
+                debugPrint('switch to personal Intro.');
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.circle),
@@ -162,7 +162,7 @@ class CardEditDoneState extends State<CardEditDone> {
                 children: [
                   TextButton(
                     onPressed: () {
-                      print('share');
+                      debugPrint('share');
                     },
                     style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
@@ -186,7 +186,7 @@ class CardEditDoneState extends State<CardEditDone> {
                   ),
                   TextButton(
                     onPressed: () {
-                      print('theme');
+                      debugPrint('theme');
                     },
                     style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
