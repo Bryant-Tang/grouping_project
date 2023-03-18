@@ -37,7 +37,6 @@ class MissionModel extends DataModel<MissionModel> {
       this.notifications})
       : super(
             databasePath: 'missions',
-            firestoreRequired: true,
             storageRequired: false,
             setOwnerRequired: true);
 
@@ -99,9 +98,12 @@ class MissionModel extends DataModel<MissionModel> {
   }
 
   @override
-  void fromFirestore(
-      {required Map<String, dynamic> data, ProfileModel? ownerProfile}) {
+  MissionModel fromFirestore(
+      {required String id,
+      required Map<String, dynamic> data,
+      ProfileModel? ownerProfile}) {
     // TODO: implement fromFirestore
+    throw UnimplementedError();
   }
 
   @override

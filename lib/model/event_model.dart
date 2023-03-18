@@ -30,7 +30,6 @@ class EventModel extends DataModel<EventModel> {
       this.notifications})
       : super(
             databasePath: 'events',
-            firestoreRequired: true,
             storageRequired: false,
             setOwnerRequired: true);
 
@@ -46,9 +45,12 @@ class EventModel extends DataModel<EventModel> {
   }
 
   @override
-  void fromFirestore(
-      {required Map<String, dynamic> data, ProfileModel? ownerProfile}) {
+  EventModel fromFirestore(
+      {required String id,
+      required Map<String, dynamic> data,
+      ProfileModel? ownerProfile}) {
     // TODO: implement fromFirestore
+    throw UnimplementedError();
   }
 
   @override

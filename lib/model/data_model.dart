@@ -6,7 +6,6 @@ import 'profile_model.dart';
 abstract class DataModel<T extends DataModel<T>> {
   final String? id;
   String databasePath;
-  bool firestoreRequired;
   bool storageRequired;
   bool setOwnerRequired;
 
@@ -16,13 +15,8 @@ abstract class DataModel<T extends DataModel<T>> {
   DataModel(
       {required this.id,
       required this.databasePath,
-      required this.firestoreRequired,
       required this.storageRequired,
       required this.setOwnerRequired});
-
-  /// !! NOTICE !!
-  /// every subclass should override this method
-  T makeEmptyInstance();
 
   /// !! NOTICE !!
   /// every subclass should override this method
@@ -30,10 +24,8 @@ abstract class DataModel<T extends DataModel<T>> {
 
   /// !! NOTICE !!
   /// every subclass should override this method
-  void fromFirestore(
-      {required Map<String, dynamic> data, ProfileModel? ownerProfile});
-
-  /// !! NOTICE !!
-  /// every subclass should override this method
-  void setOwner(ProfileModel ownerProfile);
+  T fromFirestore(
+      {required String id,
+      required Map<String, dynamic> data,
+      ProfileModel? ownerProfile});
 }

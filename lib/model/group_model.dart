@@ -5,14 +5,8 @@ class GroupModel extends DataModel<GroupModel> {
   GroupModel({super.id})
       : super(
             databasePath: 'groups',
-            firestoreRequired: true,
             storageRequired: false,
             setOwnerRequired: false);
-
-  @override
-  GroupModel makeEmptyInstance() {
-    return GroupModel();
-  }
 
   @override
   Map<String, dynamic> toFirestore() {
@@ -20,13 +14,10 @@ class GroupModel extends DataModel<GroupModel> {
   }
 
   @override
-  void fromFirestore(
-      {required Map<String, dynamic> data, ProfileModel? ownerProfile}) {
-    return;
-  }
-
-  @override
-  void setOwner(ProfileModel ownerProfile) {
-    return;
+  GroupModel fromFirestore(
+      {required String id,
+      required Map<String, dynamic> data,
+      ProfileModel? ownerProfile}) {
+    return GroupModel(id: id);
   }
 }

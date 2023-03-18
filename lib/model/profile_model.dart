@@ -35,15 +35,8 @@ class ProfileModel extends DataModel<ProfileModel> {
       : super(
             id: 'profile',
             databasePath: 'profiles',
-            firestoreRequired: true,
             storageRequired: false,
             setOwnerRequired: false);
-
-  /// ### a tricky method to ensure constructing empty instance of this type
-  @override
-  ProfileModel makeEmptyInstance() {
-    return ProfileModel();
-  }
 
   /// ### convert data from this instance to the type accepted for firestore
   /// * ***DO NOT*** use this method in frontend
@@ -72,8 +65,10 @@ class ProfileModel extends DataModel<ProfileModel> {
   /// ### set the data from firestore for this instance, and also seting attribute about owner if given
   /// * ***DO NOT*** use this method in frontend
   @override
-  void fromFirestore(
-      {required Map<String, dynamic> data, ProfileModel? ownerProfile}) {
+  ProfileModel fromFirestore(
+      {required String id,
+      required Map<String, dynamic> data,
+      ProfileModel? ownerProfile}) {
     List<ProfileTag> fromFirestoreTags = [];
     for (String tag in List.from(data['tag'])) {
       fromFirestoreTags.add(ProfileTag(tag: tag, content: ''));
@@ -83,21 +78,15 @@ class ProfileModel extends DataModel<ProfileModel> {
       fromFirestoreTags[i].content = content;
     }
 
-    name = data['name'];
-    email = data['email'];
-    color = data['color'];
-    nickname = data['nickname'];
-    slogan = data['slogan'];
-    introduction = data['introduction'];
-    tags = fromFirestoreTags;
+    ProfileModel processData = ProfileModel(
+        name: data['name'],
+        email: data['email'],
+        color: data['color'],
+        nickname: data['nickname'],
+        slogan: data['slogan'],
+        introduction: data['introduction'],
+        tags: fromFirestoreTags);
 
-    return;
-  }
-
-  /// ### set the attribute about owner if given
-  /// * ***DO NOT*** use this method in ***any case*** except in `fromFirestore()`
-  @override
-  void setOwner(ProfileModel ownerProfile) {
-    return;
+    return processData;
   }
 }
