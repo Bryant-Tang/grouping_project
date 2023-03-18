@@ -28,7 +28,7 @@ class CardViewTemplate extends StatefulWidget {
 
 class _CardViewTemplateState extends State<CardViewTemplate> {
   late final StatelessWidget detail;
-  late StatelessWidget show;
+  late Widget show;
 
   /// 隨機選擇使用的顏色
   final Color usingColor = randomColor[Random().nextInt(randomColor.length)];
@@ -40,9 +40,14 @@ class _CardViewTemplateState extends State<CardViewTemplate> {
     super.initState();
     // ~~~~~~~
     detail = widget.detailShrink;
-    show = _shrink(
-      detail: detail,
-      usingColor: usingColor,
+    show = AnimatedContainer(
+      duration: Duration(milliseconds: 250),
+      height: 84,
+      child: _shrink(
+        detail: widget.detailShrink,
+        usingColor: usingColor,
+        height: 84,
+      )
     );
   }
 
@@ -56,15 +61,26 @@ class _CardViewTemplateState extends State<CardViewTemplate> {
       child: InkWell(
           onTap: () {
             if (state == 0) {
-              show = _enlarge(
-                detail: detail,
-                usingColor: usingColor,
+              
+              show = AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                height: 405,
+                child: _enlarge(
+                  detail: widget.detailEnlarge,
+                  usingColor: usingColor,
+                  height: 405,
+                )
               );
               state = 1;
             } else {
-              show = _shrink(
-                detail: detail,
-                usingColor: usingColor,
+              show = AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                height: 84,
+                child: _shrink(
+                  detail: widget.detailShrink,
+                  usingColor: usingColor,
+                  height: 84,
+                )
               );
               state = 0;
             }
@@ -76,7 +92,7 @@ class _CardViewTemplateState extends State<CardViewTemplate> {
 }
 
 class _shrink extends StatelessWidget {
-  _shrink({super.key, required this.detail, required this.usingColor});
+  _shrink({super.key, required this.detail, required this.usingColor, required this.height});
 
   final StatelessWidget detail;
   final Color usingColor;
@@ -84,7 +100,7 @@ class _shrink extends StatelessWidget {
 
 
   // height should vary according to detailed of differet card(Upcoming, mission, message)
-  var height = 84.0;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -128,13 +144,13 @@ class _shrink extends StatelessWidget {
 }
 
 class _enlarge extends StatelessWidget {
-  _enlarge({super.key, required this.detail, required this.usingColor});
+  _enlarge({super.key, required this.detail, required this.usingColor, required this.height});
 
   final StatelessWidget detail;
   final Color usingColor;
 
   // height should vary according to detailed of differet card(Upcoming, mission, message)
-  var height = 84.0;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -166,8 +182,8 @@ class _enlarge extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: 15,
-              top: 3,
+              left: 10,
+              top: 18,
               // 放入各個 card view descript
               child: detail,
             )
