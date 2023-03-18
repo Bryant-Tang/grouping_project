@@ -62,7 +62,8 @@ class ProfileModel extends DataModel<ProfileModel> {
     };
   }
 
-  /// ### set the data from firestore for this instance, and also seting attribute about owner if given
+  /// ### return an instance with data from firestore
+  /// * also seting attribute about owner if given
   /// * ***DO NOT*** use this method in frontend
   @override
   ProfileModel fromFirestore(
