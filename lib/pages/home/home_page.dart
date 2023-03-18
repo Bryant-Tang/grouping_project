@@ -13,12 +13,12 @@ import 'package:grouping_project/components/message.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 
 import 'package:grouping_project/pages/home/home_group_page.dart';
-import 'package:grouping_project/pages/home/home_upcoming_page.dart';
-import 'package:grouping_project/pages/home/home_tracked_mission_page.dart';
+import 'package:grouping_project/pages/home/home_page/home_upcoming_page.dart';
+import 'package:grouping_project/pages/home/home_page/home_tracked_mission_page.dart';
 
 // 測試新功能用，尚未完工，請勿使用或刪除
 import 'package:grouping_project/components/card_view/card_view_template.dart';
-import 'package:grouping_project/pages/home/empty.dart';
+import 'package:grouping_project/pages/home/home_page/empty.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 
 import 'package:flutter/material.dart';
