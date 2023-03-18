@@ -2,8 +2,6 @@ import 'data_model.dart';
 import 'profile_model.dart';
 import 'user_model.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 /// to create a MissionState use such like this
 ///
 /// MissionState state = MissionState.upComing;
@@ -28,7 +26,7 @@ class MissionModel extends DataModel<MissionModel> {
   int color = 0xFFFCBF49;
 
   MissionModel(
-      {super.id = '',
+      {super.id,
       this.title,
       this.startTime,
       this.endTime,
@@ -36,9 +34,11 @@ class MissionModel extends DataModel<MissionModel> {
       this.introduction,
       this.state,
       this.tags,
-      this.notifications}) {
-    super.databasePath = 'missions';
-  }
+      this.notifications})
+      : super(
+            databasePath: 'missions',
+            storageRequired: false,
+            setOwnerRequired: true);
 
   dynamic _convertMissionState({int? stateCode}) {
     if (stateCode != null) {
@@ -87,9 +87,8 @@ class MissionModel extends DataModel<MissionModel> {
   }
 
   @override
-  MissionModel makeInstance() {
-    // TODO: implement makeInstance
-    throw UnimplementedError();
+  MissionModel makeEmptyInstance() {
+    return MissionModel();
   }
 
   @override
@@ -99,12 +98,16 @@ class MissionModel extends DataModel<MissionModel> {
   }
 
   @override
-  void fromFirestore(Map<String, dynamic> data) {
+  MissionModel fromFirestore(
+      {required String id,
+      required Map<String, dynamic> data,
+      ProfileModel? ownerProfile}) {
     // TODO: implement fromFirestore
+    throw UnimplementedError();
   }
 
   @override
-  void setOwner(Map<String, dynamic> data) {
+  void setOwner(ProfileModel ownerProfile) {
     // TODO: implement setOwner
   }
 

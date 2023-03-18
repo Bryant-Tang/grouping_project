@@ -1,22 +1,18 @@
 import 'data_model.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-/// to create a ProfileTag use ProfileTag()
-/// and pass all things you want to add
+/// ## the type for [ProfileModel.tags]
+/// * [tag] : the key for this tag
+/// * [content] : the value for this tag
 class ProfileTag {
   String tag;
   String content;
   ProfileTag({required this.tag, required this.content});
 }
 
-/// to create a ProfileModel use ProfileModel()
-/// and pass all things you want to add
-///
-/// to upload a ProfileModel use .set() method
-///
-/// to get a ProfileModel use .getAll() method
+/// ## a data model for profile, either user or group
+/// * ***DO NOT*** pass or set id for ProfileModel
 class ProfileModel extends DataModel<ProfileModel> {
   String? name;
   String? email;
@@ -36,106 +32,62 @@ class ProfileModel extends DataModel<ProfileModel> {
       this.introduction,
       this.tags,
       this.photo})
-      : super(id: '') {
-    super.databasePath = 'profile';
-  }
+      : super(
+            id: 'profile',
+            databasePath: 'profiles',
+            storageRequired: false,
+            setOwnerRequired: false);
 
-  @override
-  ProfileModel makeInstance() {
-    // TODO: implement makeInstance
-    throw UnimplementedError();
-  }
-
+  /// ### convert data from this instance to the type accepted for firestore
+  /// * ***DO NOT*** use this method in frontend
   @override
   Map<String, dynamic> toFirestore() {
-    // TODO: implement toFirestore
-    throw UnimplementedError();
+    List<String> toFirestoreTagList = [];
+    List<String> toFirestoreTagContentList = [];
+
+    for (var profileTag in tags ?? <ProfileTag>[]) {
+      toFirestoreTagList.add(profileTag.tag);
+      toFirestoreTagContentList.add(profileTag.content);
+    }
+
+    return {
+      if (name != null) 'name': name,
+      if (email != null) 'email': email,
+      if (color != null) 'color': color,
+      if (nickname != null) 'nickname': nickname,
+      if (slogan != null) 'slogan': slogan,
+      if (introduction != null) 'introduction': introduction,
+      if (tags != null) 'tag': toFirestoreTagList,
+      if (tags != null) 'tag_content': toFirestoreTagContentList,
+    };
   }
 
+  /// ### return an instance with data from firestore
+  /// * also seting attribute about owner if given
+  /// * ***DO NOT*** use this method in frontend
   @override
-  void fromFirestore(Map<String, dynamic> data) {
-    // TODO: implement fromFirestore
+  ProfileModel fromFirestore(
+      {required String id,
+      required Map<String, dynamic> data,
+      ProfileModel? ownerProfile}) {
+    List<ProfileTag> fromFirestoreTags = [];
+    for (String tag in List.from(data['tag'])) {
+      fromFirestoreTags.add(ProfileTag(tag: tag, content: ''));
+    }
+    int i = 0;
+    for (String content in List.from(data['tag_content'])) {
+      fromFirestoreTags[i].content = content;
+    }
+
+    ProfileModel processData = ProfileModel(
+        name: data['name'],
+        email: data['email'],
+        color: data['color'],
+        nickname: data['nickname'],
+        slogan: data['slogan'],
+        introduction: data['introduction'],
+        tags: fromFirestoreTags);
+
+    return processData;
   }
-
-  @override
-  void setOwner(Map<String, dynamic> data) {
-    // TODO: implement setOwner
-  }
-
-  // @override
-  // Future<ProfileModel> fromFirestore(
-  //     QueryDocumentSnapshot<Map<String, dynamic>> snapshot,
-  //     SnapshotOptions? options) async {
-  //   final data = snapshot.data();
-
-  //   List<ProfileTag> fromFirestoreTags = [];
-  //   for (String tag in List.from(data['tag'])) {
-  //     fromFirestoreTags.add(ProfileTag(tag: tag, content: ''));
-  //   }
-  //   int i = 0;
-  //   for (String content in List.from(data['tag_content'])) {
-  //     fromFirestoreTags[i].content = content;
-  //   }
-
-  //   return ProfileModel(
-  //     name: data['name'],
-  //     email: data['email'],
-  //     color: data['color'],
-  //     nickname: data['nickname'],
-  //     slogan: data['slogan'],
-  //     introduction: data['introduction'],
-  //     tags: fromFirestoreTags,
-  //   );
-  // }
-
-  // @override
-  // Map<String, dynamic> toFirestore() {
-  //   List<String> toFirestoreTags = [];
-  //   List<String> toFirestoreTagContents = [];
-  //   for (ProfileTag tag in tags ?? []) {
-  //     toFirestoreTags.add(tag.tag);
-  //     toFirestoreTagContents.add(tag.content);
-  //   }
-
-  //   return {
-  //     if (name != null) 'name': name,
-  //     if (email != null) 'email': email,
-  //     if (color != null) 'color': color,
-  //     if (nickname != null) 'nickname': nickname,
-  //     if (slogan != null) 'slogan': slogan,
-  //     if (introduction != null) 'introduction': introduction,
-  //     if (tags != null) 'tag': toFirestoreTags,
-  //     if (tags != null) 'tag_content': toFirestoreTagContents,
-  //   };
-  // }
-
-  // /// if it is a group profile, remember to pass group id
-  // ///
-  // /// remember to add await
-  // @override
-  // Future<void> set({String? groupId}) async {
-  //   await DataController(groupId: groupId).setMethod(processData: this);
-  // }
-
-  // /// if it is a group profile, remember to pass group id
-  // ///
-  // /// remember to add await
-  // Future<ProfileModel> get({String? groupId}) async {
-  //   ProfileModel processData = (await DataController(groupId: groupId)
-  //       .getAllMethod<ProfileModel>(dataTypeToGet: this))[0];
-  //   return processData;
-  // }
 }
-
-// Future<Map<String, String>> getGroupList({required String userId}) async {
-//   final groupsLocation = FirebaseFirestore.instance
-//       .collection('group_properties')
-//       .doc(userId)
-//       .collection('groups');
-//   final groupListSnap = await groupsLocation.get();
-//   Map<String, String> groupList = {};
-//   for (var groupSnap in groupListSnap.docs) {
-//     groupList.addAll({groupSnap.id: groupSnap.data()['name'] as String});
-//   }
-//   return groupList;
-// }
