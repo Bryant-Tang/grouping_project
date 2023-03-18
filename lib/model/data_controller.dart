@@ -145,20 +145,21 @@ class DataController {
         dataList.add(temp);
       }
     } else if (storageSnapList != null) {
-      for (var snap in storageSnapList) {
-        T temp = dataTypeToGet.makeEmptyInstance();
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        throw UnimplementedError();
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        if (ownerProfile != null) {
-          temp.setOwner(ownerProfile);
-        }
-        dataList.add(temp);
-      }
+      // !!!!!! unimplement yet !!!!!!
+      // !!!!!! unimplement yet !!!!!!
+      // !!!!!! unimplement yet !!!!!!
+      throw UnimplementedError();
+      // !!!!!! unimplement yet !!!!!!
+      // !!!!!! unimplement yet !!!!!!
+      // !!!!!! unimplement yet !!!!!!
+      // for (var snap in storageSnapList) {
+      //   T temp = dataTypeToGet.makeEmptyInstance();
+
+      //   if (ownerProfile != null) {
+      //     temp.setOwner(ownerProfile);
+      //   }
+      //   dataList.add(temp);
+      // }
     }
 
     if (_forUser) {
