@@ -174,7 +174,7 @@ class CardEditDoneState extends State<CardEditDone> {
                   ),
                   TextButton(
                     onPressed: () {
-                      print('edit');
+                      debugPrint('edit');
                     },
                     style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(

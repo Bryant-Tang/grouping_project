@@ -5,14 +5,17 @@ class GroupingInputField extends StatefulWidget {
   final IconData boxIcon;
   final Color boxColor;
   final String? Function(String? value) validator;
-  String inputText = "";
-  GroupingInputField({
+  final String inputText = "";
+  const GroupingInputField({
     super.key,
     required this.labelText,
     required this.boxIcon,
     required this.boxColor,
     required this.validator,
   });
+  set inputText(String text) {
+    inputText = text;
+  }
 
   set validator(String? Function(String? value) validator) {
     this.validator = validator;
@@ -29,7 +32,8 @@ class _GroupingInputFieldState extends State<GroupingInputField> {
   void initState() {
     super.initState();
     // Start listening to changes.
-    textController.addListener(() => widget.inputText = getInputText());
+    textController
+        .addListener(() => setState(() => widget.inputText = getInputText()));
   }
 
   String getInputText() {
