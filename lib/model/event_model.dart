@@ -2,8 +2,6 @@ import 'data_model.dart';
 import 'profile_model.dart';
 import 'user_model.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 /// to create a EventModel use EventModel()
 /// and pass all things you want to add
 ///
@@ -22,21 +20,22 @@ class EventModel extends DataModel<EventModel> {
   int color = 0xFFFCBF49;
 
   EventModel(
-      {super.id = '',
+      {super.id,
       this.title,
       this.startTime,
       this.endTime,
       this.contributors,
       this.introduction,
       this.tags,
-      this.notifications}) {
-    super.databasePath = 'events';
-  }
+      this.notifications})
+      : super(
+            databasePath: 'events',
+            storageRequired: false,
+            setOwnerRequired: true);
 
   @override
-  EventModel makeInstance() {
-    // TODO: implement makeInstance
-    throw UnimplementedError();
+  EventModel makeEmptyInstance() {
+    return EventModel();
   }
 
   @override
@@ -46,12 +45,16 @@ class EventModel extends DataModel<EventModel> {
   }
 
   @override
-  void fromFirestore(Map<String, dynamic> data) {
+  EventModel fromFirestore(
+      {required String id,
+      required Map<String, dynamic> data,
+      ProfileModel? ownerProfile}) {
     // TODO: implement fromFirestore
+    throw UnimplementedError();
   }
 
   @override
-  void setOwner(Map<String, dynamic> data) {
+  void setOwner(ProfileModel ownerProfile) {
     // TODO: implement setOwner
   }
 
