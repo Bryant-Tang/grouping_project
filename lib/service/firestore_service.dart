@@ -12,8 +12,13 @@ class FirestoreController {
 
   Future<void> set(
       {required Map<String, dynamic> processData,
-      required String collectionPath}) async {
-    await ownerPath.collection(collectionPath).add(processData);
+      required String collectionPath,
+      String? dataId}) async {
+    if (dataId != null) {
+      await ownerPath.collection(collectionPath).doc(dataId).set(processData);
+    } else {
+      await ownerPath.collection(collectionPath).add(processData);
+    }
     return;
   }
 
