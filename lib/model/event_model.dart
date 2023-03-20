@@ -3,12 +3,8 @@ import 'profile_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 
-/// to create a EventModel use EventModel()
-/// and pass all things you want to add
-///
-/// to upload a EventModel use .set() method
-///
-/// to get all EventModel of a user/group use EventModel().getAll()
+/// ## a data model for event
+/// * to upload/download, use `DataController`
 class EventModel extends DataModel<EventModel> {
   String? title;
   DateTime? startTime;
