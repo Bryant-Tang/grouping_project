@@ -82,8 +82,12 @@ class EventModel extends DataModel<EventModel> {
     EventModel processData = EventModel(
       id: id,
       title: data['title'],
-      startTime: (data['start_time'] as Timestamp).toDate(),
-      endTime: (data['end_time'] as Timestamp).toDate(),
+      startTime: data['start_time'] != null
+          ? (data['start_time'] as Timestamp).toDate()
+          : null,
+      endTime: data['end_time'] != null
+          ? (data['end_time'] as Timestamp).toDate()
+          : null,
       contributorIds: data['contributor_ids'] is Iterable
           ? List.from(data['contributor_ids'])
           : null,
@@ -93,7 +97,7 @@ class EventModel extends DataModel<EventModel> {
           ? List.from(data['related_mission_ids'])
           : null,
       notifications: data['notifications'] is Iterable
-          ? _fromFirestoreTimeList(data['notifications'])
+          ? _fromFirestoreTimeList(List.from(data['notifications']))
           : null,
     );
 
