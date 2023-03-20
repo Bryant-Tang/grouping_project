@@ -1,6 +1,7 @@
 import 'data_model.dart';
 import 'profile_model.dart';
-import 'user_model.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 
 /// to create a EventModel use EventModel()
 /// and pass all things you want to add
@@ -12,10 +13,11 @@ class EventModel extends DataModel<EventModel> {
   String? title;
   DateTime? startTime;
   DateTime? endTime;
-  List<UserModel>? contributors;
+  List<String>? contributorIds;
   String? introduction;
   List<String>? tags;
   List<DateTime>? notifications;
+  List<String>? relatedMissionIds;
   String ownerName = 'unknown';
   int color = 0xFFFCBF49;
 
@@ -24,103 +26,85 @@ class EventModel extends DataModel<EventModel> {
       this.title,
       this.startTime,
       this.endTime,
-      this.contributors,
+      this.contributorIds,
       this.introduction,
       this.tags,
+      this.relatedMissionIds,
       this.notifications})
       : super(
             databasePath: 'events',
             storageRequired: false,
             setOwnerRequired: true);
 
-  @override
-  EventModel makeEmptyInstance() {
-    return EventModel();
+  /// convert `List<DateTime>` to `List<Timestamp>`
+  List<Timestamp> _toFirestoreTimeList(List<DateTime> dateTimeList) {
+    List<Timestamp> processList = [];
+    for (DateTime dateTime in dateTimeList) {
+      processList.add(Timestamp.fromDate(dateTime));
+    }
+    return processList;
   }
 
+  /// convert `List<Timestamp>` to `List<DateTime>`
+  List<DateTime> _fromFirestoreTimeList(List<Timestamp> timestampList) {
+    List<DateTime> processList = [];
+    for (Timestamp timestamp in timestampList) {
+      processList.add(timestamp.toDate());
+    }
+    return processList;
+  }
+
+  /// ### convert data from this instance to the type accepted for firestore
+  /// * ***DO NOT*** use this method in frontend
   @override
   Map<String, dynamic> toFirestore() {
-    // TODO: implement toFirestore
-    throw UnimplementedError();
+    return {
+      if (title != null) "title": title,
+      if (startTime != null) "start_time": Timestamp.fromDate(startTime!),
+      if (endTime != null) "end_time": Timestamp.fromDate(endTime!),
+      if (contributorIds != null) "contributor_ids": contributorIds,
+      if (introduction != null) "introduction": introduction,
+      if (tags != null) "tags": tags,
+      if (relatedMissionIds != null) 'related_mission_ids': relatedMissionIds,
+      if (notifications != null)
+        "notifications": _toFirestoreTimeList(notifications!),
+    };
   }
 
+  /// ### return an instance with data from firestore
+  /// * also seting attribute about owner if given
+  /// * ***DO NOT*** use this method in frontend
   @override
   EventModel fromFirestore(
       {required String id,
       required Map<String, dynamic> data,
       ProfileModel? ownerProfile}) {
-    // TODO: implement fromFirestore
-    throw UnimplementedError();
+    EventModel processData = EventModel(
+      id: id,
+      title: data['title'],
+      startTime: (data['start_time'] as Timestamp).toDate(),
+      endTime: (data['end_time'] as Timestamp).toDate(),
+      contributorIds: data['contributor_ids'] is Iterable
+          ? List.from(data['contributor_ids'])
+          : null,
+      introduction: data['introduction'],
+      tags: data['tags'] is Iterable ? List.from(data['tags']) : null,
+      relatedMissionIds: data['related_mission_ids'] is Iterable
+          ? List.from(data['related_mission_ids'])
+          : null,
+      notifications: data['notifications'] is Iterable
+          ? _fromFirestoreTimeList(data['notifications'])
+          : null,
+    );
+
+    processData._setOwner(ownerProfile ?? ProfileModel());
+
+    return processData;
   }
 
-  @override
-  void setOwner(ProfileModel ownerProfile) {
-    // TODO: implement setOwner
+  /// set the data about owner for this instance
+  void _setOwner(ProfileModel ownerProfile) {
+    ownerName = ownerProfile.name ?? 'unknown';
+    color = ownerProfile.color ?? 0xFFFCBF49;
   }
-
-  // @override
-  // Future<EventModel> fromFirestore(
-  //   QueryDocumentSnapshot<Map<String, dynamic>> snapshot,
-  //   SnapshotOptions? options,
-  // ) async {
-  //   final data = snapshot.data();
-
-  //   List<UserModel> fromFireContributors = [];
-  //   if (data['notifications'] is Iterable) {
-  //     for (String element in List.from(data['contributors'])) {
-  //       fromFireContributors.add(UserModel(uid: element));
-  //     }
-  //   }
-
-  //   List<DateTime> fromFireNotifications = [];
-  //   if (data['notifications'] is Iterable) {
-  //     for (Timestamp element in List.from(data['notifications'])) {
-  //       fromFireNotifications.add(element.toDate());
-  //     }
-  //   }
-
-  //   EventModel processData = EventModel(
-  //     id: snapshot.id,
-  //     title: data['title'],
-  //     startTime: data['start_time'].toDate(),
-  //     endTime: data['end_time'].toDate(),
-  //     contributors: fromFireContributors,
-  //     introduction: data['introduction'],
-  //     tags: data['tags'] is Iterable ? List.from(data['tags']) : const [],
-  //     notifications: fromFireNotifications,
-  //   );
-
-  //   ProfileModel ownerProfile = await ProfileModel().get();
-  //   if (ownerProfile.name != null) {
-  //     processData.ownerName = ownerProfile.name as String;
-  //   }
-  //   if (ownerProfile.color != null) {
-  //     processData.color = ownerProfile.color as int;
-  //   }
-
-  //   return processData;
-  // }
-
-  // @override
-  // Map<String, dynamic> toFirestore() {
-  //   List<String> toFireContributors = [];
-  //   contributors?.forEach((element) {
-  //     toFireContributors.add(element.uid);
-  //   });
-
-  //   List<Timestamp> toFireNotifications = [];
-  //   notifications?.forEach((element) {
-  //     toFireNotifications.add(Timestamp.fromDate(element));
-  //   });
-
-  //   return {
-  //     if (title != null) "title": title,
-  //     if (startTime != null) "start_time": Timestamp.fromDate(startTime!),
-  //     if (endTime != null) "end_time": Timestamp.fromDate(endTime!),
-  //     if (contributors != null) "contributors": toFireContributors,
-  //     if (introduction != null) "introduction": introduction,
-  //     if (tags != null) "tags": tags,
-  //     if (notifications != null) "notifications": toFireNotifications,
-  //   };
-  // }
 }
