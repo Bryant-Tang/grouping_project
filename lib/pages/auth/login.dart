@@ -138,7 +138,7 @@ class _EmailFormState extends State<_EmailForm> {
         case 'user-not-found':
           debugPrint('user-not-found');
           SignUpDataModel data = SignUpDataModel(email: email);
-          SignUpPageModel page = SignUpPageModel(data: data, child: const SignUpPage());
+          SignUpPage page = SignUpPage(data: data);
           Navigator.push(
               context,
               MaterialPageRoute(

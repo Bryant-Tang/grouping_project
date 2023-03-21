@@ -11,44 +11,140 @@ class SignUpDataModel {
   SignUpDataModel({this.email = "", this.password = "", this.userName = ""});
 }
 
-class SignUpPageModel extends InheritedWidget {
-  final SignUpDataModel data;
-  const SignUpPageModel({
-    Key? key,
-    required this.data,
-    required child,
-  }) : super(key: key, child: child);
-
-  static SignUpPageModel? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<SignUpPageModel>();
-  }
-
-  @override
-  bool updateShouldNotify(SignUpPageModel oldWidget) {
-    return oldWidget.data != data;
-  }
-}
+// class SignUpPageModel extends InheritedWidget {
+//   final SignUpDataModel data;
+//   const SignUpPageModel({
+//     Key? key,
+//     required this.data,
+//     required child,
+//   }) : super(key: key, child: child);
+//   static SignUpPageModel? of(BuildContext context) {
+//     return context.dependOnInheritedWidgetOfExactType<SignUpPageModel>();
+//   }
+//   @override
+//   bool updateShouldNotify(SignUpPageModel oldWidget) {
+//     return oldWidget.data != data;
+//   }
+// }
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  final SignUpDataModel data;
+  const SignUpPage({super.key, required this.data});
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  final _pageController = PageController(keepPage: true);
+  late final List<Widget> _pages;
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      _SignUpHomePage(
+        forward: forward,
+        backward: Navigator.of(context).pop,
+      ),
+      _UserNameRegisterPage(
+          forward: forward,
+          backward: backward,
+          callback: (userName) {
+            setState(() => widget.data.userName = userName);
+          }),
+      _UserPasswordRegisterPage(
+          forward: forward,
+          backward: backward,
+          callback: (password) {
+            setState(() => widget.data.password = password);
+          }),
+      _SignUpFinishPage(
+        data: widget.data,
+        forward: register,
+        backward: backward,
+      ),
+    ];
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void backward() {
+    final pageIndex = _pageController.page!.round();
+    debugPrint(pageIndex.toString());
+    if (pageIndex > 0) {
+      _pageController.animateToPage(pageIndex - 1,
+          duration: const Duration(milliseconds: 300), curve: Curves.linear);
+    }
+  }
+
+  void forward() {
+    final pageIndex = _pageController.page!.round();
+    if (pageIndex < _pages.length - 1) {
+      _pageController.animateToPage(pageIndex + 1,
+          duration: const Duration(milliseconds: 300), curve: Curves.linear);
+    }
+    if (pageIndex == _pages.length) {
+      debugPrint(pageIndex.toString());
+    }
+    debugPrint(
+        '${widget.data.email} |${widget.data.userName} | ${widget.data.password}');
+  }
+
+  void register() async {
+    String email = widget.data.email;
+    String password = widget.data.password;
+    debugPrint('註冊信箱: $email\n使用者密碼: $password');
+    AuthService authService = AuthService();
+    await authService
+        .emailSignUp(email, password)
+        .then((value) => debugPrint("Sign Up Successfully"))
+        .catchError((error) {
+      showErrorDialog(error.code, error.toString());
+    });
+    // if (context.mounted) {
+    //   Navigator.push(
+    //       context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+    // }
+  }
+
+  void showErrorDialog(String errorTitle, String errorMessage) {
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text(errorTitle),
+              content: Text(errorMessage),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('確認'),
+                ),
+              ],
+            ));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const _SignUpHomePage();
+    return PageView(
+      controller: _pageController,
+      physics: const NeverScrollableScrollPhysics(),
+      children: _pages,
+    );
   }
 }
 
 class _SignUpHomePage extends StatelessWidget {
-  const _SignUpHomePage();
+  final void Function() forward;
+  final void Function() backward;
+  const _SignUpHomePage({required this.forward, required this.backward});
   final headLineText = "歡迎加入 Grouping";
   final content = "此信箱還未被註冊過\n用此信箱註冊一個新的帳號？\n選擇其他帳號登入?";
   @override
   Widget build(BuildContext context) {
-    // debugPrint(SignUpPageModel.of(context)!.data.email);
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
@@ -56,24 +152,19 @@ class _SignUpHomePage extends StatelessWidget {
       toggleBar: NavigationToggleBar(
         goBackButtonText: "使用其他帳號",
         goToNextButtonText: "前往註冊",
-        goBackButtonHandler: () {
-          Navigator.pop(context);
-        },
-        goToNextButtonHandler: () {
-          final data = SignUpPageModel.of(context)!.data;
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SignUpPageModel(
-                      data: data, child: const _UserNameRegisterPage())));
-        },
+        goBackButtonHandler: backward,
+        goToNextButtonHandler: forward,
       ),
     );
   }
 }
 
 class _UserNameRegisterPage extends StatefulWidget {
-  const _UserNameRegisterPage();
+  final void Function() forward;
+  final void Function() backward;
+  final void Function(String) callback;
+  const _UserNameRegisterPage(
+      {required this.forward, required this.backward, required this.callback});
 
   @override
   State<_UserNameRegisterPage> createState() => _UserNameRegisterPageState();
@@ -95,7 +186,7 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
       }
     },
   );
-
+  String userName = "";
   @override
   Widget build(BuildContext context) {
     return SignUpPageTemplate(
@@ -105,20 +196,11 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
       toggleBar: NavigationToggleBar(
         goBackButtonText: "上一步",
         goToNextButtonText: "下一步",
-        goBackButtonHandler: () {
-          Navigator.pop(context);
-        },
+        goBackButtonHandler: widget.backward,
         goToNextButtonHandler: () {
           if (_formKey.currentState!.validate()) {
-            // debugPrint("input box: ${inputBox.text}\n");
-            // debugPrint(SignUpPageModel.of(context).runtimeType.toString());
-            final data = SignUpPageModel.of(context)!.data
-              ..userName = inputBox.text;
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => SignUpPageModel(
-                        data: data, child: const _UserPasswordRegisterPage())));
+            widget.callback(inputBox.text ?? "");
+            widget.forward();
           }
         },
       ),
@@ -127,7 +209,11 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
 }
 
 class _UserPasswordRegisterPage extends StatefulWidget {
-  const _UserPasswordRegisterPage();
+  final void Function() forward;
+  final void Function() backward;
+  final void Function(String) callback;
+  const _UserPasswordRegisterPage(
+      {required this.forward, required this.backward, required this.callback});
   @override
   State<_UserPasswordRegisterPage> createState() =>
       _UserPasswordRegisterPageState();
@@ -211,56 +297,23 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
       toggleBar: NavigationToggleBar(
           goBackButtonText: "上一步",
           goToNextButtonText: "下一步",
-          goBackButtonHandler: () {
-            Navigator.pop(context);
-          },
+          goBackButtonHandler: widget.backward,
           goToNextButtonHandler: () {
             if (_formKey.currentState!.validate()) {
-              final data = SignUpPageModel.of(context)!.data
-                ..password = passwordField.text;
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SignUpPageModel(
-                          data: data, child: const _SignUpFinishPage())));
+              widget.callback(passwordField.text);
+              widget.forward();
             }
           }),
     );
   }
 }
 
-// class _SignUpPageFour extends StatelessWidget {
-//   final String email;
-//   final String userName;
-//   const _SignUpPageFour({required this.email, required this.userName,});
-//   final headLineText = "創建新的小組";
-//   final content = "已經有要加入的Group了嗎，透過連結加入小組，或是設立新的Group";
-//   @override
-//   Widget build(BuildContext context) {
-//     return SignUpPageTemplate(
-//       titleWithContent:
-//           HeadlineWithContent(headLineText: headLineText, content: content),
-//       body: const Placeholder(),
-//       toggleBar: NavigationToggleBar(
-//         goBackButtonText: "稍後設定",
-//         goToNextButtonText: "創建我的小組",
-//         goBackButtonHandler: () {
-//           Navigator.pop(context);
-//         },
-//         goToNextButtonHandler: () {
-//           Navigator.push(
-//               context,
-//               MaterialPageRoute(
-//                   builder: (context) =>
-//                       _SignUpPageFive(email: email, userName: userName)));
-//         },
-//       ),
-//     );
-//   }
-// }
-
 class _SignUpFinishPage extends StatefulWidget {
-  const _SignUpFinishPage();
+  final void Function() forward;
+  final void Function() backward;
+  final SignUpDataModel data;
+  const _SignUpFinishPage(
+      {required this.forward, required this.backward, required this.data});
   @override
   State<_SignUpFinishPage> createState() => _SignUpFinishPageState();
 }
@@ -287,23 +340,6 @@ class _SignUpFinishPageState extends State<_SignUpFinishPage> {
             ));
   }
 
-  void _onPress() async {
-    String email = SignUpPageModel.of(context)!.data.email;
-    String password = SignUpPageModel.of(context)!.data.password;
-    AuthService authService = AuthService();
-    await authService
-        .emailSignUp(email, password)
-        .then((value) => debugPrint("Sign Up Successfully"))
-        .catchError((error) {
-      showErrorDialog(error.code, error.toString());
-    });
-    debugPrint('註冊信箱: $email\n使用者密碼: $password');
-    if (context.mounted) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const MyHomePage()));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return SignUpPageTemplate(
@@ -312,26 +348,20 @@ class _SignUpFinishPageState extends State<_SignUpFinishPage> {
       body: Column(
         children: [
           HeadlineWithContent(
-              headLineText: "使用者",
-              content: SignUpPageModel.of(context)!.data.userName),
+              headLineText: "使用者", content: widget.data.userName),
+          const Divider(color: Colors.amber),
+          HeadlineWithContent(headLineText: "帳號", content: widget.data.email),
           const Divider(color: Colors.amber),
           HeadlineWithContent(
-              headLineText: "帳號",
-              content: SignUpPageModel.of(context)!.data.email),
-          const Divider(color: Colors.amber),
-          HeadlineWithContent(
-              headLineText: "密碼",
-              content: SignUpPageModel.of(context)!.data.password),
+              headLineText: "密碼", content: widget.data.password),
           const Divider(color: Colors.amber),
         ],
       ),
       toggleBar: NavigationToggleBar(
         goBackButtonText: "修改資料",
         goToNextButtonText: "完成註冊",
-        goBackButtonHandler: () {
-          Navigator.pop(context);
-        },
-        goToNextButtonHandler: _onPress,
+        goBackButtonHandler: widget.backward,
+        goToNextButtonHandler: widget.forward,
       ),
     );
   }
