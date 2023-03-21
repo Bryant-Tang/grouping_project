@@ -1,15 +1,36 @@
-// import 'dart:convert';
-
 import 'package:grouping_project/components/component_lib.dart';
-// import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/templates/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 
+class SignUpDataModel {
+  String password = "";
+  String userName = "";
+  String email = "";
+  SignUpDataModel({this.email = "", this.password = "", this.userName = ""});
+}
+
+class SignUpPageModel extends InheritedWidget {
+  final SignUpDataModel data;
+  const SignUpPageModel({
+    Key? key,
+    required this.data,
+    required child,
+  }) : super(key: key, child: child);
+
+  static SignUpPageModel? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<SignUpPageModel>();
+  }
+
+  @override
+  bool updateShouldNotify(SignUpPageModel oldWidget) {
+    return oldWidget.data != data;
+  }
+}
+
 class SignUpPage extends StatefulWidget {
-  final String email;
-  const SignUpPage({Key? key, required this.email}) : super(key: key);
+  const SignUpPage({super.key});
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
@@ -17,17 +38,17 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
-    return _SignUpHomePage(email: widget.email);
+    return const _SignUpHomePage();
   }
 }
 
 class _SignUpHomePage extends StatelessWidget {
-  final String email;
-  const _SignUpHomePage({required this.email});
+  const _SignUpHomePage();
   final headLineText = "歡迎加入 Grouping";
   final content = "此信箱還未被註冊過\n用此信箱註冊一個新的帳號？\n選擇其他帳號登入?";
   @override
   Widget build(BuildContext context) {
+    // debugPrint(SignUpPageModel.of(context)!.data.email);
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
@@ -39,12 +60,12 @@ class _SignUpHomePage extends StatelessWidget {
           Navigator.pop(context);
         },
         goToNextButtonHandler: () {
+          final data = SignUpPageModel.of(context)!.data;
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => _UserNameRegisterPage(
-                        email: email,
-                      )));
+                  builder: (context) => SignUpPageModel(
+                      data: data, child: const _UserNameRegisterPage())));
         },
       ),
     );
@@ -52,8 +73,7 @@ class _SignUpHomePage extends StatelessWidget {
 }
 
 class _UserNameRegisterPage extends StatefulWidget {
-  final String email;
-  const _UserNameRegisterPage({required this.email});
+  const _UserNameRegisterPage();
 
   @override
   State<_UserNameRegisterPage> createState() => _UserNameRegisterPageState();
@@ -89,13 +109,16 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
           Navigator.pop(context);
         },
         goToNextButtonHandler: () {
-          // print("input box: ${textController.text}\n");
           if (_formKey.currentState!.validate()) {
+            // debugPrint("input box: ${inputBox.text}\n");
+            // debugPrint(SignUpPageModel.of(context).runtimeType.toString());
+            final data = SignUpPageModel.of(context)!.data
+              ..userName = inputBox.text;
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => _UserPasswordRegisterPage(
-                        email: widget.email, userName: inputBox.inputText)));
+                    builder: (context) => SignUpPageModel(
+                        data: data, child: const _UserPasswordRegisterPage())));
           }
         },
       ),
@@ -104,11 +127,7 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
 }
 
 class _UserPasswordRegisterPage extends StatefulWidget {
-  final String email;
-  final String userName;
-  const _UserPasswordRegisterPage(
-      {required this.email, required this.userName});
-
+  const _UserPasswordRegisterPage();
   @override
   State<_UserPasswordRegisterPage> createState() =>
       _UserPasswordRegisterPageState();
@@ -118,10 +137,8 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final headLineText = "使用者密碼";
   final content = "請輸入此帳號的使用者密碼";
-  String password = "";
-  String confirmedPassword = "";
-  GroupingInputField? passwordField;
-  GroupingInputField? passwordConfirmField;
+  late final GroupingInputField passwordField;
+  late final GroupingInputField passwordConfirmField;
   @override
   void initState() {
     super.initState();
@@ -147,7 +164,7 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
           if (value == null || value.isEmpty) {
             return "確認欄位請勿留空";
           }
-          if (value!=password) {
+          if (value != passwordField.text) {
             return "兩次密碼輸入不同";
           } else {
             return null;
@@ -183,11 +200,11 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
         key: _formKey,
         child: Column(
           children: <Widget>[
-            passwordField!,
+            passwordField,
             const SizedBox(
               height: 15,
             ),
-            passwordConfirmField!
+            passwordConfirmField
           ],
         ),
       ),
@@ -198,18 +215,14 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
             Navigator.pop(context);
           },
           goToNextButtonHandler: () {
-            setState(() {
-              password = passwordField!.inputText;
-              confirmedPassword = passwordConfirmField!.inputText;
-            });
             if (_formKey.currentState!.validate()) {
+              final data = SignUpPageModel.of(context)!.data
+                ..password = passwordField.text;
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => _SignUpFinishPage(
-                          email: widget.email,
-                          userName: widget.userName,
-                          password: password)));
+                      builder: (context) => SignUpPageModel(
+                          data: data, child: const _SignUpFinishPage())));
             }
           }),
     );
@@ -247,12 +260,7 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
 // }
 
 class _SignUpFinishPage extends StatefulWidget {
-  final String email;
-  final String userName;
-  final String password;
-  const _SignUpFinishPage(
-      {required this.email, required this.userName, required this.password});
-
+  const _SignUpFinishPage();
   @override
   State<_SignUpFinishPage> createState() => _SignUpFinishPageState();
 }
@@ -280,14 +288,16 @@ class _SignUpFinishPageState extends State<_SignUpFinishPage> {
   }
 
   void _onPress() async {
+    String email = SignUpPageModel.of(context)!.data.email;
+    String password = SignUpPageModel.of(context)!.data.password;
     AuthService authService = AuthService();
     await authService
-        .emailSignUp(widget.email, widget.password)
+        .emailSignUp(email, password)
         .then((value) => debugPrint("Sign Up Successfully"))
         .catchError((error) {
       showErrorDialog(error.code, error.toString());
     });
-    debugPrint('註冊信箱： ${widget.email}\n使用者名稱${widget.userName}');
+    debugPrint('註冊信箱: $email\n使用者密碼: $password');
     if (context.mounted) {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => const MyHomePage()));
@@ -300,12 +310,18 @@ class _SignUpFinishPageState extends State<_SignUpFinishPage> {
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
       body: Column(
-        children: <Widget>[
-          HeadlineWithContent(headLineText: "使用者", content: widget.userName),
+        children: [
+          HeadlineWithContent(
+              headLineText: "使用者",
+              content: SignUpPageModel.of(context)!.data.userName),
           const Divider(color: Colors.amber),
-          HeadlineWithContent(headLineText: "帳號", content: widget.email),
+          HeadlineWithContent(
+              headLineText: "帳號",
+              content: SignUpPageModel.of(context)!.data.email),
           const Divider(color: Colors.amber),
-          HeadlineWithContent(headLineText: "密碼", content: widget.password),
+          HeadlineWithContent(
+              headLineText: "密碼",
+              content: SignUpPageModel.of(context)!.data.password),
           const Divider(color: Colors.amber),
         ],
       ),

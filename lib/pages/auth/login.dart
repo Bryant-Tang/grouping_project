@@ -101,19 +101,19 @@ class _EmailFormState extends State<_EmailForm> {
   String userInputPassword = "";
   bool isInputFormatCorrect = true;
   UserModel? user;
-  void _onPress() async{
+  void _onPress() async {
     setState(() {
       // when user press continue with email button, program first check the vaildation of input by calling all the validator in the form
       // next call call userLogin from service API
       isInputFormatCorrect = _formKey.currentState!.validate();
       if (isInputFormatCorrect) {
         // debugPrint("登入測試");
-        userInputEmail = emailInputBox.inputText;
-        userInputPassword = passwordInputBox.inputText;
+        userInputEmail = emailInputBox.text;
+        userInputPassword = passwordInputBox.text;
         // debugPrint("Email: $userInputEmail , Password: $userInputPassword");
       }
     });
-    if(isInputFormatCorrect){
+    if (isInputFormatCorrect) {
       checkUserInput(userInputEmail, userInputPassword);
     }
   }
@@ -137,12 +137,13 @@ class _EmailFormState extends State<_EmailForm> {
           break;
         case 'user-not-found':
           debugPrint('user-not-found');
+          SignUpDataModel data = SignUpDataModel(email: email);
+          SignUpPageModel page = SignUpPageModel(data: data, child: const SignUpPage());
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => SignUpPage(
-                        email: userInputEmail,
-                      )));
+                  builder: (context) => page
+              ));
           break;
         case 'wrong-password':
           showErrorDialog('密碼錯誤', '請確認帳號$userInputEmail密碼是否正確');
