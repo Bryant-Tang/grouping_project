@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/overview_choice.dart';
+import 'package:grouping_project/pages/home/home_page/home_event_page.dart';
+import 'package:grouping_project/pages/home/home_page/home_mission_page.dart';
 
 class OverView extends StatefulWidget {
   const OverView({super.key});
@@ -20,8 +22,15 @@ class _OverViewState extends State<OverView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('OVERVIEW', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey),),
-          const Divider(height: 7, thickness: 3,),
+          const Text(
+            'OVERVIEW',
+            style: TextStyle(
+                fontSize: 15, fontWeight: FontWeight.bold, color: Colors.grey),
+          ),
+          const Divider(
+            height: 7,
+            thickness: 3,
+          ),
           Expanded(
             flex: 1,
             child: Row(
@@ -34,9 +43,8 @@ class _OverViewState extends State<OverView> {
                   },
                   borderRadius: BorderRadius.circular(10),
                   child: OverViewChoice(
-                      textColor: (overViewIndex == 0
-                          ? Colors.white
-                          : Colors.black),
+                      textColor:
+                          (overViewIndex == 0 ? Colors.white : Colors.black),
                       backgroundColor: (overViewIndex == 0
                           ? const Color(0xFFFCBF49)
                           : Colors.white),
@@ -54,9 +62,8 @@ class _OverViewState extends State<OverView> {
                   },
                   borderRadius: BorderRadius.circular(10),
                   child: OverViewChoice(
-                      textColor: (overViewIndex == 1
-                          ? Colors.white
-                          : Colors.black),
+                      textColor:
+                          (overViewIndex == 1 ? Colors.white : Colors.black),
                       backgroundColor: (overViewIndex == 1
                           ? const Color(0xFFFCBF49)
                           : Colors.white),
@@ -74,9 +81,8 @@ class _OverViewState extends State<OverView> {
                   },
                   borderRadius: BorderRadius.circular(10),
                   child: OverViewChoice(
-                      textColor: (overViewIndex == 2
-                          ? Colors.white
-                          : Colors.black),
+                      textColor:
+                          (overViewIndex == 2 ? Colors.white : Colors.black),
                       backgroundColor: (overViewIndex == 2
                           ? const Color(0xFFFCBF49)
                           : Colors.white),
@@ -89,13 +95,46 @@ class _OverViewState extends State<OverView> {
           ),
           Expanded(
             flex: 4,
-            child: Container(
-              decoration:
-                  BoxDecoration(border: Border.all(color: Colors.black)),
-            ),
+            child: Container(child: pages[overViewIndex]),
+            // child: Container(
+            //   decoration:
+            //       BoxDecoration(border: Border.all(color: Colors.black)),
+            // ),
           )
         ],
       ),
     );
   }
 }
+
+// 待確認是否應該是要將 listview 放在 container 裡面
+List<ListView> pages = [
+  // Expanded(child: ListView(children: const [EventPage()])),
+  // Expanded(child: ListView(
+  //   children: const [MissionPage()],
+  // )),
+  ListView(
+    children: [
+      Container(
+        height: 100,
+        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+      ),
+    ],
+  ),
+  ListView(
+    children: [
+      Container(
+        height: 100,
+        decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+      ),
+    ],
+  ),
+  ListView(
+    children: [
+      Container(
+        height: 100,
+        decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
+      ),
+    ],
+  ),
+];

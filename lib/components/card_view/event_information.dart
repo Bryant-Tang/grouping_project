@@ -35,18 +35,17 @@ class EventInformationShrink extends StatelessWidget {
       required this.descript,
       required this.startTime,
       required this.endTime,
-      required this.contributors,
-      required this.color,
-      required this.eventId});
+      required this.contributorIds,
+      required this.color});
 
   final String group;
   final String title;
   final String descript;
   final DateTime startTime;
   final DateTime endTime;
-  final List<UserModel> contributors;
+  final List<String> contributorIds;
   final Color color;
-  final String eventId;
+  // final String eventId;
 
   @override
   Widget build(BuildContext context) {
