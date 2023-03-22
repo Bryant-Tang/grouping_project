@@ -26,7 +26,7 @@ class AuthService {
     scopes: <String>['email'],
   );
   final GoogleSignIn _googleSignInAndroid = GoogleSignIn(
-    clientId:
+    serverClientId:
         '784990691438-vutrcfkafr5d4eaq0tio9q36bl72bvae.apps.googleusercontent.com',
     scopes: <String>['email'],
   );
@@ -137,12 +137,8 @@ class AuthService {
   Future<UserModel?> thridPartyLogin(String provider) async {
     switch (provider) {
       case "google":
-        UserModel googleUser = await googleLogin();
-        if (googleUser != null) {
-          return googleUser;
-        } else {
-          return null;
-        }
+        UserModel? googleUser = await googleLogin();
+        return googleUser;
       default:
         return null;
     }
@@ -150,7 +146,7 @@ class AuthService {
 
   /// Google Login
   /// return UserModel if succeed, no return if failed
-  Future googleLogin() async {
+  Future<UserModel?> googleLogin() async {
     bool kisweb;
     try {
       if (Platform.isAndroid || Platform.isIOS) {
@@ -169,7 +165,7 @@ class AuthService {
         await _googleSignInWeb.signInSilently();
         GoogleSignInAccount? googleUser = await _googleSignInWeb.signIn();
         if (googleUser == null) {
-          return false;
+          return null;
         }
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
@@ -187,7 +183,7 @@ class AuthService {
         //var email = peopleApi.people.get("people/me");
         GoogleSignInAccount? googleUser = await _googleSignInIos.signIn();
         if (googleUser == null) {
-          return false;
+          return null;
         }
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
@@ -205,7 +201,7 @@ class AuthService {
         //var email = peopleApi.people.get("people/me");
         GoogleSignInAccount? googleUser = await _googleSignInAndroid.signIn();
         if (googleUser == null) {
-          return false;
+          return null;
         }
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
@@ -229,6 +225,9 @@ class AuthService {
     }
     if (Platform.isIOS) {
       await _googleSignInIos.disconnect();
+    }
+    if (Platform.isAndroid) {
+      await _googleSignInAndroid.disconnect();
     }
   }
 
