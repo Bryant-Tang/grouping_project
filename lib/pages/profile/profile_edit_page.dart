@@ -85,10 +85,11 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
                   debugPrint(page.content.toString());
                 }
               },
-              goBackButtonHandler: () {})
+              goBackButtonHandler: () {
+                Navigator.of(context).pop();
+              })
         ],
       ),
     ));
   }
 }
-

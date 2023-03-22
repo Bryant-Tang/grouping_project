@@ -1,3 +1,4 @@
+import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/components/message.dart';
@@ -36,10 +37,11 @@ class _TestPageState extends State<MyHomePage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
+          title: Text(
             // 讀取使用者或團體名字 !!!!!!!!!!!!
-            'QUAN 的工作區',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            // 'QUAN 的工作區',
+            UserData.of(context)!.data.uid,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           actions: [
             IconButton(

@@ -1,5 +1,6 @@
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
+import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -123,7 +124,10 @@ class _EmailFormState extends State<_EmailForm> {
         .emailLogIn(userInputEmail, userInputPassword)
         .then((value) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  UserData(data: value, child: const MyHomePage())));
     }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {
@@ -140,10 +144,7 @@ class _EmailFormState extends State<_EmailForm> {
           SignUpDataModel data = SignUpDataModel(email: email);
           SignUpPage page = SignUpPage(data: data);
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => page
-              ));
+              context, MaterialPageRoute(builder: (context) => page));
           break;
         case 'wrong-password':
           showErrorDialog('密碼錯誤', '請確認帳號$userInputEmail密碼是否正確');

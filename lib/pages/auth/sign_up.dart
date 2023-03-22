@@ -1,31 +1,9 @@
 import 'package:grouping_project/components/component_lib.dart';
+import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/templates/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
-
-class SignUpDataModel {
-  String password = "";
-  String userName = "";
-  String email = "";
-  SignUpDataModel({this.email = "", this.password = "", this.userName = ""});
-}
-
-// class SignUpPageModel extends InheritedWidget {
-//   final SignUpDataModel data;
-//   const SignUpPageModel({
-//     Key? key,
-//     required this.data,
-//     required child,
-//   }) : super(key: key, child: child);
-//   static SignUpPageModel? of(BuildContext context) {
-//     return context.dependOnInheritedWidgetOfExactType<SignUpPageModel>();
-//   }
-//   @override
-//   bool updateShouldNotify(SignUpPageModel oldWidget) {
-//     return oldWidget.data != data;
-//   }
-// }
 
 class SignUpPage extends StatefulWidget {
   final SignUpDataModel data;
@@ -86,11 +64,6 @@ class _SignUpPageState extends State<SignUpPage> {
       _pageController.animateToPage(pageIndex + 1,
           duration: const Duration(milliseconds: 300), curve: Curves.linear);
     }
-    if (pageIndex == _pages.length) {
-      debugPrint(pageIndex.toString());
-    }
-    debugPrint(
-        '${widget.data.email} |${widget.data.userName} | ${widget.data.password}');
   }
 
   void register() async {
@@ -98,16 +71,18 @@ class _SignUpPageState extends State<SignUpPage> {
     String password = widget.data.password;
     debugPrint('註冊信箱: $email\n使用者密碼: $password');
     AuthService authService = AuthService();
-    await authService
-        .emailSignUp(email, password)
-        .then((value) => debugPrint("Sign Up Successfully"))
-        .catchError((error) {
+    await authService.emailSignUp(email, password).then((value) {
+      if (context.mounted) {
+        debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    UserData(data: value, child: const MyHomePage())));
+      }
+    }).catchError((error) {
       showErrorDialog(error.code, error.toString());
     });
-    // if (context.mounted) {
-    //   Navigator.push(
-    //       context, MaterialPageRoute(builder: (context) => const MyHomePage()));
-    // }
   }
 
   void showErrorDialog(String errorTitle, String errorMessage) {
@@ -127,13 +102,16 @@ class _SignUpPageState extends State<SignUpPage> {
             ));
   }
 
+  final PageStorageBucket _bucket = PageStorageBucket();
   @override
   Widget build(BuildContext context) {
-    return PageView(
-      controller: _pageController,
-      physics: const NeverScrollableScrollPhysics(),
-      children: _pages,
-    );
+    return PageStorage(
+        bucket: _bucket,
+        child: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: _pages,
+        ));
   }
 }
 
