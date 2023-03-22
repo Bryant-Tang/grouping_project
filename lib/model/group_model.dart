@@ -1,5 +1,5 @@
-import 'profile_model.dart';
 import 'data_model.dart';
+import 'profile_model.dart';
 
 /// ## a simple model only for user
 /// * in order to record what groups a user attend

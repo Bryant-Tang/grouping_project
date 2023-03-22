@@ -1,6 +1,6 @@
 import 'data_model.dart';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Image;
 
 /// ## the type for [ProfileModel.tags]
 /// * [tag] : the key for this tag
@@ -38,18 +38,41 @@ class ProfileModel extends DataModel<ProfileModel> {
             storageRequired: false,
             setOwnerRequired: false);
 
+  /// convert `List<ProfileTag>` to `List<String>` with `ProfileTag.tag`
+  List<String> _toFirestoreTag(List<ProfileTag> profileTagList) {
+    List<String> processList = [];
+    for (ProfileTag profileTag in profileTagList) {
+      processList.add(profileTag.tag);
+    }
+    return processList;
+  }
+
+  /// convert `List<ProfileTag>` to `List<String>` with `ProfileTag.content`
+  List<String> _toFirestoreTagContent(List<ProfileTag> profileTagList) {
+    List<String> processList = [];
+    for (ProfileTag profileTag in profileTagList) {
+      processList.add(profileTag.content);
+    }
+    return processList;
+  }
+
+  /// convert two `List<String>` to `List<ProfileTag>`
+  List<ProfileTag> _fromFirestoreTags(
+      List<String> tagList, List<String> tagContentList) {
+    List<ProfileTag> processList = [];
+    for (var i = 0; i < tagList.length; i++) {
+      if (i < tagContentList.length) {
+        processList
+            .add(ProfileTag(tag: tagList[i], content: tagContentList[i]));
+      }
+    }
+    return processList;
+  }
+
   /// ### convert data from this instance to the type accepted for firestore
   /// * ***DO NOT*** use this method in frontend
   @override
   Map<String, dynamic> toFirestore() {
-    List<String> toFirestoreTagList = [];
-    List<String> toFirestoreTagContentList = [];
-
-    for (var profileTag in tags ?? <ProfileTag>[]) {
-      toFirestoreTagList.add(profileTag.tag);
-      toFirestoreTagContentList.add(profileTag.content);
-    }
-
     return {
       if (name != null) 'name': name,
       if (email != null) 'email': email,
@@ -57,8 +80,8 @@ class ProfileModel extends DataModel<ProfileModel> {
       if (nickname != null) 'nickname': nickname,
       if (slogan != null) 'slogan': slogan,
       if (introduction != null) 'introduction': introduction,
-      if (tags != null) 'tag': toFirestoreTagList,
-      if (tags != null) 'tag_content': toFirestoreTagContentList,
+      if (tags != null) 'tags': _toFirestoreTag(tags!),
+      if (tags != null) 'tag_contents': _toFirestoreTagContent(tags!),
     };
   }
 
@@ -70,15 +93,6 @@ class ProfileModel extends DataModel<ProfileModel> {
       {required String id,
       required Map<String, dynamic> data,
       ProfileModel? ownerProfile}) {
-    List<ProfileTag> fromFirestoreTags = [];
-    for (String tag in List.from(data['tag'] ?? [])) {
-      fromFirestoreTags.add(ProfileTag(tag: tag, content: ''));
-    }
-    int i = 0;
-    for (String content in List.from(data['tag_content'] ?? [])) {
-      fromFirestoreTags[i].content = content;
-    }
-
     ProfileModel processData = ProfileModel(
         name: data['name'],
         email: data['email'],
@@ -86,7 +100,9 @@ class ProfileModel extends DataModel<ProfileModel> {
         nickname: data['nickname'],
         slogan: data['slogan'],
         introduction: data['introduction'],
-        tags: fromFirestoreTags);
+        tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
+            ? _fromFirestoreTags(data['tags'], data['tag_contents'])
+            : null);
 
     return processData;
   }
