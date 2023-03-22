@@ -26,8 +26,10 @@ class AuthService {
     scopes: <String>['email'],
   );
   final GoogleSignIn _googleSignInAndroid = GoogleSignIn(
+    // serverClientId:
+    //     '784990691438-vutrcfkafr5d4eaq0tio9q36bl72bvae.apps.googleusercontent.com',
     serverClientId:
-        '784990691438-vutrcfkafr5d4eaq0tio9q36bl72bvae.apps.googleusercontent.com',
+        '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
     scopes: <String>['email'],
   );
 
