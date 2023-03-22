@@ -21,19 +21,21 @@ class DataController {
   /// * [uploadData] : the data you want to upload
   /// ------
   /// **Notice below :**
-  /// * remember to use await in front of this method.
+  /// * remember to use ***await*** in front of this method.
   /// * if [uploadData.id] exist, would be updating the data
   /// * throw error if the database does not has the data of the id.
   Future<void> upload<T extends DataModel<T>>({required T uploadData}) async {
-    uploadData.id == null
-        ? await FirestoreController(forUser: _forUser, ownerId: _ownerId).set(
-            processData: uploadData.toFirestore(),
-            collectionPath: uploadData.databasePath)
-        : await FirestoreController(forUser: _forUser, ownerId: _ownerId)
-            .update(
-                processData: uploadData.toFirestore(),
-                collectionPath: uploadData.databasePath,
-                dataId: uploadData.id!);
+    if ((uploadData.id == null) || (uploadData.id == 'profile')) {
+      await FirestoreController(forUser: _forUser, ownerId: _ownerId).set(
+          processData: uploadData.toFirestore(),
+          collectionPath: uploadData.databasePath,
+          dataId: uploadData.id);
+    } else {
+      await FirestoreController(forUser: _forUser, ownerId: _ownerId).update(
+          processData: uploadData.toFirestore(),
+          collectionPath: uploadData.databasePath,
+          dataId: uploadData.id!);
+    }
 
     if (uploadData.storageRequired) {
       // !!!!!! unimplement yet !!!!!!
@@ -54,7 +56,7 @@ class DataController {
   /// * [dataId] : the id of the data
   /// ------
   /// **Notice below :**
-  /// * remember to use await in front of this method.
+  /// * remember to use ***await*** in front of this method.
   /// * if you want to get [ProfileModel] , just pass `ProfileModel().id!` to [dataId]
   Future<T> download<T extends DataModel<T>>(
       {required T dataTypeToGet, required String dataId}) async {
@@ -104,7 +106,7 @@ class DataController {
   /// `T<T extends DataModel>()`
   /// ------
   /// **Notice below :**
-  /// * remember to use await in front of this method.
+  /// * remember to use ***await*** in front of this method.
   /// * if you want to get ProfileModel, use `download()` is better.
   Future<List<T>> downloadAll<T extends DataModel<T>>(
       {required T dataTypeToGet}) async {
@@ -168,7 +170,7 @@ class DataController {
   /// ------
   /// **Notice below :**
   /// - remember to check the data has a correct id.
-  /// - remember to use await in front of this method.
+  /// - remember to use ***await*** in front of this method.
   Future<void> remove<T extends DataModel<T>>({required T removeData}) async {
     if (removeData.id != null) {
       await FirestoreController(forUser: _forUser, ownerId: _ownerId).delete(
