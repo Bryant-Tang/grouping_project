@@ -2,6 +2,7 @@ import 'package:grouping_project/pages/auth/cover.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+// import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 import 'firebase_options.dart';
 
 // 繞過登入直接進入(測試用library)
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
       home: const CoverPage(),
-      // home: MyHomePage(),
+      // home: EditPersonalProfilePage(),
       // home: EventDataTestPage(),
     );
   }
