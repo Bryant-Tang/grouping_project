@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
+import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 
 class PersonalProfileTagSetting extends StatefulWidget {
-  final List<Map<String, String>> tagTable;
-  const PersonalProfileTagSetting({super.key, required this.tagTable});
+  List<ProfileTag>? tagTable;
+  PersonalProfileTagSetting({super.key});
   @override
   State<PersonalProfileTagSetting> createState() =>
       _PersonalProfileTagSettingState();
-
-  List<Map<String, String>> get content => tagTable;
 }
 
 class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
   late final Widget addButton;
   late final Widget editButton;
-  late List<PersonalProileTagTextEditView> tagsWidgetList;
+  List<PersonalProileTagTextEditView> tagsWidgetList = [];
   bool editMode = false;
   void initTagsWidgetList() {
     tagsWidgetList = [];
-    for (Map<String, String> tag in widget.tagTable) {
+    if (widget.tagTable == null) {
+      setState(() {
+        widget.tagTable = ProfileInherited.of(context)!.profile.tags ?? [];
+      });
+    }
+    for (ProfileTag tag in widget.tagTable!) {
       tagsWidgetList.add(PersonalProileTagTextEditView(
-        tagKey: tag['key']!,
-        tagValue: tag['value']!,
+        tagKey: tag.tag,
+        tagValue: tag.content,
         editable: editMode,
         deleteTag: deleteTag,
         editTag: updateTagTable,
@@ -29,31 +34,29 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
     }
   }
 
-  void createNewTag(Map<String, String> tag) {
+  void createNewTag(ProfileTag tag) {
     setState(() {
-      widget.tagTable.add(tag);
+      widget.tagTable!.add(tag);
     });
   }
 
   void updateTagTable() {
     setState(() {
       for (PersonalProileTagTextEditView tag in tagsWidgetList) {
-        widget.tagTable[tagsWidgetList.indexOf(tag)] = {
-          'key': tag.tagKey,
-          'value': tag.tagValue
-        };
+        widget.tagTable![tagsWidgetList.indexOf(tag)] =
+            ProfileTag(tag: tag.tagKey, content: tag.tagValue);
       }
     });
   }
 
-  void deleteTag(Map<String, String> tag) {
+  void deleteTag(ProfileTag tag) {
     debugPrint(tag.toString());
     setState(() {
       // debugPrint('${widget.tagTable.contains(tag)}');
-      for (int index = 0; index < widget.tagTable.length; index++) {
-        if (widget.tagTable[index]['key'] == tag['key'] &&
-            widget.tagTable[index]['value'] == tag['value']) {
-          widget.tagTable.removeAt(index);
+      for (int index = 0; index < widget.tagTable!.length; index++) {
+        if (widget.tagTable![index].tag == tag.tag &&
+            widget.tagTable![index].content == tag.content) {
+          widget.tagTable!.removeAt(index);
           break;
         }
       }
@@ -74,7 +77,7 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
             editMode = false;
             updateTagTable();
           });
-          if (widget.tagTable.length == 4) {
+          if (widget.tagTable!.length == 4) {
             showDialog(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
@@ -151,6 +154,7 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
         ),
       ),
     );
+    // widget.tagTable = ProfileInherited.of(context)!.tags;
   }
 
   @override
@@ -169,12 +173,14 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
             Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 mainAxisSize: MainAxisSize.max,
-                children: widget.tagTable.isNotEmpty
+                children: widget.tagTable != null && widget.tagTable!.isNotEmpty
                     ? [addButton, editButton]
                     : [addButton])
           ],
         ),
-        Column(children: tagsWidgetList),
+        Column(
+            children: tagsWidgetList
+            )
       ],
     );
   }
@@ -268,7 +274,7 @@ class _AddTagFormState extends State<AddTagForm> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   Navigator.of(context)
-                      .pop({"key": keyText, "value": valueText});
+                      .pop(ProfileTag(tag: keyText, content: valueText));
                 }
               },
               child: const Text('新增'),
@@ -375,7 +381,7 @@ class _EditTagFormState extends State<EditTagForm> {
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
                   Navigator.of(context)
-                      .pop({"key": keyText, "value": valueText});
+                      .pop(ProfileTag(tag: keyText, content: valueText));
                 }
               },
               child: const Text('修改'),
@@ -441,8 +447,8 @@ class _PersonalProileTagTextEditViewState
                             ]));
                 setState(() {
                   if (result != null) {
-                    widget.tagKey = result['key'];
-                    widget.tagValue = result['value'];
+                    widget.tagKey = result.tag;
+                    widget.tagValue = result.content;
                     debugPrint('${widget.tagKey} | ${widget.tagValue}');
                     widget.editTag();
                   }
@@ -459,7 +465,7 @@ class _PersonalProileTagTextEditViewState
               onPressed: () {
                 debugPrint('delete ${widget.tagKey} | ${widget.tagValue}');
                 widget.deleteTag(
-                    {'key': widget.tagKey, 'value': widget.tagValue});
+                    ProfileTag(tag: widget.tagKey, content: widget.tagValue));
               },
               icon: const Icon(Icons.remove, color: Colors.grey)),
         ),

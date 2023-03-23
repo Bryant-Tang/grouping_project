@@ -1,3 +1,7 @@
+import 'package:googleapis/mybusinessbusinessinformation/v1.dart';
+import 'package:grouping_project/model/data_controller.dart';
+import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
 import 'package:grouping_project/pages/home/navigation_bar.dart';
@@ -27,9 +31,21 @@ class PeronalDashboardPage extends StatefulWidget {
 
 class _TestPageState extends State<PeronalDashboardPage> {
   final AuthService _authService = AuthService();
+  ProfileModel profile = ProfileModel();
   var funtionSelect = 0;
 
   // var addNewEventHeight = -300.0;
+  @override
+  void initState() {
+    super.initState();
+    DataController()
+        .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
+        .then((value) {
+      setState(() {
+        profile = value;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +56,7 @@ class _TestPageState extends State<PeronalDashboardPage> {
         appBar: AppBar(
           title: Text(
             // TODO: Get User Name from data package
-            UserData.of(context)!.data.uid,
+            profile.name ?? "Unknown",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           actions: [

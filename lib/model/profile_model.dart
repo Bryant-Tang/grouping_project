@@ -9,6 +9,12 @@ class ProfileTag {
   String tag;
   String content;
   ProfileTag({required this.tag, required this.content});
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "Profile Tag: $tag : $content";
+  }
 }
 
 /// ## a data model for profile, either user or group
@@ -58,7 +64,7 @@ class ProfileModel extends DataModel<ProfileModel> {
 
   /// convert two `List<String>` to `List<ProfileTag>`
   List<ProfileTag> _fromFirestoreTags(
-      List<String> tagList, List<String> tagContentList) {
+      List<dynamic> tagList, List<dynamic> tagContentList) {
     List<ProfileTag> processList = [];
     for (var i = 0; i < tagList.length; i++) {
       if (i < tagContentList.length) {
