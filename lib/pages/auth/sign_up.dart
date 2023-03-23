@@ -78,7 +78,7 @@ class _SignUpPageState extends State<SignUpPage> {
             context,
             MaterialPageRoute(
                 builder: (context) =>
-                    UserData(data: value, child: const MyHomePage())));
+                    UserData(data: value, child: const PeronalDashboardPage())));
       }
     }).catchError((error) {
       showErrorDialog(error.code, error.toString());

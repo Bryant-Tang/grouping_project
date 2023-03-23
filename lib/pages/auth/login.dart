@@ -127,7 +127,7 @@ class _EmailFormState extends State<_EmailForm> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  UserData(data: value, child: const MyHomePage())));
+                  UserData(data: value, child: const PeronalDashboardPage())));
     }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {

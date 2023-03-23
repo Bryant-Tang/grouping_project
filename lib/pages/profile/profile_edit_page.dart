@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
-import './profile_info.dart';
-import './profile_photo_upload.dart';
-import './profile_tag_edit.dart';
+import 'package:grouping_project/pages/profile/profile_info.dart';
+import 'package:grouping_project/pages/profile/profile_photo_upload.dart';
+import 'package:grouping_project/pages/profile/profile_tag_edit.dart';
 
 class EditPersonalProfilePage extends StatefulWidget {
   const EditPersonalProfilePage({super.key});
@@ -15,7 +15,7 @@ class EditPersonalProfilePage extends StatefulWidget {
 class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
     with TickerProviderStateMixin {
   final PageController _pageController = PageController(initialPage: 0);
-  late final PerosonalProfileSetting personalProfileSeeting;
+  late final PerosonalProfileSetting personalProfileSetting;
   late final PersonalProfileTagSetting personalProfileTagSetting;
   late final PersonProfileImageUpload personalProfileImageUpload;
   TabController? _tabController;
@@ -34,12 +34,11 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
   @override
   void initState() {
     super.initState();
-    personalProfileSeeting = PerosonalProfileSetting();
-    personalProfileTagSetting =
-        PersonalProfileTagSetting(tagTable: getTagTable());
+    personalProfileSetting = PerosonalProfileSetting();
+    personalProfileTagSetting = PersonalProfileTagSetting(tagTable: getTagTable());
     personalProfileImageUpload = const PersonProfileImageUpload();
     _pages = [
-      personalProfileSeeting,
+      personalProfileSetting,
       personalProfileTagSetting,
       personalProfileImageUpload
     ];
