@@ -3,6 +3,7 @@ import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
+import 'package:grouping_project/pages/home/home_page/over_view.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -27,10 +28,8 @@ class LoginPage extends StatefulWidget {
             await authService.thridPartyLogin(button["name"]).then((value) {
               if (value != null) {
                 debugPrint("${value.uid}\n");
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MyHomePage()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => const OverView()));
               }
             });
           }));

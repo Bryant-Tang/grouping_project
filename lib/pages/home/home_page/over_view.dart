@@ -15,7 +15,8 @@ class _OverViewState extends State<OverView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Material(
+        child: Container(
       width: MediaQuery.of(context).size.width - 20,
       height: MediaQuery.of(context).size.height,
       //decoration: BoxDecoration(border: Border.all(color: Colors.black)),
@@ -103,7 +104,7 @@ class _OverViewState extends State<OverView> {
           )
         ],
       ),
-    );
+    ));
   }
 }
 
