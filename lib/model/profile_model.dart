@@ -63,7 +63,7 @@ class ProfileModel extends DataModel<ProfileModel> {
 
   /// convert two `List<String>` to `List<ProfileTag>`
   List<ProfileTag> _fromFirestoreTags(
-      List tagList, List tagContentList) {
+      List<String> tagList, List<String> tagContentList) {
     List<ProfileTag> processList = [];
     for (var i = 0; i < tagList.length; i++) {
       if (i < tagContentList.length) {
@@ -106,7 +106,8 @@ class ProfileModel extends DataModel<ProfileModel> {
         slogan: data['slogan'],
         introduction: data['introduction'],
         tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
-            ? _fromFirestoreTags(data['tags'], data['tag_contents'] as List)
+            ? _fromFirestoreTags(
+                List.from(data['tags']), List.from(data['tag_contents']))
             : null);
 
     return processData;
