@@ -89,57 +89,78 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ProfileInherited(
-      profile: profile,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 120, horizontal: 30),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: PageView(
-                controller: _pageController,
-                children: _pages,
+        resizeToAvoidBottomInset: false,
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: ProfileInherited(
+            profile: profile,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 150),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    flex: 1,
+                    child: PageView(
+                      controller: _pageController,
+                      children: _pages,
+                      onPageChanged: (vlaue){
+                        profile.slogan =
+                            personalProfileSetting.content!['userMotto'];
+                        profile.name =
+                            personalProfileSetting.content!['userName'];
+                        profile.nickname =
+                            personalProfileSetting.content!['userRealName'];
+                        profile.introduction =
+                            personalProfileSetting.content!['userInroduction'];
+                        profile.tags = personalProfileTagSetting.tagTable;
+                        profile.photo = personalProfileImageUpload.profileImage;
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 60.0,
+                    child: Center(
+                      child: TabPageSelector(
+                        controller: _tabController,
+                        color: Colors.white,
+                        selectedColor: Colors.amber,
+                        indicatorSize: 16,
+                      ),
+                    ),
+                  ),
+                  NavigationToggleBar(
+                      goBackButtonText: "Cancel",
+                      goToNextButtonText: "Save",
+                      goToNextButtonHandler: () {
+                        setState(() {
+                          // debugPrint(
+                          //     personalProfileSetting.content.toString());
+                          profile.slogan =
+                              personalProfileSetting.content!['userMotto'];
+                          profile.name =
+                              personalProfileSetting.content!['userName'];
+                          profile.nickname =
+                              personalProfileSetting.content!['userRealName'];
+                          profile.introduction =
+                              personalProfileSetting.content!['userInroduction'];
+                          profile.tags = personalProfileTagSetting.tagTable;
+                          profile.photo = personalProfileImageUpload.profileImage;
+                          _dataController
+                              .upload(uploadData: profile)
+                              .then((value) => debugPrint('upload successfully'));
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      goBackButtonHandler: () {
+                        Navigator.of(context).pop();
+                      })
+                ],
               ),
             ),
-            SizedBox(
-              height: 60.0,
-              child: Center(
-                child: TabPageSelector(
-                  controller: _tabController,
-                  color: Colors.white,
-                  selectedColor: Colors.amber,
-                  indicatorSize: 16,
-                ),
-              ),
-            ),
-            NavigationToggleBar(
-                goBackButtonText: "Cancel",
-                goToNextButtonText: "Save",
-                goToNextButtonHandler: () {
-                  setState(() {
-                    debugPrint(
-                        personalProfileImageUpload.profileImage.toString());
-                    profile.slogan =
-                        personalProfileSetting.content!['userMotto'];
-                    profile.name = personalProfileSetting.content!['userName'];
-                    profile.nickname =
-                        personalProfileSetting.content!['userRealName'];
-                    profile.introduction =
-                        personalProfileSetting.content!['userInroduction'];
-                    profile.tags = personalProfileTagSetting.tagTable;
-                    profile.photo = personalProfileImageUpload.profileImage;
-                    _dataController
-                        .upload(uploadData: profile)
-                        .then((value) => debugPrint('upload successfully'));
-                  });
-                  Navigator.of(context).pop();
-                },
-                goBackButtonHandler: () {
-                  Navigator.of(context).pop();
-                })
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 }

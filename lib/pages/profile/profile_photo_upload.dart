@@ -16,8 +16,8 @@ class PersonProfileImageUpload extends StatefulWidget {
 
 class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
   XFile? _image;
-  void _pickImage(){
-    ImagePicker().pickImage(source: ImageSource.gallery).then((value){
+  void _pickImage() {
+    ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
       setState(() {
         _image = value;
         widget.profileImage = Image.file(File(_image!.path));
@@ -28,7 +28,7 @@ class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         const HeadlineWithContent(
             headLineText: "個人資訊設定", content: "新增全名、暱稱、自我介紹與心情小語，讓大家更快認識你"),
@@ -37,11 +37,14 @@ class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              CircleAvatar(
-                backgroundColor: Colors.white,
-                backgroundImage:
-                    _image != null ? FileImage(File(_image!.path)) : null,
-                radius: 100,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.white,
+                  backgroundImage:
+                      _image != null ? FileImage(File(_image!.path)) : null,
+                  radius: 120,
+                ),
               ),
               MaterialButton(
                 padding:

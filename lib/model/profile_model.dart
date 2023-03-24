@@ -12,7 +12,6 @@ class ProfileTag {
 
   @override
   String toString() {
-    // TODO: implement toString
     return "Profile Tag: $tag : $content";
   }
 }
@@ -64,7 +63,7 @@ class ProfileModel extends DataModel<ProfileModel> {
 
   /// convert two `List<String>` to `List<ProfileTag>`
   List<ProfileTag> _fromFirestoreTags(
-      List<dynamic> tagList, List<dynamic> tagContentList) {
+      List tagList, List tagContentList) {
     List<ProfileTag> processList = [];
     for (var i = 0; i < tagList.length; i++) {
       if (i < tagContentList.length) {
@@ -107,7 +106,7 @@ class ProfileModel extends DataModel<ProfileModel> {
         slogan: data['slogan'],
         introduction: data['introduction'],
         tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
-            ? _fromFirestoreTags(data['tags'], data['tag_contents'])
+            ? _fromFirestoreTags(data['tags'], data['tag_contents'] as List)
             : null);
 
     return processData;
