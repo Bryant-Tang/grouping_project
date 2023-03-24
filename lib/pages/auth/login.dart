@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
+import 'package:grouping_project/pages/home/home_page/over_view.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -15,7 +17,7 @@ class LoginPage extends StatefulWidget {
     "Google": {"fileName": "google.png", "name": "google"},
     "Github": {"fileName": "github.png", "name": "github"},
   };
-  List<Widget> buttonBuilder() {
+  List<Widget> buttonBuilder(BuildContext context) {
     List<Widget> authButtonList = [];
     for (dynamic button in buttonUI.values) {
       authButtonList.add(AuthButton(
@@ -23,7 +25,15 @@ class LoginPage extends StatefulWidget {
           name: button["name"],
           onPressed: () async {
             AuthService authService = AuthService();
-            await authService.thridPartyLogin(button["name"]);
+            await authService.thridPartyLogin(button["name"]).then((value) {
+              if (value != null) {
+                debugPrint("${value.uid}\n");
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const PeronalDashboardPage()));
+              }
+            });
           }));
     }
     return authButtonList;
@@ -55,7 +65,7 @@ class _LogInState extends State<LoginPage> {
               const HintTextWithLine(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Column(children: widget.buttonBuilder()),
+                child: Column(children: widget.buttonBuilder(context)),
               )
             ],
           ),
