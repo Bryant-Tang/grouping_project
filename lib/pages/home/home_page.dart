@@ -1,4 +1,6 @@
+import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
+import 'package:grouping_project/pages/home/navigation_bar.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/components/message.dart';
 import 'package:grouping_project/pages/auth/login.dart';
@@ -17,13 +19,13 @@ import 'package:grouping_project/components/card_view/event_information.dart';
 
 import 'package:flutter/material.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class PeronalDashboardPage extends StatefulWidget {
+  const PeronalDashboardPage({super.key});
   @override
-  State<MyHomePage> createState() => _TestPageState();
+  State<PeronalDashboardPage> createState() => _TestPageState();
 }
 
-class _TestPageState extends State<MyHomePage> {
+class _TestPageState extends State<PeronalDashboardPage> {
   final AuthService _authService = AuthService();
   var funtionSelect = 0;
 
@@ -36,10 +38,10 @@ class _TestPageState extends State<MyHomePage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            // 讀取使用者或團體名字 !!!!!!!!!!!!
-            'QUAN 的工作區',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          title: Text(
+            // TODO: Get User Name from data package
+            UserData.of(context)!.data.uid,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           actions: [
             IconButton(
@@ -64,7 +66,7 @@ class _TestPageState extends State<MyHomePage> {
           backgroundColor: Colors.white,
           automaticallyImplyLeading: false,
         ),
-        body: Container(
+        body: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height - 120,
           child: Column(
@@ -92,40 +94,23 @@ class _TestPageState extends State<MyHomePage> {
         // 可以使得 bottom navigation bar 給 FAB 空間
         // ps. https://stackoverflow.com/questions/59455684/how-to-make-bottomnavigationbar-notch-transparent
         extendBody: true,
-        floatingActionButton: Container(
-          width: 50,
-          height: 50,
-          child: FloatingActionButton(
-            onPressed: () {
-              // addNewEventHeight = (addNewEventHeight == 0 ? -300 : 0);
-              // setState(() {});
-              debugPrint('add new event');
-            },
-            child: const Icon(
-              Icons.add,
-              color: Color(0xFFFFFFFF),
-              size: 30,
-            ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // addNewEventHeight = (addNewEventHeight == 0 ? -300 : 0);
+            // setState(() {});
+            debugPrint('add new event');
+          },
+          child: const Icon(
+            Icons.add,
+            color: Color(0xFFFFFFFF),
+            size: 30,
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: BottomAppBar(
-          shape: const CircularNotchedRectangle(),
-          clipBehavior: Clip.antiAlias,
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.house), label: 'house'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.calendar_month), label: 'calendar'),
-              BottomNavigationBarItem(icon: Icon(Icons.note), label: 'note'),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.message), label: 'message')
-            ],
-            selectedItemColor: Colors.black,
-            unselectedItemColor: Colors.grey,
-          ),
-        ));
+        // Fix: the navigatorAppBar is wrapped by pannding which can't be find at SG source code, we should fix that problem
+        // Notify: I remove the outter Material App Bar and finally padding is gone.
+        // Notify: 如果需要在
+        bottomNavigationBar: const NavigationAppBar());
   }
 }
 

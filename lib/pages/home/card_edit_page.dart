@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:grouping_project/pages/profile/profile_edit_page.dart';
+
 class CardEditDone extends StatefulWidget {
   const CardEditDone({super.key});
   @override
@@ -174,7 +176,12 @@ class CardEditDoneState extends State<CardEditDone> {
                   ),
                   TextButton(
                     onPressed: () {
-                      print('edit');
+                      debugPrint('edit');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  const EditPersonalProfilePage()));
                     },
                     style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
@@ -186,6 +193,9 @@ class CardEditDoneState extends State<CardEditDone> {
                   ),
                   TextButton(
                     onPressed: () {
+                      MaterialPageRoute(
+                        builder: (context) => const EditPersonalProfilePage(),
+                      );
                       debugPrint('theme');
                     },
                     style: ButtonStyle(
@@ -242,7 +252,7 @@ SizedBox createName() {
                       decoration: const BoxDecoration(
                           color: Colors.cyanAccent,
                           image: DecorationImage(
-                              image: AssetImage('groupTest.png'),
+                              image: AssetImage('assets/images/cover.png'),
                               fit: BoxFit.contain)),
                     ),
                   ))

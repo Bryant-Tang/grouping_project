@@ -28,8 +28,6 @@ class _CoverPageState extends State<CoverPage> with TickerProviderStateMixin {
         });
       });
     controller.forward();
-    // Navigator.pushReplacement(context,
-    //       MaterialPageRoute(builder: (context) => LoginPage()));
     // controller.repeat(reverse: true, period: const Duration(seconds: 3));
     super.initState();
   }
