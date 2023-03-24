@@ -25,41 +25,49 @@ class _NavigationAppBarState extends State<NavigationAppBar> {
         BottomNavigationBarItem(
             icon: SvgPicture.asset(
               "assets/icons/appBar/home.svg",
-              color: Colors.grey,
+              colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+              // color: Colors.grey,
             ),
             activeIcon: SvgPicture.asset(
               "assets/icons/appBar/home.svg",
-              color: Colors.black,
+              colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+              // color: Colors.black,
             ),
             label: 'Home'),
         BottomNavigationBarItem(
             icon: SvgPicture.asset(
               "assets/icons/appBar/calendar.svg",
-              color: Colors.grey,
+              colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+              // color: Colors.grey,
             ),
             activeIcon: SvgPicture.asset(
               "assets/icons/appBar/calendar.svg",
-              color: Colors.black,
+              colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+              // color: Colors.black,
             ),
             label: 'Calendar'),
         BottomNavigationBarItem(
             icon: SvgPicture.asset(
               "assets/icons/appBar/messages1.svg",
-              color: Colors.grey,
+              colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+              // color: Colors.grey,
             ),
             activeIcon: SvgPicture.asset(
               "assets/icons/appBar/messages1.svg",
-              color: Colors.black,
+              colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+              // color: Colors.black,
             ),
             label: 'Message'),
         BottomNavigationBarItem(
             icon: SvgPicture.asset(
               "assets/icons/appBar/note1.svg",
-              color: Colors.grey,
+              colorFilter: const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
+              // color: Colors.grey,
             ),
             activeIcon: SvgPicture.asset(
               "assets/icons/appBar/note1.svg",
-              color: Colors.black,
+              colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+              // color: Colors.black,
             ),
             label: 'Note'),
       ],
