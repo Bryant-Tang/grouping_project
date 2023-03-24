@@ -11,9 +11,13 @@ import 'package:grouping_project/pages/home/home_page/over_view.dart';
 // import 'package:flutter/rendering.dart';
 
 // 測試新功能用，尚未完工，請勿使用或刪除
-import 'package:grouping_project/components/card_view/card_view_template.dart';
-import 'package:grouping_project/pages/home/home_page/empty.dart';
-import 'package:grouping_project/components/card_view/event_information.dart';
+// import 'package:grouping_project/components/card_view/card_view_template.dart';
+// import 'package:grouping_project/pages/home/home_page/empty.dart';
+// import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/components/create/add_topic.dart';
+import 'package:grouping_project/components/create/add_event.dart';
+import 'package:grouping_project/components/create/add_note.dart';
+import 'package:grouping_project/components/create/add_mission.dart';
 
 import 'package:flutter/material.dart';
 
@@ -99,7 +103,51 @@ class _TestPageState extends State<MyHomePage> {
             onPressed: () {
               // addNewEventHeight = (addNewEventHeight == 0 ? -300 : 0);
               // setState(() {});
-              debugPrint('add new event');
+              showModalBottomSheet(
+                  context: context,
+                  barrierColor: Colors.black12,
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20))),
+                  builder: (BuildContext context) {
+                    return SizedBox(
+                      height: 475,
+                    child: Column(children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: 20,
+                        decoration: const BoxDecoration(
+                            color: Color(0xFFFFB782),
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20))),
+                      ),
+                      const SizedBox(
+                        height: 50,
+                        child: Center(
+                            child: Text(
+                          'Create',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20),
+                        )),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: 390,
+                        child: GridView.builder(
+                            itemCount: 4,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2),
+                            itemBuilder: (context, index) {
+                              return createsPng[index];
+                            }),
+                      )
+                    ])
+                    );
+                  });
+              // debugPrint('add new event');
             },
             child: const Icon(
               Icons.add,
@@ -128,6 +176,8 @@ class _TestPageState extends State<MyHomePage> {
         ));
   }
 }
+
+List<StatelessWidget> createsPng = const [AddTopic(), AddEvent(), AddNote(), AddMission()];
 
 // // this is test, don't delete it
 // EventInformationShrink shrink = EventInformationShrink(
