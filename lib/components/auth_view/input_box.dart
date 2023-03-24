@@ -5,7 +5,9 @@ class GroupingInputField extends StatefulWidget {
   final IconData boxIcon;
   final Color boxColor;
   final String? Function(String? value) validator;
-  String inputText = "";
+  final textController = TextEditingController();
+  // final String inputText = "";
+  // final void Function() callBack;
   GroupingInputField({
     super.key,
     required this.labelText,
@@ -18,27 +20,26 @@ class GroupingInputField extends StatefulWidget {
     this.validator = validator;
   }
 
+  get text => textController.text;
+
   @override
   State<GroupingInputField> createState() => _GroupingInputFieldState();
 }
 
 class _GroupingInputFieldState extends State<GroupingInputField> {
-  final textController = TextEditingController();
-
+  // final textController = TextEditingController();
+  String inputText = "";
   @override
   void initState() {
     super.initState();
     // Start listening to changes.
-    textController.addListener(() => widget.inputText = getInputText());
-  }
-
-  String getInputText() {
-    return textController.text;
+    widget.textController.addListener(
+        () => setState(() => inputText = widget.textController.text));
   }
 
   @override
   void dispose() {
-    textController.dispose();
+    widget.textController.dispose();
     super.dispose();
   }
 
@@ -47,7 +48,7 @@ class _GroupingInputFieldState extends State<GroupingInputField> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
       child: TextFormField(
-          controller: textController,
+          controller: widget.textController,
           validator: widget.validator,
           decoration: InputDecoration(
               // isDense 為必要, contentPadding 越大，則 textfield 越大

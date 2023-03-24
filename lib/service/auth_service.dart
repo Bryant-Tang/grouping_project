@@ -25,6 +25,13 @@ class AuthService {
         '784990691438-q9ni6tteu6336u58fcdlf9opdm6cvtok.apps.googleusercontent.com',
     scopes: <String>['email'],
   );
+  final GoogleSignIn _googleSignInAndroid = GoogleSignIn(
+    // serverClientId:
+    //     '784990691438-vutrcfkafr5d4eaq0tio9q36bl72bvae.apps.googleusercontent.com',
+    serverClientId:
+        '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
+    scopes: <String>['email'],
+  );
 
   Stream<UserModel?> get onAuthStateChanged {
     return _auth
@@ -70,6 +77,7 @@ class AuthService {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User user = result.user!;
+      debugPrint("${user.uid}\n");
 
       return _userModelFromAuth(user);
     } on FirebaseAuthException catch (error) {
@@ -131,7 +139,8 @@ class AuthService {
   Future<UserModel?> thridPartyLogin(String provider) async {
     switch (provider) {
       case "google":
-        return await googleLogin();
+        UserModel? googleUser = await googleLogin();
+        return googleUser;
       default:
         return null;
     }
@@ -139,7 +148,7 @@ class AuthService {
 
   /// Google Login
   /// return UserModel if succeed, no return if failed
-  Future googleLogin() async {
+  Future<UserModel?> googleLogin() async {
     bool kisweb;
     try {
       if (Platform.isAndroid || Platform.isIOS) {
@@ -158,7 +167,7 @@ class AuthService {
         await _googleSignInWeb.signInSilently();
         GoogleSignInAccount? googleUser = await _googleSignInWeb.signIn();
         if (googleUser == null) {
-          return false;
+          return null;
         }
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
@@ -176,7 +185,25 @@ class AuthService {
         //var email = peopleApi.people.get("people/me");
         GoogleSignInAccount? googleUser = await _googleSignInIos.signIn();
         if (googleUser == null) {
-          return false;
+          return null;
+        }
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        UserCredential result = await _auth.signInWithCredential(credential);
+
+        return _userModelFromAuth(result.user);
+      }
+      if (Platform.isAndroid) {
+        //var httpClient = (await _googleSignInIos.authenticatedClient())!;
+        //var peopleApi = PeopleServiceApi(httpClient);
+        //var email = peopleApi.people.get("people/me");
+        GoogleSignInAccount? googleUser = await _googleSignInAndroid.signIn();
+        if (googleUser == null) {
+          return null;
         }
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
@@ -201,6 +228,9 @@ class AuthService {
     if (Platform.isIOS) {
       await _googleSignInIos.disconnect();
     }
+    if (Platform.isAndroid) {
+      await _googleSignInAndroid.disconnect();
+    }
   }
 
   /// Email sign out, no return
@@ -211,5 +241,25 @@ class AuthService {
       debugPrint(e.toString());
       return null;
     }
+  }
+
+  /// a function determine a user is logging in for the first time or not.
+  ///
+  /// if the user have logging before, return true; otherwise, return false.
+  Future<bool> haveEverLoginBefore(String userId) async {
+    final clientLocation =
+        FirebaseFirestore.instance.collection('client_properties').doc(userId);
+    bool ans = false;
+    await clientLocation.get().then(
+      (DocumentSnapshot doc) {
+        ans = true;
+      },
+      onError: (e) {
+        debugPrint(
+            '[Notification] this client is logging in for the first time.');
+        ans = false;
+      },
+    );
+    return ans;
   }
 }

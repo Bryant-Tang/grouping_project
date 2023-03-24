@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
+import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
+import 'package:grouping_project/pages/home/home_page/over_view.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -14,7 +17,7 @@ class LoginPage extends StatefulWidget {
     "Google": {"fileName": "google.png", "name": "google"},
     "Github": {"fileName": "github.png", "name": "github"},
   };
-  List<Widget> buttonBuilder() {
+  List<Widget> buttonBuilder(BuildContext context) {
     List<Widget> authButtonList = [];
     for (dynamic button in buttonUI.values) {
       authButtonList.add(AuthButton(
@@ -22,7 +25,15 @@ class LoginPage extends StatefulWidget {
           name: button["name"],
           onPressed: () async {
             AuthService authService = AuthService();
-            await authService.thridPartyLogin(button["name"]);
+            await authService.thridPartyLogin(button["name"]).then((value) {
+              if (value != null) {
+                debugPrint("${value.uid}\n");
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const PeronalDashboardPage()));
+              }
+            });
           }));
     }
     return authButtonList;
@@ -38,12 +49,13 @@ class _LogInState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Container(
-        padding: const EdgeInsets.fromLTRB(30.0, 150.0, 30.0, 100.0),
+        padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0, 120.0),
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               HeadlineWithContent(
@@ -54,7 +66,7 @@ class _LogInState extends State<LoginPage> {
               const HintTextWithLine(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Column(children: widget.buttonBuilder()),
+                child: Column(children: widget.buttonBuilder(context)),
               )
             ],
           ),
@@ -101,19 +113,19 @@ class _EmailFormState extends State<_EmailForm> {
   String userInputPassword = "";
   bool isInputFormatCorrect = true;
   UserModel? user;
-  void _onPress() async{
+  void _onPress() async {
     setState(() {
       // when user press continue with email button, program first check the vaildation of input by calling all the validator in the form
       // next call call userLogin from service API
       isInputFormatCorrect = _formKey.currentState!.validate();
       if (isInputFormatCorrect) {
         // debugPrint("登入測試");
-        userInputEmail = emailInputBox.inputText;
-        userInputPassword = passwordInputBox.inputText;
+        userInputEmail = emailInputBox.text;
+        userInputPassword = passwordInputBox.text;
         // debugPrint("Email: $userInputEmail , Password: $userInputPassword");
       }
     });
-    if(isInputFormatCorrect){
+    if (isInputFormatCorrect) {
       checkUserInput(userInputEmail, userInputPassword);
     }
   }
@@ -123,7 +135,10 @@ class _EmailFormState extends State<_EmailForm> {
         .emailLogIn(userInputEmail, userInputPassword)
         .then((value) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => const MyHomePage()));
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  UserData(data: value, child: const PeronalDashboardPage())));
     }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {
@@ -137,12 +152,10 @@ class _EmailFormState extends State<_EmailForm> {
           break;
         case 'user-not-found':
           debugPrint('user-not-found');
+          SignUpDataModel data = SignUpDataModel(email: email);
+          SignUpPage page = SignUpPage(data: data);
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => SignUpPage(
-                        email: userInputEmail,
-                      )));
+              context, MaterialPageRoute(builder: (context) => page));
           break;
         case 'wrong-password':
           showErrorDialog('密碼錯誤', '請確認帳號$userInputEmail密碼是否正確');

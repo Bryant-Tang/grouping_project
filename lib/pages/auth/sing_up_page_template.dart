@@ -22,9 +22,10 @@ class _SignUpPageTemplateState extends State<SignUpPageTemplate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 120),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,

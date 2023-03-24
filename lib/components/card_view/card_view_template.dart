@@ -41,7 +41,7 @@ class _CardViewTemplateState extends State<CardViewTemplate> {
     // ~~~~~~~
     detail = widget.detailShrink;
     show = AnimatedContainer(
-      duration: Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 250),
       height: 84,
       child: _shrink(
         detail: widget.detailShrink,

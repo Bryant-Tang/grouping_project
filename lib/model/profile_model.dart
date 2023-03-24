@@ -9,6 +9,11 @@ class ProfileTag {
   String tag;
   String content;
   ProfileTag({required this.tag, required this.content});
+
+  @override
+  String toString() {
+    return "Profile Tag: $tag : $content";
+  }
 }
 
 /// ## a data model for profile, either user or group
@@ -101,7 +106,8 @@ class ProfileModel extends DataModel<ProfileModel> {
         slogan: data['slogan'],
         introduction: data['introduction'],
         tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
-            ? _fromFirestoreTags(data['tags'], data['tag_contents'])
+            ? _fromFirestoreTags(
+                List.from(data['tags']), List.from(data['tag_contents']))
             : null);
 
     return processData;
