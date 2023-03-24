@@ -49,12 +49,13 @@ class _LogInState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Container(
-        padding: const EdgeInsets.fromLTRB(30.0, 150.0, 30.0, 100.0),
+        padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0, 120.0),
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
               HeadlineWithContent(

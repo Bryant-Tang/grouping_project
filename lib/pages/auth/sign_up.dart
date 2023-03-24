@@ -1,6 +1,7 @@
 import 'package:grouping_project/components/component_lib.dart';
+import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/user.dart';
-import 'package:grouping_project/pages/templates/sing_up_page_template.dart';
+import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/home/home_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -69,16 +70,24 @@ class _SignUpPageState extends State<SignUpPage> {
   void register() async {
     String email = widget.data.email;
     String password = widget.data.password;
+    String userName = widget.data.userName;
     debugPrint('註冊信箱: $email\n使用者密碼: $password');
     AuthService authService = AuthService();
     await authService.emailSignUp(email, password).then((value) {
       if (context.mounted) {
         debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
+        final ProfileModel user = ProfileModel(name: userName, email: email);
+        DataController()
+            .upload(uploadData: user)
+            .then((value) => {debugPrint('upload successfully')})
+            .catchError((error) {
+          debugPrint(error.toString());
+        });
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    UserData(data: value, child: const PeronalDashboardPage())));
+                builder: (context) => UserData(
+                    data: value, child: const PeronalDashboardPage())));
       }
     }).catchError((error) {
       showErrorDialog(error.code, error.toString());

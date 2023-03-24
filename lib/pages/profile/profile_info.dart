@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
+// import 'package:grouping_project/model/profile_model.dart';
+import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 
 class PerosonalProfileSetting extends StatefulWidget {
+  // final void Function(Map<String, String?> content) callback;
   PerosonalProfileSetting({super.key});
-  Map<String, String?> personalInformation = {};
-  Map<String, String?> get content => personalInformation;
+  Map<String, String?>? content;
 
   @override
   State<PerosonalProfileSetting> createState() =>
@@ -17,20 +19,19 @@ class _PerosonalProfileSettingState extends State<PerosonalProfileSetting> {
   final userReallNameEditTextController = TextEditingController();
   final userMottoEditTextController = TextEditingController();
   final userIntroductioionEditController = TextEditingController();
-  late final TextFormField userNameField;
-  late final TextFormField userRealNameField;
-  late final TextFormField userMottoField;
-  late final TextFormField userIntroductionField;
+  TextFormField? userNameField;
+  TextFormField? userRealNameField;
+  TextFormField? userMottoField;
+  TextFormField? userIntroductionField;
+  String? userName;
   @override
   void initState() {
     super.initState();
     userNameField = TextFormField(
-      // 預設會是UserName
       controller: userNameEditTextController
         ..addListener(() {
-          widget.personalInformation = getAllFormContent();
+          widget.content = getAllFormContent();
         }),
-      //initialValue: "Your User Name",
       decoration: const InputDecoration(
         label: Text("使用者名稱 / User Name"),
         icon: Icon(Icons.person_pin_outlined),
@@ -40,7 +41,7 @@ class _PerosonalProfileSettingState extends State<PerosonalProfileSetting> {
       // 預設會是UserName
       controller: userReallNameEditTextController
         ..addListener(() {
-          widget.personalInformation = getAllFormContent();
+          widget.content = getAllFormContent();
         }),
       decoration: const InputDecoration(
         label: Text("本名 / Real Name"),
@@ -50,7 +51,7 @@ class _PerosonalProfileSettingState extends State<PerosonalProfileSetting> {
     userMottoField = TextFormField(
       controller: userMottoEditTextController
         ..addListener(() {
-          widget.personalInformation = getAllFormContent();
+          widget.content = getAllFormContent();
         }),
       decoration: const InputDecoration(
         label: Text("心情小語 / 座右銘"),
@@ -62,14 +63,13 @@ class _PerosonalProfileSettingState extends State<PerosonalProfileSetting> {
       maxLines: 2,
       controller: userIntroductioionEditController
         ..addListener(() {
-          widget.personalInformation = getAllFormContent();
+          widget.content = getAllFormContent();
         }),
       decoration: const InputDecoration(
         label: Text("自我介紹"),
         icon: Icon(Icons.chat),
       ),
     );
-    widget.personalInformation = getAllFormContent();
   }
 
   @override
@@ -103,10 +103,18 @@ class _PerosonalProfileSettingState extends State<PerosonalProfileSetting> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              userNameField,
-              userRealNameField,
-              userMottoField,
-              userIntroductionField
+              userNameField!
+                ..controller!.text =
+                    ProfileInherited.of(context)!.profile.name ?? "Unknown",
+              userRealNameField!
+                ..controller!.text =
+                    ProfileInherited.of(context)!.profile.nickname ?? "",
+              userMottoField!
+                ..controller!.text =
+                    ProfileInherited.of(context)!.profile.slogan ?? "",
+              userIntroductionField!
+                ..controller!.text =
+                    ProfileInherited.of(context)!.profile.introduction ?? ""
             ],
           ),
         )

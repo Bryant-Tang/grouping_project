@@ -72,13 +72,3 @@ class _NavigationAppBarState extends State<NavigationAppBar> {
     );
   }
 }
-
-class GroupingLogo extends StatelessWidget {
-  const GroupingLogo({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SvgPicture.asset("assets/images/logo.svg",
-        semanticsLabel: 'Acme Logo');
-  }
-}
