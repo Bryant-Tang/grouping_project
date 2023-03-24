@@ -28,8 +28,10 @@ class LoginPage extends StatefulWidget {
             await authService.thridPartyLogin(button["name"]).then((value) {
               if (value != null) {
                 debugPrint("${value.uid}\n");
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const OverView()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const PeronalDashboardPage()));
               }
             });
           }));
