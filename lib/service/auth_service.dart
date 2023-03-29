@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/model/user_model.dart';
 
 import 'dart:io';
@@ -52,6 +54,17 @@ class AuthService {
   String getUid() {
     String cur = _auth.currentUser!.uid;
     return cur;
+  }
+
+  /// get thrid partt profile photo
+  getProfile() {
+    String? curPhoto = _auth.currentUser!.photoURL;
+    if (curPhoto != null) {
+      return Image.network(curPhoto, height: 100, width: 100);
+    } else {
+      return SvgPicture.asset("assets/images/logo.svg",
+          semanticsLabel: 'You profile pictue');
+    }
   }
 
   /// Change the password of the target user
@@ -119,19 +132,19 @@ class AuthService {
   /// flutter run --web-hostname localhost --web-port 5000 for easy test
   ///
   /// ! onlu 5 mails a day !
-  Future<void> sendEmailLink(String email) async {
-    try {
-      ActionCodeSettings actionCodeSettings = ActionCodeSettings(
-          url: "https://127.0.0.1:5000/#/", handleCodeInApp: true);
-      _auth.sendSignInLinkToEmail(
-          email: email, actionCodeSettings: actionCodeSettings);
-    } catch (e) {
-      debugPrint(e.toString());
-    }
-  }
+  // Future<void> sendEmailLink(String email) async {
+  //   try {
+  //     ActionCodeSettings actionCodeSettings = ActionCodeSettings(
+  //         url: "https://127.0.0.1:5000/#/", handleCodeInApp: true);
+  //     _auth.sendSignInLinkToEmail(
+  //         email: email, actionCodeSettings: actionCodeSettings);
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //   }
+  // }
 
   /// To handle the email link
-  void handleEmailLink() {}
+  // void handleEmailLink() {}
 
   /// Thrid party login with provider name as parameter
   ///
