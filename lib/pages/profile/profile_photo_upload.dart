@@ -21,6 +21,7 @@ class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
       setState(() {
         _image = value;
         widget.profileImage = Image.file(File(_image!.path));
+        debugPrint(_image!.path);
       });
     });
   }
