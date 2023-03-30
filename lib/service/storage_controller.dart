@@ -26,7 +26,9 @@ class StorageController extends DataController {
     if (type != PicturePurpose.other) {
       imagesRef = _firebaseStorage.ref().child("${targetId}/${type.name}");
     } else {
-      imagesRef = _firebaseStorage.ref().child("${targetId}/${DateTime.now()}");
+      imagesRef = _firebaseStorage
+          .ref()
+          .child("${targetId}/${type.name}/${DateTime.now()}");
     }
 
     File file = File(filePath);
@@ -58,6 +60,45 @@ class StorageController extends DataController {
     }
   }
 
-  getAll() {}
-  delete() {}
+  Future<List<XFile>?> getAll(
+      {String? targetId, required PicturePurpose type}) async {
+    targetId = targetId ?? _authService.getUid();
+
+    List<XFile> list = [];
+    String toBeGet = '$targetId/${type.name}';
+
+    try {
+      ListResult listResult =
+          await _firebaseStorage.ref().child(toBeGet).listAll();
+      // debugPrint(url);
+      for (Reference element in listResult.items) {
+        String url = await element.getDownloadURL();
+        var file = await DefaultCacheManager().getSingleFile(url);
+        list.add(XFile(file.path));
+      }
+      return list;
+    } catch (e) {
+      // e.g, e.code == 'canceled'
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> delete(
+      {String? targetId, required PicturePurpose type, required name}) async {
+    switch (type) {
+      case PicturePurpose.profilepicture:
+        _firebaseStorage.ref().child('$targetId/${type.name}').delete();
+        break;
+      default:
+        ListResult listResult = await _firebaseStorage
+            .ref()
+            .child('$targetId/${PicturePurpose.other.name}/')
+            .listAll();
+        for (Reference element in listResult.items) {
+          if (element.name == name) {
+            element.delete();
+          }
+        }
+    }
+  }
 }
