@@ -20,6 +20,7 @@ import 'package:grouping_project/components/create/add_topic.dart';
 import 'package:grouping_project/components/create/add_event.dart';
 import 'package:grouping_project/components/create/add_note.dart';
 import 'package:grouping_project/components/create/add_mission.dart';
+import 'package:grouping_project/pages/home/home_page/empty.dart';
 
 import 'package:flutter/material.dart';
 
@@ -52,6 +53,8 @@ class _TestPageState extends State<PeronalDashboardPage> {
     // show the from of widget
     // debugPaintSizeEnabled = true;
 
+
+
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -62,6 +65,10 @@ class _TestPageState extends State<PeronalDashboardPage> {
           actions: [
             IconButton(
                 onPressed: () {
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => EmptyWidget()));
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -117,40 +124,39 @@ class _TestPageState extends State<PeronalDashboardPage> {
                           topRight: Radius.circular(20))),
                   builder: (BuildContext context) {
                     return SizedBox(
-                      height: 475,
-                    child: Column(children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 20,
-                        decoration: const BoxDecoration(
-                            color: Color(0xFFFFB782),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20))),
-                      ),
-                      const SizedBox(
-                        height: 50,
-                        child: Center(
-                            child: Text(
-                          'Create',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                        )),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: 390,
-                        child: GridView.builder(
-                            itemCount: 4,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2),
-                            itemBuilder: (context, index) {
-                              return createsPng[index];
-                            }),
-                      )
-                    ])
-                    );
+                        height: 475,
+                        child: Column(children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 20,
+                            decoration: const BoxDecoration(
+                                color: Color(0xFFFFB782),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20))),
+                          ),
+                          const SizedBox(
+                            height: 50,
+                            child: Center(
+                                child: Text(
+                              'Create',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            )),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: 390,
+                            child: GridView.builder(
+                                itemCount: 4,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2),
+                                itemBuilder: (context, index) {
+                                  return createsPng[index];
+                                }),
+                          )
+                        ]));
                   });
             },
             child: const Icon(
@@ -168,4 +174,9 @@ class _TestPageState extends State<PeronalDashboardPage> {
   }
 }
 
-List<StatelessWidget> createsPng = const [AddTopic(), AddEvent(), AddNote(), AddMission()];
+List<StatelessWidget> createsPng = const [
+  AddTopic(),
+  AddEvent(),
+  AddNote(),
+  AddMission()
+];

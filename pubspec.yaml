@@ -48,6 +48,7 @@ dependencies:
   meta: ^1.9.0
   image_picker_web: ^3.0.0+1
   image_picker: ^0.8.7
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
