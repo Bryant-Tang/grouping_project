@@ -50,6 +50,7 @@ dependencies:
   image_picker: ^0.8.7
   firebase_storage: ^11.0.16
   path_provider: ^2.0.14
+  flutter_cache_manager: ^3.3.0
 
 dev_dependencies:
   flutter_test:

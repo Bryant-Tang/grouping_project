@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
+import 'package:grouping_project/service/storage_controller.dart';
 
 import 'package:image_picker/image_picker.dart';
 
@@ -15,12 +16,30 @@ class PersonProfileImageUpload extends StatefulWidget {
 }
 
 class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
+  StorageController _storageController = StorageController();
+
   XFile? _image;
+  ImageProvider<Object>? picProvider;
+  Image? pic;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    _storageController.get(type: PicturePurpose.profilepicture).then((value) {
+      setState(() {
+        _image = value;
+        widget.profileImage = Image.file(File(value!.path));
+      });
+    });
+  }
+
   void _pickImage() {
     ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
       setState(() {
         _image = value;
         widget.profileImage = Image.file(File(_image!.path));
+        _storageController.update(
+            filePath: _image!.path, type: PicturePurpose.profilepicture);
         debugPrint(_image!.path);
       });
     });
