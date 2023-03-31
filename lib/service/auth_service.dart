@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/model/user_model.dart';
 
@@ -7,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:image_picker/image_picker.dart';
 
 /// For all auth service, you need an AuthService instance
 ///
@@ -57,13 +59,14 @@ class AuthService {
   }
 
   /// get thrid partt profile photo
-  getProfile() {
-    String? curPhoto = _auth.currentUser!.photoURL;
-    if (curPhoto != null) {
-      return Image.network(curPhoto, height: 100, width: 100);
+  Future<XFile?> getProfile() async {
+    String? photoUrl = _auth.currentUser!.photoURL;
+    if (photoUrl != null) {
+      var file = await DefaultCacheManager().getSingleFile(photoUrl);
+      XFile result = XFile(file.path);
+      return result;
     } else {
-      return SvgPicture.asset("assets/images/logo.svg",
-          semanticsLabel: 'You profile pictue');
+      return null;
     }
   }
 

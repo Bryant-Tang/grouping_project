@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -25,7 +26,9 @@ class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
   @override
   void initState() {
     // TODO: implement initState
-    _storageController.get(type: PicturePurpose.profilepicture).then((value) {
+    _storageController
+        .get(purpose: FilePurpose.profilepicture, type: FileType.picture)
+        .then((value) {
       setState(() {
         _image = value;
         widget.profileImage = Image.file(File(value!.path));
@@ -39,7 +42,7 @@ class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
         _image = value;
         widget.profileImage = Image.file(File(_image!.path));
         _storageController.update(
-            filePath: _image!.path, type: PicturePurpose.profilepicture);
+            filePath: _image!.path, purpose: FilePurpose.profilepicture);
         debugPrint(_image!.path);
       });
     });
