@@ -19,7 +19,7 @@ class AddMission extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('images/Mission.png'),
+              Image.asset('assets/images/Mission.png'),
               const SizedBox(
                 height: 10,
               ),

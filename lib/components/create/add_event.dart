@@ -19,7 +19,7 @@ class AddEvent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('images/Event.png'),
+              Image.asset('assets/images/Event.png'),
               const SizedBox(
                 height: 10,
               ),
