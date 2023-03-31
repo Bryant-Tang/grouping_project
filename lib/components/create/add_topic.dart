@@ -19,7 +19,7 @@ class AddTopic extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('images/topic.png'),
+              Image.asset('assets/images/topic.png'),
               const SizedBox(
                 height: 10,
               ),

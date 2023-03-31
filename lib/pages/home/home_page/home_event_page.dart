@@ -2,7 +2,6 @@
 //import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 
-import '';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/card_view/card_view_template.dart';
 
@@ -188,15 +187,15 @@ Future<void> showEvents() async {
     eventCards.add(const SizedBox(
       height: 2,
     ));
-    EventInformationShrink shrink = EventInformationShrink(
-      group: event.ownerName,
-      color: Color(event.color),
-      contributorIds: event.contributorIds ?? [],
-      title: event.title ?? 'unknown',
-      descript: event.introduction ?? 'unknown',
-      startTime: event.startTime ?? DateTime(0),
-      endTime: event.endTime ?? DateTime(0),);
-
+    // EventInformationShrink shrink = EventInformationShrink(
+    //   group: event.ownerName,
+    //   color: Color(event.color),
+    //   contributorIds: event.contributorIds ?? [],
+    //   title: event.title ?? 'unknown',
+    //   descript: event.introduction ?? 'unknown',
+    //   startTime: event.startTime ?? DateTime(0),
+    //   endTime: event.endTime ?? DateTime(0),);
+    EventInformationShrink shrink = EventInformationShrink(eventModel: event);
 
     eventCards.add(
       CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)

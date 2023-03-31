@@ -7,7 +7,7 @@ import 'package:grouping_project/service/storage_test.dart';
 import 'firebase_options.dart';
 
 // 繞過登入直接進入(測試用library)
-import 'package:grouping_project/pages/home/home_page.dart';
+import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
 // import 'package:grouping_project/pages/event_data_test_page.dart';
 
 void main() async {
