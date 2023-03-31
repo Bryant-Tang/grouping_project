@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/auth/user.dart';
-import 'package:grouping_project/pages/home/home_page.dart';
+import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
 import 'package:grouping_project/pages/home/home_page/over_view.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';

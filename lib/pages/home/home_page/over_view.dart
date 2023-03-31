@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/components/card_view/card_view_template.dart';
+import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/overview_choice.dart';
+import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/home/home_page/home_event_page.dart';
 import 'package:grouping_project/pages/home/home_page/home_mission_page.dart';
 
@@ -120,6 +123,7 @@ List<ListView> pages = [
         height: 100,
         decoration: BoxDecoration(border: Border.all(color: Colors.black)),
       ),
+      CardViewTemplate(detailShrink: EventInformationShrink(eventModel: EventModel()), detailEnlarge: EventInformationEnlarge(eventModel: EventModel()))
     ],
   ),
   ListView(
