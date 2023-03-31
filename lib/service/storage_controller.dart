@@ -65,12 +65,18 @@ class StorageController extends DataController {
     } on FirebaseException catch (e) {
       if (e.code == 'object-not-found') {
         try {
-          return await _authService.getProfile();
+          XFile? thridPartyPhoto = await _authService.getProfile();
+          if (thridPartyPhoto != null) {
+            await update(
+                filePath: thridPartyPhoto.path,
+                purpose: FilePurpose.profilepicture);
+            return thridPartyPhoto;
+          }
         } catch (e) {
-          debugPrint('Exception:============>>> $e');
+          debugPrint('Exception:==>> $e');
         }
       }
-      debugPrint('Exception:==============> ${e.code}');
+      debugPrint('Exception:=> ${e.code}');
     }
   }
 
@@ -89,6 +95,7 @@ class StorageController extends DataController {
         String url = await element.getDownloadURL();
         var file = await DefaultCacheManager().getSingleFile(url);
         list.add(XFile(file.path));
+        debugPrint(XFile(file.path).mimeType);
       }
       return list;
     } catch (e) {
