@@ -58,6 +58,7 @@ class StorageController extends DataController {
       // debugPrint(url);
 
       if (type == FileType.picture) {
+        // DefaultCacheManager only works on Android and Ios
         var file = await DefaultCacheManager().getSingleFile(url);
         XFile result = XFile(file.path);
         return result;
@@ -65,7 +66,7 @@ class StorageController extends DataController {
     } on FirebaseException catch (e) {
       if (e.code == 'object-not-found') {
         try {
-          XFile? thridPartyPhoto = await _authService.getProfile();
+          XFile? thridPartyPhoto = await _authService.getProfilePicture();
           if (thridPartyPhoto != null) {
             await update(
                 filePath: thridPartyPhoto.path,
@@ -92,6 +93,7 @@ class StorageController extends DataController {
           await _firebaseStorage.ref().child(toBeGet).listAll();
       // debugPrint(url);
       for (Reference element in listResult.items) {
+        // DefaultCacheManager only works on Android and Ios
         String url = await element.getDownloadURL();
         var file = await DefaultCacheManager().getSingleFile(url);
         list.add(XFile(file.path));

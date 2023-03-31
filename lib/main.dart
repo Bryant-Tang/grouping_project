@@ -2,7 +2,6 @@ import 'package:grouping_project/pages/auth/cover.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:grouping_project/service/storage_test.dart';
 // import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 import 'firebase_options.dart';
 
@@ -32,7 +31,7 @@ class MyApp extends StatelessWidget {
           fontFamily: 'NotoSansTC'),
       debugShowCheckedModeBanner: false,
       // 呼叫 home_page.dart
-      home: const StorageTestPage(),
+      home: const CoverPage(),
       // home: EditPersonalProfilePage(),
       // home: EventDataTestPage(),
     );

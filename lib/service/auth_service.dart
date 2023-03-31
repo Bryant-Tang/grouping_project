@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/model/user_model.dart';
 
 import 'dart:io';
@@ -16,26 +14,6 @@ import 'package:image_picker/image_picker.dart';
 /// flutter run --web-hostname localhost --web-port 5000
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  // kIsWeb => Web
-  // Platform.isIos / Platform.isAndroid => IOS ? Android;
-  // Change scopes parameter for different scope
-  final GoogleSignIn _googleSignInWeb = GoogleSignIn(
-    clientId:
-        '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
-    scopes: <String>['email'],
-  );
-  final GoogleSignIn _googleSignInIos = GoogleSignIn(
-    clientId:
-        '784990691438-q9ni6tteu6336u58fcdlf9opdm6cvtok.apps.googleusercontent.com',
-    scopes: <String>['email'],
-  );
-  final GoogleSignIn _googleSignInAndroid = GoogleSignIn(
-    // serverClientId:
-    //     '784990691438-vutrcfkafr5d4eaq0tio9q36bl72bvae.apps.googleusercontent.com',
-    serverClientId:
-        '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
-    scopes: <String>['email'],
-  );
 
   Stream<UserModel?> get onAuthStateChanged {
     return _auth
@@ -46,6 +24,7 @@ class AuthService {
   /// Change Auth User into UserModel
   UserModel? _userModelFromAuth(User? user) {
     if (user != null) {
+      debugPrint("${user.uid}\n");
       return UserModel(uid: user.uid);
     } else {
       return null;
@@ -59,7 +38,7 @@ class AuthService {
   }
 
   /// get thrid partt profile photo
-  Future<XFile?> getProfile() async {
+  Future<XFile?> getProfilePicture() async {
     String? photoUrl = _auth.currentUser!.photoURL;
     if (photoUrl != null) {
       var file = await DefaultCacheManager().getSingleFile(photoUrl);
@@ -68,6 +47,11 @@ class AuthService {
     } else {
       return null;
     }
+  }
+
+  Future<String?> getProfileName() async {
+    String? name = _auth.currentUser!.displayName;
+    return name;
   }
 
   /// Change the password of the target user
@@ -93,7 +77,6 @@ class AuthService {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User user = result.user!;
-      debugPrint("${user.uid}\n");
 
       return _userModelFromAuth(user);
     } on FirebaseAuthException catch (error) {
@@ -180,6 +163,11 @@ class AuthService {
         //var httpClient = (await _googleSignInWeb.authenticatedClient())!;
         //var peopleApi = PeopleServiceApi(httpClient);
         //var email = peopleApi.people.get("people/me");
+        final GoogleSignIn _googleSignInWeb = GoogleSignIn(
+          clientId:
+              '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
+          scopes: <String>['email'],
+        );
         await _googleSignInWeb.signInSilently();
         GoogleSignInAccount? googleUser = await _googleSignInWeb.signIn();
         if (googleUser == null) {
@@ -199,6 +187,11 @@ class AuthService {
         //var httpClient = (await _googleSignInIos.authenticatedClient())!;
         //var peopleApi = PeopleServiceApi(httpClient);
         //var email = peopleApi.people.get("people/me");
+        final GoogleSignIn _googleSignInIos = GoogleSignIn(
+          clientId:
+              '784990691438-q9ni6tteu6336u58fcdlf9opdm6cvtok.apps.googleusercontent.com',
+          scopes: <String>['email'],
+        );
         GoogleSignInAccount? googleUser = await _googleSignInIos.signIn();
         if (googleUser == null) {
           return null;
@@ -217,6 +210,13 @@ class AuthService {
         //var httpClient = (await _googleSignInIos.authenticatedClient())!;
         //var peopleApi = PeopleServiceApi(httpClient);
         //var email = peopleApi.people.get("people/me");
+        final GoogleSignIn _googleSignInAndroid = GoogleSignIn(
+          // serverClientId:
+          //     '784990691438-vutrcfkafr5d4eaq0tio9q36bl72bvae.apps.googleusercontent.com',
+          serverClientId:
+              '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
+          scopes: <String>['email'],
+        );
         GoogleSignInAccount? googleUser = await _googleSignInAndroid.signIn();
         if (googleUser == null) {
           return null;
@@ -233,19 +233,34 @@ class AuthService {
       }
     } catch (e) {
       debugPrint(e.toString());
+      return null;
     }
   }
 
   /// Google Log out, no return
   Future<void> googleSignOut() async {
     if (kIsWeb) {
-      _googleSignInWeb.disconnect();
+      GoogleSignIn(
+        clientId:
+            '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
+        scopes: <String>['email'],
+      ).disconnect();
     }
     if (Platform.isIOS) {
-      await _googleSignInIos.disconnect();
+      await GoogleSignIn(
+        clientId:
+            '784990691438-q9ni6tteu6336u58fcdlf9opdm6cvtok.apps.googleusercontent.com',
+        scopes: <String>['email'],
+      ).disconnect();
     }
     if (Platform.isAndroid) {
-      await _googleSignInAndroid.disconnect();
+      GoogleSignIn(
+        // serverClientId:
+        //     '784990691438-vutrcfkafr5d4eaq0tio9q36bl72bvae.apps.googleusercontent.com',
+        serverClientId:
+            '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
+        scopes: <String>['email'],
+      ).disconnect();
     }
   }
 
