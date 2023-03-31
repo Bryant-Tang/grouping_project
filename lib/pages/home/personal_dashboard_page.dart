@@ -6,7 +6,6 @@ import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
 import 'package:grouping_project/pages/home/navigation_bar.dart';
 import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/components/message.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 
 // progress card
@@ -17,13 +16,11 @@ import 'package:grouping_project/pages/home/home_page/over_view.dart';
 // import 'package:flutter/rendering.dart';
 
 // 測試新功能用，尚未完工，請勿使用或刪除
-// import 'package:grouping_project/components/card_view/card_view_template.dart';
-// import 'package:grouping_project/pages/home/home_page/empty.dart';
-// import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/create/add_topic.dart';
 import 'package:grouping_project/components/create/add_event.dart';
 import 'package:grouping_project/components/create/add_note.dart';
 import 'package:grouping_project/components/create/add_mission.dart';
+import 'package:grouping_project/pages/home/home_page/empty.dart';
 
 import 'package:flutter/material.dart';
 
@@ -56,6 +53,8 @@ class _TestPageState extends State<PeronalDashboardPage> {
     // show the from of widget
     // debugPaintSizeEnabled = true;
 
+
+
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -66,6 +65,10 @@ class _TestPageState extends State<PeronalDashboardPage> {
           actions: [
             IconButton(
                 onPressed: () {
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => EmptyWidget()));
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -101,13 +104,6 @@ class _TestPageState extends State<PeronalDashboardPage> {
                   height: 3,
                 ),
                 Expanded(flex: 5, child: OverView()),
-                // const SizedBox(
-                //   height: 3,
-                // ),
-                // Expanded(
-                //   flex: 5,
-                //   child: differentFunctionPage[funtionSelect],
-                // )
               ]),
         ),
         // 利用 extendBody: true 以及 BottomAppBar 的 shape, clipBehavior
@@ -119,8 +115,6 @@ class _TestPageState extends State<PeronalDashboardPage> {
           height: 50,
           child: FloatingActionButton(
             onPressed: () {
-              // addNewEventHeight = (addNewEventHeight == 0 ? -300 : 0);
-              // setState(() {});
               showModalBottomSheet(
                   context: context,
                   barrierColor: Colors.black12,
@@ -130,42 +124,40 @@ class _TestPageState extends State<PeronalDashboardPage> {
                           topRight: Radius.circular(20))),
                   builder: (BuildContext context) {
                     return SizedBox(
-                      height: 475,
-                    child: Column(children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 20,
-                        decoration: const BoxDecoration(
-                            color: Color(0xFFFFB782),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20))),
-                      ),
-                      const SizedBox(
-                        height: 50,
-                        child: Center(
-                            child: Text(
-                          'Create',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                        )),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: 390,
-                        child: GridView.builder(
-                            itemCount: 4,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2),
-                            itemBuilder: (context, index) {
-                              return createsPng[index];
-                            }),
-                      )
-                    ])
-                    );
+                        height: 475,
+                        child: Column(children: [
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 20,
+                            decoration: const BoxDecoration(
+                                color: Color(0xFFFFB782),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(20),
+                                    topRight: Radius.circular(20))),
+                          ),
+                          const SizedBox(
+                            height: 50,
+                            child: Center(
+                                child: Text(
+                              'Create',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            )),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: 390,
+                            child: GridView.builder(
+                                itemCount: 4,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2),
+                                itemBuilder: (context, index) {
+                                  return createsPng[index];
+                                }),
+                          )
+                        ]));
                   });
-              // debugPrint('add new event');
             },
             child: const Icon(
               Icons.add,
@@ -182,60 +174,9 @@ class _TestPageState extends State<PeronalDashboardPage> {
   }
 }
 
-List<StatelessWidget> createsPng = const [AddTopic(), AddEvent(), AddNote(), AddMission()];
-
-// // this is test, don't delete it
-// EventInformationShrink shrink = EventInformationShrink(
-//   group: "personal",
-//   title: "test title",
-//   descript: "test information",
-//   color: Color(0xFFFFc953),
-//   contributors: [],
-//   startTime: DateTime(0),
-//   endTime: DateTime.now(),
-// );
-
-// EventInformationEnlarge enlarge = EventInformationEnlarge(
-//   group: "personal",
-//   title: "test title",
-//   descript: "test information",
-//   color: Color(0xFFFFc953),
-//   contributors: [],
-//   eventId: "123456",
-//   startTime: DateTime(0),
-//   endTime: DateTime.now(),
-// );
-
-// List<Widget> differentFunctionPage = [
-//   Expanded(
-//       child: ListView(
-//     // children: const [
-//     children: [
-//       //GroupPage()
-
-//       CardViewTemplate(detailShrink: shrink, detailEnlarge: enlarge)
-//     ],
-//   )),
-//   Expanded(
-//       child: ListView(
-//     children: const [
-//       // UpcomingExpand(
-//       //     group: 'personal',
-//       //     title: 'P+ 籃球會',
-//       //     descript: '領航員 vs 富邦勇士',
-//       //     date1: '9:00 PM, FEB 2, 2023',
-//       //     date2: '11:00 PM, FEB 2, 2023'),
-//       //UpcomingPage()
-//       const Placeholder()
-//     ],
-//   )),
-//   Expanded(
-//       child: ListView(
-//     // children: const [TrackedPage()],
-//     children: [const Placeholder()],
-//   )),
-//   Expanded(
-//       child: ListView(
-//     children: [Message(messageNumber: 1)],
-//   ))
-// ];
+List<StatelessWidget> createsPng = const [
+  AddTopic(),
+  AddEvent(),
+  AddNote(),
+  AddMission()
+];

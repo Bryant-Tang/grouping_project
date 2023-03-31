@@ -19,7 +19,7 @@ class AddNote extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset('images/Note.png'),
+              Image.asset('assets/images/Note.png'),
               const SizedBox(
                 height: 10,
               ),
