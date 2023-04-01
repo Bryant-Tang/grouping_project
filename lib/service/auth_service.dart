@@ -140,10 +140,18 @@ class AuthService {
       case "google":
         UserModel? googleUser = await googleLogin();
         return googleUser;
+      case "facebook":
+        await facebookLogin();
+        break;
+      case "github":
+        break;
       default:
         return null;
     }
   }
+
+  // now at step 6
+  Future<UserModel?> facebookLogin() async {}
 
   /// Google Login
   /// return UserModel if succeed, no return if failed
