@@ -53,8 +53,6 @@ class _TestPageState extends State<PeronalDashboardPage> {
     // show the from of widget
     // debugPaintSizeEnabled = true;
 
-
-
     return Scaffold(
         appBar: AppBar(
           title: Text(
@@ -81,6 +79,7 @@ class _TestPageState extends State<PeronalDashboardPage> {
                 onPressed: () async {
                   _authService.signOut();
                   _authService.googleSignOut();
+                  _authService.facebookSignOut();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginPage()));
                 },

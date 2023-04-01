@@ -60,6 +60,34 @@ class AuthService {
     await user.updatePassword(password);
   }
 
+  /// sing up with email & password
+  ///
+  /// return userModel if succeed, return null if any error catched.
+  ///
+  /// Error codes are:
+  /// * **email-already-in-use:**
+  /// * Thrown if there already exists an account with the given email address.
+  /// * **invalid-email:**
+  /// * Thrown if the email address is not valid.
+  /// * **operation-not-allowed:**
+  /// * Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
+  /// * **weak-password:**
+  /// * Thrown if the password is not strong enough.
+  Future emailSignUp(String email, String password) async {
+    try {
+      UserCredential result = await _auth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      User user = result.user!;
+
+      return _userModelFromAuth(user);
+    } on FirebaseAuthException {
+      rethrow;
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
+  }
+
   /// Login with email & password
   ///
   /// return userModel if succeed., return error code if FireAuthException catched.
@@ -87,28 +115,9 @@ class AuthService {
     }
   }
 
-  /// sing up with email & password
-  ///
-  /// return userModel if succeed, return null if any error catched.
-  ///
-  /// Error codes are:
-  /// * **email-already-in-use:**
-  /// * Thrown if there already exists an account with the given email address.
-  /// * **invalid-email:**
-  /// * Thrown if the email address is not valid.
-  /// * **operation-not-allowed:**
-  /// * Thrown if email/password accounts are not enabled. Enable email/password accounts in the Firebase Console, under the Auth tab.
-  /// * **weak-password:**
-  /// * Thrown if the password is not strong enough.
-  Future emailSignUp(String email, String password) async {
+  Future signOut() async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      User user = result.user!;
-
-      return _userModelFromAuth(user);
-    } on FirebaseAuthException {
-      rethrow;
+      return await _auth.signOut();
     } catch (e) {
       debugPrint(e.toString());
       return null;
@@ -140,11 +149,22 @@ class AuthService {
     switch (provider) {
       case "google":
         UserModel? googleUser = await googleLogin();
+        if (googleUser == null) {
+          debugPrint("===> Login failed");
+        }
         return googleUser;
       case "facebook":
-        return await facebookLogin();
+        UserModel? facebookUser = await facebookLogin();
+        if (facebookUser != null) {
+          debugPrint("===> Login failed");
+        }
+        return facebookUser;
       case "github":
-        return await githubLogin();
+        UserModel? githubUser = await githubLogin();
+        if (githubUser != null) {
+          debugPrint("===> Login failed");
+        }
+        return githubUser;
       default:
         return null;
     }
@@ -153,23 +173,53 @@ class AuthService {
   // Need to setup in Ios
   // Currentlu only work for test accounts
   Future<UserModel?> facebookLogin() async {
+    debugPrint('========> Entered Facebook Login');
+    bool kisweb;
     try {
-      final LoginResult loginResult = await FacebookAuth.instance.login();
-      if (loginResult.status == LoginStatus.success) {
-        // Create a credential from the access token
-        final AuthCredential credential =
-            FacebookAuthProvider.credential(loginResult.accessToken!.token);
-        // Once signed in, return the UserCredential
+      if (Platform.isAndroid || Platform.isIOS) {
+        kisweb = false;
+      } else {
+        kisweb = true;
+      }
+    } catch (e) {
+      kisweb = true;
+    }
+    try {
+      if (kisweb) {
+        FacebookAuthProvider facebookProvider = FacebookAuthProvider();
+
+        facebookProvider.addScope('email');
+        facebookProvider.addScope('public_profile');
+        facebookProvider.setCustomParameters({
+          'display': 'popup',
+        });
+
         UserCredential result =
-            await FirebaseAuth.instance.signInWithCredential(credential);
+            await FirebaseAuth.instance.signInWithPopup(facebookProvider);
+
+        // Once signed in, return the UserCredential
         return _userModelFromAuth(result.user);
+      } else if (Platform.isAndroid || Platform.isIOS) {
+        // The line below only work on Android (and Ios?)
+        final LoginResult loginResult = await FacebookAuth.instance.login();
+        if (loginResult.status == LoginStatus.success) {
+          final AuthCredential credential =
+              FacebookAuthProvider.credential(loginResult.accessToken!.token);
+          UserCredential result =
+              await FirebaseAuth.instance.signInWithCredential(credential);
+          return _userModelFromAuth(result.user);
+        }
       }
     } catch (error) {
-      debugPrint(error.toString());
+      debugPrint('========> ${error.toString()}');
     }
   }
 
+  Future<void> facebookSignOut() async {}
+
   Future<UserModel?> githubLogin() async {}
+
+  Future<void> githubSignOut() async {}
 
   /// Google Login
   /// return UserModel if succeed, no return if failed
@@ -288,35 +338,5 @@ class AuthService {
         scopes: <String>['email'],
       ).disconnect();
     }
-  }
-
-  /// Email sign out, no return
-  Future signOut() async {
-    try {
-      return await _auth.signOut();
-    } catch (e) {
-      debugPrint(e.toString());
-      return null;
-    }
-  }
-
-  /// a function determine a user is logging in for the first time or not.
-  ///
-  /// if the user have logging before, return true; otherwise, return false.
-  Future<bool> haveEverLoginBefore(String userId) async {
-    final clientLocation =
-        FirebaseFirestore.instance.collection('client_properties').doc(userId);
-    bool ans = false;
-    await clientLocation.get().then(
-      (DocumentSnapshot doc) {
-        ans = true;
-      },
-      onError: (e) {
-        debugPrint(
-            '[Notification] this client is logging in for the first time.');
-        ans = false;
-      },
-    );
-    return ans;
   }
 }
