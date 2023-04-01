@@ -25,7 +25,7 @@ class AuthService {
   /// Change Auth User into UserModel
   UserModel? _userModelFromAuth(User? user) {
     if (user != null) {
-      debugPrint("${user.uid}\n");
+      debugPrint('Uid is ${user.uid}');
       return UserModel(uid: user.uid);
     } else {
       return null;
@@ -117,7 +117,10 @@ class AuthService {
 
   Future signOut() async {
     try {
-      return await _auth.signOut();
+      await _auth.signOut();
+      if (_auth.currentUser == null) {
+        debugPrint('!!! Successfully signout !!!');
+      }
     } catch (e) {
       debugPrint(e.toString());
       return null;
@@ -155,13 +158,13 @@ class AuthService {
         return googleUser;
       case "facebook":
         UserModel? facebookUser = await facebookLogin();
-        if (facebookUser != null) {
+        if (facebookUser == null) {
           debugPrint("===> Login failed");
         }
         return facebookUser;
       case "github":
         UserModel? githubUser = await githubLogin();
-        if (githubUser != null) {
+        if (githubUser == null) {
           debugPrint("===> Login failed");
         }
         return githubUser;
@@ -215,9 +218,35 @@ class AuthService {
     }
   }
 
-  Future<void> facebookSignOut() async {}
+  Future<UserModel?> githubLogin() async {
+    bool kisweb;
+    try {
+      if (Platform.isAndroid || Platform.isIOS) {
+        kisweb = false;
+      } else {
+        kisweb = true;
+      }
+    } catch (e) {
+      kisweb = true;
+    }
+    try {
+      if (kisweb) {
+        GithubAuthProvider githubProvider = GithubAuthProvider();
 
-  Future<UserModel?> githubLogin() async {}
+        UserCredential result =
+            await FirebaseAuth.instance.signInWithPopup(githubProvider);
+        return _userModelFromAuth(result.user);
+      } else if (Platform.isAndroid || Platform.isIOS) {
+        GithubAuthProvider githubProvider = GithubAuthProvider();
+
+        UserCredential result =
+            await FirebaseAuth.instance.signInWithProvider(githubProvider);
+        return _userModelFromAuth(result.user);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 
   Future<void> githubSignOut() async {}
 
@@ -310,33 +339,6 @@ class AuthService {
     } catch (e) {
       debugPrint(e.toString());
       return null;
-    }
-  }
-
-  /// Google Log out, no return
-  Future<void> googleSignOut() async {
-    if (kIsWeb) {
-      GoogleSignIn(
-        clientId:
-            '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
-        scopes: <String>['email'],
-      ).disconnect();
-    }
-    if (Platform.isIOS) {
-      await GoogleSignIn(
-        clientId:
-            '784990691438-q9ni6tteu6336u58fcdlf9opdm6cvtok.apps.googleusercontent.com',
-        scopes: <String>['email'],
-      ).disconnect();
-    }
-    if (Platform.isAndroid) {
-      GoogleSignIn(
-        // serverClientId:
-        //     '784990691438-vutrcfkafr5d4eaq0tio9q36bl72bvae.apps.googleusercontent.com',
-        serverClientId:
-            '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
-        scopes: <String>['email'],
-      ).disconnect();
     }
   }
 }

@@ -78,8 +78,6 @@ class _TestPageState extends State<PeronalDashboardPage> {
                 //temp remove async for quick test
                 onPressed: () async {
                   _authService.signOut();
-                  _authService.googleSignOut();
-                  _authService.facebookSignOut();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginPage()));
                 },

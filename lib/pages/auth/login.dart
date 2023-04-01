@@ -26,7 +26,6 @@ class LoginPage extends StatefulWidget {
             AuthService authService = AuthService();
             await authService.thridPartyLogin(button["name"]).then((value) {
               if (value != null) {
-                debugPrint("${value.uid}\n");
                 Navigator.push(
                     context,
                     MaterialPageRoute(
