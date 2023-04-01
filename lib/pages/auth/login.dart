@@ -1,9 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
-import 'package:grouping_project/pages/home/home_page/over_view.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -13,9 +11,10 @@ class LoginPage extends StatefulWidget {
   final headLineText = "登入";
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
-    "Apple": {"fileName": "apple.png", "name": "apple"},
+    // "Apple": {"fileName": "apple.png", "name": "apple"},
     "Google": {"fileName": "google.png", "name": "google"},
     "Github": {"fileName": "github.png", "name": "github"},
+    "Facebook": {"fileName": "facebook.png", "name": "facebook"}
   };
   List<Widget> buttonBuilder(BuildContext context) {
     List<Widget> authButtonList = [];

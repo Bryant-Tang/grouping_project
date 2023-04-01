@@ -51,6 +51,7 @@ dependencies:
   intl: ^0.17.0
   firebase_storage: ^11.0.16
   flutter_cache_manager: ^3.3.0
+  flutter_facebook_auth: ^5.0.8
 
 dev_dependencies:
   flutter_test:

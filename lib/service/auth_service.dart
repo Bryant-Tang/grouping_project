@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 /// For all auth service, you need an AuthService instance
 ///
@@ -79,7 +80,7 @@ class AuthService {
       User user = result.user!;
 
       return _userModelFromAuth(user);
-    } on FirebaseAuthException catch (error) {
+    } on FirebaseAuthException {
       rethrow;
     } catch (error) {
       debugPrint(error.toString());
@@ -106,7 +107,7 @@ class AuthService {
       User user = result.user!;
 
       return _userModelFromAuth(user);
-    } on FirebaseAuthException catch (error) {
+    } on FirebaseAuthException {
       rethrow;
     } catch (e) {
       debugPrint(e.toString());
@@ -141,17 +142,34 @@ class AuthService {
         UserModel? googleUser = await googleLogin();
         return googleUser;
       case "facebook":
-        await facebookLogin();
-        break;
+        return await facebookLogin();
       case "github":
-        break;
+        return await githubLogin();
       default:
         return null;
     }
   }
 
-  // now at step 6
-  Future<UserModel?> facebookLogin() async {}
+  // Need to setup in Ios
+  // Currentlu only work for test accounts
+  Future<UserModel?> facebookLogin() async {
+    try {
+      final LoginResult loginResult = await FacebookAuth.instance.login();
+      if (loginResult.status == LoginStatus.success) {
+        // Create a credential from the access token
+        final AuthCredential credential =
+            FacebookAuthProvider.credential(loginResult.accessToken!.token);
+        // Once signed in, return the UserCredential
+        UserCredential result =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+        return _userModelFromAuth(result.user);
+      }
+    } catch (error) {
+      debugPrint(error.toString());
+    }
+  }
+
+  Future<UserModel?> githubLogin() async {}
 
   /// Google Login
   /// return UserModel if succeed, no return if failed

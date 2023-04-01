@@ -6,7 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 // 繞過登入直接進入(測試用library)
-import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
+// import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
 // import 'package:grouping_project/pages/event_data_test_page.dart';
 
 void main() async {
