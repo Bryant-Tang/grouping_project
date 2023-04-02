@@ -33,7 +33,6 @@ class _TestPageState extends State<PeronalDashboardPage> {
   ProfileModel profile = ProfileModel();
   var funtionSelect = 0;
 
-  // var addNewEventHeight = -300.0;
   @override
   void initState() {
     super.initState();
