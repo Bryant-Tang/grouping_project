@@ -75,3 +75,50 @@ class NavigationToggleBar extends StatelessWidget {
     );
   }
 }
+
+class SingleButtonNavigationBar extends StatelessWidget {
+  final String goToNextButtonText;
+  final goToNextButtonIcon = Icons.arrow_forward_rounded;
+  final void Function() goToNextButtonHandler;
+  const SingleButtonNavigationBar({
+    super.key,
+    required this.goToNextButtonText,
+    required this.goToNextButtonHandler,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        MaterialButton(
+          onPressed: goToNextButtonHandler,
+          color: Colors.amber,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+              side: const BorderSide(color: Colors.amber)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  goToNextButtonText,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Icon(
+                  goToNextButtonIcon,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

@@ -15,12 +15,11 @@ class BuildingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0, 120.0),
+        padding: const EdgeInsets.fromLTRB(30.0, 100.0, 30.0, 100.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            HeadlineWithContent(
-                headLineText: '測試頁面', content: errorMessage),
+            HeadlineWithContent(headLineText: '測試頁面', content: errorMessage),
             Image.asset('assets/images/technical_support.png'),
             MaterialButton(
               onPressed: () {

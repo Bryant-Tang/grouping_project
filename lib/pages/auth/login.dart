@@ -1,9 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/auth/user.dart';
+import 'package:grouping_project/pages/home/home_page/home_page.dart';
 import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
-import 'package:grouping_project/pages/home/home_page/over_view.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -31,7 +30,7 @@ class LoginPage extends StatefulWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const PeronalDashboardPage()));
+                        builder: (context) => const HomePage()));
               }
             });
           }));
@@ -138,7 +137,7 @@ class _EmailFormState extends State<_EmailForm> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  UserData(data: value, child: const PeronalDashboardPage())));
+                  UserData(data: value, child: const HomePage())));
     }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {
