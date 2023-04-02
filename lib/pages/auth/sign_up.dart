@@ -4,14 +4,30 @@ import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
 import 'package:grouping_project/pages/building.dart';
 import 'package:grouping_project/pages/home/home_page/home_page.dart';
-import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
 import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 
-class SignUpPage extends StatefulWidget {
+class InhertedSignUpData extends InheritedWidget {
   final SignUpDataModel data;
-  const SignUpPage({super.key, required this.data});
+  const InhertedSignUpData({
+    Key? key,
+    required Widget child,
+    required this.data,
+  }) : super(key: key, child: child);
+
+  static InhertedSignUpData? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<InhertedSignUpData>();
+  }
+
+  @override
+  bool updateShouldNotify(InhertedSignUpData oldWidget) {
+    return data != oldWidget.data;
+  }
+}
+
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
@@ -19,9 +35,12 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _pageController = PageController(keepPage: true);
   late final List<Widget> _pages;
+  late final SignUpDataModel data;
+
   @override
   void initState() {
     super.initState();
+    data = InhertedSignUpData.of(context)!.data;
     _pages = [
       _SignUpHomePage(
         forward: forward,
@@ -31,16 +50,15 @@ class _SignUpPageState extends State<SignUpPage> {
           forward: forward,
           backward: backward,
           callback: (userName) {
-            setState(() => widget.data.userName = userName);
+            setState(() => data.userName = userName);
           }),
       _UserPasswordRegisterPage(
           forward: forward,
           backward: backward,
           callback: (password) {
-            setState(() => widget.data.password = password);
+            setState(() => data.password = password);
           }),
       _SignUpFinishPage(
-        data: widget.data,
         forward: register,
         backward: backward,
       ),
@@ -75,9 +93,9 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void register() async {
-    String email = widget.data.email;
-    String password = widget.data.password;
-    String userName = widget.data.userName;
+    String email = InhertedSignUpData.of(context)!.data.email;
+    String password = InhertedSignUpData.of(context)!.data.password;
+    String userName = InhertedSignUpData.of(context)!.data.userName;
     debugPrint('註冊信箱: $email\n使用者密碼: $password');
     AuthService authService = AuthService();
     await authService.emailSignUp(email, password).then((value) {
@@ -117,13 +135,16 @@ class _SignUpPageState extends State<SignUpPage> {
   final PageStorageBucket _bucket = PageStorageBucket();
   @override
   Widget build(BuildContext context) {
-    return PageStorage(
-        bucket: _bucket,
-        child: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: _pages,
-        ));
+    return InhertedSignUpData(
+      data: data,
+      child: PageStorage(
+          bucket: _bucket,
+          child: PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: _pages,
+          )),
+    );
   }
 }
 
@@ -301,9 +322,8 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
 class _SignUpFinishPage extends StatefulWidget {
   final void Function() forward;
   final void Function() backward;
-  final SignUpDataModel data;
   const _SignUpFinishPage(
-      {required this.forward, required this.backward, required this.data});
+      {required this.forward, required this.backward});
   @override
   State<_SignUpFinishPage> createState() => _SignUpFinishPageState();
 }
@@ -442,8 +462,9 @@ class _RecommendPageState extends State<_RecommendPage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              const BuildingPage(errorMessage: "創建小組",)));
+                          builder: (context) => const BuildingPage(
+                                errorMessage: "創建小組",
+                              )));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
