@@ -1,7 +1,5 @@
 import 'package:googleapis/mybusinessbusinessinformation/v1.dart';
-import 'package:grouping_project/model/data_controller.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/card_edit_page.dart';
 import 'package:grouping_project/pages/home/navigation_bar.dart';
@@ -52,12 +50,10 @@ class _TestPageState extends State<PeronalDashboardPage> {
   Widget build(BuildContext context) {
     // show the from of widget
     // debugPaintSizeEnabled = true;
-
-
-
     return Scaffold(
         appBar: AppBar(
           title: Text(
+            // ignore: todo
             // TODO: Get User Name from data package
             profile.name ?? "Unknown",
             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -150,8 +146,7 @@ class _TestPageState extends State<PeronalDashboardPage> {
                             child: GridView.builder(
                                 itemCount: 4,
                                 gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2),
+                                    const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
                                 itemBuilder: (context, index) {
                                   return createsPng[index];
                                 }),
@@ -167,10 +162,8 @@ class _TestPageState extends State<PeronalDashboardPage> {
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        // Fix: the navigatorAppBar is wrapped by pannding which can't be find at SG source code, we should fix that problem
-        // Notify: I remove the outter Material App Bar and finally padding is gone.
-        // Notify: 如果需要在
-        bottomNavigationBar: const NavigationAppBar());
+        bottomNavigationBar: const NavigationAppBar()
+    );
   }
 }
 
