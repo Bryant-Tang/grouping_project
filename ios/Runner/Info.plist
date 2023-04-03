@@ -51,5 +51,14 @@
 	<string>This app needs access to the camera to take photos.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to the photo library to select photos.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.784990691438-q9ni6tteu6336u58fcdlf9opdm6cvtok</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

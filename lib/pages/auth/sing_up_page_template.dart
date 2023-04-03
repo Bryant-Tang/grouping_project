@@ -5,7 +5,7 @@ import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart
 class SignUpPageTemplate extends StatefulWidget {
   final HeadlineWithContent titleWithContent;
   final Widget body;
-  final NavigationToggleBar toggleBar;
+  final Widget toggleBar;
   const SignUpPageTemplate({
     super.key,
     required this.titleWithContent,

@@ -1,9 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/auth/user.dart';
+import 'package:grouping_project/pages/home/home_page/home_page.dart';
 import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
-import 'package:grouping_project/pages/home/home_page/over_view.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -13,7 +12,7 @@ class LoginPage extends StatefulWidget {
   final headLineText = "登入";
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
-    "Apple": {"fileName": "apple.png", "name": "apple"},
+    "Facebook": {"fileName": "apple.png", "name": "facebook"},
     "Google": {"fileName": "google.png", "name": "google"},
     "Github": {"fileName": "github.png", "name": "github"},
   };
@@ -31,7 +30,7 @@ class LoginPage extends StatefulWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const PeronalDashboardPage()));
+                        builder: (context) => const HomePage()));
               }
             });
           }));
@@ -138,7 +137,7 @@ class _EmailFormState extends State<_EmailForm> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  UserData(data: value, child: const PeronalDashboardPage())));
+                  UserData(data: value, child: const HomePage())));
     }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {
@@ -153,9 +152,9 @@ class _EmailFormState extends State<_EmailForm> {
         case 'user-not-found':
           debugPrint('user-not-found');
           SignUpDataModel data = SignUpDataModel(email: email);
-          SignUpPage page = SignUpPage(data: data);
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => page));
+              context, MaterialPageRoute(builder: (context) => SignUpPage(data: data))
+          );
           break;
         case 'wrong-password':
           showErrorDialog('密碼錯誤', '請確認帳號$userInputEmail密碼是否正確');
