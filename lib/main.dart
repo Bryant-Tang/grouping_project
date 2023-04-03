@@ -3,7 +3,6 @@ import 'package:grouping_project/pages/auth/cover.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:grouping_project/pages/building.dart';
-import 'package:grouping_project/pages/home/home_page/home_page.dart';
 // import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 import 'package:grouping_project/pages/page_not_found.dart';
 import 'firebase_options.dart';
