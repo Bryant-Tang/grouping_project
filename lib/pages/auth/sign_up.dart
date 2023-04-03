@@ -27,7 +27,11 @@ class InhertedSignUpData extends InheritedWidget {
 }
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  final SignUpDataModel data;
+  const SignUpPage({
+    super.key,
+    required this.data,
+  });
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
@@ -35,12 +39,9 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _pageController = PageController(keepPage: true);
   late final List<Widget> _pages;
-  late final SignUpDataModel data;
-
   @override
   void initState() {
     super.initState();
-    data = InhertedSignUpData.of(context)!.data;
     _pages = [
       _SignUpHomePage(
         forward: forward,
@@ -50,13 +51,13 @@ class _SignUpPageState extends State<SignUpPage> {
           forward: forward,
           backward: backward,
           callback: (userName) {
-            setState(() => data.userName = userName);
+            setState(() => widget.data.userName = userName);
           }),
       _UserPasswordRegisterPage(
           forward: forward,
           backward: backward,
           callback: (password) {
-            setState(() => data.password = password);
+            setState(() => widget.data.password = password);
           }),
       _SignUpFinishPage(
         forward: register,
@@ -93,9 +94,9 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void register() async {
-    String email = InhertedSignUpData.of(context)!.data.email;
-    String password = InhertedSignUpData.of(context)!.data.password;
-    String userName = InhertedSignUpData.of(context)!.data.userName;
+    String email = widget.data.email;
+    String password = widget.data.password;
+    String userName = widget.data.userName;
     debugPrint('註冊信箱: $email\n使用者密碼: $password');
     AuthService authService = AuthService();
     await authService.emailSignUp(email, password).then((value) {
@@ -136,7 +137,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return InhertedSignUpData(
-      data: data,
+      data: widget.data,
       child: PageStorage(
           bucket: _bucket,
           child: PageView(
@@ -322,8 +323,7 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
 class _SignUpFinishPage extends StatefulWidget {
   final void Function() forward;
   final void Function() backward;
-  const _SignUpFinishPage(
-      {required this.forward, required this.backward});
+  const _SignUpFinishPage({required this.forward, required this.backward});
   @override
   State<_SignUpFinishPage> createState() => _SignUpFinishPageState();
 }

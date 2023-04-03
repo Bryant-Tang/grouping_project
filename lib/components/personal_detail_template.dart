@@ -104,7 +104,7 @@ class HeadShot extends StatelessWidget {
                                 color: Colors.cyanAccent,
                                 image: DecorationImage(
                                     image: imageShot.image,
-                                    fit: BoxFit.contain)),
+                                    fit: BoxFit.fill)),
                           ),
                         ))
                   ],

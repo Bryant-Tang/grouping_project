@@ -153,10 +153,8 @@ class _EmailFormState extends State<_EmailForm> {
           debugPrint('user-not-found');
           SignUpDataModel data = SignUpDataModel(email: email);
           Navigator.push(
-              context, MaterialPageRoute(builder: (context) => InhertedSignUpData(
-              data: data,
-              child: const SignUpPage())
-          ));
+              context, MaterialPageRoute(builder: (context) => SignUpPage(data: data))
+          );
           break;
         case 'wrong-password':
           showErrorDialog('密碼錯誤', '請確認帳號$userInputEmail密碼是否正確');
