@@ -39,13 +39,14 @@ class _HomePageState extends State<HomePage> {
       });
     });
   }
-  
+
   int _currentPageIndex = 0;
   @override
-  void dispose(){
+  void dispose() {
     _pageController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +71,6 @@ class _HomePageState extends State<HomePage> {
                 //temp remove async for quick test
                 onPressed: () async {
                   _authService.signOut();
-                  _authService.googleSignOut();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginPage()));
                 },
