@@ -89,7 +89,7 @@ class HeadShot extends StatelessWidget {
                       child: Container(
                         width: 153,
                         height: 76.5 * sqrt(3),
-                        color: Colors.black,
+                        // color: Colors.black,
                       ),
                     ),
                     Positioned(
@@ -101,10 +101,9 @@ class HeadShot extends StatelessWidget {
                             width: 150,
                             height: 75 * sqrt(3),
                             decoration: BoxDecoration(
-                                color: Colors.cyanAccent,
+                                // color: Colors.cyanAccent,
                                 image: DecorationImage(
-                                    image: imageShot.image,
-                                    fit: BoxFit.fill)),
+                                    image: imageShot.image, fit: BoxFit.cover)),
                           ),
                         ))
                   ],
