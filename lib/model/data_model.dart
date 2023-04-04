@@ -1,3 +1,5 @@
+import 'dart:io' as io show File;
+
 import 'profile_model.dart';
 
 /// ## a base class of every data in database, can only use as POLYMORPHISM
@@ -29,4 +31,9 @@ abstract class DataModel<T extends DataModel<T>> {
       {required String id,
       required Map<String, dynamic> data,
       ProfileModel? ownerProfile});
+}
+
+abstract class StorageData {
+  Map<String, io.File> toStorage();
+  void setAttributeFromStorage({required Map<String, io.File> data});
 }

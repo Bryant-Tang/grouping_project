@@ -25,26 +25,31 @@ class DataController {
   /// * if [uploadData.id] exist, would be updating the data
   /// * throw error if the database does not has the data of the id.
   Future<void> upload<T extends DataModel<T>>({required T uploadData}) async {
+    String dataId;
     if ((uploadData.id == null) || (uploadData.id == 'profile')) {
-      await FirestoreController(forUser: _forUser, ownerId: _ownerId).set(
-          processData: uploadData.toFirestore(),
-          collectionPath: uploadData.databasePath,
-          dataId: uploadData.id);
+      dataId = await FirestoreController(forUser: _forUser, ownerId: _ownerId)
+          .set(
+              processData: uploadData.toFirestore(),
+              collectionPath: uploadData.databasePath,
+              dataId: uploadData.id);
     } else {
       await FirestoreController(forUser: _forUser, ownerId: _ownerId).update(
           processData: uploadData.toFirestore(),
           collectionPath: uploadData.databasePath,
           dataId: uploadData.id!);
+      dataId = uploadData.id!;
     }
 
-    if (uploadData.storageRequired) {
-      // !!!!!! unimplement yet !!!!!!
-      // !!!!!! unimplement yet !!!!!!
-      // !!!!!! unimplement yet !!!!!!
-      throw UnimplementedError();
-      // !!!!!! unimplement yet !!!!!!
-      // !!!!!! unimplement yet !!!!!!
-      // !!!!!! unimplement yet !!!!!!
+    if (uploadData.storageRequired && uploadData is StorageData) {
+      var uploadFileMap = (uploadData as StorageData).toStorage();
+      StorageController storageController =
+          StorageController(forUser: _forUser, ownerId: _ownerId);
+      for (String key in uploadFileMap.keys) {
+        storageController.set(
+            processData: uploadFileMap[key]!,
+            collectionPath: '${uploadData.databasePath}/$dataId',
+            dataId: key);
+      }
     }
     return;
   }
@@ -68,16 +73,6 @@ class DataController {
         await FirestoreController(forUser: _forUser, ownerId: _ownerId)
             .get(collectionPath: dataTypeToGet.databasePath, dataId: dataId);
 
-    var storageSnap = dataTypeToGet.storageRequired
-        ? throw UnimplementedError()
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        : null;
-
     var ownerProfile = dataTypeToGet.setOwnerRequired
         ? await download(
             dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
@@ -91,8 +86,12 @@ class DataController {
           id: firestoreSnap.id,
           data: firestoreSnap.data() ?? {},
           ownerProfile: ownerProfile);
-      if (storageSnap != null) {
-        throw UnimplementedError();
+      if (processData.storageRequired && processData is StorageData) {
+        (processData as StorageData).setAttributeFromStorage(
+            data: await StorageController(forUser: _forUser, ownerId: _ownerId)
+                .getAllInFile(
+                    collectionPath:
+                        '${processData.databasePath}/${processData.id}'));
       }
 
       return processData;
@@ -122,16 +121,6 @@ class DataController {
         await FirestoreController(forUser: _forUser, ownerId: _ownerId)
             .getAll(collectionPath: dataTypeToGet.databasePath);
 
-    var storageSnapList = dataTypeToGet.storageRequired
-        ? throw UnimplementedError()
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        : null;
-
     var ownerProfile = dataTypeToGet.setOwnerRequired
         ? await download(
             dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
@@ -140,14 +129,11 @@ class DataController {
     for (var snap in firestoreSnapList) {
       T temp = dataTypeToGet.fromFirestore(
           id: snap.id, data: snap.data(), ownerProfile: ownerProfile);
-      if (storageSnapList != null) {
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        throw UnimplementedError();
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
+      if (temp.storageRequired && temp is StorageData) {
+        (temp as StorageData).setAttributeFromStorage(
+            data: await StorageController(forUser: _forUser, ownerId: _ownerId)
+                .getAllInFile(
+                    collectionPath: '${temp.databasePath}/${temp.id}'));
       }
       dataList.add(temp);
     }
@@ -177,13 +163,8 @@ class DataController {
           collectionPath: removeData.databasePath, dataId: removeData.id!);
 
       if (removeData.storageRequired) {
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        throw UnimplementedError();
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
-        // !!!!!! unimplement yet !!!!!!
+        StorageController(forUser: _forUser, ownerId: _ownerId).deleteAll(
+            collectionPath: '${removeData.databasePath}/${removeData.id}');
       }
     } else {
       debugPrint("[Error] data id should be pass");

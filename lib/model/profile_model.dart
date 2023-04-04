@@ -1,6 +1,6 @@
 import 'data_model.dart';
 
-import 'package:flutter/material.dart' show Image;
+import 'dart:io' as io show File;
 
 /// ## the type for [ProfileModel.tags]
 /// * [tag] : the key for this tag
@@ -18,7 +18,7 @@ class ProfileTag {
 
 /// ## a data model for profile, either user or group
 /// * ***DO NOT*** pass or set id for ProfileModel
-class ProfileModel extends DataModel<ProfileModel> {
+class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   String? name;
   String? email;
   int? color;
@@ -26,7 +26,7 @@ class ProfileModel extends DataModel<ProfileModel> {
   String? slogan;
   String? introduction;
   List<ProfileTag>? tags;
-  Image? photo;
+  io.File? photo;
 
   ProfileModel(
       {this.name,
@@ -40,7 +40,7 @@ class ProfileModel extends DataModel<ProfileModel> {
       : super(
             id: 'profile',
             databasePath: 'profiles',
-            storageRequired: false,
+            storageRequired: true,
             setOwnerRequired: false);
 
   /// convert `List<ProfileTag>` to `List<String>` with `ProfileTag.tag`
@@ -111,5 +111,15 @@ class ProfileModel extends DataModel<ProfileModel> {
             : null);
 
     return processData;
+  }
+
+  @override
+  Map<String, io.File> toStorage() {
+    return {if (photo != null) 'photo': photo!};
+  }
+
+  @override
+  void setAttributeFromStorage({required Map<String, io.File> data}) {
+    photo = data['photo'];
   }
 }

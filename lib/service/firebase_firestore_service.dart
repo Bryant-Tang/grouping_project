@@ -17,16 +17,17 @@ class FirestoreController {
   /// * [processData] : the data to be added
   /// * [collectionPath] : the path to add data, suppose to be `T<T extends DataModel>.databasePath`
   /// * [dataId] : if not given, firestore will generate a random id
-  Future<void> set(
+  Future<String> set(
       {required Map<String, dynamic> processData,
       required String collectionPath,
       String? dataId}) async {
     if (dataId != null) {
       await ownerPath.collection(collectionPath).doc(dataId).set(processData);
+      return dataId;
     } else {
-      await ownerPath.collection(collectionPath).add(processData);
+      var snap = await ownerPath.collection(collectionPath).add(processData);
+      return snap.id;
     }
-    return;
   }
 
   /// ### update an existed data

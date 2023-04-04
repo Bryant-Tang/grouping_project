@@ -2,13 +2,36 @@ import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
-import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
+import 'package:grouping_project/pages/building.dart';
+import 'package:grouping_project/pages/home/home_page/home_page.dart';
+import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 
+class InhertedSignUpData extends InheritedWidget {
+  final SignUpDataModel data;
+  const InhertedSignUpData({
+    Key? key,
+    required Widget child,
+    required this.data,
+  }) : super(key: key, child: child);
+
+  static InhertedSignUpData? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<InhertedSignUpData>();
+  }
+
+  @override
+  bool updateShouldNotify(InhertedSignUpData oldWidget) {
+    return data != oldWidget.data;
+  }
+}
+
 class SignUpPage extends StatefulWidget {
   final SignUpDataModel data;
-  const SignUpPage({super.key, required this.data});
+  const SignUpPage({
+    super.key,
+    required this.data,
+  });
   @override
   State<SignUpPage> createState() => _SignUpPageState();
 }
@@ -37,10 +60,13 @@ class _SignUpPageState extends State<SignUpPage> {
             setState(() => widget.data.password = password);
           }),
       _SignUpFinishPage(
-        data: widget.data,
         forward: register,
         backward: backward,
       ),
+      _RecommendPage(forward: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const HomePage()));
+      })
     ];
   }
 
@@ -83,11 +109,7 @@ class _SignUpPageState extends State<SignUpPage> {
             .catchError((error) {
           debugPrint(error.toString());
         });
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => UserData(
-                    data: value, child: const PeronalDashboardPage())));
+        forward();
       }
     }).catchError((error) {
       showErrorDialog(error.code, error.toString());
@@ -114,13 +136,16 @@ class _SignUpPageState extends State<SignUpPage> {
   final PageStorageBucket _bucket = PageStorageBucket();
   @override
   Widget build(BuildContext context) {
-    return PageStorage(
-        bucket: _bucket,
-        child: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: _pages,
-        ));
+    return InhertedSignUpData(
+      data: widget.data,
+      child: PageStorage(
+          bucket: _bucket,
+          child: PageView(
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: _pages,
+          )),
+    );
   }
 }
 
@@ -135,7 +160,7 @@ class _SignUpHomePage extends StatelessWidget {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: const GroupingLogo(),
+      body: Image.asset('assets/images/login_upsketch.png'),
       toggleBar: NavigationToggleBar(
         goBackButtonText: "使用其他帳號",
         goToNextButtonText: "前往註冊",
@@ -298,9 +323,7 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
 class _SignUpFinishPage extends StatefulWidget {
   final void Function() forward;
   final void Function() backward;
-  final SignUpDataModel data;
-  const _SignUpFinishPage(
-      {required this.forward, required this.backward, required this.data});
+  const _SignUpFinishPage({required this.forward, required this.backward});
   @override
   State<_SignUpFinishPage> createState() => _SignUpFinishPageState();
 }
@@ -332,22 +355,146 @@ class _SignUpFinishPageState extends State<_SignUpFinishPage> {
     return SignUpPageTemplate(
       titleWithContent:
           HeadlineWithContent(headLineText: headLineText, content: content),
-      body: Column(
-        children: [
-          HeadlineWithContent(
-              headLineText: "使用者", content: widget.data.userName),
-          const Divider(color: Colors.amber),
-          HeadlineWithContent(headLineText: "帳號", content: widget.data.email),
-          const Divider(color: Colors.amber),
-          HeadlineWithContent(
-              headLineText: "密碼", content: widget.data.password),
-          const Divider(color: Colors.amber),
-        ],
-      ),
+      body: Image.asset("assets/images/welcome.png"),
       toggleBar: NavigationToggleBar(
         goBackButtonText: "修改資料",
         goToNextButtonText: "完成註冊",
         goBackButtonHandler: widget.backward,
+        goToNextButtonHandler: widget.forward,
+      ),
+    );
+  }
+}
+
+class _RecommendPage extends StatefulWidget {
+  final void Function() forward;
+  const _RecommendPage({required this.forward});
+  @override
+  State<_RecommendPage> createState() => _RecommendPageState();
+}
+
+class _RecommendPageState extends State<_RecommendPage> {
+  final headLineText = "歡迎加入 GROUPING!";
+  final content = "你可以先修改你的個人名片資訊或是創建一個新的小組。";
+
+  @override
+  Widget build(BuildContext context) {
+    return SignUpPageTemplate(
+      titleWithContent:
+          HeadlineWithContent(headLineText: headLineText, content: content),
+      body: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 150,
+            height: 200,
+            // padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xffD9D9D9),
+                  spreadRadius: 3,
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: MaterialButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const EditPersonalProfilePage()));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Image.asset(
+                        "assets/images/profile_male.png",
+                        height: 120,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        "修改個人資訊",
+                        style: TextStyle(
+                            color: Colors.amber,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                )),
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          Container(
+            width: 150,
+            height: 200,
+            // padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xffD9D9D9),
+                  spreadRadius: 3,
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: MaterialButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const BuildingPage(
+                                errorMessage: "創建小組",
+                              )));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Image.asset(
+                        "assets/images/conference.png",
+                        height: 120,
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        "創建小組",
+                        style: TextStyle(
+                            color: Colors.amber,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                )),
+          ),
+        ],
+      ),
+      // Image.asset("assets/images/welcome.png"),
+      toggleBar: SingleButtonNavigationBar(
+        goToNextButtonText: "前往主頁",
         goToNextButtonHandler: widget.forward,
       ),
     );
