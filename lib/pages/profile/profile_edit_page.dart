@@ -97,7 +97,8 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
           child: ProfileInherited(
             profile: profile,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 150),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 30, vertical: 150),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
@@ -106,7 +107,7 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
                     child: PageView(
                       controller: _pageController,
                       children: _pages,
-                      onPageChanged: (vlaue){
+                      onPageChanged: (vlaue) {
                         profile.slogan =
                             personalProfileSetting.content!['userMotto'];
                         profile.name =
@@ -116,7 +117,7 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
                         profile.introduction =
                             personalProfileSetting.content!['userInroduction'];
                         profile.tags = personalProfileTagSetting.tagTable;
-                        profile.photo = personalProfileImageUpload.profileImage;
+                        // profile.photo = personalProfileImageUpload.profileImage;
                       },
                     ),
                   ),
@@ -144,13 +145,13 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
                               personalProfileSetting.content!['userName'];
                           profile.nickname =
                               personalProfileSetting.content!['userRealName'];
-                          profile.introduction =
-                              personalProfileSetting.content!['userInroduction'];
+                          profile.introduction = personalProfileSetting
+                              .content!['userInroduction'];
                           profile.tags = personalProfileTagSetting.tagTable;
-                          profile.photo = personalProfileImageUpload.profileImage;
-                          _dataController
-                              .upload(uploadData: profile)
-                              .then((value) => debugPrint('upload successfully'));
+                          // profile.photo =
+                          //     personalProfileImageUpload.profileImage;
+                          _dataController.upload(uploadData: profile).then(
+                              (value) => debugPrint('upload successfully'));
                         });
                         Navigator.of(context).pop();
                       },

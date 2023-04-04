@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 /// For all auth service, you need an AuthService instance
@@ -36,18 +35,6 @@ class AuthService {
   String getUid() {
     String cur = _auth.currentUser!.uid;
     return cur;
-  }
-
-  /// get thrid partt profile photo
-  Future<XFile?> getProfilePicture() async {
-    String? photoUrl = _auth.currentUser!.photoURL;
-    if (photoUrl != null) {
-      var file = await DefaultCacheManager().getSingleFile(photoUrl);
-      XFile result = XFile(file.path);
-      return result;
-    } else {
-      return null;
-    }
   }
 
   Future<String?> getProfileName() async {
@@ -152,21 +139,15 @@ class AuthService {
     switch (provider) {
       case "google":
         UserModel? googleUser = await googleLogin();
-        if (googleUser == null) {
-          debugPrint("===> Login failed");
-        }
+        debugPrint(googleUser.toString());
         return googleUser;
       case "facebook":
         UserModel? facebookUser = await facebookLogin();
-        if (facebookUser == null) {
-          debugPrint("===> Login failed");
-        }
+        debugPrint(facebookUser.toString());
         return facebookUser;
       case "github":
         UserModel? githubUser = await githubLogin();
-        if (githubUser == null) {
-          debugPrint("===> Login failed");
-        }
+        debugPrint(githubUser.toString());
         return githubUser;
       default:
         return null;
@@ -187,35 +168,117 @@ class AuthService {
     } catch (e) {
       kisweb = true;
     }
-    try {
-      if (kisweb) {
-        FacebookAuthProvider facebookProvider = FacebookAuthProvider();
+    if (kisweb) {
+      FacebookAuthProvider facebookProvider = FacebookAuthProvider();
 
-        facebookProvider.addScope('email');
-        facebookProvider.addScope('public_profile');
-        facebookProvider.setCustomParameters({
-          'display': 'popup',
-        });
+      facebookProvider.addScope('email');
+      facebookProvider.addScope('public_profile');
+      facebookProvider.setCustomParameters({
+        'display': 'popup',
+      });
 
-        UserCredential result =
-            await FirebaseAuth.instance.signInWithPopup(facebookProvider);
-
-        // Once signed in, return the UserCredential
-        return _userModelFromAuth(result.user);
-      } else if (Platform.isAndroid || Platform.isIOS) {
-        // The line below only work on Android (and Ios?)
-        final LoginResult loginResult = await FacebookAuth.instance.login();
-        if (loginResult.status == LoginStatus.success) {
-          final AuthCredential credential =
-              FacebookAuthProvider.credential(loginResult.accessToken!.token);
-          UserCredential result =
-              await FirebaseAuth.instance.signInWithCredential(credential);
-          return _userModelFromAuth(result.user);
+      debugPrint(
+          'Break on step 0, there ${FirebaseAuth.instance.currentUser != null ? 'are' : 'isn\'t'} current user');
+      // google link start
+      // HERE
+      try {
+        final GoogleSignIn _googleSignInWeb = GoogleSignIn(
+          clientId:
+              '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
+          scopes: <String>['email'],
+        );
+        debugPrint('Break on step 1');
+        await _googleSignInWeb.signInSilently();
+        GoogleSignInAccount? googleUser = await _googleSignInWeb.signIn();
+        if (googleUser == null) {
+          return null;
         }
+        debugPrint('Break on step 2');
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        debugPrint('Break on step 3');
+        final credential =
+            GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+        debugPrint('Break on step 4');
+        await FirebaseAuth.instance.currentUser?.linkWithCredential(credential);
+      } catch (e) {
+        debugPrint('In linking trys: ${e.toString()}');
       }
-    } catch (error) {
-      debugPrint('========> ${error.toString()}');
-    }
+      // HERE
+      // google link end
+
+      try {
+        await FirebaseAuth.instance
+            .signInWithPopup(facebookProvider)
+            .then((value) {
+          debugPrint(value.toString());
+          return _userModelFromAuth(value.user);
+        });
+      } catch (error) {
+        debugPrint('========> ${error.toString()}');
+      }
+
+      // Once signed in, return the UserCredential
+    } else if (Platform.isAndroid) {
+      bool googleLink = false;
+      // google link start
+      // HERE
+      try {
+        final GoogleSignIn _googleSignInAndroid = GoogleSignIn(
+          // serverClientId:
+          //     '784990691438-vutrcfkafr5d4eaq0tio9q36bl72bvae.apps.googleusercontent.com',
+          serverClientId:
+              '784990691438-2raup8q9qutdb9cc4fq1cpg6ntffm0be.apps.googleusercontent.com',
+          scopes: <String>['email'],
+        );
+        ;
+        debugPrint('Break on step 1');
+        await _googleSignInAndroid.signInSilently();
+        GoogleSignInAccount? googleUser = await _googleSignInAndroid.signIn();
+        if (googleUser == null) {
+          return null;
+        }
+        debugPrint('Break on step 2');
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        debugPrint('Break on step 3');
+        final credential =
+            GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+        debugPrint('Break on step 4');
+        await _auth.signInWithCredential(credential).then((value) async {
+          if ((value != null) &&
+              (await FirebaseAuth.instance
+                          .fetchSignInMethodsForEmail(value.user!.email!))
+                      .contains('facebook.com') !=
+                  true) {
+            debugPrint((await FirebaseAuth.instance
+                    .fetchSignInMethodsForEmail(value.user!.email!))
+                .contains('facebook.com')
+                .toString());
+            googleLink = true;
+          }
+        });
+      } catch (e) {
+        debugPrint('In linking trys: ${e.toString()}');
+      }
+      // HERE
+      // google link end
+
+      // The line below only work on Android (and Ios?)
+      final LoginResult loginResult = await FacebookAuth.instance.login();
+      if (loginResult.status == LoginStatus.success) {
+        final AuthCredential credential =
+            FacebookAuthProvider.credential(loginResult.accessToken!.token);
+        if (googleLink == true) {
+          await FirebaseAuth.instance.currentUser
+              ?.linkWithCredential(credential);
+          await signOut();
+        }
+        UserCredential result =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+        return _userModelFromAuth(result.user);
+      }
+    } else if (Platform.isIOS) {}
   }
 
   Future<UserModel?> githubLogin() async {
@@ -284,6 +347,7 @@ class AuthService {
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
+
         UserCredential result = await _auth.signInWithCredential(credential);
 
         return _userModelFromAuth(result.user);
