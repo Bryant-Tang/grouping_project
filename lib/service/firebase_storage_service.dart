@@ -26,8 +26,8 @@ class StorageController {
     Uint8List? processData =
         await ownerPath.child('$collectionPath/$dataId').getData();
     if (processData == null) {
-      throw ErrorDescription(
-          '[Error] something went wrong while downloading, please retry later.');
+      throw Exception(
+          '[Exception] something went wrong while downloading, please retry later.');
     } else {
       return processData;
     }

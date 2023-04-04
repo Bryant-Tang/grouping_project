@@ -13,6 +13,13 @@ class FirestoreController {
         .doc(ownerId);
   }
 
+  static Future<String> createGroup() async {
+    return (await FirebaseFirestore.instance
+            .collection('group_properties')
+            .add({}))
+        .id;
+  }
+
   /// ### add a new data to the specific path
   /// * [processData] : the data to be added
   /// * [collectionPath] : the path to add data, suppose to be `T<T extends DataModel>.databasePath`
@@ -34,7 +41,7 @@ class FirestoreController {
   /// * [processData] : the data to be updated
   /// * [collectionPath] : the path to update data, suppose to be `T<T extends DataModel>.databasePath`
   /// * [dataId] : the data id
-  /// * if firestore does not exist the data of the id, throw an Error.
+  /// * if firestore does not exist the data of the id, throw an Exception.
   Future<void> update(
       {required Map<String, dynamic> processData,
       required String collectionPath,
@@ -46,7 +53,7 @@ class FirestoreController {
   /// ### get an existed data
   /// * [collectionPath] : the path to get data, suppose to be `T<T extends DataModel>.databasePath`
   /// * [dataId] : the data id
-  /// * if firestore does not exist the data of the id, throw an Error.
+  /// * if firestore does not exist the data of the id, throw an Exception.
   Future<DocumentSnapshot<Map<String, dynamic>>> get(
       {required String collectionPath, required String dataId}) async {
     return await ownerPath.collection(collectionPath).doc(dataId).get();
@@ -62,7 +69,7 @@ class FirestoreController {
   /// ### delete an existed data
   /// * [collectionPath] : the path to delete data, suppose to be `T<T extends DataModel>.databasePath`
   /// * [dataId] : the data id
-  /// * if firestore does not exist the data of the id, throw an Error.
+  /// * if firestore does not exist the data of the id, throw an Exception.
   Future<void> delete(
       {required String collectionPath, required String dataId}) async {
     await ownerPath.collection(collectionPath).doc(dataId).delete();
