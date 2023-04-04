@@ -1,22 +1,18 @@
-/*
-
-**  ATTENTION  **
-This is a empty test Widget, it's only used as test. Therefore, please don't delete it.
-
-*/
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 
-class EmptyWidget extends StatefulWidget {
-  const EmptyWidget({super.key});
+
+class TimeSetWidget extends StatefulWidget {
+  /// this is the temporal class, it will be deleted when event edit page is complete.
+  const TimeSetWidget({super.key});
 
   @override
-  State<EmptyWidget> createState() => _StartEndState();
+  State<TimeSetWidget> createState() => _StartEndState();
 }
 
-class _StartEndState extends State<EmptyWidget> {
+class _StartEndState extends State<TimeSetWidget> {
   DateTime _start = DateTime(0);
   DateTime _end = DateTime.now();
 
@@ -68,7 +64,6 @@ class _StartEndState extends State<EmptyWidget> {
     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
 
     return Scaffold(
-      appBar: AppBar(title: Text('title'),),
       body: Center(
         child: Column(children: [
           Text(
@@ -135,18 +130,3 @@ class _StartEndState extends State<EmptyWidget> {
     );
   }
 }
-
-// class EmptyWidget extends StatelessWidget {
-//   EmptyWidget({super.key});
-
-
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: 
-//       ),
-//     );
-//   }
-// }

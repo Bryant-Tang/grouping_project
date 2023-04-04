@@ -9,6 +9,8 @@ import 'package:grouping_project/pages/home/navigation_bar.dart';
 import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
+import 'package:grouping_project/pages/home/home_page/empty.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -64,6 +66,12 @@ class _HomePageState extends State<HomePage> {
                       MaterialPageRoute(
                           builder: (context) => const CardEditDone()));
                 },
+                // onPressed: () {
+                //   Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //           builder: (context) => EmptyWidget()));
+                // },
                 // 改變成使用者或團體的頭像 !!!!!!!!!!!
                 icon: const Icon(Icons.circle)),
             IconButton(

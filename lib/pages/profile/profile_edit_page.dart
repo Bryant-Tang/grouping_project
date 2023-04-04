@@ -116,7 +116,7 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
                         profile.introduction =
                             personalProfileSetting.content!['userInroduction'];
                         profile.tags = personalProfileTagSetting.tagTable;
-                        profile.photo = personalProfileImageUpload.profileImage;
+                        // profile.photo = personalProfileImageUpload.profileImage;
                       },
                     ),
                   ),
@@ -147,7 +147,7 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
                           profile.introduction =
                               personalProfileSetting.content!['userInroduction'];
                           profile.tags = personalProfileTagSetting.tagTable;
-                          profile.photo = personalProfileImageUpload.profileImage;
+                          // profile.photo = FileImage(personalProfileImageUpload.profileImage);
                           _dataController
                               .upload(uploadData: profile)
                               .then((value) => debugPrint('upload successfully'));
