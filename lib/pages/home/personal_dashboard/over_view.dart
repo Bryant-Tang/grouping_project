@@ -3,8 +3,8 @@ import 'package:grouping_project/components/card_view/card_view_template.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/overview_choice.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/home/home_page/home_event_page.dart';
-import 'package:grouping_project/pages/home/home_page/home_mission_page.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/home_event_page.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/home_mission_page.dart';
 
 class OverView extends StatefulWidget {
   const OverView({super.key});

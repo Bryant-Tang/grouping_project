@@ -1,10 +1,10 @@
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/user.dart';
-import 'package:grouping_project/pages/auth/sing_up_page_template.dart';
-import 'package:grouping_project/pages/building.dart';
-import 'package:grouping_project/pages/home/base_page.dart';
-import 'package:grouping_project/pages/profile/profile_edit_page.dart';
+import 'package:grouping_project/pages/templates/sing_up_page_template.dart';
+import 'package:grouping_project/pages/templates/building.dart';
+import 'package:grouping_project/pages/home/home_page/base_page.dart';
+import 'package:grouping_project/pages/profile/personal_profile/profile_edit_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 
@@ -63,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
         forward: register,
         backward: backward,
       ),
-      _RecommendPage(forward: () {
+      RecommendPage(forward: () {
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => const BasePage()));
       })
@@ -133,18 +133,18 @@ class _SignUpPageState extends State<SignUpPage> {
             ));
   }
 
-  final PageStorageBucket _bucket = PageStorageBucket();
+  // final PageStorageBucket _bucket = PageStorageBucket();
   @override
   Widget build(BuildContext context) {
     return InhertedSignUpData(
       data: widget.data,
-      child: PageStorage(
-          bucket: _bucket,
-          child: PageView(
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: _pages,
-          )),
+      child: // PageStorage(
+          // bucket: _bucket,
+          PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: _pages,
+      ),
     );
   }
 }
@@ -366,14 +366,14 @@ class _SignUpFinishPageState extends State<_SignUpFinishPage> {
   }
 }
 
-class _RecommendPage extends StatefulWidget {
+class RecommendPage extends StatefulWidget {
   final void Function() forward;
-  const _RecommendPage({required this.forward});
+  const RecommendPage({required this.forward});
   @override
-  State<_RecommendPage> createState() => _RecommendPageState();
+  State<RecommendPage> createState() => _RecommendPageState();
 }
 
-class _RecommendPageState extends State<_RecommendPage> {
+class _RecommendPageState extends State<RecommendPage> {
   final headLineText = "歡迎加入 GROUPING!";
   final content = "你可以先修改你的個人名片資訊或是創建一個新的小組。";
 
@@ -406,11 +406,16 @@ class _RecommendPageState extends State<_RecommendPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const EditPersonalProfilePage()));
+                  DataController()
+                      .download(
+                          dataTypeToGet: ProfileModel(),
+                          dataId: ProfileModel().id!)
+                      .then((value) => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditPersonalProfilePage(
+                                    profile: ProfileModel(),
+                                  ))));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),

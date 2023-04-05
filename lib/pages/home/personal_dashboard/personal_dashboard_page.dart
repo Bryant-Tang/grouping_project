@@ -1,14 +1,14 @@
 import 'package:googleapis/mybusinessbusinessinformation/v1.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/user.dart';
-import 'package:grouping_project/pages/home/card_edit_page.dart';
-import 'package:grouping_project/pages/home/navigation_bar.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/card_edit_page.dart';
+import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 
 // progress card
 import 'package:grouping_project/components/card_view/progress.dart';
-import 'package:grouping_project/pages/home/home_page/over_view.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/over_view.dart';
 
 // show frame of widget
 // import 'package:flutter/rendering.dart';

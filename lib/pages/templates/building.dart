@@ -21,19 +21,19 @@ class BuildingPage extends StatelessWidget {
           children: [
             HeadlineWithContent(headLineText: '測試頁面', content: errorMessage),
             Image.asset('assets/images/technical_support.png'),
-            MaterialButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              shape: RoundedRectangleBorder(
-                  side: const BorderSide(color: Colors.amber),
-                  borderRadius: BorderRadius.circular(20)),
-              child: const Padding(
-                padding: EdgeInsets.all(4.0),
-                child: Text("點我返回",
-                    style: TextStyle(color: Colors.amber, fontSize: 16)),
-              ),
-            )
+            //MaterialButton(
+            //  onPressed: () {
+            //    Navigator.of(context).pop();
+            //  },
+            //  shape: RoundedRectangleBorder(
+            //      side: const BorderSide(color: Colors.amber),
+            //      borderRadius: BorderRadius.circular(20)),
+            //  child: const Padding(
+            //    padding: EdgeInsets.all(4.0),
+            //    child: Text("點我返回",
+            //        style: TextStyle(color: Colors.amber, fontSize: 16)),
+            //  ),
+            //)
           ],
         ),
       ),

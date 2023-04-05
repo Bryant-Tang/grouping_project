@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/login.dart';
+import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
 
-import 'package:grouping_project/pages/building.dart';
-import 'package:grouping_project/pages/home/card_edit_page.dart';
+import 'package:grouping_project/pages/templates/building.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/card_edit_page.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
-import 'package:grouping_project/pages/home/navigation_bar.dart';
-import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
+import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 class BasePage extends StatefulWidget {
@@ -93,7 +94,6 @@ class _BasePageState extends State<BasePage> {
                     return Container(
                         clipBehavior: Clip.hardEdge,
                         margin: const EdgeInsets.fromLTRB(3, 3, 3, 0),
-                        width: MediaQuery.of(context).size.width,
                         decoration: const BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.only(
@@ -101,7 +101,7 @@ class _BasePageState extends State<BasePage> {
                                 topRight: Radius.circular(20))),
                         constraints: const BoxConstraints(
                           maxHeight: 450,
-                          minHeight: 300,
+                          minHeight: 180,
                         ),
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
@@ -132,13 +132,12 @@ class _BasePageState extends State<BasePage> {
                               ),
                               MaterialButton(
                                   onPressed: () {
+                                    debugPrint('create new work space');
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                const BuildingPage(
-                                                    errorMessage:
-                                                        "Create New Workspace")));
+                                                CreateWorkspacePage()));
                                     // TODO: Create New Workspace Page
                                     // debugPrint("create new workspace");
                                   },
