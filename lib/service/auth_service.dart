@@ -240,7 +240,7 @@ class AuthService {
   }
 
   /// Facebook login, but will try to link with existed google account in default
-  Future<UserModel?> facebookLogin({bool linkToGoogle = true}) async {
+  Future<UserModel?> facebookLogin({bool linkToGoogle = false}) async {
     debugPrint('========> Entered Facebook Login');
     bool kisweb;
     try {
@@ -274,12 +274,21 @@ class AuthService {
           // }
           if (linkToGoogle == true) {
             debugPrint('+++++++++++++++> Tried link with Google');
-            await linkWithGoogle(credential);
+            try {
+              await linkWithGoogle(credential);
+            } catch (e) {
+              debugPrint('In linking with google: ${e.toString()}');
+            }
           }
 
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
           return _userModelFromAuth(result.user);
+        }
+      } on FirebaseAuthException catch (e) {
+        debugPrint('In linking trys: ${e.code}');
+        if (e.code == 'account-exists-with-different-credential') {
+          return await facebookLogin(linkToGoogle: true);
         }
       } catch (e) {
         debugPrint('In linking trys: ${e.toString()}');
@@ -317,7 +326,11 @@ class AuthService {
             FacebookAuthProvider.credential(loginResult.accessToken!.token);
 
         if (linkToGoogle == true) {
-          await linkWithGoogle(credential);
+          try {
+            await linkWithGoogle(credential);
+          } catch (e) {
+            debugPrint('In linking with google: ${e.toString()}');
+          }
         }
         // if (linkToGithub == true) {
         //   await linkWithGitHub(credential);
@@ -396,7 +409,11 @@ class AuthService {
         );
 
         if (linkToFacebook == true) {
-          await linkWithFacebook(credential);
+          try {
+            await linkWithFacebook(credential);
+          } catch (e) {
+            debugPrint('In link with Facebook: ${e.toString()}');
+          }
         }
         // if (linkToGithub == true) {
         //   await linkWithGitHub(credential);
@@ -420,7 +437,11 @@ class AuthService {
         );
 
         if (linkToFacebook == true) {
-          await linkWithFacebook(credential);
+          try {
+            await linkWithFacebook(credential);
+          } catch (e) {
+            debugPrint('In link with Facebook: ${e.toString()}');
+          }
         }
         // if (linkToGithub == true) {
         //   await linkWithGitHub(credential);
