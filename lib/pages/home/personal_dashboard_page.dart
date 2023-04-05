@@ -18,6 +18,27 @@ import 'package:grouping_project/pages/home/home_page/empty.dart';
 
 import 'package:flutter/material.dart';
 
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return PageView(
+      scrollDirection: Axis.vertical,
+      controller: PageController(initialPage: 1), 
+      children: const [
+        CardEditDone(),
+        PeronalDashboardPage(),
+      ],
+    );
+  }
+}
+
 class PeronalDashboardPage extends StatefulWidget {
   const PeronalDashboardPage({super.key});
   @override

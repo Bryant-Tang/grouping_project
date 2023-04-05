@@ -1,8 +1,8 @@
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/auth/user.dart';
-import 'package:grouping_project/pages/home/home_page/home_page.dart';
 import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
+import 'package:grouping_project/pages/home/base_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -29,7 +29,7 @@ class LoginPage extends StatefulWidget {
               if (value != null) {
                 debugPrint("${value.uid}\n");
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const HomePage()));
+                    MaterialPageRoute(builder: (context) => const BasePage()));
               }
             });
           }));
@@ -151,7 +151,6 @@ class _EmailFormState extends State<_EmailForm> {
         case 'user-not-found':
           debugPrint('user-not-found');
           SignUpDataModel data = SignUpDataModel(email: email);
-          SignUpPage page = SignUpPage(data: data);
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => SignUpPage(data: data)));
           break;
