@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
 
 import 'package:grouping_project/pages/profile/personal_profile/profile_edit_page.dart';
 import 'package:grouping_project/components/personal_detail_template.dart';
-import 'package:grouping_project/service/auth_service.dart';
 
 class CardEditDone extends StatefulWidget {
   const CardEditDone({super.key});
@@ -12,7 +12,7 @@ class CardEditDone extends StatefulWidget {
 }
 
 class CardEditDoneState extends State<CardEditDone> {
-  ProfileModel profile = ProfileModel();
+  // late ProfileModel profile;
   List<CustomLabel> allProfileTag(List<ProfileTag>? tags) {
     List<CustomLabel> datas = [];
     int len = tags?.length ?? 0;
@@ -21,20 +21,10 @@ class CardEditDoneState extends State<CardEditDone> {
     }
     return datas;
   }
-  @override
-  void initState() {
-    super.initState();
-    DataController()
-        .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
-        .then((value) {
-      setState(() {
-        profile = value;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final profile = InheritedProfile.of(context)!.profile;
     return SafeArea(
       bottom: true,
       child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -112,19 +102,15 @@ class CardEditDoneState extends State<CardEditDone> {
                   onPressed: () {
                     debugPrint('edit');
                     Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (BuildContext context) =>
-                                EditPersonalProfilePage(profile: profile))).then(
-                        (value) => DataController()
-                                .download(
-                                    dataTypeToGet: ProfileModel(),
-                                    dataId: ProfileModel().id!)
-                                .then((value) {
-                              setState(() {
-                                profile = value;
-                              });
-                            }));
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    EditPersonalProfilePage(profile: profile)))
+                        .then((value) {
+                      if (value is ProfileModel) {
+                        InheritedProfile.of(context)!.updateProfile(value);
+                      }
+                    });
                   },
                   style: ButtonStyle(
                       shape: MaterialStatePropertyAll(RoundedRectangleBorder(

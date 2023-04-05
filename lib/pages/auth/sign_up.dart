@@ -413,8 +413,8 @@ class _RecommendPageState extends State<RecommendPage> {
                       .then((value) => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EditPersonalProfilePage(
-                                    profile: ProfileModel(),
+                              builder: (context) =>  EditPersonalProfilePage(
+                                    profile: value,
                                   ))));
                 },
                 child: Padding(
