@@ -36,11 +36,13 @@ class AuthService {
     return cur;
   }
 
+  /// get thrid party account profile names, returns string
   Future<String?> getProfileName() async {
     String? name = _auth.currentUser!.displayName;
     return name;
   }
 
+  /// get correct googlesignin depend on platform
   GoogleSignIn? getCorrectGoogleSignIn() {
     if (kIsWeb) {
       return GoogleSignIn(
@@ -201,6 +203,7 @@ class AuthService {
     }
   }
 
+  /// Sign out from current user and disconnect current google user
   Future signOut() async {
     try {
       await _auth.signOut();
@@ -213,24 +216,6 @@ class AuthService {
       return null;
     }
   }
-
-  /// Send login email link to target email address
-  /// flutter run --web-hostname localhost --web-port 5000 for easy test
-  ///
-  /// ! onlu 5 mails a day !
-  // Future<void> sendEmailLink(String email) async {
-  //   try {
-  //     ActionCodeSettings actionCodeSettings = ActionCodeSettings(
-  //         url: "https://127.0.0.1:5000/#/", handleCodeInApp: true);
-  //     _auth.sendSignInLinkToEmail(
-  //         email: email, actionCodeSettings: actionCodeSettings);
-  //   } catch (e) {
-  //     debugPrint(e.toString());
-  //   }
-  // }
-
-  // /// To handle the email link
-  // void handleEmailLink() {}
 
   /// Thrid party login with provider name as parameter
   ///
@@ -254,8 +239,7 @@ class AuthService {
     }
   }
 
-  // Need to setup in Ios
-  // Currentlu only work for test accounts
+  /// Facebook login, but will try to link with existed google account in default
   Future<UserModel?> facebookLogin({bool linkToGoogle = true}) async {
     debugPrint('========> Entered Facebook Login');
     bool kisweb;
@@ -346,6 +330,7 @@ class AuthService {
     }
   }
 
+  /// Github login, CAN NOT link any account
   Future<UserModel?> githubLogin() async {
     bool kisweb;
     try {
@@ -382,7 +367,7 @@ class AuthService {
     }
   }
 
-  /// Google Login
+  /// Google Login, but will try to link with existed Facebook account in default
   /// return UserModel if succeed, no return if failed
   Future<UserModel?> googleLogin({bool linkToFacebook = true}) async {
     bool kisweb;
