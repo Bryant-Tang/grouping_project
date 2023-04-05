@@ -1,36 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:googleapis/mybusinessbusinessinformation/v1.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/profile/profile_info.dart';
-import 'package:grouping_project/pages/profile/profile_photo_upload.dart';
-import 'package:grouping_project/pages/profile/profile_tag_edit.dart';
+import 'package:grouping_project/pages/profile/personal_profile/profile_info.dart';
+import 'package:grouping_project/pages/profile/personal_profile/profile_photo_upload.dart';
+import 'package:grouping_project/pages/profile/personal_profile/profile_tag_edit.dart';
 
-class ProfileInherited extends InheritedWidget {
-  final Widget child;
+class InheritedProfile extends InheritedWidget {
   final ProfileModel profile;
-  const ProfileInherited(
-      {super.key, required this.profile, required this.child})
+  const InheritedProfile(
+      {super.key, required this.profile, required Widget child})
       : super(child: child);
 
-  // static ProfileInherited? maybeOf(BuildContext context) {
-  //   return context.dependOnInheritedWidgetOfExactType<ProfileInherited>();
-  // }
-
-  static ProfileInherited? of(BuildContext context) {
-    // final ProfileInherited? result = maybeOf(context);
-    // assert(result != null, 'No ProfileInherited found in context');
-    // return result!;
-    return context.dependOnInheritedWidgetOfExactType<ProfileInherited>();
+  static InheritedProfile? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<InheritedProfile>();
   }
 
   @override
-  bool updateShouldNotify(ProfileInherited oldWidget) {
+  bool updateShouldNotify(InheritedProfile oldWidget) {
     return oldWidget.profile != profile;
   }
 }
 
 class EditPersonalProfilePage extends StatefulWidget {
-  const EditPersonalProfilePage({super.key});
+  final ProfileModel profile;
+  const EditPersonalProfilePage({super.key, required this.profile});
 
   @override
   State<EditPersonalProfilePage> createState() =>
@@ -47,30 +41,22 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
   TabController? _tabController;
   int _currentPageIndex = 0;
   late final List<Widget> _pages;
-  ProfileModel profile = ProfileModel();
-
-  // List<Map<String, String>> getTagTable() {
-  //   return [
-  //     // {"key": "學校", "value": "國立中央大學"},
-  //     // {"key": "生日", "value": "91/07/15"},
-  //     // {"key": "號碼", "value": "0987685806"},
-  //     // {"key": "號碼", "value": "0987685806"},
-  //   ];
-  // }
+  // ProfileModel profile = ProfileModel();
 
   @override
   void initState() {
     super.initState();
-    _dataController
-        .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
-        .then((value) {
-      debugPrint(value.toString());
-      setState(() {
-        profile = value;
-      });
-    });
+    debugPrint("INIT");
+    debugPrint(widget.profile.name);
+    debugPrint(widget.profile.nickname);
+    debugPrint(widget.profile.introduction);
+    debugPrint(widget.profile.slogan);
+    debugPrint(widget.profile.tags.toString());
+    debugPrint(widget.profile.photo.toString());
     personalProfileSetting = PerosonalProfileSetting();
-    personalProfileTagSetting = PersonalProfileTagSetting();
+    personalProfileTagSetting = PersonalProfileTagSetting(
+      tagTable: widget.profile.tags??[],
+    );
     personalProfileImageUpload = PersonProfileImageUpload();
     _pages = [
       personalProfileSetting,
@@ -94,8 +80,8 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
-          child: ProfileInherited(
-            profile: profile,
+          child: InheritedProfile(
+            profile: widget.profile,
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 30, vertical: 150),
@@ -107,18 +93,6 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
                     child: PageView(
                       controller: _pageController,
                       children: _pages,
-                      onPageChanged: (vlaue) {
-                        profile.slogan =
-                            personalProfileSetting.content!['userMotto'];
-                        profile.name =
-                            personalProfileSetting.content!['userName'];
-                        profile.nickname =
-                            personalProfileSetting.content!['userRealName'];
-                        profile.introduction =
-                            personalProfileSetting.content!['userInroduction'];
-                        profile.tags = personalProfileTagSetting.tagTable;
-                        profile.photo = personalProfileImageUpload.profileImage;
-                      },
                     ),
                   ),
                   SizedBox(
@@ -137,22 +111,30 @@ class _EditPersonalProfilePageState extends State<EditPersonalProfilePage>
                       goToNextButtonText: "Save",
                       goToNextButtonHandler: () {
                         setState(() {
-                          // debugPrint(
-                          //     personalProfileSetting.content.toString());
-                          profile.slogan =
-                              personalProfileSetting.content!['userMotto'];
-                          profile.name =
-                              personalProfileSetting.content!['userName'];
-                          profile.nickname =
-                              personalProfileSetting.content!['userRealName'];
-                          profile.introduction = personalProfileSetting
-                              .content!['userInroduction'];
-                          profile.tags = personalProfileTagSetting.tagTable;
-                          profile.photo =
+                          widget.profile.name =
+                              personalProfileSetting.profile.name;
+                          widget.profile.nickname =
+                              personalProfileSetting.profile.nickname;
+                          widget.profile.slogan =
+                              personalProfileSetting.profile.slogan;
+                          widget.profile.introduction =
+                              personalProfileSetting.profile.introduction;
+                          widget.profile.tags =
+                              personalProfileTagSetting.tagTable;
+                          widget.profile.photo =
                               personalProfileImageUpload.profileImage;
-                          _dataController.upload(uploadData: profile).then(
-                              (value) => debugPrint('upload successfully'));
+                          // debugPrint all profile data
+                          debugPrint("SAVE");
+                          debugPrint(widget.profile.name);
+                          debugPrint(widget.profile.nickname);
+                          debugPrint(widget.profile.introduction);
+                          debugPrint(widget.profile.slogan);
+                          debugPrint(widget.profile.tags.toString());
+                          debugPrint(widget.profile.photo.toString());
                         });
+                        _dataController
+                            .upload(uploadData: widget.profile)
+                            .then((value) => debugPrint('upload successfully'));
                         Navigator.of(context).pop();
                       },
                       goBackButtonHandler: () {
