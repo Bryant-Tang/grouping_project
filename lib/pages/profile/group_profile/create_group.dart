@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/components/auth_view/headline_with_content.dart';
 import 'package:grouping_project/components/auth_view/input_box.dart';
 import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart';
+import 'package:grouping_project/model/data_controller.dart';
 import 'package:grouping_project/model/profile_model.dart';
+import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
 import 'package:grouping_project/pages/templates/sing_up_page_template.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -147,25 +149,16 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
             .map((tags) => ProfileTag(tag: tags, content: tags))
             .toList(),
         photo: widget.groupInfo.groupImage);
-    Navigator.of(context).pop();
+    DataController().createGroup(group).then((value) {
+      DataController()
+          .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
+          .then((value) {
+        InheritedProfile.of(context)!.updateProfile(value);
+      });
+    });
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("小組建立成功")));
-    
-    // await authService.emailSignUp(email, password).then((value) {
-    //   if (context.mounted) {
-    //     debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
-    //     final ProfileModel user = ProfileModel(name: userName, email: email);
-    //     DataController()
-    //         .upload(uploadData: user)
-    //         .then((value) => {debugPrint('upload successfully')})
-    //         .catchError((error) {
-    //       debugPrint(error.toString());
-    //     });
-    //     forward();
-    //   }
-    // }).catchError((error) {
-    //   showErrorDialog(error.code, error.toString());
-    // });
+    Navigator.of(context).pop();
   }
 
   @override

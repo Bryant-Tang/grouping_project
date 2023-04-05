@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
@@ -66,8 +68,7 @@ class CardEditDoneState extends State<CardEditDone> {
                               HeadShot(
                                   name: profile.name ?? 'unknown',
                                   nickName: profile.nickname ?? 'None',
-                                  imageShot: Image.asset(
-                                      'assets/images/profile_male.png'),
+                                  imageShot: profile.photo != null ? Image.file(File(profile.photo!.path)) : Image.asset('assets/images/profile_male.png'),
                                   motto: profile.slogan ?? 'None'),
                               CustomLabel(
                                   title: '自我介紹',

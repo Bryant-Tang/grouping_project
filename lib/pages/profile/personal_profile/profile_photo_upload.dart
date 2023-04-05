@@ -15,9 +15,7 @@ class PersonProfileImageUpload extends StatefulWidget {
 }
 
 class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
-  XFile? _image;
   void _pickImage() {
-    File? _image = InheritedProfile.of(context)!.profile.photo;
     ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
       InheritedProfile.of(context)!.updateProfile(
           InheritedProfile.of(context)!.profile.copyWith(photo: File(value!.path)));
@@ -26,7 +24,7 @@ class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
 
   @override
   Widget build(BuildContext context) {
-    File? _image = InheritedProfile.of(context)!.profile.photo;
+    File? image = InheritedProfile.of(context)!.profile.photo;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -42,7 +40,7 @@ class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
                   radius: 120,
                   backgroundColor: Colors.white,
                   backgroundImage:
-                      _image != null ? FileImage(File(_image.path)) : Image.asset('assets/images/profile_male.png').image
+                      image != null ? FileImage(File(image.path)) : Image.asset('assets/images/profile_male.png').image
                 ),
               ),
               MaterialButton(
