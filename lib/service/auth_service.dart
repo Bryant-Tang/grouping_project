@@ -69,50 +69,52 @@ class AuthService {
 
   /// When logged in to a google-existed account
   /// This well login and link to current-login-method account
-  Future<void> linkWithGoogle(AuthCredential credential) async {
+  Future<UserModel?> linkWithGoogle(AuthCredential credential) async {
     debugPrint(credential.toString());
     try {
       await googleLogin(linkToFacebook: false).then((value) async {
-        if ((await FirebaseAuth.instance.fetchSignInMethodsForEmail(
-                    FirebaseAuth.instance.currentUser!.email!))
-                .contains(credential.providerId) !=
-            true) {
+        if ((value != null) &&
+            (await FirebaseAuth.instance.fetchSignInMethodsForEmail(
+                        FirebaseAuth.instance.currentUser!.email!))
+                    .contains(credential.providerId) !=
+                true) {
           debugPrint((await FirebaseAuth.instance.fetchSignInMethodsForEmail(
                   FirebaseAuth.instance.currentUser!.email!))
               .contains(credential.providerId)
               .toString());
           await FirebaseAuth.instance.currentUser
               ?.linkWithCredential(credential);
+        } else if (value != null) {
+          return value;
         }
-        await signOut();
       });
     } catch (e) {
       debugPrint('In linking trys: ${e.toString()}');
-      return;
     }
   }
 
   /// When logged in to a facebook-existed account
   /// This well login and link to current-login-method account
-  Future<void> linkWithFacebook(AuthCredential credential) async {
+  Future<UserModel?> linkWithFacebook(AuthCredential credential) async {
     try {
       await facebookLogin(linkToGoogle: false).then((value) async {
-        if ((await FirebaseAuth.instance.fetchSignInMethodsForEmail(
-                    FirebaseAuth.instance.currentUser!.email!))
-                .contains(credential.providerId) !=
-            true) {
+        if ((value != null) &&
+            (await FirebaseAuth.instance.fetchSignInMethodsForEmail(
+                        FirebaseAuth.instance.currentUser!.email!))
+                    .contains(credential.providerId) !=
+                true) {
           debugPrint((await FirebaseAuth.instance.fetchSignInMethodsForEmail(
                   FirebaseAuth.instance.currentUser!.email!))
               .contains(credential.providerId)
               .toString());
           await FirebaseAuth.instance.currentUser
               ?.linkWithCredential(credential);
+        } else if (value != null) {
+          return value;
         }
-        await signOut();
       });
     } catch (e) {
       debugPrint('In linking trys: ${e.toString()}');
-      return;
     }
   }
 
@@ -275,7 +277,11 @@ class AuthService {
           if (linkToGoogle == true) {
             debugPrint('+++++++++++++++> Tried link with Google');
             try {
-              await linkWithGoogle(credential);
+              await linkWithGoogle(credential).then((value) {
+                if (value != null) {
+                  return value;
+                }
+              });
             } catch (e) {
               debugPrint('In linking with google: ${e.toString()}');
             }
@@ -302,24 +308,24 @@ class AuthService {
       //   'display': 'popup',
       // });
 
-      try {
-        // if (googleLink == true) {
-        //   await FirebaseAuth.instance.currentUser
-        //       ?.linkWithCredential(FacebookAuthProvider.credential(accessToken));
-        //   await signOut();
-        // }
-        // await FirebaseAuth.instance
-        //     .signInWithPopup(facebookProvider)
-        //     .then((value) {
-        //   debugPrint(value.toString());
-        //   return _userModelFromAuth(value.user);
-        // });
-      } catch (error) {
-        debugPrint('========> ${error.toString()}');
-      }
+      // try {
+      //   if (googleLink == true) {
+      //     await FirebaseAuth.instance.currentUser
+      //         ?.linkWithCredential(FacebookAuthProvider.credential(accessToken));
+      //     await signOut();
+      //   }
+      //   await FirebaseAuth.instance
+      //       .signInWithPopup(facebookProvider)
+      //       .then((value) {
+      //     debugPrint(value.toString());
+      //     return _userModelFromAuth(value.user);
+      //   });
+      // } catch (error) {
+      //   debugPrint('========> ${error.toString()}');
+      // }
 
       // Once signed in, return the UserCredential
-    } else if (Platform.isAndroid || Platform.isAndroid) {
+    } else if (Platform.isAndroid || Platform.isIOS) {
       final LoginResult loginResult = await FacebookAuth.instance.login();
       if (loginResult.status == LoginStatus.success) {
         final AuthCredential credential =
@@ -327,7 +333,11 @@ class AuthService {
 
         if (linkToGoogle == true) {
           try {
-            await linkWithGoogle(credential);
+            await linkWithGoogle(credential).then((value) {
+              if (value != null) {
+                return value;
+              }
+            });
           } catch (e) {
             debugPrint('In linking with google: ${e.toString()}');
           }
@@ -410,7 +420,11 @@ class AuthService {
 
         if (linkToFacebook == true) {
           try {
-            await linkWithFacebook(credential);
+            await linkWithFacebook(credential).then((value) {
+              if (value != null) {
+                return value;
+              }
+            });
           } catch (e) {
             debugPrint('In link with Facebook: ${e.toString()}');
           }
@@ -438,7 +452,11 @@ class AuthService {
 
         if (linkToFacebook == true) {
           try {
-            await linkWithFacebook(credential);
+            await linkWithFacebook(credential).then((value) {
+              if (value != null) {
+                return value;
+              }
+            });
           } catch (e) {
             debugPrint('In link with Facebook: ${e.toString()}');
           }
