@@ -2,15 +2,16 @@ import 'data_controller.dart';
 import 'data_model.dart';
 import 'mission_state_stage.dart';
 
-class MissionStateModel extends DataModel<MissionStateModel> {
+class MissionStateModel extends BaseDataModel<MissionStateModel> {
   MissionStage? stage;
   String? stateName;
 
   MissionStateModel({super.id, this.stage, this.stateName})
       : super(
-            databasePath: 'mission_states',
-            storageRequired: false,
-            setOwnerRequired: false);
+          databasePath: 'mission_states',
+          storageRequired: false,
+          // setOwnerRequired: false
+        );
 
   @override
   Future<Map<String, dynamic>> toFirestore(

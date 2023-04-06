@@ -24,7 +24,8 @@ class DataController {
   /// * remember to use ***await*** in front of this method.
   /// * if [uploadData.id] exist, would be updating the data
   /// * throw exception if the database does not has the data of the id.
-  Future<void> upload<T extends DataModel<T>>({required T uploadData}) async {
+  Future<void> upload<T extends BaseDataModel<T>>(
+      {required T uploadData}) async {
     String dataId;
     if ((uploadData.id == null) ||
         ((uploadData.id?.contains('default')) ?? false)) {
@@ -41,8 +42,8 @@ class DataController {
       dataId = uploadData.id!;
     }
 
-    if (uploadData.storageRequired && uploadData is StorageData) {
-      var uploadFileMap = (uploadData as StorageData).toStorage();
+    if (uploadData.storageRequired && uploadData is BaseStorageData) {
+      var uploadFileMap = (uploadData as BaseStorageData).toStorage();
       StorageController storageController =
           StorageController(forUser: _forUser, ownerId: _ownerId);
       for (String key in uploadFileMap.keys) {
@@ -64,7 +65,7 @@ class DataController {
   /// **Notice below :**
   /// * remember to use ***await*** in front of this method.
   /// * if you want to get [ProfileModel] , just pass `ProfileModel().id!` to [dataId]
-  Future<T> download<T extends DataModel<T>>(
+  Future<T> download<T extends BaseDataModel<T>>(
       {required T dataTypeToGet, required String dataId}) async {
     var firestoreSnap =
         await FirestoreController(forUser: _forUser, ownerId: _ownerId)
@@ -81,8 +82,8 @@ class DataController {
           id: firestoreSnap.id,
           data: firestoreSnap.data() ?? {},
           ownerController: this);
-      if (processData.storageRequired && processData is StorageData) {
-        (processData as StorageData).setAttributeFromStorage(
+      if (processData.storageRequired && processData is BaseStorageData) {
+        (processData as BaseStorageData).setAttributeFromStorage(
             data: await StorageController(forUser: _forUser, ownerId: _ownerId)
                 .getAllInFile(
                     collectionPath:
@@ -102,7 +103,7 @@ class DataController {
   /// **Notice below :**
   /// * remember to use ***await*** in front of this method.
   /// * if you want to get ProfileModel, use `download()`.
-  Future<List<T>> downloadAll<T extends DataModel<T>>(
+  Future<List<T>> downloadAll<T extends BaseDataModel<T>>(
       {required T dataTypeToGet}) async {
     if (dataTypeToGet.runtimeType == ProfileModel) {
       throw GroupingProjectException(
@@ -121,8 +122,8 @@ class DataController {
     for (var snap in firestoreSnapList) {
       T temp = await dataTypeToGet.fromFirestore(
           id: snap.id, data: snap.data(), ownerController: this);
-      if (temp.storageRequired && temp is StorageData) {
-        (temp as StorageData).setAttributeFromStorage(
+      if (temp.storageRequired && temp is BaseStorageData) {
+        (temp as BaseStorageData).setAttributeFromStorage(
             data: await StorageController(forUser: _forUser, ownerId: _ownerId)
                 .getAllInFile(
                     collectionPath: '${temp.databasePath}/${temp.id}'));
@@ -149,7 +150,8 @@ class DataController {
   /// **Notice below :**
   /// - remember to check the data has a correct id.
   /// - remember to use ***await*** in front of this method.
-  Future<void> remove<T extends DataModel<T>>({required T removeData}) async {
+  Future<void> remove<T extends BaseDataModel<T>>(
+      {required T removeData}) async {
     if (removeData.id != null) {
       await FirestoreController(forUser: _forUser, ownerId: _ownerId).delete(
           collectionPath: removeData.databasePath, dataId: removeData.id!);

@@ -19,7 +19,8 @@ class ProfileTag {
 
 /// ## a data model for profile, either user or group
 /// * ***DO NOT*** pass or set id for ProfileModel
-class ProfileModel extends DataModel<ProfileModel> implements StorageData {
+class ProfileModel extends BaseDataModel<ProfileModel>
+    implements BaseStorageData {
   String? name;
   String? email;
   int? color;
@@ -41,10 +42,11 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
       this.photo,
       this.associateEntityId})
       : super(
-            id: 'profile_default',
-            databasePath: 'profiles',
-            storageRequired: true,
-            setOwnerRequired: false);
+          id: 'profile_default',
+          databasePath: 'profiles',
+          storageRequired: true,
+          // setOwnerRequired: false
+        );
 
   // implement copyWith Method
   ProfileModel copyWith(

@@ -3,11 +3,11 @@ import 'data_controller.dart';
 import 'dart:io' as io show File;
 
 /// ## a base class of every data in database, can only use as POLYMORPHISM
-abstract class DataModel<T extends DataModel<T>> {
+abstract class BaseDataModel<T extends BaseDataModel<T>> {
   final String? id;
   String databasePath;
   bool storageRequired;
-  bool setOwnerRequired;
+  // bool setOwnerRequired;
 
   /// every subclass should pass all follow attribute to this superclass
   /// * [id] : the id of this data
@@ -15,11 +15,12 @@ abstract class DataModel<T extends DataModel<T>> {
   /// * [storageRequired] : whether this type of data need firebase storage
   /// * [setOwnerRequired] : whether this type of data need to set owner data
   /// while downloading from firestore
-  DataModel(
-      {required this.id,
-      required this.databasePath,
-      required this.storageRequired,
-      required this.setOwnerRequired});
+  BaseDataModel({
+    required this.id,
+    required this.databasePath,
+    required this.storageRequired,
+    // required this.setOwnerRequired
+  });
 
   /// return a `map` data in order to upload to firestore
   /// * every subclass should override this method
@@ -34,7 +35,7 @@ abstract class DataModel<T extends DataModel<T>> {
       required DataController ownerController});
 }
 
-abstract class StorageData {
+abstract class BaseStorageData {
   Map<String, io.File> toStorage();
   void setAttributeFromStorage({required Map<String, io.File> data});
 }

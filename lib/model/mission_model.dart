@@ -7,7 +7,7 @@ import 'package:grouping_project/exception.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 
-class MissionModel extends DataModel<MissionModel> {
+class MissionModel extends BaseDataModel<MissionModel> {
   String? title;
   DateTime? deadline;
   List<String>? contributorIds;
@@ -37,9 +37,10 @@ class MissionModel extends DataModel<MissionModel> {
       this.childMissionIds,
       MissionStateModel? state})
       : super(
-            databasePath: 'missions',
-            storageRequired: false,
-            setOwnerRequired: true) {
+          databasePath: 'missions',
+          storageRequired: false,
+          // setOwnerRequired: true
+        ) {
     if (state != null) {
       // ignore: unnecessary_this
       this.stage = state.stage;

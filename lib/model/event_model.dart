@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 
 /// ## a data model for event
 /// * to upload/download, use `DataController`
-class EventModel extends DataModel<EventModel> {
+class EventModel extends BaseDataModel<EventModel> {
   String? title;
   DateTime? startTime;
   DateTime? endTime;
@@ -29,9 +29,10 @@ class EventModel extends DataModel<EventModel> {
       this.relatedMissionIds,
       this.notifications})
       : super(
-            databasePath: 'events',
-            storageRequired: false,
-            setOwnerRequired: true);
+          databasePath: 'events',
+          storageRequired: false,
+          // setOwnerRequired: true
+        );
 
   /// convert `List<DateTime>` to `List<Timestamp>`
   List<Timestamp> _toFirestoreTimeList(List<DateTime> dateTimeList) {
