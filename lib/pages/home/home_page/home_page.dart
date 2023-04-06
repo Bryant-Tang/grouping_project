@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 
-import 'package:grouping_project/pages/building.dart';
-import 'package:grouping_project/pages/home/card_edit_page.dart';
+import 'package:grouping_project/pages/templates/building.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/card_edit_page.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
-import 'package:grouping_project/pages/home/navigation_bar.dart';
-import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
+import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 import 'package:grouping_project/pages/home/home_page/empty.dart';
@@ -78,7 +78,6 @@ class _HomePageState extends State<HomePage> {
                 //temp remove async for quick test
                 onPressed: () async {
                   _authService.signOut();
-                  _authService.googleSignOut();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginPage()));
                 },

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/profile/profile_info.dart';
-import 'package:grouping_project/pages/profile/profile_photo_upload.dart';
-import 'package:grouping_project/pages/profile/profile_tag_edit.dart';
+import 'package:grouping_project/pages/profile/personal_profile/profile_info.dart';
+import 'package:grouping_project/pages/profile/personal_profile/profile_photo_upload.dart';
+import 'package:grouping_project/pages/profile/personal_profile/profile_tag_edit.dart';
 
 class ProfileInherited extends InheritedWidget {
   final Widget child;

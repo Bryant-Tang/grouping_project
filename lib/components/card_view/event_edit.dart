@@ -2,7 +2,117 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
+// import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
+import 'package:grouping_project/components/card_view/edit_enlarge_fragment_body.dart';
 
+class EventEditPage extends StatefulWidget {
+  const EventEditPage({super.key});
+
+  @override
+  State<EventEditPage> createState() => _EventEditPageState();
+}
+
+class _EventEditPageState extends State<EventEditPage> {
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    
+    String group = 'personal';
+    String title = 'Test Title';
+    String descript = 'This is a test information text.';
+    DateTime startTime = DateTime(0);
+    DateTime endTime = DateTime.now().add(const Duration(days: 1));
+    List<String> contributorIds = [];
+    Color color = Colors.amber;
+    TextEditingController titleContorller = TextEditingController(text: title);
+
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: (){
+            debugPrint('back');
+            Navigator.pop(context);
+          }, icon: const Icon(Icons.cancel)),
+          IconButton(onPressed: (){
+            if(titleContorller.text.isNotEmpty){
+              debugPrint('Done');
+              Navigator.pop(context);
+            }
+            else {debugPrint('error occur');}
+          }, icon: const Icon(Icons.done))
+        ],
+      ),
+      body: Container(
+        width: MediaQuery.of(context).size.width - 30,
+        height: MediaQuery.of(context).size.height,
+        child: ListView(
+          children: [
+            const Divider(
+              thickness: 1.5,
+              color: Color.fromARGB(255, 170, 170, 170),
+            ),
+            TitleDateOfEvent(
+              titleController: titleContorller,
+                startTime: startTime,
+                endTime: endTime,
+                group: group,
+                color: color,
+                callback: (p0, p1){
+                  startTime = p0;
+                  endTime = p1;
+                }),
+            EnlargeObjectTemplate(
+                title: '參與成員',
+                contextOfTitle: Contributors(
+                  contributorIds: contributorIds,
+                )),
+            const SizedBox(
+              height: 1,
+            ),
+            EnlargeObjectTemplate(
+                title: '敘述',
+                contextOfTitle: Text(
+                  descript,
+                  style: const TextStyle(
+                    fontSize: 15,
+                  ),
+                  softWrap: true,
+                  maxLines: 5,
+                )),
+            const SizedBox(
+              height: 2,
+            ),
+            const EnlargeObjectTemplate(
+              title: '相關任務',
+              // contextOfTitle: Container(
+              //   height: 50,
+              //   decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(5),
+              //       border: Border.all(color: Colors.black)),
+              // ),
+              contextOfTitle: CollabMissons(),
+            ),
+            const SizedBox(
+              height: 2,
+            ),
+            const EnlargeObjectTemplate(
+                title: '相關共筆', contextOfTitle: CollabNotes()),
+            const SizedBox(
+              height: 2,
+            ),
+            const EnlargeObjectTemplate(
+              title: '相關會議',
+              contextOfTitle: CollabMeetings(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class TimeSetWidget extends StatefulWidget {
   /// this is the temporal class, it will be deleted when event edit page is complete.
@@ -25,11 +135,12 @@ class _StartEndState extends State<TimeSetWidget> {
           value: tmp,
           onChange: (time) {
             setState(() {
-              if(state == 0){
-                _start = DateTime(show.year, show.month, show.day, time.hour, time.minute);
-              }
-              else if(state == 1){
-                _end = DateTime(show.year, show.month, show.day, time.hour, time.minute);
+              if (state == 0) {
+                _start = DateTime(
+                    show.year, show.month, show.day, time.hour, time.minute);
+              } else if (state == 1) {
+                _end = DateTime(
+                    show.year, show.month, show.day, time.hour, time.minute);
               }
             });
           },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/enlarge_fragment_body.dart';
-import 'package:grouping_project/components/card_view/enlarge_fragment_template.dart';
+import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/model/model_lib.dart';
 
 class EventInformationEnlarge extends StatelessWidget {
