@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
+import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
 
 import 'package:image_picker/image_picker.dart';
 
 class PersonProfileImageUpload extends StatefulWidget {
-  File? profileImage;
-  PersonProfileImageUpload({super.key});
+  const PersonProfileImageUpload({super.key});
 
   @override
   State<PersonProfileImageUpload> createState() =>
@@ -15,19 +15,16 @@ class PersonProfileImageUpload extends StatefulWidget {
 }
 
 class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
-  XFile? _image;
   void _pickImage() {
     ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
-      setState(() {
-        _image = value;
-        debugPrint('image: ${_image!.path}');
-        widget.profileImage = File(_image!.path);
-      });
+      InheritedProfile.of(context)!.updateProfile(
+          InheritedProfile.of(context)!.profile.copyWith(photo: File(value!.path)));
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    File? image = InheritedProfile.of(context)!.profile.photo;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -43,7 +40,7 @@ class _PersonProfileImageUploadgState extends State<PersonProfileImageUpload> {
                   radius: 120,
                   backgroundColor: Colors.white,
                   backgroundImage:
-                      _image != null ? FileImage(File(_image!.path)) : Image.asset('assets/images/profile_male.png').image
+                      image != null ? FileImage(File(image.path)) : Image.asset('assets/images/profile_male.png').image
                 ),
               ),
               MaterialButton(

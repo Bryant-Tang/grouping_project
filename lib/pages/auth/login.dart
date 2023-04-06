@@ -1,4 +1,3 @@
-import 'package:grouping_project/model/data_controller.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
@@ -145,7 +144,7 @@ class _EmailFormState extends State<_EmailForm> {
           context,
           MaterialPageRoute(
               builder: (context) =>
-                  UserData(data: value, child: const HomePage())));
+                  UserData(data: value, child: const BasePage())));
     }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {
