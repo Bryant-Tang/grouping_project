@@ -50,10 +50,6 @@ class ProfileModel extends BaseDataModel<ProfileModel>
 
   // implement copyWith Method
   ProfileModel copyWith({
-    String? id,
-    String? databasePath,
-    bool? storageRequired,
-    bool? setOwnerRequired,
     String? name,
     String? email,
     int? color,
