@@ -1,6 +1,6 @@
-import 'dart:io' as io show File;
+import 'data_controller.dart';
 
-import 'profile_model.dart';
+import 'dart:io' as io show File;
 
 /// ## a base class of every data in database, can only use as POLYMORPHISM
 abstract class DataModel<T extends DataModel<T>> {
@@ -23,14 +23,15 @@ abstract class DataModel<T extends DataModel<T>> {
 
   /// return a `map` data in order to upload to firestore
   /// * every subclass should override this method
-  Map<String, dynamic> toFirestore();
+  Future<Map<String, dynamic>> toFirestore(
+      {required DataController ownerController});
 
   /// return a `T<T extends DataModel>` data in order to download from firestore
   /// * every subclass should override this method
-  T fromFirestore(
+  Future<T> fromFirestore(
       {required String id,
       required Map<String, dynamic> data,
-      ProfileModel? ownerProfile});
+      required DataController ownerController});
 }
 
 abstract class StorageData {

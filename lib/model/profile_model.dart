@@ -1,3 +1,4 @@
+import 'data_controller.dart';
 import 'data_model.dart';
 
 import 'dart:io' as io show File;
@@ -40,7 +41,7 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
       this.photo,
       this.associateEntityId})
       : super(
-            id: 'profile',
+            id: 'profile_default',
             databasePath: 'profiles',
             storageRequired: true,
             setOwnerRequired: false);
@@ -102,7 +103,8 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   /// ### convert data from this instance to the type accepted for firestore
   /// * ***DO NOT*** use this method in frontend
   @override
-  Map<String, dynamic> toFirestore() {
+  Future<Map<String, dynamic>> toFirestore(
+      {required DataController ownerController}) async {
     return {
       if (name != null) 'name': name,
       if (email != null) 'email': email,
@@ -120,10 +122,10 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   /// * also seting attribute about owner if given
   /// * ***DO NOT*** use this method in frontend
   @override
-  ProfileModel fromFirestore(
+  Future<ProfileModel> fromFirestore(
       {required String id,
       required Map<String, dynamic> data,
-      ProfileModel? ownerProfile}) {
+      required DataController ownerController}) async {
     ProfileModel processData = ProfileModel(
         name: data['name'],
         email: data['email'],

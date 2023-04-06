@@ -1,6 +1,7 @@
 import 'data_model.dart';
 import 'profile_model.dart';
 import 'package:grouping_project/service/service_lib.dart';
+import 'package:grouping_project/exception.dart';
 
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class DataController {
     _ownerId = groupId ?? AuthService().getUid();
   }
 
-  /// ## upload *"one"* data from database.
+  /// ## upload *'one'* data from database.
   /// * [uploadData] : the data you want to upload
   /// ------
   /// **Notice below :**
@@ -25,15 +26,16 @@ class DataController {
   /// * throw exception if the database does not has the data of the id.
   Future<void> upload<T extends DataModel<T>>({required T uploadData}) async {
     String dataId;
-    if ((uploadData.id == null) || (uploadData.id == 'profile')) {
+    if ((uploadData.id == null) ||
+        ((uploadData.id?.contains('default')) ?? false)) {
       dataId = await FirestoreController(forUser: _forUser, ownerId: _ownerId)
           .set(
-              processData: uploadData.toFirestore(),
+              processData: await uploadData.toFirestore(ownerController: this),
               collectionPath: uploadData.databasePath,
               dataId: uploadData.id);
     } else {
       await FirestoreController(forUser: _forUser, ownerId: _ownerId).update(
-          processData: uploadData.toFirestore(),
+          processData: await uploadData.toFirestore(ownerController: this),
           collectionPath: uploadData.databasePath,
           dataId: uploadData.id!);
       dataId = uploadData.id!;
@@ -53,7 +55,7 @@ class DataController {
     return;
   }
 
-  /// ## download *"one"* data from database.
+  /// ## download *'one'* data from database.
   /// * retrun one object of the type you specify.
   /// * [dataTypeToGet] : the data type you want to get, suppose to be
   /// `T<T extends DataModel>()`
@@ -68,19 +70,17 @@ class DataController {
         await FirestoreController(forUser: _forUser, ownerId: _ownerId)
             .get(collectionPath: dataTypeToGet.databasePath, dataId: dataId);
 
-    var ownerProfile = dataTypeToGet.setOwnerRequired
-        ? await download(
-            dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
-        : null;
-
     if (firestoreSnap.exists != true) {
       debugPrint('[Exception] data does not exist');
-      throw Exception('[Exception] data does not exist');
+      throw GroupingProjectException(
+          message: '[Exception] data does not exist',
+          code: GroupingProjectExceptionCode.notExistInDatabase,
+          stackTrace: StackTrace.current);
     } else {
-      T processData = dataTypeToGet.fromFirestore(
+      T processData = await dataTypeToGet.fromFirestore(
           id: firestoreSnap.id,
           data: firestoreSnap.data() ?? {},
-          ownerProfile: ownerProfile);
+          ownerController: this);
       if (processData.storageRequired && processData is StorageData) {
         (processData as StorageData).setAttributeFromStorage(
             data: await StorageController(forUser: _forUser, ownerId: _ownerId)
@@ -101,14 +101,16 @@ class DataController {
   /// ------
   /// **Notice below :**
   /// * remember to use ***await*** in front of this method.
-  /// * if you want to get ProfileModel, use `download()` is better.
+  /// * if you want to get ProfileModel, use `download()`.
   Future<List<T>> downloadAll<T extends DataModel<T>>(
       {required T dataTypeToGet}) async {
-    // if (_forUser == false && dataTypeToGet.runtimeType == GroupModel) {
-    //   debugPrint(
-    //       '[Warning] not suppose to happened. trying to get group model list of a group!');
-    //   return [];
-    // }
+    if (dataTypeToGet.runtimeType == ProfileModel) {
+      throw GroupingProjectException(
+          message: 'you are using downloadAll() method to get a ProfileModel, '
+              'please use download() instead.',
+          code: GroupingProjectExceptionCode.wrongConstructParameter,
+          stackTrace: StackTrace.current);
+    }
 
     List<T> dataList = [];
 
@@ -116,14 +118,9 @@ class DataController {
         await FirestoreController(forUser: _forUser, ownerId: _ownerId)
             .getAll(collectionPath: dataTypeToGet.databasePath);
 
-    var ownerProfile = dataTypeToGet.setOwnerRequired
-        ? await download(
-            dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
-        : null;
-
     for (var snap in firestoreSnapList) {
-      T temp = dataTypeToGet.fromFirestore(
-          id: snap.id, data: snap.data(), ownerProfile: ownerProfile);
+      T temp = await dataTypeToGet.fromFirestore(
+          id: snap.id, data: snap.data(), ownerController: this);
       if (temp.storageRequired && temp is StorageData) {
         (temp as StorageData).setAttributeFromStorage(
             data: await StorageController(forUser: _forUser, ownerId: _ownerId)
@@ -134,7 +131,7 @@ class DataController {
     }
 
     if (_forUser == true) {
-      ownerProfile ??= await download(
+      ProfileModel ownerProfile = await download(
           dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!);
       for (var groupId in ownerProfile.associateEntityId ?? []) {
         var dataListForGroup = await DataController(groupId: groupId)
@@ -162,7 +159,7 @@ class DataController {
             collectionPath: '${removeData.databasePath}/${removeData.id}');
       }
     } else {
-      debugPrint("[Exception] data id should be pass");
+      debugPrint('[Exception] data id should be pass');
       throw Exception('[Exception] data id should be pass');
     }
 
