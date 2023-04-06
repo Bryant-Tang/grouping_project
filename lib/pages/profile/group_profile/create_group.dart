@@ -94,7 +94,7 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
   void register() {
     // print out the group info
     DataController().createGroup(profile).then((value) {
-      debugPrint('小組建立成功');
+      debugPrint('$value 小組建立成功');
     }).catchError((error) {
       debugPrint(error.toString());
     });
