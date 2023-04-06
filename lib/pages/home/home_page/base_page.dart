@@ -10,6 +10,7 @@ import 'package:grouping_project/pages/templates/building.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
 import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
+import 'package:grouping_project/pages/templates/page_not_found.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 class BasePage extends StatefulWidget {
@@ -21,6 +22,8 @@ class BasePage extends StatefulWidget {
 
 class _BasePageState extends State<BasePage> {
   late Future<void> _dataFuture;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
   final _pageController = PageController();
   final _pages = const <Widget>[
     HomePage(),
@@ -35,7 +38,7 @@ class _BasePageState extends State<BasePage> {
   @override
   void initState() {
     super.initState();
-    _dataFuture = loadData();
+    _dataFuture = refresh();
   }
 
   @override
@@ -44,13 +47,16 @@ class _BasePageState extends State<BasePage> {
     super.dispose();
   }
 
-  Future<void> loadData() async {
+  Future<void> refresh() async {
     await DataController()
         .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
         .then((value) {
       setState(() {
         profile = value;
       });
+      debugPrint(profile.name);
+      debugPrint(profile.associateEntityId.toString());
+      // debugPrint all Profile data
     });
   }
 
@@ -61,25 +67,7 @@ class _BasePageState extends State<BasePage> {
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
-            return Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Error"),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()));
-                      },
-                      child: const Text("Log out"),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return Scaffold(body: NotFoundPage.fromError("ERROR"));
           } else {
             // data loaded successfully, build the widget tree here
             return InheritedProfile(
@@ -174,10 +162,18 @@ class _BasePageState extends State<BasePage> {
                                               debugPrint(
                                                   'create new work space');
                                               Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          CreateWorkspacePage()));
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              const CreateWorkspacePage()))
+                                                  .then((value) {
+                                                debugPrint(value.toString());
+                                                if (value) {
+                                                  setState(() {
+                                                    _dataFuture = refresh();
+                                                  });
+                                                }
+                                              });
                                             },
                                             child: Row(
                                               mainAxisSize: MainAxisSize.max,
@@ -197,10 +193,12 @@ class _BasePageState extends State<BasePage> {
                                                             FontWeight.bold,
                                                         color: Colors.black))
                                               ],
-                                            ))
-                                        ,
+                                            )),
                                         Column(
-                                          children: (profile.associateEntityId??[]).map((id) => Text(id)).toList(),
+                                          children:
+                                              (profile.associateEntityId ?? [])
+                                                  .map((id) => Text(id))
+                                                  .toList(),
                                         )
                                       ]));
                             });
