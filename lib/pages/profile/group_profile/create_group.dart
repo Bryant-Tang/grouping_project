@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:googleapis/mybusinessbusinessinformation/v1.dart';
 import 'package:grouping_project/components/auth_view/headline_with_content.dart';
 import 'package:grouping_project/components/auth_view/input_box.dart';
 import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart';
@@ -10,47 +11,17 @@ import 'package:grouping_project/pages/profile/personal_profile/inherited_profil
 import 'package:grouping_project/pages/templates/sing_up_page_template.dart';
 import 'package:image_picker/image_picker.dart';
 
-class GroupInfo {
-  String groupName;
-  String groupDescription;
-  List<String> groupTags;
-  File groupImage;
-  GroupInfo(
-      {required this.groupName,
-      required this.groupDescription,
-      required this.groupTags,
-      required this.groupImage});
-  factory GroupInfo.empty() => GroupInfo(
-      groupName: "", groupDescription: "", groupTags: [], groupImage: File(""));
-}
-
-class InhertedGroupInfo extends InheritedWidget {
-  final GroupInfo groupInfo;
-  const InhertedGroupInfo(
-      {Key? key, required this.groupInfo, required Widget child})
-      : super(key: key, child: child);
-  static InhertedGroupInfo? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<InhertedGroupInfo>();
-  }
-
-  @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return true;
-  }
-}
-
 class CreateWorkspacePage extends StatefulWidget {
-  CreateWorkspacePage({Key? key}) : super(key: key);
-  final GroupInfo groupInfo = GroupInfo.empty();
+  const CreateWorkspacePage({Key? key}) : super(key: key);
   @override
   State<CreateWorkspacePage> createState() => _CreateWorkspacePageState();
 }
 
 // implement the state class
 class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
-  // create a page controller
   final PageController _pageController = PageController();
   int _currentPageIndex = 0;
+  ProfileModel profile = ProfileModel();
   late final List<Widget> _pages;
   late final StartingPage startingPage;
   late final WorkspaceDescriptionRegisterPage workspaceDescriptionRegisterPage;
@@ -70,38 +41,18 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
     workspaceNameRegisterPage = WorkspaceNameRegisterPage(
       forward: forward,
       backward: backward,
-      callback: (name) {
-        setState(() {
-          widget.groupInfo.groupName = name;
-        });
-      },
     );
     workspaceDescriptionRegisterPage = WorkspaceDescriptionRegisterPage(
       forward: forward,
       backward: backward,
-      callback: (content) {
-        setState(() {
-          widget.groupInfo.groupDescription = content;
-        });
-      },
     );
     workspaceTagRegisterPage = WorkspaceTagRegisterPage(
       forward: forward,
       backward: backward,
-      callback: (selectedTags) {
-        setState(() {
-          widget.groupInfo.groupTags = selectedTags;
-        });
-      },
     );
     workspaceImageRegisterPage = WorkspaceImageRegisterPage(
       forward: register,
       backward: backward,
-      callback: (file) {
-        setState(() {
-          widget.groupInfo.groupImage = file;
-        });
-      },
     );
     // endingPage = EndingPage(
     //   forward: register,
@@ -142,30 +93,26 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
 
   void register() {
     // print out the group info
-    final ProfileModel group = ProfileModel(
-        name: widget.groupInfo.groupName,
-        introduction: widget.groupInfo.groupDescription,
-        tags: widget.groupInfo.groupTags
-            .map((tags) => ProfileTag(tag: tags, content: tags))
-            .toList(),
-        photo: widget.groupInfo.groupImage);
-    DataController().createGroup(group).then((value) {
-      DataController()
-          .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
-          .then((value) {
-        InheritedProfile.of(context)!.updateProfile(value);
-      });
+    DataController().createGroup(profile).then((value) {
+      debugPrint('$value 小組建立成功');
+    }).catchError((error) {
+      debugPrint(error.toString());
     });
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("小組建立成功")));
-    Navigator.of(context).pop();
+    Navigator.of(context).pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: InhertedGroupInfo(
-        groupInfo: widget.groupInfo,
+      body: InheritedProfile(
+        profile: profile,
+        updateProfile: (ProfileModel newProfile) {
+          setState(() {
+            profile = newProfile;
+          });
+        },
         child: PageView(
           physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
@@ -206,11 +153,7 @@ class StartingPage extends StatelessWidget {
 
 class WorkspaceNameRegisterPage extends StatefulWidget {
   const WorkspaceNameRegisterPage(
-      {super.key,
-      required this.callback,
-      required this.forward,
-      required this.backward});
-  final void Function(String) callback;
+      {super.key, required this.forward, required this.backward});
   final void Function() forward;
   final void Function() backward;
   @override
@@ -220,22 +163,11 @@ class WorkspaceNameRegisterPage extends StatefulWidget {
 
 class _WorkspaceNameRegisterPageState extends State<WorkspaceNameRegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final inputBox = GroupingInputField(
-    labelText: "小組名稱",
-    boxIcon: Icons.people,
-    boxColor: Colors.grey,
-    validator: (value) {
-      if (value == null || value.isEmpty) {
-        return "小組名稱名稱請勿留空";
-      } else {
-        return null;
-      }
-    },
-  );
   final headLineText = "小組名稱";
   final content = "你的小組要叫什麼名字呢？";
   @override
   Widget build(BuildContext context) {
+    final profile = InheritedProfile.of(context)?.profile;
     return SignUpPageTemplate(
       titleWithContent: HeadlineWithContent(
         headLineText: headLineText,
@@ -243,19 +175,24 @@ class _WorkspaceNameRegisterPageState extends State<WorkspaceNameRegisterPage> {
       ),
       body: Form(
         key: _formKey,
-        child: inputBox
-          ..setText(InhertedGroupInfo.of(context)!.groupInfo.groupName),
+        child: TextFormField(
+          initialValue: profile?.name ?? "",
+          decoration: const InputDecoration(
+            label: Text("小組名稱 / User Name"),
+            icon: Icon(Icons.person_pin_outlined),
+          ),
+          onChanged: (value) {
+            InheritedProfile.of(context)!
+                .updateProfile(profile!.copyWith(nickname: value, name: value));
+          },
+        ),
       ),
       toggleBar: NavigationToggleBar(
         goBackButtonText: "上一步",
         goToNextButtonText: "下一步",
-        goBackButtonHandler: () {
-          widget.callback(inputBox.text ?? "");
-          widget.backward();
-        },
+        goBackButtonHandler: widget.backward,
         goToNextButtonHandler: () {
           if (_formKey.currentState!.validate()) {
-            widget.callback(inputBox.text ?? "");
             widget.forward();
           }
         },
@@ -266,11 +203,7 @@ class _WorkspaceNameRegisterPageState extends State<WorkspaceNameRegisterPage> {
 
 class WorkspaceDescriptionRegisterPage extends StatefulWidget {
   const WorkspaceDescriptionRegisterPage(
-      {super.key,
-      required this.callback,
-      required this.forward,
-      required this.backward});
-  final void Function(String) callback;
+      {super.key, required this.forward, required this.backward});
   final void Function() forward;
   final void Function() backward;
   @override
@@ -282,23 +215,11 @@ class WorkspaceDescriptionRegisterPage extends StatefulWidget {
 class _WorkspaceDescriptionRegisterPageState
     extends State<WorkspaceDescriptionRegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final inputBox = GroupingInputField(
-      labelText: "小組介紹",
-      boxIcon: Icons.people,
-      boxColor: Colors.grey,
-      maxLength: 100,
-      // maxLines: 5,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "小組名稱名稱請勿留空";
-        } else {
-          return null;
-        }
-      });
   final headLineText = "小組介紹";
   final content = "簡述一下你的工作小組";
   @override
   Widget build(BuildContext context) {
+    final profile = InheritedProfile.of(context)?.profile;
     return SignUpPageTemplate(
       titleWithContent: HeadlineWithContent(
         headLineText: headLineText,
@@ -306,22 +227,24 @@ class _WorkspaceDescriptionRegisterPageState
       ),
       body: Form(
         key: _formKey,
-        child: inputBox
-          ..setText(InhertedGroupInfo.of(context)!.groupInfo.groupDescription),
+        child: TextFormField(
+          initialValue: profile?.introduction ?? "",
+          decoration: const InputDecoration(
+            label: Text("小組介紹 / Group Introduction"),
+            icon: Icon(Icons.person_pin_outlined),
+          ),
+          onChanged: (value) {
+            InheritedProfile.of(context)!
+                .updateProfile(profile!.copyWith(introduction: value));
+          },
+        ),
       ),
       toggleBar: NavigationToggleBar(
         goBackButtonText: "上一步",
         goToNextButtonText: "下一步",
-        goBackButtonHandler: () {
-          widget.callback(inputBox.text ?? "");
-          widget.backward();
-        },
+        goBackButtonHandler: widget.backward,
         goToNextButtonHandler: () {
           if (_formKey.currentState!.validate()) {
-            widget.callback(inputBox.text ?? "");
-            debugPrint(
-                InhertedGroupInfo.of(context)!.groupInfo.groupDescription);
-            debugPrint(InhertedGroupInfo.of(context)!.groupInfo.groupName);
             widget.forward();
           }
         },
@@ -332,11 +255,7 @@ class _WorkspaceDescriptionRegisterPageState
 
 class WorkspaceTagRegisterPage extends StatefulWidget {
   const WorkspaceTagRegisterPage(
-      {super.key,
-      required this.callback,
-      required this.forward,
-      required this.backward});
-  final void Function(List<String>) callback;
+      {super.key, required this.forward, required this.backward});
   final void Function() forward;
   final void Function() backward;
   @override
@@ -349,7 +268,7 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final headLineText = "小組標籤";
   final content = "為你的小組選擇一個或多個標籤";
-  final List<String> tags = [
+  final List<ProfileTag> tags = [
     "#社團",
     "#課程",
     "#打工",
@@ -359,20 +278,12 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
     "#讀書會",
     "#期末報告",
     "#其他"
-  ];
+  ].map((tagString) => ProfileTag(tag: tagString, content: tagString)).toList();
   // TODO : let user add their own tags
-  List<String> selectedTags = [];
-
-  @override
-  void initState() {
-    super.initState();
-    // setState(() {
-    //   selectedTags.addAll(InhertedGroupInfo.of(context)?.groupInfo.groupTags ?? []);
-    // });
-  }
-
   @override
   Widget build(BuildContext context) {
+    final profile = InheritedProfile.of(context)!.profile;
+    final selectedTags = profile.tags ?? [];
     return SignUpPageTemplate(
       titleWithContent: HeadlineWithContent(
         headLineText: headLineText,
@@ -381,8 +292,6 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
       body: Form(
         key: _formKey,
         child: Builder(builder: (context) {
-          selectedTags =
-              InhertedGroupInfo.of(context)?.groupInfo.groupTags ?? [];
           return Wrap(
             children: tags
                 .map((tag) => Padding(
@@ -390,7 +299,7 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
                       child: ChoiceChip(
                         backgroundColor: Colors.grey.shade300,
                         selectedColor: Colors.amber,
-                        label: Text(tag,
+                        label: Text(tag.tag,
                             style: TextStyle(
                               color: selectedTags.contains(tag)
                                   ? Colors.white
@@ -403,7 +312,9 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
                             if (selected) {
                               if (selectedTags.length < 4) {
                                 // implement change label text color
-                                selectedTags.add(tag);
+                                InheritedProfile.of(context)!.updateProfile(
+                                    profile.copyWith(
+                                        tags: selectedTags..add(tag)));
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -412,7 +323,9 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
                                 );
                               }
                             } else {
-                              selectedTags.remove(tag);
+                              InheritedProfile.of(context)!.updateProfile(
+                                  profile.copyWith(
+                                      tags: selectedTags..remove(tag)));
                             }
                           });
                         },
@@ -425,13 +338,9 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
       toggleBar: NavigationToggleBar(
         goBackButtonText: "上一步",
         goToNextButtonText: "下一步",
-        goBackButtonHandler: () {
-          widget.callback(selectedTags);
-          widget.backward();
-        },
+        goBackButtonHandler: widget.backward,
         goToNextButtonHandler: () {
           if (_formKey.currentState!.validate()) {
-            widget.callback(selectedTags);
             widget.forward();
           }
         },
@@ -442,11 +351,7 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
 
 class WorkspaceImageRegisterPage extends StatefulWidget {
   const WorkspaceImageRegisterPage(
-      {super.key,
-      required this.callback,
-      required this.forward,
-      required this.backward});
-  final void Function(File) callback;
+      {super.key, required this.forward, required this.backward});
   final void Function() forward;
   final void Function() backward;
   @override
@@ -463,18 +368,18 @@ class _WorkspaceImageRegisterPageState
   final defaultImage = Image.asset("assets/images/profile_male.png");
   String? imageFilePath;
   void _pickImage() {
+    final profile = InheritedProfile.of(context)!.profile;
     ImagePicker().pickImage(source: ImageSource.gallery).then((value) {
-      setState(() {
-        imageFilePath = value?.path ?? imageFilePath;
-        widget.callback(File(imageFilePath!));
-      });
+      InheritedProfile.of(context)!.updateProfile(profile.copyWith(
+        photo: File(value!.path),
+      ));
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      imageFilePath = InhertedGroupInfo.of(context)?.groupInfo.groupImage.path;
+      final profile = InheritedProfile.of(context)!.profile;
       return SignUpPageTemplate(
         titleWithContent: HeadlineWithContent(
           headLineText: headLineText,
@@ -492,8 +397,8 @@ class _WorkspaceImageRegisterPageState
                             child: CircleAvatar(
                               radius: 120,
                               backgroundColor: Colors.grey[300],
-                              backgroundImage: imageFilePath != null
-                                  ? FileImage(File(imageFilePath!))
+                              backgroundImage: profile.photo != null
+                                  ? FileImage(File(profile.photo!.path))
                                   : defaultImage.image,
                             )),
                         MaterialButton(
@@ -526,16 +431,8 @@ class _WorkspaceImageRegisterPageState
         toggleBar: NavigationToggleBar(
           goBackButtonText: "上一步",
           goToNextButtonText: "下一步",
-          goBackButtonHandler: () {
-            widget.callback(
-                imageFilePath != null ? File(imageFilePath!) : File(""));
-            widget.backward();
-          },
-          goToNextButtonHandler: () {
-            widget.callback(
-                imageFilePath != null ? File(imageFilePath!) : File(""));
-            widget.forward();
-          },
+          goBackButtonHandler: widget.backward,
+          goToNextButtonHandler: widget.forward,
         ),
       );
     });

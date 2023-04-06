@@ -49,26 +49,32 @@ class ProfileModel extends BaseDataModel<ProfileModel>
         );
 
   // implement copyWith Method
-  ProfileModel copyWith(
-      {String? name,
-      String? email,
-      int? color,
-      String? nickname,
-      String? slogan,
-      String? introduction,
-      List<ProfileTag>? tags,
-      io.File? photo,
-      List<String>? associateEntityId}) {
+  ProfileModel copyWith({
+    String? id,
+    String? databasePath,
+    bool? storageRequired,
+    bool? setOwnerRequired,
+    String? name,
+    String? email,
+    int? color,
+    String? nickname,
+    String? slogan,
+    String? introduction,
+    List<ProfileTag>? tags,
+    io.File? photo,
+    List<String>? associateEntityId,
+  }) {
     return ProfileModel(
-        name: name ?? this.name,
-        email: email ?? this.email,
-        color: color ?? this.color,
-        nickname: nickname ?? this.nickname,
-        slogan: slogan ?? this.slogan,
-        introduction: introduction ?? this.introduction,
-        tags: tags ?? this.tags,
-        photo: photo ?? this.photo,
-        associateEntityId: associateEntityId ?? this.associateEntityId);
+      name: name ?? this.name,
+      email: email ?? this.email,
+      color: color ?? this.color,
+      nickname: nickname ?? this.nickname,
+      slogan: slogan ?? this.slogan,
+      introduction: introduction ?? this.introduction,
+      tags: tags ?? this.tags,
+      photo: photo ?? this.photo,
+      associateEntityId: associateEntityId ?? this.associateEntityId,
+    );
   }
 
   /// convert `List<ProfileTag>` to `List<String>` with `ProfileTag.tag`
