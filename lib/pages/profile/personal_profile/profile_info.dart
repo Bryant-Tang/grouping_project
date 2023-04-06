@@ -57,7 +57,7 @@ class _PerosonalProfileSettingState extends State<PerosonalProfileSetting> {
                 ),
                 onChanged: (value) {
                   InheritedProfile.of(context)!.updateProfile(profile
-                      .copyWith(slogan: value));
+                    .copyWith(slogan: value));
                 },
               ), 
               TextFormField(
