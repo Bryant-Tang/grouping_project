@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/profile/personal_profile/profile_edit_page.dart';
+import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
 
 class PersonalProfileTagSetting extends StatefulWidget {
-  PersonalProfileTagSetting({super.key, required this.tagTable});
-  List<ProfileTag> tagTable;
+  const PersonalProfileTagSetting({super.key});
   @override
   State<PersonalProfileTagSetting> createState() =>
       _PersonalProfileTagSettingState();
 }
 
 class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
-  late final Widget addButton;
-  late final Widget editButton;
   bool editMode = false;
+
   void createNewTag(ProfileTag tag) {
-    setState(() {
-      widget.tagTable.add(tag);
-    });
+    final ProfileModel profile = InheritedProfile.of(context)!.profile;
+    final List<ProfileTag>? tagTable = profile.tags;
+    InheritedProfile.of(context)!.updateProfile(
+      profile.copyWith(
+        tags: tagTable!..add(tag),
+      ),
+    );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    addButton = Padding(
+  List<Widget> createToolBar() {
+    final tagTable = InheritedProfile.of(context)!.profile.tags;
+    final addButton = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: MaterialButton(
         shape: const RoundedRectangleBorder(
@@ -34,7 +35,7 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
           setState(() {
             editMode = false;
           });
-          if (widget.tagTable.length == 4) {
+          if (tagTable!.length == 4) {
             setState(() {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -56,7 +57,7 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
                 }).then((value) {
               if (value is ProfileTag) {
                 createNewTag(value);
-                debugPrint(widget.tagTable.toString());
+                // debugPrint(widget.tagTable.toString());
               }
             }).catchError((error) {
               debugPrint(error.toString());
@@ -78,7 +79,7 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
         ),
       ),
     );
-    editButton = Padding(
+    final editButton = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: MaterialButton(
         shape: const RoundedRectangleBorder(
@@ -105,10 +106,12 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
         ),
       ),
     );
-    // widget.tagTable = ProfileInherited.of(context)!.tags;
+    return tagTable!.isNotEmpty ? [addButton, editButton] : [addButton];
   }
+
   @override
   Widget build(BuildContext context) {
+    final tagTable = InheritedProfile.of(context)!.profile.tags;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
@@ -119,28 +122,29 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
         Row(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
-            children: widget.tagTable.isNotEmpty
-                ? [addButton, editButton]
-                : [addButton]),
+            children: createToolBar()),
         Flexible(
           child: ListView.builder(
-              // physics: const NeverScrollableScrollPhysics(),
               clipBehavior: Clip.hardEdge,
-              itemCount: widget.tagTable.length,
+              itemCount: tagTable!.length,
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
                 return PersonalProileTagTextEditView(
-                  tag: widget.tagTable[index],
+                  tag: tagTable[index],
                   editable: editMode,
                   deleteTag: () {
-                    setState(() {
-                      widget.tagTable.removeAt(index);
-                    });
+                    InheritedProfile.of(context)!.updateProfile(
+                      InheritedProfile.of(context)!.profile.copyWith(
+                            tags: tagTable..removeAt(index),
+                          ),
+                    );
                   },
                   editTag: (tag) {
-                    setState(() {
-                      widget.tagTable[index] = tag;
-                    });
+                    InheritedProfile.of(context)!.updateProfile(
+                      InheritedProfile.of(context)!.profile.copyWith(
+                            tags: tagTable..[index] = tag,
+                          ),
+                    );
                   },
                 );
               }),
@@ -379,12 +383,8 @@ class _PersonalProileTagTextEditViewState
       fontSize: 22, fontWeight: FontWeight.bold, color: Colors.amber);
   final TextStyle valueTextStyle = TextStyle(
       fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]);
-  late final Widget editTool;
-  late final Widget tag;
-  @override
-  void initState() {
-    super.initState();
-    editTool = Row(
+  Widget createTag() {
+    final editTool = Row(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -422,7 +422,7 @@ class _PersonalProileTagTextEditViewState
         ),
       ],
     );
-    tag = Padding(
+    final tag = Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -440,66 +440,22 @@ class _PersonalProileTagTextEditViewState
                   Text(widget.tag.content, style: valueTextStyle),
                 ],
               ),
-              widget.editable ? editTool : const SizedBox()
+              widget.editable ? editTool : Container()
             ],
           ),
         ],
       ),
     );
+    return widget.editable
+        ? ShakeWidget(
+            child: tag,
+          )
+        : tag;
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.editable
-        ? ShakeWidget(
-            child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(widget.tag.tag, style: keyTextStyle),
-                        Text(widget.tag.content, style: valueTextStyle),
-                      ],
-                    ),
-                    editTool
-                  ],
-                ),
-              ],
-            ),
-          ))
-        : Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(widget.tag.tag, style: keyTextStyle),
-                        Text(widget.tag.content, style: valueTextStyle),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-    ;
+    return createTag();
   }
 }
 

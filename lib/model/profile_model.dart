@@ -44,6 +44,27 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
             databasePath: 'profiles',
             storageRequired: true,
             setOwnerRequired: false);
+  
+  // implement copyWith Method
+  ProfileModel copyWith(
+      {String? name,
+      String? email,
+      int? color,
+      String? nickname,
+      String? slogan,
+      String? introduction,
+      List<ProfileTag>? tags,
+      io.File? photo}) {
+    return ProfileModel(
+        name: name ?? this.name,
+        email: email ?? this.email,
+        color: color ?? this.color,
+        nickname: nickname ?? this.nickname,
+        slogan: slogan ?? this.slogan,
+        introduction: introduction ?? this.introduction,
+        tags: tags ?? this.tags,
+        photo: photo ?? this.photo);
+  }
 
   /// convert `List<ProfileTag>` to `List<String>` with `ProfileTag.tag`
   List<String> _toFirestoreTag(List<ProfileTag> profileTagList) {
