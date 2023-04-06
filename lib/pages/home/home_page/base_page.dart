@@ -169,7 +169,6 @@ class _BasePageState extends State<BasePage> {
                 //temp remove async for quick test
                 onPressed: () async {
                   _authService.signOut();
-                  _authService.googleSignOut();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginPage()));
                 },

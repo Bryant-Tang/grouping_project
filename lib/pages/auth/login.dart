@@ -14,9 +14,9 @@ class LoginPage extends StatefulWidget {
   final headLineText = "登入";
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
-    "Facebook": {"fileName": "apple.png", "name": "facebook"},
     "Google": {"fileName": "google.png", "name": "google"},
     "Github": {"fileName": "github.png", "name": "github"},
+    "Facebook": {"fileName": "facebook.png", "name": "facebook"}
   };
   List<Widget> buttonBuilder(BuildContext context) {
     List<Widget> authButtonList = [];
