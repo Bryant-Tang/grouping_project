@@ -12,7 +12,7 @@ class ProfileTag {
 
   @override
   String toString() {
-    return "Profile Tag: $tag : $content";
+    return 'Profile Tag: $tag : $content';
   }
 }
 
@@ -44,7 +44,7 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
             databasePath: 'profiles',
             storageRequired: true,
             setOwnerRequired: false);
-  
+
   // implement copyWith Method
   ProfileModel copyWith({
     String? id,
@@ -118,6 +118,7 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
       if (introduction != null) 'introduction': introduction,
       if (tags != null) 'tags': _toFirestoreTag(tags!),
       if (tags != null) 'tag_contents': _toFirestoreTagContent(tags!),
+      if (associateEntityId != null) 'associate_entity_id': associateEntityId,
     };
   }
 
@@ -139,6 +140,9 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
         tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
             ? _fromFirestoreTags(
                 List.from(data['tags']), List.from(data['tag_contents']))
+            : null,
+        associateEntityId: data['associate_entity_id'] is Iterable
+            ? List.from(data['associate_entity_id'])
             : null);
 
     return processData;
