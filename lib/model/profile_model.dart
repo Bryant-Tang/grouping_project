@@ -153,6 +153,7 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   }
 
   void addEntity(String id) {
+    associateEntityId ??= [];
     if (associateEntityId?.contains(id) == false) {
       associateEntityId?.add(id);
     }
@@ -161,6 +162,9 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   void removeEntity(String id) {
     if (associateEntityId?.contains(id) == true) {
       associateEntityId?.remove(id);
+    }
+    if (associateEntityId?.isEmpty == true) {
+      associateEntityId = null;
     }
   }
 }
