@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/profile/profile_edit_page.dart';
+import 'package:grouping_project/pages/profile/personal_profile/profile_edit_page.dart';
 
 class PersonalProfileTagSetting extends StatefulWidget {
-  List<ProfileTag>? tagTable;
-  PersonalProfileTagSetting({super.key});
+  PersonalProfileTagSetting({super.key, required this.tagTable});
+  List<ProfileTag> tagTable;
   @override
   State<PersonalProfileTagSetting> createState() =>
       _PersonalProfileTagSettingState();
@@ -14,52 +14,10 @@ class PersonalProfileTagSetting extends StatefulWidget {
 class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
   late final Widget addButton;
   late final Widget editButton;
-  List<PersonalProileTagTextEditView> tagsWidgetList = [];
   bool editMode = false;
-  void initTagsWidgetList() {
-    tagsWidgetList = [];
-    if (widget.tagTable == null) {
-      setState(() {
-        widget.tagTable = ProfileInherited.of(context)!.profile.tags ?? [];
-      });
-    }
-    for (ProfileTag tag in widget.tagTable!) {
-      tagsWidgetList.add(PersonalProileTagTextEditView(
-        tagKey: tag.tag,
-        tagValue: tag.content,
-        editable: editMode,
-        deleteTag: deleteTag,
-        editTag: updateTagTable,
-      ));
-    }
-  }
-
   void createNewTag(ProfileTag tag) {
     setState(() {
-      widget.tagTable!.add(tag);
-    });
-  }
-
-  void updateTagTable() {
-    setState(() {
-      for (PersonalProileTagTextEditView tag in tagsWidgetList) {
-        widget.tagTable![tagsWidgetList.indexOf(tag)] =
-            ProfileTag(tag: tag.tagKey, content: tag.tagValue);
-      }
-    });
-  }
-
-  void deleteTag(ProfileTag tag) {
-    debugPrint(tag.toString());
-    setState(() {
-      // debugPrint('${widget.tagTable.contains(tag)}');
-      for (int index = 0; index < widget.tagTable!.length; index++) {
-        if (widget.tagTable![index].tag == tag.tag &&
-            widget.tagTable![index].content == tag.content) {
-          widget.tagTable!.removeAt(index);
-          break;
-        }
-      }
+      widget.tagTable.add(tag);
     });
   }
 
@@ -75,24 +33,17 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
         onPressed: () async {
           setState(() {
             editMode = false;
-            updateTagTable();
           });
-          if (widget.tagTable!.length == 4) {
-            showDialog(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                      content: const Text("個人標籤數量已達上限"),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('ok'),
-                        ),
-                      ],
-                    ));
+          if (widget.tagTable.length == 4) {
+            setState(() {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("個人標籤數量已達上限"),
+                ),
+              );
+            });
           } else {
-            final result = await showDialog(
+            showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   AddTagForm addTagForm = const AddTagForm();
@@ -102,13 +53,13 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
                         const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                     children: [addTagForm],
                   );
-                });
-            // debugPrint(result.toString());
-            setState(() {
-              if (result != null) {
-                createNewTag(result);
+                }).then((value) {
+              if (value is ProfileTag) {
+                createNewTag(value);
                 debugPrint(widget.tagTable.toString());
               }
+            }).catchError((error) {
+              debugPrint(error.toString());
             });
           }
         },
@@ -156,31 +107,44 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
     );
     // widget.tagTable = ProfileInherited.of(context)!.tags;
   }
-
   @override
   Widget build(BuildContext context) {
-    initTagsWidgetList();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const HeadlineWithContent(
-                headLineText: "個人標籤",
-                content: "填寫名片資訊，可自由填寫 ，可選0 ~ 4項資訊自由填寫, ex 學校: 中央大學"),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: widget.tagTable != null && widget.tagTable!.isNotEmpty
-                    ? [addButton, editButton]
-                    : [addButton])
-          ],
-        ),
-        Column(
-            children: tagsWidgetList
-            )
+        const HeadlineWithContent(
+            headLineText: "個人標籤",
+            content: "填寫名片資訊，可自由填寫 ，可選0 ~ 4項資訊自由填寫, ex 學校: 中央大學"),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: widget.tagTable.isNotEmpty
+                ? [addButton, editButton]
+                : [addButton]),
+        Flexible(
+          child: ListView.builder(
+              // physics: const NeverScrollableScrollPhysics(),
+              clipBehavior: Clip.hardEdge,
+              itemCount: widget.tagTable.length,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                return PersonalProileTagTextEditView(
+                  tag: widget.tagTable[index],
+                  editable: editMode,
+                  deleteTag: () {
+                    setState(() {
+                      widget.tagTable.removeAt(index);
+                    });
+                  },
+                  editTag: (tag) {
+                    setState(() {
+                      widget.tagTable[index] = tag;
+                    });
+                  },
+                );
+              }),
+        )
       ],
     );
   }
@@ -287,12 +251,10 @@ class _AddTagFormState extends State<AddTagForm> {
 }
 
 class EditTagForm extends StatefulWidget {
-  final String initKeyText;
-  final String initValueText;
+  final ProfileTag tag;
   const EditTagForm({
     super.key,
-    required this.initKeyText,
-    required this.initValueText,
+    required this.tag,
   });
 
   @override
@@ -318,7 +280,7 @@ class _EditTagFormState extends State<EditTagForm> {
             keyText = keyTextController.text;
           });
         })
-        ..text = widget.initKeyText,
+        ..text = widget.tag.tag,
       decoration: const InputDecoration(
         label: Text("標籤名稱"),
         icon: Icon(Icons.label),
@@ -339,7 +301,7 @@ class _EditTagFormState extends State<EditTagForm> {
             valueText = valueTextController.text;
           });
         })
-        ..text = widget.initValueText,
+        ..text = widget.tag.content,
       decoration: const InputDecoration(
         label: Text("標籤內容"),
         icon: Icon(Icons.contact_emergency_outlined),
@@ -394,15 +356,13 @@ class _EditTagFormState extends State<EditTagForm> {
 }
 
 class PersonalProileTagTextEditView extends StatefulWidget {
-  String tagKey;
-  String tagValue;
-  bool editable;
+  final ProfileTag tag;
+  final bool editable;
   final Function deleteTag;
-  final Function editTag;
-  PersonalProileTagTextEditView({
+  final void Function(ProfileTag) editTag;
+  const PersonalProileTagTextEditView({
     super.key,
-    required this.tagKey,
-    required this.tagValue,
+    required this.tag,
     required this.editable,
     required this.deleteTag,
     required this.editTag,
@@ -419,7 +379,6 @@ class _PersonalProileTagTextEditViewState
       fontSize: 22, fontWeight: FontWeight.bold, color: Colors.amber);
   final TextStyle valueTextStyle = TextStyle(
       fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]);
-  // late final Widget tag;
   late final Widget editTool;
   late final Widget tag;
   @override
@@ -432,27 +391,20 @@ class _PersonalProileTagTextEditViewState
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2),
           child: IconButton(
-              onPressed: () async {
-                final result = await showDialog(
-                    context: context,
-                    builder: (BuildContext context) => SimpleDialog(
+              onPressed: () {
+                showDialog(
+                        context: context,
+                        builder: (BuildContext context) => SimpleDialog(
                             title: const Text('修改標籤'),
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 5),
-                            children: [
-                              EditTagForm(
-                                initKeyText: widget.tagKey,
-                                initValueText: widget.tagValue,
-                              )
-                            ]));
-                setState(() {
-                  if (result != null) {
-                    widget.tagKey = result.tag;
-                    widget.tagValue = result.content;
-                    debugPrint('${widget.tagKey} | ${widget.tagValue}');
-                    widget.editTag();
+                            children: [EditTagForm(tag: widget.tag)]))
+                    .then((value) {
+                  if (value != null && value is ProfileTag) {
+                    debugPrint('${value.tag} | ${value.content}');
+                    widget.editTag(value);
                   }
-                });
+                }).onError((error, stackTrace) => null);
               },
               icon: const Icon(
                 Icons.edit,
@@ -463,9 +415,8 @@ class _PersonalProileTagTextEditViewState
           padding: const EdgeInsets.symmetric(horizontal: 2),
           child: IconButton(
               onPressed: () {
-                debugPrint('delete ${widget.tagKey} | ${widget.tagValue}');
-                widget.deleteTag(
-                    ProfileTag(tag: widget.tagKey, content: widget.tagValue));
+                debugPrint('delete ${widget.tag.tag} | ${widget.tag.content}');
+                widget.deleteTag();
               },
               icon: const Icon(Icons.remove, color: Colors.grey)),
         ),
@@ -485,8 +436,8 @@ class _PersonalProileTagTextEditViewState
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.tagKey, style: keyTextStyle),
-                  Text(widget.tagValue, style: valueTextStyle),
+                  Text(widget.tag.tag, style: keyTextStyle),
+                  Text(widget.tag.content, style: valueTextStyle),
                 ],
               ),
               widget.editable ? editTool : const SizedBox()
@@ -515,11 +466,11 @@ class _PersonalProileTagTextEditViewState
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(widget.tagKey, style: keyTextStyle),
-                        Text(widget.tagValue, style: valueTextStyle),
+                        Text(widget.tag.tag, style: keyTextStyle),
+                        Text(widget.tag.content, style: valueTextStyle),
                       ],
                     ),
-                    widget.editable ? editTool : const SizedBox()
+                    editTool
                   ],
                 ),
               ],
@@ -539,16 +490,16 @@ class _PersonalProileTagTextEditViewState
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(widget.tagKey, style: keyTextStyle),
-                        Text(widget.tagValue, style: valueTextStyle),
+                        Text(widget.tag.tag, style: keyTextStyle),
+                        Text(widget.tag.content, style: valueTextStyle),
                       ],
                     ),
-                    widget.editable ? editTool : const SizedBox()
                   ],
                 ),
               ],
             ),
           );
+    ;
   }
 }
 
