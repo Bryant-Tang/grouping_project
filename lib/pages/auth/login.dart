@@ -1,8 +1,10 @@
+import 'package:grouping_project/model/data_controller.dart';
+import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/auth/user.dart';
-import 'package:grouping_project/pages/home/personal_dashboard_page.dart';
-import 'package:grouping_project/pages/home/base_page.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
+import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
@@ -12,9 +14,9 @@ class LoginPage extends StatefulWidget {
   final headLineText = "登入";
   final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
   final buttonUI = {
-    "Facebook": {"fileName": "apple.png", "name": "facebook"},
     "Google": {"fileName": "google.png", "name": "google"},
     "Github": {"fileName": "github.png", "name": "github"},
+    "Facebook": {"fileName": "facebook.png", "name": "facebook"}
   };
   List<Widget> buttonBuilder(BuildContext context) {
     List<Widget> authButtonList = [];
@@ -26,7 +28,15 @@ class LoginPage extends StatefulWidget {
             AuthService authService = AuthService();
             await authService.thridPartyLogin(button["name"]).then((value) {
               if (value != null) {
-                debugPrint("${value.uid}\n");
+                // debugPrint("${value.uid}\n");
+                // DataController d = DataController();
+                // d.download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!).onError((error, stackTrace){
+                //   // if(error is ){
+                //     Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => RecommendPage(forward: () {  },)));
+                //   // }
+                // });
+                // TODO: check if user has profile
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => const BasePage()));
               }
@@ -49,7 +59,7 @@ class _LogInState extends State<LoginPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Container(
-        padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0, 120.0),
+        padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0,0.0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,

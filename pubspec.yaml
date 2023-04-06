@@ -49,10 +49,12 @@ dependencies:
   image_picker_web: ^3.0.0+1
   image_picker: ^0.8.7
   intl: ^0.17.0
+  flutter_facebook_auth: ^5.0.8
   firebase_storage: ^11.1.0
   path_provider: ^2.0.14
   syncfusion_flutter_datepicker: ^21.0.0
   day_night_time_picker: ^1.2.0
+  path: ^1.8.3
 
 dev_dependencies:
   flutter_test:

@@ -27,6 +27,7 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   String? introduction;
   List<ProfileTag>? tags;
   io.File? photo;
+  List<String>? associateEntityId;
 
   ProfileModel(
       {this.name,
@@ -36,7 +37,8 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
       this.slogan,
       this.introduction,
       this.tags,
-      this.photo})
+      this.photo,
+      this.associateEntityId})
       : super(
             id: 'profile',
             databasePath: 'profiles',
@@ -121,5 +123,17 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   @override
   void setAttributeFromStorage({required Map<String, io.File> data}) {
     photo = data['photo'];
+  }
+
+  void addEntity(String id) {
+    if (associateEntityId?.contains(id) == false) {
+      associateEntityId?.add(id);
+    }
+  }
+
+  void removeEntity(String id) {
+    if (associateEntityId?.contains(id) == true) {
+      associateEntityId?.remove(id);
+    }
   }
 }

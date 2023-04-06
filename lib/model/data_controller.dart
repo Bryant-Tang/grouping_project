@@ -1,6 +1,5 @@
 import 'data_model.dart';
 import 'profile_model.dart';
-import 'group_model.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 import 'package:flutter/material.dart';
@@ -23,7 +22,7 @@ class DataController {
   /// **Notice below :**
   /// * remember to use ***await*** in front of this method.
   /// * if [uploadData.id] exist, would be updating the data
-  /// * throw error if the database does not has the data of the id.
+  /// * throw exception if the database does not has the data of the id.
   Future<void> upload<T extends DataModel<T>>({required T uploadData}) async {
     String dataId;
     if ((uploadData.id == null) || (uploadData.id == 'profile')) {
@@ -65,10 +64,6 @@ class DataController {
   /// * if you want to get [ProfileModel] , just pass `ProfileModel().id!` to [dataId]
   Future<T> download<T extends DataModel<T>>(
       {required T dataTypeToGet, required String dataId}) async {
-    if (_forUser == false && dataTypeToGet.runtimeType == GroupModel) {
-      debugPrint('[Error] not allow to get group model of a group');
-      throw ErrorDescription('[Error] not allow to get group model of a group');
-    }
     var firestoreSnap =
         await FirestoreController(forUser: _forUser, ownerId: _ownerId)
             .get(collectionPath: dataTypeToGet.databasePath, dataId: dataId);
@@ -79,8 +74,8 @@ class DataController {
         : null;
 
     if (firestoreSnap.exists != true) {
-      debugPrint('[Error] data does not exist');
-      throw ErrorDescription('[Error] data does not exist');
+      debugPrint('[Exception] data does not exist');
+      throw Exception('[Exception] data does not exist');
     } else {
       T processData = dataTypeToGet.fromFirestore(
           id: firestoreSnap.id,
@@ -109,11 +104,11 @@ class DataController {
   /// * if you want to get ProfileModel, use `download()` is better.
   Future<List<T>> downloadAll<T extends DataModel<T>>(
       {required T dataTypeToGet}) async {
-    if (_forUser == false && dataTypeToGet.runtimeType == GroupModel) {
-      debugPrint(
-          '[Warning] not suppose to happened. trying to get group model list of a group!');
-      return [];
-    }
+    // if (_forUser == false && dataTypeToGet.runtimeType == GroupModel) {
+    //   debugPrint(
+    //       '[Warning] not suppose to happened. trying to get group model list of a group!');
+    //   return [];
+    // }
 
     List<T> dataList = [];
 
@@ -138,11 +133,11 @@ class DataController {
       dataList.add(temp);
     }
 
-    if (_forUser == true && dataTypeToGet.runtimeType != GroupModel) {
-      List<GroupModel> groupList =
-          await downloadAll(dataTypeToGet: GroupModel());
-      for (var group in groupList) {
-        var dataListForGroup = await DataController(groupId: group.id)
+    if (_forUser == true) {
+      ownerProfile ??= await download(
+          dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!);
+      for (var groupId in ownerProfile.associateEntityId ?? []) {
+        var dataListForGroup = await DataController(groupId: groupId)
             .downloadAll(dataTypeToGet: dataTypeToGet);
         dataList.addAll(dataListForGroup);
       }
@@ -167,10 +162,29 @@ class DataController {
             collectionPath: '${removeData.databasePath}/${removeData.id}');
       }
     } else {
-      debugPrint("[Error] data id should be pass");
-      throw ErrorDescription('[Error] data id should be pass');
+      debugPrint("[Exception] data id should be pass");
+      throw Exception('[Exception] data id should be pass');
     }
 
     return;
+  }
+
+  /// create a group from current user
+  /// return new group id
+  Future<String> createGroup(ProfileModel groupProfile) async {
+    if (_forUser == false) {
+      throw Exception('[Exception] trying to create group for group');
+    }
+    String groupId = await FirestoreController.createGroup();
+
+    var userProfile = await download(
+        dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!);
+    userProfile.addEntity(groupId);
+    await upload(uploadData: userProfile);
+
+    groupProfile.addEntity(_ownerId);
+    await DataController(groupId: groupId).upload(uploadData: groupProfile);
+
+    return groupId;
   }
 }

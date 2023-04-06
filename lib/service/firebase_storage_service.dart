@@ -1,6 +1,5 @@
 import 'dart:io' as io show File;
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -17,7 +16,7 @@ class StorageController {
       {required io.File processData,
       required String collectionPath,
       required String dataId}) async {
-    await ownerPath.child('$collectionPath/$dataId}').putFile(processData);
+    await ownerPath.child('$collectionPath/$dataId').putFile(processData);
     return;
   }
 
@@ -26,8 +25,8 @@ class StorageController {
     Uint8List? processData =
         await ownerPath.child('$collectionPath/$dataId').getData();
     if (processData == null) {
-      throw ErrorDescription(
-          '[Error] something went wrong while downloading, please retry later.');
+      throw Exception(
+          '[Exception] something went wrong while downloading, please retry later.');
     } else {
       return processData;
     }
@@ -35,9 +34,12 @@ class StorageController {
 
   Future<io.File> getInFile(
       {required String collectionPath, required String dataId}) async {
-    io.File processData = io.File(
-        '${(await getTemporaryDirectory()).path}/${ownerPath.fullPath}/$collectionPath/$dataId');
-    await ownerPath.child('$collectionPath/$dataId').writeToFile(processData);
+    Reference downloadRef = ownerPath.child('$collectionPath/$dataId');
+    io.File processData =
+        io.File('${(await getTemporaryDirectory()).path}/temp-'
+            '${_takeOutSlash(downloadRef.fullPath)}');
+    await downloadRef.writeToFile(processData);
+
     return processData;
   }
 
@@ -45,12 +47,14 @@ class StorageController {
       {required String collectionPath}) async {
     var fileRefList = (await ownerPath.child(collectionPath).list()).items;
     Map<String, io.File> resultMap = {};
+
     for (var ref in fileRefList) {
-      io.File tempFile =
-          io.File('${(await getTemporaryDirectory()).path}/${ref.fullPath}');
+      io.File tempFile = io.File('${(await getTemporaryDirectory()).path}/temp-'
+          '${_takeOutSlash(ref.fullPath)}');
       await ref.writeToFile(tempFile);
       resultMap.addAll({path.basenameWithoutExtension(ref.name): tempFile});
     }
+
     return resultMap;
   }
 
@@ -58,4 +62,12 @@ class StorageController {
     await ownerPath.child(collectionPath).delete();
     return;
   }
+}
+
+String _takeOutSlash(String path) {
+  String newPath = '';
+  for (String s in path.split('/')) {
+    newPath += s;
+  }
+  return newPath;
 }
