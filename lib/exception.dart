@@ -10,6 +10,15 @@
 ///   print(e.toString());
 /// }
 /// ```
+/// -----
+/// * if you want to throw a `GroupingProjectException`, here is an example:
+///
+/// ```
+/// throw GroupingProjectException(
+/// message: 'The data is not exist in database.',
+/// code: GroupingProjectExceptionCode.notExistInDatabase,
+/// stackTrace: StackTrace.current);
+/// ```
 class GroupingProjectException implements Exception {
   /// A generic class which provides exceptions in a GroupingProject-friendly format
   /// to users.
@@ -22,6 +31,15 @@ class GroupingProjectException implements Exception {
   /// } catch (e) {
   ///   print(e.toString());
   /// }
+  /// ```
+  /// -----
+  /// * if you want to throw a `GroupingProjectException`, here is an example:
+  ///
+  /// ```
+  /// throw GroupingProjectException(
+  /// message: 'The data is not exist in database.',
+  /// code: GroupingProjectExceptionCode.notExistInDatabase,
+  /// stackTrace: StackTrace.current);
   /// ```
   GroupingProjectException({
     this.message,

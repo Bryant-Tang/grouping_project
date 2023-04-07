@@ -64,6 +64,7 @@ class ProfileModel extends BaseDataModel<ProfileModel>
     io.File? photo,
     List<String>? associateEntityId,
   }) {
+    
     return ProfileModel(
       name: name ?? this.name,
       email: email ?? this.email,

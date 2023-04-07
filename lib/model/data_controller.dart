@@ -1,5 +1,4 @@
-import 'package:grouping_project/model/mission_state_model.dart';
-
+import 'mission_state_model.dart';
 import 'data_model.dart';
 import 'profile_model.dart';
 import 'package:grouping_project/service/service_lib.dart';
