@@ -14,7 +14,7 @@ String stageToString(MissionStage stage) {
       message:
           'Some thing went wrong during convert the type of mission stage. '
           'Please contact developer.',
-      code: GroupingProjectExceptionCode.wrongConstructParameter,
+      code: GroupingProjectExceptionCode.wrongParameter,
       stackTrace: StackTrace.current);
 }
 

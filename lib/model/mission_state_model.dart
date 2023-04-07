@@ -6,6 +6,21 @@ class MissionStateModel extends BaseDataModel<MissionStateModel> {
   MissionStage? stage;
   String? stateName;
 
+  static final MissionStateModel defaultProgressState = MissionStateModel(
+      id: 'default_progress',
+      stage: MissionStage.progress,
+      stateName: 'in_progress');
+  static final MissionStateModel defaultPendingState = MissionStateModel(
+      id: 'default_pending', stage: MissionStage.pending, stateName: 'pending');
+  static final MissionStateModel defaultFinishState = MissionStateModel(
+      id: 'default_finish',
+      stage: MissionStage.close,
+      stateName: 'in_progress');
+  static final MissionStateModel defaultTimeOutState = MissionStateModel(
+      id: 'default_time_out',
+      stage: MissionStage.progress,
+      stateName: 'time_out');
+
   MissionStateModel({super.id, this.stage, this.stateName})
       : super(
           databasePath: 'mission_states',

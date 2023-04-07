@@ -22,30 +22,35 @@ class MissionModel extends BaseDataModel<MissionModel> {
   String ownerName = 'unknown';
   int color = 0xFFFCBF49;
 
-  MissionModel(
-      {super.id,
-      this.title,
-      this.deadline,
-      this.contributorIds,
-      this.introduction,
-      this.stateModelId,
-      this.stage,
-      this.stateName,
-      this.tags,
-      this.notifications,
-      this.parentMissionIds,
-      this.childMissionIds,
-      MissionStateModel? state})
-      : super(
+  MissionModel({
+    super.id,
+    this.title,
+    this.deadline,
+    this.contributorIds,
+    this.introduction,
+    MissionStateModel? state,
+    this.stateModelId,
+    this.stage,
+    this.stateName,
+    this.tags,
+    this.notifications,
+    this.parentMissionIds,
+    this.childMissionIds,
+  }) : super(
           databasePath: 'missions',
           storageRequired: false,
           // setOwnerRequired: true
         ) {
     if (state != null) {
-      // ignore: unnecessary_this
-      this.stage = state.stage;
-      // ignore: unnecessary_this
-      this.stateName = state.stateName;
+      setStateByStateModel(state);
+    } else if (stage != null) {
+      if (stage == MissionStage.progress) {
+        setStateByStateModel(MissionStateModel.defaultProgressState);
+      } else if (stage == MissionStage.pending) {
+        setStateByStateModel(MissionStateModel.defaultPendingState);
+      } else if (stage == MissionStage.close) {
+        setStateByStateModel(MissionStateModel.defaultFinishState);
+      }
     }
   }
 
@@ -54,9 +59,10 @@ class MissionModel extends BaseDataModel<MissionModel> {
       throw GroupingProjectException(
           message: 'The state model is lack of stage or stateName, '
               'please make sure you are using the correct state.',
-          code: GroupingProjectExceptionCode.wrongConstructParameter,
+          code: GroupingProjectExceptionCode.wrongParameter,
           stackTrace: StackTrace.current);
     }
+    stateModelId = stateModel.id;
     stage = stateModel.stage;
     stateName = stateModel.stateName;
   }
@@ -98,13 +104,24 @@ class MissionModel extends BaseDataModel<MissionModel> {
   @override
   Future<Map<String, dynamic>> toFirestore(
       {required DataController ownerController}) async {
+    if (stateModelId == null && stage == null && stateName == null) {
+      setStateByStateModel(MissionStateModel.defaultProgressState);
+    }
+
     String? stateModelCheckedId = await _checkIfStateExist(ownerController);
+    if (stateModelCheckedId == null) {
+      throw GroupingProjectException(
+          message: 'The state of this mission is not exist in the state model '
+              'pool for this entity. Please make sure assign a correct state.',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
+    }
     return {
       if (title != null) 'title': title,
       if (deadline != null) 'deadline': Timestamp.fromDate(deadline!),
       if (contributorIds != null) 'contributor_ids': contributorIds,
       if (introduction != null) 'introduction': introduction,
-      if (stateModelCheckedId != null) 'state_model_id': stateModelCheckedId,
+      'state_model_id': stateModelCheckedId,
       if (tags != null) 'tags': tags,
       if (parentMissionIds != null) 'parent_mission_ids': parentMissionIds,
       if (childMissionIds != null) 'child_mission_ids': childMissionIds,

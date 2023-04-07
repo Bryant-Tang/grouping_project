@@ -65,6 +65,6 @@ class GroupingProjectException implements Exception {
 
 class GroupingProjectExceptionCode {
   GroupingProjectExceptionCode._();
-  static const String wrongConstructParameter = 'wrong-construct-parameter';
+  static const String wrongParameter = 'wrong-parameter';
   static const String notExistInDatabase = 'not-exist-in-database';
 }
