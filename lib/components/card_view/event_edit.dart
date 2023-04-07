@@ -181,6 +181,8 @@ class _EventEditPageState extends State<EventEditPage> {
                   descriptController.text = value;
                   descriptController.selection = TextSelection.fromPosition(
                       TextPosition(offset: value.length));
+                  debugPrint(descriptController.text);
+                  setState(() {});
                 },
                 decoration: InputDecoration(
                     hintText: '輸入標題',

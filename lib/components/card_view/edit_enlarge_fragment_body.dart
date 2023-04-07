@@ -165,10 +165,9 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
           controller: widget.titleController,
           onChanged: (value) {
             widget.titleController.text = value;
-            widget.titleController.selection = TextSelection.fromPosition(TextPosition(offset: value.length));
-            // setState(() {
-              
-            // });
+            widget.titleController.selection =
+                TextSelection.fromPosition(TextPosition(offset: value.length));
+            setState(() {});
           },
           decoration: InputDecoration(
               hintText: '輸入標題',
@@ -184,8 +183,10 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
               onPressed: selectStartTime,
               child: Text(
                 parseDate.format(start),
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black),
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
             ),
             Icon(
@@ -198,8 +199,10 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
               onPressed: selectEndTime,
               child: Text(
                 parseDate.format(end),
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black),
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
               ),
             )
           ],

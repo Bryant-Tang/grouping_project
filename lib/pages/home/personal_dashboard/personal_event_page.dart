@@ -16,15 +16,16 @@ List<Widget> eventCards = [];
 
 class EventPageState extends State<EventPage> {
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    await showEvents();
+    showEvents();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+    return SizedBox(
+      width: MediaQuery.of(context).size.width - 20,
+      height: MediaQuery.of(context).size.height - 80,
       child: ListView(
         children: [
           Column(
