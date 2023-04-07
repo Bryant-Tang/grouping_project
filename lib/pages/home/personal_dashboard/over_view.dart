@@ -179,14 +179,8 @@ List<ListView> pages = [
         height: 100,
         decoration: BoxDecoration(border: Border.all(color: Colors.black)),
       ),
-<<<<<<< HEAD
-      // const EventPage(),
+      const EventPage(),
       // CardViewTemplate(detailShrink: EventInformationShrink(eventModel: EventModel()), detailEnlarge: EventInformationEnlarge(eventModel: EventModel()))
-=======
-      CardViewTemplate(
-          detailShrink: EventInformationShrink(eventModel: EventModel()),
-          detailEnlarge: EventInformationEnlarge(eventModel: EventModel()))
->>>>>>> upstream/master
     ],
   ),
   ListView(

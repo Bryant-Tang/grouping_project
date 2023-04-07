@@ -93,11 +93,11 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
 
   void register() {
     // print out the group info
-    DataController().createGroup(profile).then((value) {
-      debugPrint('$value 小組建立成功');
-    }).catchError((error) {
-      debugPrint(error.toString());
-    });
+    // DataController().createGroup(profile).then((value) {
+    //   debugPrint('$value 小組建立成功');
+    // }).catchError((error) {
+    //   debugPrint(error.toString());
+    // });
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("小組建立成功")));
     Navigator.of(context).pop(true);

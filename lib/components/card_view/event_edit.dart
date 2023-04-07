@@ -68,25 +68,25 @@ class _EventEditPageState extends State<EventEditPage> {
     List<String> contributorIds = [];
 
     void createEvent() async {
-      // await DataController().upload(
-      //     uploadData: EventModel(
-      //   title: titleController.text,
-      //   introduction: descriptController.text,
-      //   startTime: startTime,
-      //   endTime: endTime,
-      // ));
+      await DataController().upload(
+          uploadData: EventModel(
+        title: titleController.text,
+        introduction: descriptController.text,
+        startTime: startTime,
+        endTime: endTime,
+      ));
     }
 
     void updateEvent() async {
       // TODO: check it's the same event and has been modified to new data
-      // await DataController().upload(
-      //     uploadData: EventModel(
-      //   id: widget.eventModel!.id,
-      //   title: titleController.text,
-      //   introduction: descriptController.text,
-      //   startTime: startTime,
-      //   endTime: endTime,
-      // ));
+      await DataController().upload(
+          uploadData: EventModel(
+        id: widget.eventModel!.id,
+        title: titleController.text,
+        introduction: descriptController.text,
+        startTime: startTime,
+        endTime: endTime,
+      ));
     }
 
     return Scaffold(
