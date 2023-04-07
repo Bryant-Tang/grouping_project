@@ -104,11 +104,12 @@ class _SignUpPageState extends State<SignUpPage> {
         debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
         final ProfileModel user = ProfileModel(name: userName, email: email);
         DataController()
-            .upload(uploadData: user)
+            .createUser(userProfile: user)
             .then((value) => {debugPrint('upload successfully')})
             .catchError((error) {
-          debugPrint(error.toString());
-        });
+              debugPrint(error.toString());
+            }
+        );
         forward();
       }
     }).catchError((error) {
