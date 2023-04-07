@@ -92,6 +92,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/icons/appBar/
 
   fonts:
      - family: NotoSansTC

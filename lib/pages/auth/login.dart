@@ -143,8 +143,7 @@ class _EmailFormState extends State<_EmailForm> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  UserData(data: value, child: const BasePage())));
+              builder: (context) => const BasePage()));
     }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {
