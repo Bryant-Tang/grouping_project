@@ -1,181 +1,206 @@
+import 'data_controller.dart';
 import 'data_model.dart';
 import 'profile_model.dart';
-import 'user_model.dart';
+import 'mission_state_model.dart';
+import 'mission_state_stage.dart';
+import 'package:grouping_project/exception.dart';
 
-/// to create a MissionState use such like this
-///
-/// MissionState state = MissionState.upComing;
-enum MissionState { upComing, inProgress, finish }
+import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 
-/// to create a MissionModel use MissionModel()
-/// and pass all things you want to add
-///
-/// to upload a MissionModel use .set() method
-///
-/// to get all MissionModel of a user/group use MissionModel().getAll()
-class MissionModel extends DataModel<MissionModel> {
+/// ## a data model for misison
+/// * to upload/download, use `DataController`
+class MissionModel extends BaseDataModel<MissionModel> {
   String? title;
-  DateTime? startTime;
-  DateTime? endTime;
-  List<UserModel>? contributors;
+  DateTime? deadline;
+  List<String>? contributorIds;
   String? introduction;
-  MissionState? state;
+  String? stateModelId;
+  MissionStage? stage;
+  String? stateName;
   List<String>? tags;
   List<DateTime>? notifications;
+  List<String>? parentMissionIds;
+  List<String>? childMissionIds;
   String ownerName = 'unknown';
   int color = 0xFFFCBF49;
 
-  MissionModel(
-      {super.id,
-      this.title,
-      this.startTime,
-      this.endTime,
-      this.contributors,
-      this.introduction,
-      this.state,
-      this.tags,
-      this.notifications})
-      : super(
-            databasePath: 'missions',
-            storageRequired: false,
-            setOwnerRequired: true);
-
-  dynamic _convertMissionState({int? stateCode}) {
-    if (stateCode != null) {
-      switch (stateCode) {
-        case 0:
-          {
-            return MissionState.upComing;
-          }
-
-        case 1:
-          {
-            return MissionState.inProgress;
-          }
-
-        case 2:
-          {
-            return MissionState.finish;
-          }
-        default:
-          {
-            return null;
-          }
-      }
-    } else {
-      switch (state) {
-        case MissionState.upComing:
-          {
-            return 0;
-          }
-
-        case MissionState.inProgress:
-          {
-            return 1;
-          }
-
-        case MissionState.finish:
-          {
-            return 2;
-          }
-        default:
-          {
-            return -1;
-          }
+  /// ## a data model for mission
+  /// * to upload/download, use `DataController`
+  /// -----
+  /// - recommend to pass state using [state]
+  /// - if [state] is not given, will then seek default state by [stage]
+  MissionModel({
+    super.id,
+    this.title,
+    this.deadline,
+    this.contributorIds,
+    this.introduction,
+    MissionStateModel? state,
+    this.stateModelId,
+    this.stage,
+    this.stateName,
+    this.tags,
+    this.notifications,
+    this.parentMissionIds,
+    this.childMissionIds,
+  }) : super(
+          databasePath: 'missions',
+          storageRequired: false,
+          // setOwnerRequired: true
+        ) {
+    if (state != null) {
+      setStateByStateModel(state);
+    } else if (stage != null) {
+      if (stage == MissionStage.progress) {
+        setStateByStateModel(MissionStateModel.defaultProgressState);
+      } else if (stage == MissionStage.pending) {
+        setStateByStateModel(MissionStateModel.defaultPendingState);
+      } else if (stage == MissionStage.close) {
+        setStateByStateModel(MissionStateModel.defaultFinishState);
       }
     }
   }
 
-  @override
-  MissionModel makeEmptyInstance() {
-    return MissionModel();
+  /// ### This is the perfered method to change state of mission
+  /// - please make sure the [stateModel] is a correct model in database
+  void setStateByStateModel(MissionStateModel stateModel) {
+    if (stateModel.stage == null || stateModel.stateName == null) {
+      throw GroupingProjectException(
+          message: 'The state model is lack of stage or stateName, '
+              'please make sure you are using the correct state.',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
+    }
+    stateModelId = stateModel.id;
+    stage = stateModel.stage;
+    stateName = stateModel.stateName;
   }
 
-  @override
-  Map<String, dynamic> toFirestore() {
-    // TODO: implement toFirestore
-    throw UnimplementedError();
+  /// convert `List<DateTime>` to `List<Timestamp>`
+  List<Timestamp> _toFirestoreTimeList(List<DateTime> dateTimeList) {
+    List<Timestamp> processList = [];
+    for (DateTime dateTime in dateTimeList) {
+      processList.add(Timestamp.fromDate(dateTime));
+    }
+    return processList;
   }
 
+  /// convert `List<Timestamp>` to `List<DateTime>`
+  List<DateTime> _fromFirestoreTimeList(List<Timestamp> timestampList) {
+    List<DateTime> processList = [];
+    for (Timestamp timestamp in timestampList) {
+      processList.add(timestamp.toDate());
+    }
+    return processList;
+  }
+
+  /// check if the state of this instance is exist in the database
+  Future<String?> _checkIfStateExist(DataController ownerController) async {
+    List<MissionStateModel> stateModelList =
+        await ownerController.downloadAll(dataTypeToGet: MissionStateModel());
+    for (var stateModel in stateModelList) {
+      if (stateModel.id != null && stateModelId == stateModel.id) {
+        return stateModel.id;
+      } else if (stateModel.stage != null &&
+          stage == stateModel.stage &&
+          stateModel.stateName != null &&
+          stateName == stateModel.stateName) {
+        return stateModel.id;
+      }
+    }
+    return null;
+  }
+
+  /// ### convert data from this instance to the type accepted for firestore
+  /// * ***DO NOT*** use this method in frontend
   @override
-  MissionModel fromFirestore(
+  Future<Map<String, dynamic>> toFirestore(
+      {required DataController ownerController}) async {
+    if (stateModelId == null && stage == null && stateName == null) {
+      setStateByStateModel(MissionStateModel.defaultProgressState);
+    }
+
+    String? stateModelCheckedId = await _checkIfStateExist(ownerController);
+    if (stateModelCheckedId == null) {
+      throw GroupingProjectException(
+          message: 'The state of this mission is not exist in the state model '
+              'pool for this entity. Please make sure assign a correct state.',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
+    }
+    return {
+      if (title != null) 'title': title,
+      if (deadline != null) 'deadline': Timestamp.fromDate(deadline!),
+      if (contributorIds != null) 'contributor_ids': contributorIds,
+      if (introduction != null) 'introduction': introduction,
+      'state_model_id': stateModelCheckedId,
+      if (tags != null) 'tags': tags,
+      if (parentMissionIds != null) 'parent_mission_ids': parentMissionIds,
+      if (childMissionIds != null) 'child_mission_ids': childMissionIds,
+      if (notifications != null)
+        'notifications': _toFirestoreTimeList(notifications!),
+    };
+  }
+
+  /// ### return an instance with data from firestore
+  /// * also seting attribute about owner if given
+  /// * ***DO NOT*** use this method in frontend
+  @override
+  Future<MissionModel> fromFirestore(
       {required String id,
       required Map<String, dynamic> data,
-      ProfileModel? ownerProfile}) {
-    // TODO: implement fromFirestore
-    throw UnimplementedError();
+      required DataController ownerController}) async {
+    List<MissionStateModel> stateModelList =
+        await ownerController.downloadAll(dataTypeToGet: MissionStateModel());
+    MissionStateModel? stateModelChecked;
+    for (var stateModel in stateModelList) {
+      if (stateModel.id != null && data['state_model_id'] == stateModel.id) {
+        stateModelChecked = stateModel;
+        break;
+      }
+    }
+    if (stateModelChecked == null) {
+      throw GroupingProjectException(
+          message: 'The state of this mission record in database is not exist '
+              'in the state model pool for this entity. This is not suppose '
+              'to happend, please contact developer.',
+          code: GroupingProjectExceptionCode.notExistInDatabase,
+          stackTrace: StackTrace.current);
+    }
+    MissionModel processData = MissionModel(
+      id: id,
+      title: data['title'],
+      deadline: data['deadline'] != null
+          ? (data['deadline'] as Timestamp).toDate()
+          : null,
+      contributorIds: data['contributor_ids'] is Iterable
+          ? List.from(data['contributor_ids'])
+          : null,
+      introduction: data['introduction'],
+      stateModelId: stateModelChecked.id,
+      stage: stateModelChecked.stage,
+      stateName: stateModelChecked.stateName,
+      tags: data['tags'] is Iterable ? List.from(data['tags']) : null,
+      parentMissionIds: data['parent_mission_ids'] is Iterable
+          ? List.from(data['parent_mission_ids'])
+          : null,
+      childMissionIds: data['child_mission_ids'] is Iterable
+          ? List.from(data['child_mission_ids'])
+          : null,
+      notifications: data['notifications'] is Iterable
+          ? _fromFirestoreTimeList(List.from(data['notifications']))
+          : null,
+    );
+
+    processData._setOwner(await ownerController.download(
+        dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!));
+
+    return processData;
   }
 
-  @override
-  void setOwner(ProfileModel ownerProfile) {
-    // TODO: implement setOwner
+  /// set the data about owner for this instance
+  void _setOwner(ProfileModel ownerProfile) {
+    ownerName = ownerProfile.name ?? 'unknown';
+    color = ownerProfile.color ?? 0xFFFCBF49;
   }
-
-  // @override
-  // Future<MissionModel> fromFirestore(
-  //   QueryDocumentSnapshot<Map<String, dynamic>> snapshot,
-  //   SnapshotOptions? options,
-  // ) async {
-  //   final data = snapshot.data();
-
-  //   List<UserModel> fromFireContributors = [];
-  //   if (data['notifications'] is Iterable) {
-  //     for (String element in List.from(data['contributors'])) {
-  //       fromFireContributors.add(UserModel(uid: element));
-  //     }
-  //   }
-
-  //   List<DateTime> fromFireNotifications = [];
-  //   if (data['notifications'] is Iterable) {
-  //     for (Timestamp element in List.from(data['notifications'])) {
-  //       fromFireNotifications.add(element.toDate());
-  //     }
-  //   }
-
-  //   MissionModel processData = MissionModel(
-  //     id: snapshot.id,
-  //     title: data['title'],
-  //     startTime: data['start_time'].toDate(),
-  //     endTime: data['end_time'].toDate(),
-  //     contributors: fromFireContributors,
-  //     introduction: data['introduction'],
-  //     state: _convertMissionState(stateCode: data['state']),
-  //     tags: data['tags'] is Iterable ? List.from(data['tags']) : const [],
-  //     notifications: fromFireNotifications,
-  //   );
-
-  //   ProfileModel ownerProfile = await ProfileModel().get();
-  //   if (ownerProfile.name != null) {
-  //     processData.ownerName = ownerProfile.name as String;
-  //   }
-  //   if (ownerProfile.color != null) {
-  //     processData.color = ownerProfile.color as int;
-  //   }
-
-  //   return processData;
-  // }
-
-  // @override
-  // Map<String, dynamic> toFirestore() {
-  //   List<String> toFireContributors = [];
-  //   contributors?.forEach((element) {
-  //     toFireContributors.add(element.uid);
-  //   });
-
-  //   List<Timestamp> toFireNotifications = [];
-  //   notifications?.forEach((element) {
-  //     toFireNotifications.add(Timestamp.fromDate(element));
-  //   });
-
-  //   return {
-  //     if (title != null) "title": title,
-  //     if (startTime != null) "start_time": Timestamp.fromDate(startTime!),
-  //     if (endTime != null) "end_time": Timestamp.fromDate(endTime!),
-  //     if (contributors != null) "contributors": toFireContributors,
-  //     if (introduction != null) "introduction": introduction,
-  //     if (state != null) 'state': _convertMissionState(),
-  //     if (tags != null) "tags": tags,
-  //     if (notifications != null) "notifications": toFireNotifications,
-  //   };
-  // }
 }
