@@ -7,12 +7,13 @@ import 'package:grouping_project/exception.dart';
 
 import 'package:flutter/material.dart';
 
-/// ## to get any data from firebase, you need a DataController
+/// ## construct a `DataController` to communicate with firebase database
+/// * auto get current user id if not given group id
 class DataController {
   late bool _forUser;
   late String _ownerId;
 
-  /// ## construct a DataController to communicate with firebase database
+  /// ## construct a `DataController` to communicate with firebase database
   /// * auto get current user id if not given group id
   DataController({String? groupId}) {
     _forUser = (groupId == null);
@@ -24,7 +25,7 @@ class DataController {
   /// ------
   /// **Notice below :**
   /// * remember to use ***await*** in front of this method.
-  /// * if [uploadData.id] exist, would be updating the data
+  /// * if [uploadData.id] exist and not contain `'default'`, would be updating the data
   /// * throw exception if the database does not has the data of the id.
   Future<void> upload<T extends BaseDataModel<T>>(
       {required T uploadData}) async {
@@ -103,16 +104,17 @@ class DataController {
   /// ------
   /// **Notice below :**
   /// * remember to use ***await*** in front of this method.
-  /// * if you want to get ProfileModel, use `download()`.
+  /// * if this is a user controller, this method will auto get all the other
+  /// data in the specific type belong to the associate group of the user.
   Future<List<T>> downloadAll<T extends BaseDataModel<T>>(
       {required T dataTypeToGet}) async {
-    if (dataTypeToGet.runtimeType == ProfileModel) {
-      throw GroupingProjectException(
-          message: 'you are using downloadAll() method to get a ProfileModel, '
-              'please use download() instead.',
-          code: GroupingProjectExceptionCode.wrongParameter,
-          stackTrace: StackTrace.current);
-    }
+    // if (dataTypeToGet.runtimeType == ProfileModel) {
+    //   throw GroupingProjectException(
+    //       message: 'you are using downloadAll() method to get a ProfileModel, '
+    //           'please use download() instead.',
+    //       code: GroupingProjectExceptionCode.wrongParameter,
+    //       stackTrace: StackTrace.current);
+    // }
 
     List<T> dataList = [];
 
@@ -162,14 +164,21 @@ class DataController {
             collectionPath: '${removeData.databasePath}/${removeData.id}');
       }
     } else {
-      debugPrint('[Exception] data id should be pass');
-      throw Exception('[Exception] data id should be pass');
+      throw GroupingProjectException(
+          message: 'Data id should be pass in',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
     }
 
     return;
   }
 
-  Future<void> createUser(ProfileModel userProfile) async {
+  /// ## create user with the [userProfile] and current login user id
+  /// * [userProfile] : the new user profile
+  /// ------
+  /// **Notice below :**
+  /// - remember to use ***await*** in front of this method.
+  Future<void> createUser({required ProfileModel userProfile}) async {
     if (_forUser == false) {
       throw GroupingProjectException(
           message: 'You are using a controller for group to create user, '
@@ -185,9 +194,12 @@ class DataController {
     return;
   }
 
-  /// create a group from current user
-  /// return new group id
-  Future<String> createGroup(ProfileModel groupProfile) async {
+  /// ## create group from current user
+  /// * [groupProfile] : the new group profile
+  /// ------
+  /// **Notice below :**
+  /// - remember to use ***await*** in front of this method.
+  Future<String> createGroup({required ProfileModel groupProfile}) async {
     if (_forUser == false) {
       throw GroupingProjectException(
           message: 'You are using a controller for group to create group, '
@@ -205,10 +217,14 @@ class DataController {
     DataController groupController = DataController(groupId: groupId);
     groupProfile.addEntity(_ownerId);
     await groupController.upload(uploadData: groupProfile);
-    await groupController.upload(uploadData: MissionStateModel.defaultProgressState);
-    await groupController.upload(uploadData: MissionStateModel.defaultPendingState);
-    await groupController.upload(uploadData: MissionStateModel.defaultFinishState);
-    await groupController.upload(uploadData: MissionStateModel.defaultTimeOutState);
+    await groupController.upload(
+        uploadData: MissionStateModel.defaultProgressState);
+    await groupController.upload(
+        uploadData: MissionStateModel.defaultPendingState);
+    await groupController.upload(
+        uploadData: MissionStateModel.defaultFinishState);
+    await groupController.upload(
+        uploadData: MissionStateModel.defaultTimeOutState);
 
     return groupId;
   }
