@@ -15,16 +15,17 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
 
   void createNewTag(ProfileTag tag) {
     final ProfileModel profile = InheritedProfile.of(context)!.profile;
-    final List<ProfileTag>? tagTable = profile.tags;
+    // debugPrint(profile.runtimeType.toString());
+    final tagTable = profile.tags ?? [];
     InheritedProfile.of(context)!.updateProfile(
       profile.copyWith(
-        tags: tagTable!..add(tag),
+        tags: tagTable..add(tag),
       ),
     );
   }
 
   List<Widget> createToolBar() {
-    final tagTable = InheritedProfile.of(context)!.profile.tags;
+    final tagTable = InheritedProfile.of(context)!.profile.tags ?? [];
     final addButton = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: MaterialButton(
@@ -35,7 +36,7 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
           setState(() {
             editMode = false;
           });
-          if (tagTable!.length == 4) {
+          if (tagTable.length == 4) {
             setState(() {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -106,12 +107,12 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
         ),
       ),
     );
-    return tagTable!.isNotEmpty ? [addButton, editButton] : [addButton];
+    return tagTable.isNotEmpty ? [addButton, editButton] : [addButton];
   }
 
   @override
   Widget build(BuildContext context) {
-    final tagTable = InheritedProfile.of(context)!.profile.tags;
+    final tagTable = InheritedProfile.of(context)!.profile.tags ?? [];
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.max,
@@ -126,7 +127,7 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
         Flexible(
           child: ListView.builder(
               clipBehavior: Clip.hardEdge,
-              itemCount: tagTable!.length,
+              itemCount: tagTable.length,
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
                 return PersonalProileTagTextEditView(
@@ -462,13 +463,13 @@ class _PersonalProileTagTextEditViewState
 class ShakeWidget extends StatefulWidget {
   final Widget child;
 
-  ShakeWidget({required this.child});
+  const ShakeWidget({super.key, required this.child});
 
   @override
-  _ShakeWidgetState createState() => _ShakeWidgetState();
+  ShakeWidgetState createState() => ShakeWidgetState();
 }
 
-class _ShakeWidgetState extends State<ShakeWidget>
+class ShakeWidgetState extends State<ShakeWidget>
     with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;

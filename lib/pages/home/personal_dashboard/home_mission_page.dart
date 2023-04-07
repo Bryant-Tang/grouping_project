@@ -16,7 +16,7 @@ class MissionPageState extends State<MissionPage> {
   @override
   void initState() async{
     super.initState();
-    await showMissions();
+    // await showMissions();
   }
 
   @override
@@ -167,26 +167,27 @@ class MissionPageState extends State<MissionPage> {
   }
 }
 
-Future<void> showMissions() async {
-  var allDatas = await DataController().downloadAll(dataTypeToGet: MissionModel());
-  missionCards = [];
-  for (int index = 0; index < allDatas.length; index++) {
-    var mission = allDatas[index];
-    missionCards.add(const SizedBox(
-      height: 2,
-    ));
-    // MissionInformationShrink shrink = MissionInformationShrink(
-    //   group: mission.ownerName,
-    //   color: Color(mission.color),
-    //   contributors: mission.contributors ?? [],
-    //   title: mission.title ?? 'unknown',
-    //   descript: mission.introduction ?? 'unknown',
-    //   startTime: mission.startTime ?? DateTime(0),
-    //   endTime: mission.endTime ?? DateTime(0),
-    //   state: MissionState.inProgress,);
+// Future<void> showMissions() async {
+//   var allDatas = await DataController().downloadAll(dataTypeToGet: MissionModel());
+//   missionCards = [];
+//   for (int index = 0; index < allDatas.length; index++) {
+//     var mission = allDatas[index];
+//     missionCards.add(const SizedBox(
+//       height: 2,
+//     ));
+//     MissionInformationShrink shrink = MissionInformationShrink(
+//       group: mission.ownerName,
+//       color: Color(mission.color),
+//       contributors: mission.contributors ?? [],
+//       title: mission.title ?? 'unknown',
+//       descript: mission.introduction ?? 'unknown',
+//       startTime: mission.startTime ?? DateTime(0),
+//       endTime: mission.endTime ?? DateTime(0),
+//       state: MissionState.inProgress,);
 
-    // missionCards.add(
-    //   CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)
-    // );
-  }
-}
+
+//     missionCards.add(
+//       CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)
+//     );
+//   }
+// }

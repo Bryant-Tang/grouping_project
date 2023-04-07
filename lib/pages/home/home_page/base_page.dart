@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:grouping_project/exception.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
@@ -69,7 +70,19 @@ class _BasePageState extends State<BasePage> {
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
-            return Scaffold(body: NotFoundPage.fromError("ERROR"));
+            if (snapshot.error is GroupingProjectException) {
+              if ((snapshot.error as GroupingProjectException).code ==
+                  GroupingProjectExceptionCode.notExistInDatabase) {
+                DataController().createUser(userProfile: ProfileModel());
+                // TODO : 拿到第三方認證 Profile 後，將資料傳入 createProfile
+                setState(() {
+                  _dataFuture = refresh();
+                });
+              }
+              return Scaffold(body: NotFoundPage.fromError("ERROR"));
+            } else {
+              return Scaffold(body: NotFoundPage.fromError("ERROR"));
+            }
           } else {
             // data loaded successfully, build the widget tree here
             return InheritedProfile(
@@ -128,11 +141,11 @@ class _BasePageState extends State<BasePage> {
                       IconButton(
                           //temp remove async for quick test
                           onPressed: () async {
-                            _authService.signOut();
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()));
+                            _authService.signOut().then((value) =>
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginPage())));
                           },
                           icon:
                               const Icon(Icons.settings_accessibility_rounded)),

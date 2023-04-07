@@ -93,24 +93,24 @@ class AuthService {
   /// When logged in to a facebook-existed account
   /// This well login and link to current-login-method account
   Future<UserModel?> linkWithFacebook(AuthCredential credential) async {
-    try {
-      await facebookLogin(linkToGoogle: false).then((value) async {
-        if ((value != null) &&
-            (await FirebaseAuth.instance.fetchSignInMethodsForEmail(
-                        FirebaseAuth.instance.currentUser!.email!))
-                    .contains(credential.providerId) !=
-                true) {
-          debugPrint(
-              'This place should be false: ${(await FirebaseAuth.instance.fetchSignInMethodsForEmail(FirebaseAuth.instance.currentUser!.email!)).contains(credential.providerId)}');
-          await FirebaseAuth.instance.currentUser
-              ?.linkWithCredential(credential);
-        } else if (value != null) {
-          return value;
-        }
-      });
-    } catch (e) {
-      debugPrint('In the linking with facebook: ${e.toString()}');
-    }
+    // try {
+    //   await facebookLogin(linkToGoogle: false).then((value) async {
+    //     if ((value != null) &&
+    //         (await FirebaseAuth.instance.fetchSignInMethodsForEmail(
+    //                     FirebaseAuth.instance.currentUser!.email!))
+    //                 .contains(credential.providerId) !=
+    //             true) {
+    //       debugPrint(
+    //           'This place should be false: ${(await FirebaseAuth.instance.fetchSignInMethodsForEmail(FirebaseAuth.instance.currentUser!.email!)).contains(credential.providerId)}');
+    //       await FirebaseAuth.instance.currentUser
+    //           ?.linkWithCredential(credential);
+    //     } else if (value != null) {
+    //       return value;
+    //     }
+    //   });
+    // } catch (e) {
+    //   debugPrint('In the linking with facebook: ${e.toString()}');
+    // }
   }
 
   /// When logged in to a github-existed account
