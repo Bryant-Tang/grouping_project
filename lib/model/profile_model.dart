@@ -19,6 +19,7 @@ class ProfileTag {
 
 /// ## a data model for profile, either user or group
 /// * ***DO NOT*** pass or set id for ProfileModel
+/// * to upload/download, use `DataController`
 class ProfileModel extends BaseDataModel<ProfileModel>
     implements BaseStorageData {
   String? name;
@@ -31,6 +32,9 @@ class ProfileModel extends BaseDataModel<ProfileModel>
   io.File? photo;
   List<String>? associateEntityId;
 
+  /// ## a data model for profile, either user or group
+  /// * ***DO NOT*** pass or set id for ProfileModel
+  /// * to upload/download, use `DataController`
   ProfileModel(
       {this.name,
       this.email,
@@ -48,7 +52,7 @@ class ProfileModel extends BaseDataModel<ProfileModel>
           // setOwnerRequired: false
         );
 
-  // implement copyWith Method
+  /// ### A method to copy an instance from this instance, and change some data with given.
   ProfileModel copyWith({
     String? name,
     String? email,
@@ -148,16 +152,21 @@ class ProfileModel extends BaseDataModel<ProfileModel>
     return processData;
   }
 
+  /// ### collect the data in this instance which need to upload to storage
+  /// * ***DO NOT*** use this method in frontend
   @override
   Map<String, io.File> toStorage() {
     return {if (photo != null) 'photo': photo!};
   }
 
+  /// ### set the data in this instance which need to downlaod from storage
+  /// * ***DO NOT*** use this method in frontend
   @override
   void setAttributeFromStorage({required Map<String, io.File> data}) {
     photo = data['photo'];
   }
 
+  /// ### add an associate entity id to this profile
   void addEntity(String id) {
     associateEntityId ??= [];
     if (associateEntityId?.contains(id) == false) {
@@ -165,6 +174,7 @@ class ProfileModel extends BaseDataModel<ProfileModel>
     }
   }
 
+  /// ### remove an associate entity id to this profile
   void removeEntity(String id) {
     if (associateEntityId?.contains(id) == true) {
       associateEntityId?.remove(id);

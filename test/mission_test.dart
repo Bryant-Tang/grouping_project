@@ -21,7 +21,7 @@ void main() async {
     userProfile = ProfileModel(name: 'test user', email: 'test@mail.com');
   }
 
-  await controller.createUser(userProfile);
+  await controller.createUser(userProfile: userProfile);
 
   MissionModel testUploadData = MissionModel(
       title: 'test event',

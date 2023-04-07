@@ -7,6 +7,8 @@ import 'package:grouping_project/exception.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 
+/// ## a data model for misison
+/// * to upload/download, use `DataController`
 class MissionModel extends BaseDataModel<MissionModel> {
   String? title;
   DateTime? deadline;
@@ -22,6 +24,11 @@ class MissionModel extends BaseDataModel<MissionModel> {
   String ownerName = 'unknown';
   int color = 0xFFFCBF49;
 
+  /// ## a data model for mission
+  /// * to upload/download, use `DataController`
+  /// -----
+  /// - recommend to pass state using [state]
+  /// - if [state] is not given, will then seek default state by [stage]
   MissionModel({
     super.id,
     this.title,
@@ -54,6 +61,8 @@ class MissionModel extends BaseDataModel<MissionModel> {
     }
   }
 
+  /// ### This is the perfered method to change state of mission
+  /// - please make sure the [stateModel] is a correct model in database
   void setStateByStateModel(MissionStateModel stateModel) {
     if (stateModel.stage == null || stateModel.stateName == null) {
       throw GroupingProjectException(
@@ -85,6 +94,7 @@ class MissionModel extends BaseDataModel<MissionModel> {
     return processList;
   }
 
+  /// check if the state of this instance is exist in the database
   Future<String?> _checkIfStateExist(DataController ownerController) async {
     List<MissionStateModel> stateModelList =
         await ownerController.downloadAll(dataTypeToGet: MissionStateModel());
@@ -101,6 +111,8 @@ class MissionModel extends BaseDataModel<MissionModel> {
     return null;
   }
 
+  /// ### convert data from this instance to the type accepted for firestore
+  /// * ***DO NOT*** use this method in frontend
   @override
   Future<Map<String, dynamic>> toFirestore(
       {required DataController ownerController}) async {
@@ -130,6 +142,9 @@ class MissionModel extends BaseDataModel<MissionModel> {
     };
   }
 
+  /// ### return an instance with data from firestore
+  /// * also seting attribute about owner if given
+  /// * ***DO NOT*** use this method in frontend
   @override
   Future<MissionModel> fromFirestore(
       {required String id,
@@ -183,6 +198,7 @@ class MissionModel extends BaseDataModel<MissionModel> {
     return processData;
   }
 
+  /// set the data about owner for this instance
   void _setOwner(ProfileModel ownerProfile) {
     ownerName = ownerProfile.name ?? 'unknown';
     color = ownerProfile.color ?? 0xFFFCBF49;

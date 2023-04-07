@@ -1,7 +1,9 @@
 import 'package:grouping_project/exception.dart';
 
+/// Stage of mission state
 enum MissionStage { progress, pending, close }
 
+/// convert `MissionStage` to `String`
 String stageToString(MissionStage stage) {
   if (stage == MissionStage.progress) {
     return 'progress';
@@ -18,6 +20,7 @@ String stageToString(MissionStage stage) {
       stackTrace: StackTrace.current);
 }
 
+/// convert `String` to `MissionStage`
 MissionStage? stringToStage(String stage) {
   if (stage == 'progress') {
     return MissionStage.progress;

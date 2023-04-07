@@ -2,19 +2,22 @@ import 'data_controller.dart';
 
 import 'dart:io' as io show File;
 
-/// ## a base class of every data in database, can only use as POLYMORPHISM
+/// ## a base class of every data in database, can only use as ***Polymorphism***
+/// every subclass should pass all follow attribute to this superclass
+/// * [id] : the id of this data
+/// * [databasePath] : the collection path of this type of data
+/// * [storageRequired] : whether this type of data need firebase storage
 abstract class BaseDataModel<T extends BaseDataModel<T>> {
   final String? id;
   String databasePath;
   bool storageRequired;
   // bool setOwnerRequired;
 
+  /// ## a base class of every data in database, can only use as ***Polymorphism***
   /// every subclass should pass all follow attribute to this superclass
   /// * [id] : the id of this data
   /// * [databasePath] : the collection path of this type of data
   /// * [storageRequired] : whether this type of data need firebase storage
-  /// * [setOwnerRequired] : whether this type of data need to set owner data
-  /// while downloading from firestore
   BaseDataModel({
     required this.id,
     required this.databasePath,
@@ -35,6 +38,7 @@ abstract class BaseDataModel<T extends BaseDataModel<T>> {
       required DataController ownerController});
 }
 
+/// ## a base class of every data in storage, can only be implement
 abstract class BaseStorageData {
   Map<String, io.File> toStorage();
   void setAttributeFromStorage({required Map<String, io.File> data});

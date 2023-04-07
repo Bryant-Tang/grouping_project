@@ -18,6 +18,8 @@ class EventModel extends BaseDataModel<EventModel> {
   String ownerName = 'unknown';
   int color = 0xFFFCBF49;
 
+  /// ## a data model for event
+  /// * to upload/download, use `DataController`
   EventModel(
       {super.id,
       this.title,

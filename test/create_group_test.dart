@@ -33,7 +33,7 @@ void main() async {
   print('creating a group ...');
   ProfileModel testProfie = ProfileModel(
       name: 'test user', email: 'test@mail.com', photo: File(image!.path));
-  String groupId = await DataController().createGroup(testProfie);
+  String groupId = await DataController().createGroup(groupProfile: testProfie);
   print('create group finish');
 
   print('downloading user and group profile ...');
