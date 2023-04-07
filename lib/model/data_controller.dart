@@ -1,3 +1,5 @@
+import 'package:grouping_project/model/mission_state_model.dart';
+
 import 'data_model.dart';
 import 'profile_model.dart';
 import 'package:grouping_project/service/service_lib.dart';
@@ -72,9 +74,8 @@ class DataController {
             .get(collectionPath: dataTypeToGet.databasePath, dataId: dataId);
 
     if (firestoreSnap.exists != true) {
-      debugPrint('[Exception] data does not exist');
       throw GroupingProjectException(
-          message: '[Exception] data does not exist',
+          message: 'Data does not exist in the database.',
           code: GroupingProjectExceptionCode.notExistInDatabase,
           stackTrace: StackTrace.current);
     } else {
@@ -109,7 +110,7 @@ class DataController {
       throw GroupingProjectException(
           message: 'you are using downloadAll() method to get a ProfileModel, '
               'please use download() instead.',
-          code: GroupingProjectExceptionCode.wrongConstructParameter,
+          code: GroupingProjectExceptionCode.wrongParameter,
           stackTrace: StackTrace.current);
     }
 
@@ -168,11 +169,31 @@ class DataController {
     return;
   }
 
+  Future<void> createUser(ProfileModel userProfile) async {
+    if (_forUser == false) {
+      throw GroupingProjectException(
+          message: 'You are using a controller for group to create user, '
+              'please make sure don\'t create entity from a group.',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
+    }
+    await upload(uploadData: userProfile);
+    await upload(uploadData: MissionStateModel.defaultProgressState);
+    await upload(uploadData: MissionStateModel.defaultPendingState);
+    await upload(uploadData: MissionStateModel.defaultFinishState);
+    await upload(uploadData: MissionStateModel.defaultTimeOutState);
+    return;
+  }
+
   /// create a group from current user
   /// return new group id
   Future<String> createGroup(ProfileModel groupProfile) async {
     if (_forUser == false) {
-      throw Exception('[Exception] trying to create group for group');
+      throw GroupingProjectException(
+          message: 'You are using a controller for group to create group, '
+              'please make sure don\'t create entity from a group.',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
     }
     String groupId = await FirestoreController.createGroup();
 
@@ -181,8 +202,13 @@ class DataController {
     userProfile.addEntity(groupId);
     await upload(uploadData: userProfile);
 
+    DataController groupController = DataController(groupId: groupId);
     groupProfile.addEntity(_ownerId);
-    await DataController(groupId: groupId).upload(uploadData: groupProfile);
+    await groupController.upload(uploadData: groupProfile);
+    await groupController.upload(uploadData: MissionStateModel.defaultProgressState);
+    await groupController.upload(uploadData: MissionStateModel.defaultPendingState);
+    await groupController.upload(uploadData: MissionStateModel.defaultFinishState);
+    await groupController.upload(uploadData: MissionStateModel.defaultTimeOutState);
 
     return groupId;
   }
