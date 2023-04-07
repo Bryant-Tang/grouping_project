@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/enlarge_fragment_body.dart';
-import 'package:grouping_project/components/card_view/enlarge_fragment_template.dart';
+import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/components/card_view/event_edit.dart';
 
-class EventInformationEnlarge extends StatelessWidget {
+class EventInformationEnlarge extends StatefulWidget {
   /// (未完成!!)
   /// 這個 class 實現了 event 放大時要展現的資訊
   /// 藉由創建時得到的資料來回傳一個 Container 回去
@@ -13,23 +14,29 @@ class EventInformationEnlarge extends StatelessWidget {
   final EventModel eventModel;
 
   @override
-  Widget build(BuildContext context) {
-    // String group = eventModel.ownerName;
-    // String title = eventModel.title ?? 'unknown';
-    // String descript = eventModel.introduction ?? 'unknown';
-    // DateTime startTime = eventModel.startTime ?? DateTime(0);
-    // DateTime endTime = eventModel.endTime ?? DateTime(0);
-    // List<String> contributorIds = eventModel.contributorIds ?? [];
-    // Color color = Color(eventModel.color);
-    // String eventId = eventModel.id!;
+  State<EventInformationEnlarge> createState() =>
+      _EventInformationEnlargeState();
+}
 
-    String group = 'personal';
-    String title = 'Test Title';
-    String descript = 'This is a test information text.';
-    DateTime startTime = DateTime(0);
-    DateTime endTime = DateTime.now().add(const Duration(days: 1));
-    List<String> contributorIds = [];
-    Color color = Colors.amber;
+class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
+  @override
+  Widget build(BuildContext context) {
+    String group = widget.eventModel.ownerName;
+    String title =  widget.eventModel.title ?? 'unknown';
+    String descript =  widget.eventModel.introduction ?? 'unknown';
+    DateTime startTime =  widget.eventModel.startTime ?? DateTime(0);
+    DateTime endTime =  widget.eventModel.endTime ?? DateTime(0);
+    List<String> contributorIds =  widget.eventModel.contributorIds ?? [];
+    Color color = Color( widget.eventModel.color);
+    String eventId =  widget.eventModel.id!;
+
+    // String group = 'personal';
+    // String title = 'Test Title';
+    // String descript = 'This is a test information text.';
+    // DateTime startTime = DateTime.now().subtract(const Duration(days: 1));
+    // DateTime endTime = DateTime.now().add(const Duration(days: 1));
+    // List<String> contributorIds = [];
+    // Color color = Colors.amber;
 
     return Container(
       width: MediaQuery.of(context).size.width - 30,
@@ -50,8 +57,14 @@ class EventInformationEnlarge extends StatelessWidget {
               Row(
                 children: [
                   IconButton(
-                      onPressed: () {
+                      onPressed: () async {
                         debugPrint('go to edit page');
+                        await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EventEditPage(
+                                    eventModel: widget.eventModel)));
+                        setState(() {});
                       },
                       icon: const Icon(
                         Icons.edit,
@@ -79,7 +92,11 @@ class EventInformationEnlarge extends StatelessWidget {
               endTime: endTime,
               group: group,
               color: color),
-          EnlargeObjectTemplate(title: '參與成員', contextOfTitle: Contributors(contributorIds: contributorIds,)),
+          EnlargeObjectTemplate(
+              title: '參與成員',
+              contextOfTitle: Contributors(
+                contributorIds: contributorIds,
+              )),
           const SizedBox(
             height: 1,
           ),

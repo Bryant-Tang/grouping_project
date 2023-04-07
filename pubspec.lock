@@ -113,6 +113,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  day_night_time_picker:
+    dependency: "direct main"
+    description:
+      name: day_night_time_picker
+      sha256: "24abed3bcac575fe67308eb1ef8161bbfb93fa4f9742da3e791ad143110d9b6a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0+2"
   extension_google_sign_in_as_googleapis_auth:
     dependency: "direct main"
     description:
@@ -677,6 +685,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  syncfusion_flutter_core:
+    dependency: transitive
+    description:
+      name: syncfusion_flutter_core
+      sha256: f23067e46b781d488abf8e22e5608ca9972b49562e95f9e46cb6134e968f721b
+      url: "https://pub.dev"
+    source: hosted
+    version: "21.1.37"
+  syncfusion_flutter_datepicker:
+    dependency: "direct main"
+    description:
+      name: syncfusion_flutter_datepicker
+      sha256: c9c0b90c10aec611266432fe34640fc6a46afe41cdeea39564d002f6c43daf91
+      url: "https://pub.dev"
+    source: hosted
+    version: "21.1.37"
   term_glyph:
     dependency: transitive
     description:
@@ -758,5 +782,5 @@ packages:
     source: hosted
     version: "6.2.2"
 sdks:
-  dart: ">=2.19.0 <3.0.0"
+  dart: ">=2.19.0 <4.0.0"
   flutter: ">=3.7.0-0"
