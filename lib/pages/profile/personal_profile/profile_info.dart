@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
-import 'package:grouping_project/model/profile_model.dart';
 import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
 
 class PerosonalProfileSetting extends StatefulWidget {
