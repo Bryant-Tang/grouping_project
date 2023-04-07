@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:googleapis/mybusinessbusinessinformation/v1.dart';
 import 'package:grouping_project/components/auth_view/headline_with_content.dart';
-import 'package:grouping_project/components/auth_view/input_box.dart';
 import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart';
 import 'package:grouping_project/model/data_controller.dart';
 import 'package:grouping_project/model/profile_model.dart';
@@ -93,7 +91,7 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
 
   void register() {
     // print out the group info
-    DataController().createGroup(profile).then((value) {
+    DataController().createGroup(groupProfile: profile).then((value) {
       debugPrint('$value 小組建立成功');
     }).catchError((error) {
       debugPrint(error.toString());

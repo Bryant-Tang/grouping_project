@@ -20,8 +20,7 @@ class ProfileTag {
 /// ## a data model for profile, either user or group
 /// * ***DO NOT*** pass or set id for ProfileModel
 /// * to upload/download, use `DataController`
-class ProfileModel extends BaseDataModel<ProfileModel>
-    implements BaseStorageData {
+class ProfileModel extends BaseDataModel<ProfileModel> implements BaseStorageData {
   String? name;
   String? email;
   int? color;
