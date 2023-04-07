@@ -30,38 +30,19 @@ void main() async {
   XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
   print('Pick image finish');
 
-  // await FirebaseStorage.instance
-  //     .ref('user_properties/yAsG52sqrwORStZAxxmIE3VMhuu2')
-  //     .child('profile/profile')
-  //     .putFile(File(image!.path));
-
-  // // final Directory systemTempDir = Directory.systemTemp;
-  // // final File tempFile = File(
-  // // '${systemTempDir.path}/grouping_project/user_properties/yAsG52sqrwORStZAxxmIE3VMhuu2/profile/profile');
-  // File processData = File(
-  //     '${(await getTemporaryDirectory()).path}/temp-yAsG52sqrwORStZAxxmIE3VMhuu2');
-  // print('path:${(await getTemporaryDirectory()).path}');
-  // try {
-  //   await FirebaseStorage.instance
-  //       .ref('user_properties/yAsG52sqrwORStZAxxmIE3VMhuu2')
-  //       .child('profile/profile')
-  //       .writeToFile(processData);
-  // } catch (e) {
-  //   print('!!!!!!$e!!!!!!');
-  // }
-
-  // print(processData.absolute);
-
-  print('Uploading test profile ...');
+  print('creating a group ...');
   ProfileModel testProfie = ProfileModel(
       name: 'test user', email: 'test@mail.com', photo: File(image!.path));
-  await DataController().upload(uploadData: testProfie);
-  print('Upload test profile finish');
+  String groupId = await DataController().createGroup(groupProfile: testProfie);
+  print('create group finish');
 
-  print('Downloading test profile ...');
-  var testData = await DataController()
+  print('downloading user and group profile ...');
+  ProfileModel userProfile = await DataController()
       .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!);
-  print('Download test profile finish');
+  ProfileModel groupProfile = await DataController(groupId: groupId)
+      .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!);
+  print('downlaodiing profile finish');
 
-  print('test profile photo exist : ${await testData.photo?.exists()}');
+  print('user profile associate entities: ${userProfile.associateEntityId}');
+  print('group profile associate entities: ${groupProfile.associateEntityId}');
 }

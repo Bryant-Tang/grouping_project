@@ -1,3 +1,4 @@
+import 'data_controller.dart';
 import 'data_model.dart';
 
 import 'dart:io' as io show File;
@@ -18,7 +19,9 @@ class ProfileTag {
 
 /// ## a data model for profile, either user or group
 /// * ***DO NOT*** pass or set id for ProfileModel
-class ProfileModel extends DataModel<ProfileModel> implements StorageData {
+/// * to upload/download, use `DataController`
+class ProfileModel extends BaseDataModel<ProfileModel>
+    implements BaseStorageData {
   String? name;
   String? email;
   int? color;
@@ -29,6 +32,9 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   io.File? photo;
   List<String>? associateEntityId;
 
+  /// ## a data model for profile, either user or group
+  /// * ***DO NOT*** pass or set id for ProfileModel
+  /// * to upload/download, use `DataController`
   ProfileModel(
       {this.name,
       this.email,
@@ -40,32 +46,35 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
       this.photo,
       this.associateEntityId})
       : super(
-            id: 'profile',
-            databasePath: 'profiles',
-            storageRequired: true,
-            setOwnerRequired: false);
+          id: 'profile_default',
+          databasePath: 'profiles',
+          storageRequired: true,
+          // setOwnerRequired: false
+        );
 
-  // implement copyWith Method
-  ProfileModel copyWith(
-      {String? name,
-      String? email,
-      int? color,
-      String? nickname,
-      String? slogan,
-      String? introduction,
-      List<ProfileTag>? tags,
-      io.File? photo,
-      List<String>? associateEntityId}) {
+  /// ### A method to copy an instance from this instance, and change some data with given.
+  ProfileModel copyWith({
+    String? name,
+    String? email,
+    int? color,
+    String? nickname,
+    String? slogan,
+    String? introduction,
+    List<ProfileTag>? tags,
+    io.File? photo,
+    List<String>? associateEntityId,
+  }) {
     return ProfileModel(
-        name: name ?? this.name,
-        email: email ?? this.email,
-        color: color ?? this.color,
-        nickname: nickname ?? this.nickname,
-        slogan: slogan ?? this.slogan,
-        introduction: introduction ?? this.introduction,
-        tags: tags ?? this.tags,
-        photo: photo ?? this.photo,
-        associateEntityId: associateEntityId ?? this.associateEntityId);
+      name: name ?? this.name,
+      email: email ?? this.email,
+      color: color ?? this.color,
+      nickname: nickname ?? this.nickname,
+      slogan: slogan ?? this.slogan,
+      introduction: introduction ?? this.introduction,
+      tags: tags ?? this.tags,
+      photo: photo ?? this.photo,
+      associateEntityId: associateEntityId ?? this.associateEntityId,
+    );
   }
 
   /// convert `List<ProfileTag>` to `List<String>` with `ProfileTag.tag`
@@ -102,7 +111,8 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   /// ### convert data from this instance to the type accepted for firestore
   /// * ***DO NOT*** use this method in frontend
   @override
-  Map<String, dynamic> toFirestore() {
+  Future<Map<String, dynamic>> toFirestore(
+      {required DataController ownerController}) async {
     return {
       if (name != null) 'name': name,
       if (email != null) 'email': email,
@@ -120,10 +130,10 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
   /// * also seting attribute about owner if given
   /// * ***DO NOT*** use this method in frontend
   @override
-  ProfileModel fromFirestore(
+  Future<ProfileModel> fromFirestore(
       {required String id,
       required Map<String, dynamic> data,
-      ProfileModel? ownerProfile}) {
+      required DataController ownerController}) async {
     ProfileModel processData = ProfileModel(
         name: data['name'],
         email: data['email'],
@@ -142,25 +152,35 @@ class ProfileModel extends DataModel<ProfileModel> implements StorageData {
     return processData;
   }
 
+  /// ### collect the data in this instance which need to upload to storage
+  /// * ***DO NOT*** use this method in frontend
   @override
   Map<String, io.File> toStorage() {
     return {if (photo != null) 'photo': photo!};
   }
 
+  /// ### set the data in this instance which need to downlaod from storage
+  /// * ***DO NOT*** use this method in frontend
   @override
   void setAttributeFromStorage({required Map<String, io.File> data}) {
     photo = data['photo'];
   }
 
+  /// ### add an associate entity id to this profile
   void addEntity(String id) {
+    associateEntityId ??= [];
     if (associateEntityId?.contains(id) == false) {
       associateEntityId?.add(id);
     }
   }
 
+  /// ### remove an associate entity id to this profile
   void removeEntity(String id) {
     if (associateEntityId?.contains(id) == true) {
       associateEntityId?.remove(id);
+    }
+    if (associateEntityId?.isEmpty == true) {
+      associateEntityId = null;
     }
   }
 }

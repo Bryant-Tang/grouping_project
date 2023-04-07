@@ -93,7 +93,7 @@ flutter:
   # example:
   assets:
     - assets/images/
-    - assets/icons/appBar/
+    - assets/icons/
 
   fonts:
      - family: NotoSansTC

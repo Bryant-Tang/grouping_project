@@ -10,6 +10,7 @@ import 'package:grouping_project/pages/templates/building.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
 import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
+import 'package:grouping_project/pages/templates/page_not_found.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 import 'package:grouping_project/pages/home/home_page/empty.dart';
@@ -23,6 +24,8 @@ class BasePage extends StatefulWidget {
 
 class _BasePageState extends State<BasePage> {
   late Future<void> _dataFuture;
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
   final _pageController = PageController();
   final _pages = const <Widget>[
     HomePage(),
@@ -37,7 +40,7 @@ class _BasePageState extends State<BasePage> {
   @override
   void initState() {
     super.initState();
-    _dataFuture = loadData();
+    _dataFuture = refresh();
   }
 
   @override
@@ -46,13 +49,16 @@ class _BasePageState extends State<BasePage> {
     super.dispose();
   }
 
-  Future<void> loadData() async {
+  Future<void> refresh() async {
     await DataController()
         .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
         .then((value) {
       setState(() {
         profile = value;
       });
+      debugPrint(profile.name);
+      debugPrint(profile.associateEntityId.toString());
+      // debugPrint all Profile data
     });
   }
 
@@ -63,25 +69,7 @@ class _BasePageState extends State<BasePage> {
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
-            return Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Error"),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()));
-                      },
-                      child: const Text("Log out"),
-                    ),
-                  ],
-                ),
-              ),
-            );
+            return Scaffold(body: NotFoundPage.fromError("ERROR"));
           } else {
             // data loaded successfully, build the widget tree here
             return InheritedProfile(
@@ -130,81 +118,7 @@ class _BasePageState extends State<BasePage> {
                                     topLeft: Radius.circular(20),
                                     topRight: Radius.circular(20))),
                             builder: (BuildContext context) {
-                              return Container(
-                                  clipBehavior: Clip.hardEdge,
-                                  margin: const EdgeInsets.fromLTRB(3, 3, 3, 0),
-                                  decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(20),
-                                          topRight: Radius.circular(20))),
-                                  constraints: const BoxConstraints(
-                                    maxHeight: 450,
-                                    minHeight: 180,
-                                  ),
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Container(
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          height: 12,
-                                          color: Colors.amber,
-                                        ),
-                                        const Padding(
-                                          padding: EdgeInsets.all(4.0),
-                                          child: Center(
-                                            child: Text(
-                                              'WOKSPACE',
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20),
-                                            ),
-                                          ),
-                                        ),
-                                        const Divider(
-                                          height: 1,
-                                          thickness: 1,
-                                          indent: 20,
-                                          endIndent: 20,
-                                        ),
-                                        MaterialButton(
-                                            onPressed: () {
-                                              debugPrint(
-                                                  'create new work space');
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          CreateWorkspacePage()));
-                                            },
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: const [
-                                                Icon(
-                                                  size: 30,
-                                                  Icons.add_box_outlined,
-                                                  color: Colors.black,
-                                                ),
-                                                SizedBox(width: 10),
-                                                Text("創建新的工作小組",
-                                                    style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black))
-                                              ],
-                                            ))
-                                        ,
-                                        Column(
-                                          children: (profile.associateEntityId??[]).map((id) => Text(id)).toList(),
-                                        )
-                                      ]));
+                              return SwitchWorkSpaceSheet();
                             });
                       },
                     ),
@@ -257,6 +171,221 @@ class _BasePageState extends State<BasePage> {
               child: const Center(child: CircularProgressIndicator()));
         }
       },
+    );
+  }
+}
+
+class SwitchWorkSpaceSheet extends StatelessWidget {
+  // implement the switch work space sheet
+  final allGroupProfile = [
+    ProfileModel(
+        name: "服務學習課程",
+        color: 0xFF00417D,
+        introduction: "python 程式教育課程小組",
+        tags: ["#Python", "#程式基礎教育", "#工作"]
+            .map((t) => ProfileTag(tag: t, content: t))
+            .toList()),
+    ProfileModel(
+        name: "服務學習課程",
+        color: 0xFF993300,
+        introduction: "python 程式教育課程小組",
+        tags: ["#Python", "#程式基礎教育", "#工作"]
+            .map((t) => ProfileTag(tag: t, content: t))
+            .toList()),
+    ProfileModel(
+        name: "服務學習課程",
+        color: 0xFFFFB782,
+        introduction: "python 程式教育課程小組",
+        tags: ["#Python", "#程式基礎教育", "#工作"]
+            .map((t) => ProfileTag(tag: t, content: t))
+            .toList()),
+  ];
+  SwitchWorkSpaceSheet({Key? key}) : super(key: key);
+  // implement the switch work space sheet build method
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+          clipBehavior: Clip.hardEdge,
+          margin: const EdgeInsets.fromLTRB(3, 3, 3, 0),
+          decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 12,
+                  color: Colors.amber,
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Center(
+                    child: Text(
+                      'WOKSPACE',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                  ),
+                ),
+                const Divider(
+                  height: 1,
+                  thickness: 1,
+                  indent: 20,
+                  endIndent: 20,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    clipBehavior: Clip.hardEdge,
+                    itemBuilder: (context, index) {
+                      return GroupSwitcherView(
+                          groupProfile: allGroupProfile.elementAt(index));
+                    },
+                    itemCount: allGroupProfile.length,
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                  ),
+                ),
+                MaterialButton(
+                    onPressed: () {
+                      debugPrint('create new work space');
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const CreateWorkspacePage())).then((value) {
+                        // debugPrint(value.toString());
+                      });
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(
+                          size: 30,
+                          Icons.add_box_outlined,
+                          color: Colors.black,
+                        ),
+                        SizedBox(width: 10),
+                        Text("創建新的工作小組",
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black))
+                      ],
+                    )),
+              ])),
+    );
+  }
+}
+
+class GroupSwitcherView extends StatelessWidget {
+  final ProfileModel groupProfile;
+  const GroupSwitcherView({Key? key, required this.groupProfile})
+      : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      child: MaterialButton(
+        onPressed: () {
+          debugPrint('switch to ${groupProfile.name}');
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+            // implement shadow Border
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 7,
+                offset: const Offset(0, 3), // changes position of shadow
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundColor: Color(groupProfile.color ?? 0xFF00417D),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      // mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(groupProfile.name ?? "",
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text(
+                          groupProfile.introduction ?? "",
+                          style: const TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: (groupProfile.tags ?? [])
+                          .map((tag) => ColorTagChip(
+                              tagString: tag.tag,
+                              color: Color(groupProfile.color ?? 0xFF00417D)))
+                          .toList(),
+                    )
+                  ],
+                )
+              ]),
+        ),
+      ),
+    );
+  }
+}
+
+class ColorTagChip extends StatelessWidget {
+  const ColorTagChip(
+      {Key? key, required this.tagString, this.color = Colors.amber})
+      : super(key: key);
+  final Color color;
+  final String tagString;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 4, 6, 4),
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border.all(color: color.withOpacity(0.5), width: 1),
+            borderRadius: BorderRadius.circular(20),
+            color: color.withOpacity(0.1)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          child: Center(
+            child: Text(tagString,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: color, fontWeight: FontWeight.bold, fontSize: 10)),
+          ),
+        ),
+      ),
     );
   }
 }

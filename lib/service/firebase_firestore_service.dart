@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// ## a `FirestoreController` instance controll all things with firestore
+/// ## a `FirestoreController` instance controll all things with Firestore
 /// * an instance can controll all data of one user/group
 class FirestoreController {
   late DocumentReference ownerPath;
 
+  /// ## a `FirestoreController` instance controll all things with Firestore
+  /// * an instance can controll all data of one user/group
+  /// -----
   /// * [forUser] : whether this instance is going to controll data of a user or not
   /// * [ownerId] : the id of user/group this instance is going to controll
   FirestoreController({required bool forUser, required String ownerId}) {
@@ -13,6 +16,7 @@ class FirestoreController {
         .doc(ownerId);
   }
 
+  /// ### create a group with no data inside and return group id
   static Future<String> createGroup() async {
     return (await FirebaseFirestore.instance
             .collection('group_properties')

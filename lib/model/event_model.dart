@@ -1,3 +1,4 @@
+import 'data_controller.dart';
 import 'data_model.dart';
 import 'profile_model.dart';
 
@@ -5,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 
 /// ## a data model for event
 /// * to upload/download, use `DataController`
-class EventModel extends DataModel<EventModel> {
+class EventModel extends BaseDataModel<EventModel> {
   String? title;
   DateTime? startTime;
   DateTime? endTime;
@@ -17,6 +18,8 @@ class EventModel extends DataModel<EventModel> {
   String ownerName = 'unknown';
   int color = 0xFFFCBF49;
 
+  /// ## a data model for event
+  /// * to upload/download, use `DataController`
   EventModel(
       {super.id,
       this.title,
@@ -28,9 +31,10 @@ class EventModel extends DataModel<EventModel> {
       this.relatedMissionIds,
       this.notifications})
       : super(
-            databasePath: 'events',
-            storageRequired: false,
-            setOwnerRequired: true);
+          databasePath: 'events',
+          storageRequired: false,
+          // setOwnerRequired: true
+        );
 
   /// convert `List<DateTime>` to `List<Timestamp>`
   List<Timestamp> _toFirestoreTimeList(List<DateTime> dateTimeList) {
@@ -53,17 +57,18 @@ class EventModel extends DataModel<EventModel> {
   /// ### convert data from this instance to the type accepted for firestore
   /// * ***DO NOT*** use this method in frontend
   @override
-  Map<String, dynamic> toFirestore() {
+  Future<Map<String, dynamic>> toFirestore(
+      {required DataController ownerController}) async {
     return {
-      if (title != null) "title": title,
-      if (startTime != null) "start_time": Timestamp.fromDate(startTime!),
-      if (endTime != null) "end_time": Timestamp.fromDate(endTime!),
-      if (contributorIds != null) "contributor_ids": contributorIds,
-      if (introduction != null) "introduction": introduction,
-      if (tags != null) "tags": tags,
+      if (title != null) 'title': title,
+      if (startTime != null) 'start_time': Timestamp.fromDate(startTime!),
+      if (endTime != null) 'end_time': Timestamp.fromDate(endTime!),
+      if (contributorIds != null) 'contributor_ids': contributorIds,
+      if (introduction != null) 'introduction': introduction,
+      if (tags != null) 'tags': tags,
       if (relatedMissionIds != null) 'related_mission_ids': relatedMissionIds,
       if (notifications != null)
-        "notifications": _toFirestoreTimeList(notifications!),
+        'notifications': _toFirestoreTimeList(notifications!),
     };
   }
 
@@ -71,10 +76,10 @@ class EventModel extends DataModel<EventModel> {
   /// * also seting attribute about owner if given
   /// * ***DO NOT*** use this method in frontend
   @override
-  EventModel fromFirestore(
+  Future<EventModel> fromFirestore(
       {required String id,
       required Map<String, dynamic> data,
-      ProfileModel? ownerProfile}) {
+      required DataController ownerController}) async {
     EventModel processData = EventModel(
       id: id,
       title: data['title'],
@@ -97,7 +102,8 @@ class EventModel extends DataModel<EventModel> {
           : null,
     );
 
-    processData._setOwner(ownerProfile ?? ProfileModel());
+    processData._setOwner(await ownerController.download(
+        dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!));
 
     return processData;
   }
