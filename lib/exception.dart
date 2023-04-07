@@ -63,6 +63,9 @@ class GroupingProjectException implements Exception {
   }
 }
 
+/// A simple class to use as our exception code
+/// - not allow to be construct, use it as static
+/// - to add a code, add a `static const String` variable below
 class GroupingProjectExceptionCode {
   GroupingProjectExceptionCode._();
   static const String wrongParameter = 'wrong-parameter';
