@@ -33,26 +33,26 @@ class EventInformationShrink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // String group = eventModel.ownerName;
-    // String title = eventModel.title ?? 'unknown';
-    // String descript = eventModel.introduction ?? 'unknown';
-    // DateTime startTime = eventModel.startTime ?? DateTime(0);
-    // DateTime endTime = eventModel.endTime ?? DateTime(0);
-    // List<String> contributorIds = eventModel.contributorIds ?? [];
-    // Color color = Color(eventModel.color);
-    String group = 'personal';
-    String title = 'Test titel';
-    String descript = 'This is a information test';
-    DateTime startTime = DateTime(0);
-    DateTime endTime = DateTime.now();
-    List<String> contributorIds = [];
-    Color color = Colors.amber;
+    String group = eventModel.ownerName;
+    String title = eventModel.title ?? 'unknown';
+    String descript = eventModel.introduction ?? 'unknown';
+    DateTime startTime = eventModel.startTime ?? DateTime(0);
+    DateTime endTime = eventModel.endTime ?? DateTime(0);
+    List<String> contributorIds = eventModel.contributorIds ?? [];
+    Color color = Color(eventModel.color);
+    // String group = 'personal';
+    // String title = 'Test titel';
+    // String descript = 'This is a information test';
+    // DateTime startTime = DateTime(0);
+    // DateTime endTime = DateTime.now();
+    // List<String> contributorIds = [];
+    // Color color = Colors.amber;
 
     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
 
     return Container(
       width: MediaQuery.of(context).size.width - 30,
-      height: 84,
+      height: 100,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -71,7 +71,7 @@ class EventInformationShrink extends StatelessWidget {
             height: 1,
           ),
           Text(
-            descript,
+            descript.split('\n').length > 1 ? '${descript.split('\n')[0]}...' : descript,
             style: const TextStyle(fontSize: 13),
           ),
           const SizedBox(

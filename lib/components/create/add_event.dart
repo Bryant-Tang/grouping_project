@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/components/card_view/event_edit.dart';
 
-class AddEvent extends StatelessWidget {
+class AddEvent extends StatefulWidget {
   const AddEvent({super.key});
 
+  @override
+  State<AddEvent> createState() => _AddEventState();
+}
+
+class _AddEventState extends State<AddEvent> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(5),
-      onTap: () {
+      onTap: () async {
         debugPrint('create event');
+        await Navigator.push(context,
+            MaterialPageRoute(builder: ((context) => const EventEditPage())));
+        setState(() {});
       },
       splashFactory: InkRipple.splashFactory,
       child: Card(

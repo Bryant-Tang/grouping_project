@@ -4,7 +4,7 @@ import 'package:grouping_project/components/card_view/card_view_template.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/overview_choice.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/home_event_page.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/home_mission_page.dart';
 
 class OverView extends StatefulWidget {
@@ -16,6 +16,36 @@ class OverView extends StatefulWidget {
 
 class _OverViewState extends State<OverView> {
   int overViewIndex = 0;
+  late int eventNumbers = 0;
+
+  List<Widget> pages = [
+    const EventPage(),
+    ListView(
+      children: [
+        Container(
+          height: 100,
+          decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+        ),
+      ],
+    ),
+    ListView(
+      children: [
+        Container(
+          height: 100,
+          decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
+        ),
+      ],
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    DataController().downloadAll(dataTypeToGet: EventModel()).then((value) {
+      eventNumbers = value.length;
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +88,7 @@ class _OverViewState extends State<OverView> {
                             ? const Color(0xFFFCBF49)
                             : const Color(0XFFFFFDF9)),
                         totalNumber: Text(
-                          "10",
+                          eventNumbers.toString(),
                           style: TextStyle(
                             color: overViewIndex == 0
                                 ? const Color(0XFFFFFDF9)
@@ -168,36 +198,36 @@ class _OverViewState extends State<OverView> {
 }
 
 // 待確認是否應該是要將 listview 放在 container 裡面
-List<ListView> pages = [
+// List<Widget> pages = [
   // Expanded(child: ListView(children: const [EventPage()])),
   // Expanded(child: ListView(
   //   children: const [MissionPage()],
   // )),
-  ListView(
-    children: [
-      Container(
-        height: 100,
-        decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-      ),
-      CardViewTemplate(
-          detailShrink: EventInformationShrink(eventModel: EventModel()),
-          detailEnlarge: EventInformationEnlarge(eventModel: EventModel()))
-    ],
-  ),
-  ListView(
-    children: [
-      Container(
-        height: 100,
-        decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-      ),
-    ],
-  ),
-  ListView(
-    children: [
-      Container(
-        height: 100,
-        decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-      ),
-    ],
-  ),
-];
+  // ListView(
+  //   children: [
+  //     Container(
+  //       height: 100,
+  //       decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+  //     ),
+  //     const EventPage(),
+  //     // CardViewTemplate(detailShrink: EventInformationShrink(eventModel: EventModel()), detailEnlarge: EventInformationEnlarge(eventModel: EventModel()))
+  //   ],
+  // ),
+//   const EventPage(),
+//   ListView(
+//     children: [
+//       Container(
+//         height: 100,
+//         decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+//       ),
+//     ],
+//   ),
+//   ListView(
+//     children: [
+//       Container(
+//         height: 100,
+//         decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
+//       ),
+//     ],
+//   ),
+// ];
