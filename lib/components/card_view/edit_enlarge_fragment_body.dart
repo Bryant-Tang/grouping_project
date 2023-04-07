@@ -4,16 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 
-String diff(DateTime end) {
-  Duration difference = end.difference(DateTime.now());
-
-  int days = difference.inDays;
-  int hours = difference.inHours % 24;
-  int minutes = difference.inMinutes % 60;
-
-  return '剩餘 $days D $hours H $minutes M';
-}
-
 class AntiLabel extends StatelessWidget {
   /// 標籤反白的 group
 
@@ -41,8 +31,7 @@ class TitleDateOfEvent extends StatefulWidget {
       required this.color,
       required this.startTime,
       required this.endTime,
-      required this.callback
-      });
+      required this.callback});
 
   final TextEditingController titleController;
   final String group;
@@ -62,12 +51,18 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
   // final String group;
   // final Color color;
   // final TextEditingController titleController;
+  late DateTime start;
+  late DateTime end;
+
+  @override
+  void initState() {
+    super.initState();
+    start = widget.startTime;
+    end = widget.endTime;
+  }
 
   @override
   Widget build(BuildContext context) {
-    DateTime start = widget.startTime;
-    DateTime end = widget.endTime;
-
     void timePickerDialog(DateTime show, int state) {
       Time tmp = Time(hour: 0, minute: 0);
       Navigator.of(context).push(
@@ -78,6 +73,7 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
               if (state == 0) {
                 start = DateTime(
                     show.year, show.month, show.day, time.hour, time.minute);
+                // debugPrint(start.toString());
               } else if (state == 1) {
                 end = DateTime(
                     show.year, show.month, show.day, time.hour, time.minute);
@@ -112,47 +108,47 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
         Navigator.pop(context);
       });
     }
-    
-    void selectStartTime(){
+
+    void selectStartTime() {
       showDialog(
-        context: context,
-        builder: ((BuildContext context) {
-          return AlertDialog(
-            title: const Text('選擇時間'),
-            content: SizedBox(
-                width: 200,
-                height: 400,
-                child: SfDateRangePicker(
-                  // onSelectionChanged: _onSelected,
-                  onSubmit: startConfirmChange,
-                  onCancel: cancelChange,
-                  initialSelectedRange: PickerDateRange(
-                      DateTime.now(), DateTime.now()),
-                  showActionButtons: true,
-                )),
-          );
-        }));
+          context: context,
+          builder: ((BuildContext context) {
+            return AlertDialog(
+              title: const Text('選擇時間'),
+              content: SizedBox(
+                  width: 200,
+                  height: 400,
+                  child: SfDateRangePicker(
+                    // onSelectionChanged: _onSelected,
+                    onSubmit: startConfirmChange,
+                    onCancel: cancelChange,
+                    initialSelectedRange:
+                        PickerDateRange(DateTime.now(), DateTime.now()),
+                    showActionButtons: true,
+                  )),
+            );
+          }));
     }
 
-    void selectEndTime(){
+    void selectEndTime() {
       showDialog(
-        context: context,
-        builder: ((BuildContext context) {
-          return AlertDialog(
-            title: const Text('選擇時間'),
-            content: SizedBox(
-                width: 200,
-                height: 400,
-                child: SfDateRangePicker(
-                  // onSelectionChanged: _onSelected,
-                  onSubmit: endConfirmChange,
-                  onCancel: cancelChange,
-                  initialSelectedRange: PickerDateRange(
-                      DateTime.now(), DateTime.now()),
-                  showActionButtons: true,
-                )),
-          );
-        }));
+          context: context,
+          builder: ((BuildContext context) {
+            return AlertDialog(
+              title: const Text('選擇時間'),
+              content: SizedBox(
+                  width: 200,
+                  height: 400,
+                  child: SfDateRangePicker(
+                    // onSelectionChanged: _onSelected,
+                    onSubmit: endConfirmChange,
+                    onCancel: cancelChange,
+                    initialSelectedRange:
+                        PickerDateRange(DateTime.now(), DateTime.now()),
+                    showActionButtons: true,
+                  )),
+            );
+          }));
     }
 
     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
@@ -167,9 +163,19 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
         // ),
         TextField(
           controller: widget.titleController,
+          onChanged: (value) {
+            widget.titleController.text = value;
+            widget.titleController.selection = TextSelection.fromPosition(TextPosition(offset: value.length));
+            // setState(() {
+              
+            // });
+          },
           decoration: InputDecoration(
               hintText: '輸入標題',
-              errorText: widget.titleController.text.isEmpty ? '不可為空' : ''),
+              errorText: widget.titleController.text.isEmpty ? '不可為空' : null,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 2),
+              border: const OutlineInputBorder()),
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         Row(
@@ -179,7 +185,7 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
               child: Text(
                 parseDate.format(start),
                 style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ),
             Icon(
@@ -193,7 +199,7 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
               child: Text(
                 parseDate.format(end),
                 style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             )
           ],
@@ -225,7 +231,7 @@ class Contributors extends StatelessWidget {
     for (int i = 0; i < contributorIds.length; i++) {
       tmp.add(createHeadShot(contributorIds[i]));
     }
-    // only for test!!!!
+    // TODO: only for test!!!!
     if (tmp.isEmpty) {
       tmp.add(Container(
         height: 30,

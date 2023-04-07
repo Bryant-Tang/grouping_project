@@ -185,9 +185,8 @@ Future<void> showMissions() async {
       endTime: mission.endTime ?? DateTime(0),
       state: MissionState.inProgress,);
 
-
-    missionCards.add(
-      CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)
-    );
+    // missionCards.add(
+    //   CardViewTemplate(detailShrink: shrink, detailEnlarge: shrink)
+    // );
   }
 }

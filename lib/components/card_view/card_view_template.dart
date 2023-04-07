@@ -31,7 +31,7 @@ class CardViewTemplate extends StatelessWidget {
       {super.key, required this.detailShrink, required this.detailEnlarge});
 
   final StatelessWidget detailShrink;
-  final StatelessWidget detailEnlarge;
+  final StatefulWidget detailEnlarge;
 
   /// 隨機選擇使用的顏色
   final Color usingColor = randomColor[Random().nextInt(randomColor.length)];
@@ -127,7 +127,7 @@ class _shrink extends StatelessWidget {
 class _enlarge extends StatelessWidget {
   _enlarge({super.key, required this.detail, required this.usingColor});
 
-  final StatelessWidget detail;
+  final StatefulWidget detail;
   final Color usingColor;
 
   @override

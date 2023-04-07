@@ -9,11 +9,12 @@ class CreateButton extends StatefulWidget {
 }
 
 class _CreateButtonState extends State<CreateButton> {
-  final List<StatelessWidget> createsPng = const [
-    AddTopic(),
+  // TODO: make every widget to stateful widget
+  final List<Widget> createsPng = const [
+    AddTopic(), //not yet
     AddEvent(),
-    AddNote(),
-    AddMission()
+    AddNote(), //not yet
+    AddMission() //not yet
   ];
   @override
   Widget build(BuildContext context) {
