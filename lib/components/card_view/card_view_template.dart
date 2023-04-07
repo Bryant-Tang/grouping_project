@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:grouping_project/components/card_view/event_information.dart';
+
 List<Color> randomColor = const [
   /// 顏色固定用色碼
   Color(0xFFFCBF49),
@@ -26,12 +28,12 @@ List<Color> randomColor = const [
 //   State<CardViewTemplate> createState() => _CardViewTemplateState();
 // }
 
-class CardViewTemplate extends StatelessWidget {
-  CardViewTemplate(
+class EventCardViewTemplate extends StatelessWidget {
+  EventCardViewTemplate(
       {super.key, required this.detailShrink, required this.detailEnlarge});
 
-  final StatelessWidget detailShrink;
-  final StatelessWidget detailEnlarge;
+  final EventInformationShrink detailShrink;
+  final EventInformationEnlarge detailEnlarge;
 
   /// 隨機選擇使用的顏色
   final Color usingColor = randomColor[Random().nextInt(randomColor.length)];
@@ -56,7 +58,7 @@ class CardViewTemplate extends StatelessWidget {
                         detail: detailEnlarge, usingColor: usingColor)));
           },
           child: Hero(
-            tag: 'change',
+            tag: 'change${detailShrink.eventModel.id}',
             child: Material(
               type: MaterialType.transparency,
               child: _shrink(
@@ -77,7 +79,7 @@ class _shrink extends StatelessWidget {
       required this.usingColor,
       required this.height});
 
-  final StatelessWidget detail;
+  final EventInformationShrink detail;
   final Color usingColor;
 
   // height should vary according to detailed of differet card(Upcoming, mission, message)
@@ -127,7 +129,7 @@ class _shrink extends StatelessWidget {
 class _enlarge extends StatelessWidget {
   _enlarge({super.key, required this.detail, required this.usingColor});
 
-  final StatelessWidget detail;
+  final EventInformationEnlarge detail;
   final Color usingColor;
 
   @override
@@ -135,7 +137,7 @@ class _enlarge extends StatelessWidget {
     //debugPrint('it is enlarge');
     return Scaffold(
       body: Hero(
-        tag: 'change',
+        tag: 'change${detail.eventModel.id}',
         child: Material(
           type: MaterialType.transparency,
           child: Container(

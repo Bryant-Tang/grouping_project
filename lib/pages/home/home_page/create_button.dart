@@ -7,50 +7,55 @@ class CreateButton extends StatefulWidget {
   @override
   State<CreateButton> createState() => _CreateButtonState();
 }
+
 class _CreateButtonState extends State<CreateButton> {
-  final List<StatelessWidget> createsPng = const [
-    AddTopic(),
+  // TODO: make every widget to stateful widget
+  final List<Widget> createsPng = const [
+    AddTopic(), //not yet
     AddEvent(),
-    AddNote(),
-    AddMission()
+    AddNote(), //not yet
+    AddMission() //not yet
   ];
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-          width: 50,
-          height: 50,
-          child: FloatingActionButton(
-            onPressed: () {
-              showModalBottomSheet(
-                  context: context,
-                  barrierColor: Colors.black12,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20))),
-                  builder: (BuildContext context) {
-                    return SizedBox(
-                        height: 475,
-                        child: Column(children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width,
-                            height: 20,
-                            decoration: const BoxDecoration(
-                                color: Color(0xFFFFB782),
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20))),
-                          ),
-                          const SizedBox(
-                            height: 50,
-                            child: Center(
-                                child: Text(
-                              'Create',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20),
-                            )),
-                          ),
-                          SizedBox(
+        width: 50,
+        height: 50,
+        child: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                barrierColor: Colors.black12,
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20))),
+                builder: (BuildContext context) {
+                  return SizedBox(
+                      height: 460,
+                      child: Column(children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 20,
+                          decoration: const BoxDecoration(
+                              color: Color(0xFFFFB782),
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(20),
+                                  topRight: Radius.circular(20))),
+                        ),
+                        const SizedBox(
+                          height: 37,
+                          child: Center(
+                              child: Text(
+                            'Create',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          )),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          child: SizedBox(
                             width: MediaQuery.of(context).size.width,
                             height: 390,
                             child: GridView.builder(
@@ -61,15 +66,16 @@ class _CreateButtonState extends State<CreateButton> {
                                 itemBuilder: (context, index) {
                                   return createsPng[index];
                                 }),
-                          )
-                        ]));
-                  });
-            },
-            child: const Icon(
-              Icons.add,
-              color: Color(0xFFFFFFFF),
-              size: 30,
-            ),
-          ));
+                          ),
+                        ),
+                      ]));
+                });
+          },
+          child: const Icon(
+            Icons.add,
+            color: Color(0xFFFFFFFF),
+            size: 30,
+          ),
+        ));
   }
 }
