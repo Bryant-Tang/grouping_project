@@ -21,22 +21,22 @@ class EventInformationEnlarge extends StatefulWidget {
 class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
   @override
   Widget build(BuildContext context) {
-    // String group = eventModel.ownerName;
-    // String title = eventModel.title ?? 'unknown';
-    // String descript = eventModel.introduction ?? 'unknown';
-    // DateTime startTime = eventModel.startTime ?? DateTime(0);
-    // DateTime endTime = eventModel.endTime ?? DateTime(0);
-    // List<String> contributorIds = eventModel.contributorIds ?? [];
-    // Color color = Color(eventModel.color);
-    // String eventId = eventModel.id!;
+    String group = widget.eventModel.ownerName;
+    String title =  widget.eventModel.title ?? 'unknown';
+    String descript =  widget.eventModel.introduction ?? 'unknown';
+    DateTime startTime =  widget.eventModel.startTime ?? DateTime(0);
+    DateTime endTime =  widget.eventModel.endTime ?? DateTime(0);
+    List<String> contributorIds =  widget.eventModel.contributorIds ?? [];
+    Color color = Color( widget.eventModel.color);
+    String eventId =  widget.eventModel.id!;
 
-    String group = 'personal';
-    String title = 'Test Title';
-    String descript = 'This is a test information text.';
-    DateTime startTime = DateTime.now().subtract(const Duration(days: 1));
-    DateTime endTime = DateTime.now().add(const Duration(days: 1));
-    List<String> contributorIds = [];
-    Color color = Colors.amber;
+    // String group = 'personal';
+    // String title = 'Test Title';
+    // String descript = 'This is a test information text.';
+    // DateTime startTime = DateTime.now().subtract(const Duration(days: 1));
+    // DateTime endTime = DateTime.now().add(const Duration(days: 1));
+    // List<String> contributorIds = [];
+    // Color color = Colors.amber;
 
     return Container(
       width: MediaQuery.of(context).size.width - 30,

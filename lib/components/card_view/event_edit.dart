@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
@@ -89,6 +90,10 @@ class _EventEditPageState extends State<EventEditPage> {
       ));
     }
 
+    void removeEvent() async {
+      await DataController().remove(removeData: widget.eventModel!);
+    }
+
     return Scaffold(
       // body: Container(
       //   padding: const EdgeInsets.only(left: 10, top: 18),
@@ -110,11 +115,15 @@ class _EventEditPageState extends State<EventEditPage> {
                 Row(
                   children: [
                     IconButton(
-                        onPressed: () async {
+                        onPressed: () {
                           debugPrint('remove');
                           if (widget.eventModel != null) {
-                            await DataController()
-                                .remove(removeData: widget.eventModel!);
+                            removeEvent();
+                            // Navigator.pop(context);
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (_) => BasePage()),
+                                (route) => false);
                           } else {
                             showDialog(
                                 context: context,
@@ -141,7 +150,11 @@ class _EventEditPageState extends State<EventEditPage> {
                             else {
                               createEvent();
                             }
-                            Navigator.pop(context);
+                            // Navigator.pop(context);
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (_) => BasePage()),
+                                (route) => false);
                           } else {
                             debugPrint('error occur');
                           }
@@ -176,12 +189,14 @@ class _EventEditPageState extends State<EventEditPage> {
             EnlargeObjectTemplate(
               title: '敘述',
               contextOfTitle: TextField(
+                keyboardType: TextInputType.multiline,
+                maxLines: 10,
                 controller: descriptController,
                 onChanged: (value) {
                   descriptController.text = value;
                   descriptController.selection = TextSelection.fromPosition(
                       TextPosition(offset: value.length));
-                  debugPrint(descriptController.text);
+                  // debugPrint(descriptController.text);
                   setState(() {});
                 },
                 decoration: InputDecoration(

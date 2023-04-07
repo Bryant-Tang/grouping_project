@@ -18,7 +18,9 @@ class EventPageState extends State<EventPage> {
   @override
   void initState() {
     super.initState();
-    showEvents();
+    showEvents().then((value) => setState(
+          () {},
+        ));
   }
 
   @override
@@ -45,13 +47,13 @@ Future<void> showEvents() async {
   for (int index = 0; index < allDatas.length; index++) {
     var event = allDatas[index];
     eventCards.add(const SizedBox(
-      height: 2,
+      height: 10,
     ));
     EventInformationShrink shrink = EventInformationShrink(eventModel: event);
     EventInformationEnlarge enlarge =
         EventInformationEnlarge(eventModel: event);
 
-    eventCards
-        .add(CardViewTemplate(detailShrink: shrink, detailEnlarge: enlarge));
+    eventCards.add(
+        EventCardViewTemplate(detailShrink: shrink, detailEnlarge: enlarge));
   }
 }
