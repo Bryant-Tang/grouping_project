@@ -140,7 +140,7 @@ class _EmailFormState extends State<_EmailForm> {
     await authService
         .emailLogIn(userInputEmail, userInputPassword)
         .then((value) {
-      Navigator.push(
+      Navigator.pushReplacement(
           context,
           MaterialPageRoute(
               builder: (context) => const BasePage()));

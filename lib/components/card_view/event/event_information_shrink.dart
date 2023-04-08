@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/card_view/enlarge_fragment_body.dart';
+import 'package:grouping_project/components/card_view/enlarge_controller_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 
 import 'package:intl/intl.dart';
