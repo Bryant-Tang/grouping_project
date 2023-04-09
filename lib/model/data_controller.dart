@@ -136,7 +136,7 @@ class DataController {
     if (_forUser == true) {
       ProfileModel ownerProfile = await download(
           dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!);
-      for (var groupId in ownerProfile.associateEntityId ?? []) {
+      for (var groupId in ownerProfile.associateEntityId) {
         var dataListForGroup = await DataController(groupId: groupId)
             .downloadAll(dataTypeToGet: dataTypeToGet);
         dataList.addAll(dataListForGroup);

@@ -200,7 +200,7 @@ class MissionModel extends BaseDataModel<MissionModel> {
 
   /// set the data about owner for this instance
   void _setOwner(ProfileModel ownerProfile) {
-    ownerName = ownerProfile.name ?? 'unknown';
-    color = ownerProfile.color ?? 0xFFFCBF49;
+    ownerName = ownerProfile.name;
+    color = ownerProfile.color;
   }
 }

@@ -7,32 +7,58 @@ import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 /// ## a data model for event
 /// * to upload/download, use `DataController`
 class EventModel extends BaseDataModel<EventModel> {
-  String? title;
-  DateTime? startTime;
-  DateTime? endTime;
-  List<String>? contributorIds;
-  String? introduction;
-  List<String>? tags;
-  List<DateTime>? notifications;
-  List<String>? relatedMissionIds;
-  String ownerName = 'unknown';
-  int color = 0xFFFCBF49;
+  String title;
+  DateTime startTime;
+  DateTime endTime;
+  List<String> contributorIds;
+  String introduction;
+  List<String> tags;
+  List<DateTime> notifications;
+  List<String> relatedMissionIds;
+  String ownerName;
+  int color;
+
+  static final EventModel defaultEvent = EventModel._default();
+
+  EventModel._default()
+      : this.title = 'unknown',
+        this.startTime = DateTime(0),
+        this.endTime = DateTime(0),
+        this.contributorIds = [],
+        this.introduction = 'unknown',
+        this.tags = [],
+        this.relatedMissionIds = [],
+        this.notifications = [],
+        this.color = ProfileModel.defaultProfile.color,
+        this.ownerName = ProfileModel.defaultProfile.name,
+        super(id: null, databasePath: 'events', storageRequired: false);
 
   /// ## a data model for event
   /// * to upload/download, use `DataController`
   EventModel(
       {super.id,
-      this.title,
-      this.startTime,
-      this.endTime,
-      this.contributorIds,
-      this.introduction,
-      this.tags,
-      this.relatedMissionIds,
-      this.notifications})
-      : super(
-          databasePath: 'events',
-          storageRequired: false,
+      String? title,
+      DateTime? startTime,
+      DateTime? endTime,
+      List<String>? contributorIds,
+      String? introduction,
+      List<String>? tags,
+      List<String>? relatedMissionIds,
+      List<DateTime>? notifications})
+      : this.title = title ?? defaultEvent.title,
+        this.startTime = startTime ?? defaultEvent.startTime,
+        this.endTime = endTime ?? defaultEvent.endTime,
+        this.contributorIds = contributorIds ?? defaultEvent.contributorIds,
+        this.introduction = introduction ?? defaultEvent.introduction,
+        this.tags = tags ?? defaultEvent.tags,
+        this.relatedMissionIds =
+            relatedMissionIds ?? defaultEvent.relatedMissionIds,
+        this.notifications = notifications ?? defaultEvent.notifications,
+        this.color = defaultEvent.color,
+        this.ownerName = defaultEvent.ownerName,
+        super(
+          databasePath: defaultEvent.databasePath,
+          storageRequired: defaultEvent.storageRequired,
           // setOwnerRequired: true
         );
 
@@ -61,14 +87,14 @@ class EventModel extends BaseDataModel<EventModel> {
       {required DataController ownerController}) async {
     return {
       if (title != null) 'title': title,
-      if (startTime != null) 'start_time': Timestamp.fromDate(startTime!),
-      if (endTime != null) 'end_time': Timestamp.fromDate(endTime!),
+      if (startTime != null) 'start_time': Timestamp.fromDate(startTime),
+      if (endTime != null) 'end_time': Timestamp.fromDate(endTime),
       if (contributorIds != null) 'contributor_ids': contributorIds,
       if (introduction != null) 'introduction': introduction,
       if (tags != null) 'tags': tags,
       if (relatedMissionIds != null) 'related_mission_ids': relatedMissionIds,
       if (notifications != null)
-        'notifications': _toFirestoreTimeList(notifications!),
+        'notifications': _toFirestoreTimeList(notifications),
     };
   }
 
@@ -110,7 +136,7 @@ class EventModel extends BaseDataModel<EventModel> {
 
   /// set the data about owner for this instance
   void _setOwner(ProfileModel ownerProfile) {
-    ownerName = ownerProfile.name ?? 'unknown';
-    color = ownerProfile.color ?? 0xFFFCBF49;
+    ownerName = ownerProfile.name;
+    color = ownerProfile.color;
   }
 }

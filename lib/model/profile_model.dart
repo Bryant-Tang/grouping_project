@@ -2,6 +2,7 @@ import 'data_controller.dart';
 import 'data_model.dart';
 
 import 'dart:io' as io show File;
+import 'package:path_provider/path_provider.dart';
 
 /// ## the type for [ProfileModel.tags]
 /// * [tag] : the key for this tag
@@ -20,34 +21,82 @@ class ProfileTag {
 /// ## a data model for profile, either user or group
 /// * ***DO NOT*** pass or set id for ProfileModel
 /// * to upload/download, use `DataController`
-class ProfileModel extends BaseDataModel<ProfileModel> implements BaseStorageData {
-  String? name;
-  String? email;
-  int? color;
-  String? nickname;
-  String? slogan;
-  String? introduction;
-  List<ProfileTag>? tags;
-  io.File? photo;
-  List<String>? associateEntityId;
+class ProfileModel extends BaseDataModel<ProfileModel>
+    implements BaseStorageData {
+  String name;
+  String email;
+  int color;
+  String nickname;
+  String slogan;
+  String introduction;
+  List<ProfileTag> tags;
+  io.File photo;
+  List<String> associateEntityId;
+
+  /// default profile that all attribute is set to a default value
+  static final ProfileModel defaultProfile = ProfileModel._default();
+
+  /// default constructor, only for default profile
+  ProfileModel._default()
+      //ignore: unnecessary_this
+      : this.name = 'unknown',
+        //ignore: unnecessary_this
+        this.color = 0xFFFCBF49,
+        //ignore: unnecessary_this
+        this.email = 'unknown',
+        //ignore: unnecessary_this
+        this.nickname = 'unknown',
+        //ignore: unnecessary_this
+        this.slogan = 'unknown',
+        //ignore: unnecessary_this
+        this.introduction = 'unknown',
+        //ignore: unnecessary_this
+        this.tags = [],
+        //ignore: unnecessary_this
+        this.photo = io.File('../assets/images/profile_male.png'),
+        //ignore: unnecessary_this
+        this.associateEntityId = [],
+        super(
+            id: 'profile_default',
+            databasePath: 'profiles',
+            storageRequired: true);
 
   /// ## a data model for profile, either user or group
   /// * ***DO NOT*** pass or set id for ProfileModel
   /// * to upload/download, use `DataController`
   ProfileModel(
-      {this.name,
-      this.email,
-      this.color,
-      this.nickname,
-      this.slogan,
-      this.introduction,
-      this.tags,
-      this.photo,
-      this.associateEntityId})
-      : super(
-          id: 'profile_default',
-          databasePath: 'profiles',
-          storageRequired: true,
+      {String? name,
+      String? email,
+      int? color,
+      String? nickname,
+      String? slogan,
+      String? introduction,
+      List<ProfileTag>? tags,
+      io.File? photo,
+      List<String>? associateEntityId})
+      //ignore: unnecessary_this
+      : this.name = name ?? defaultProfile.name,
+        //ignore: unnecessary_this
+        this.email = email ?? defaultProfile.email,
+        //ignore: unnecessary_this
+        this.color = color ?? defaultProfile.color,
+        //ignore: unnecessary_this
+        this.nickname = nickname ?? defaultProfile.nickname,
+        //ignore: unnecessary_this
+        this.slogan = slogan ?? defaultProfile.slogan,
+        //ignore: unnecessary_this
+        this.introduction = introduction ?? defaultProfile.introduction,
+        //ignore: unnecessary_this
+        this.tags = tags ?? defaultProfile.tags,
+        //ignore: unnecessary_this
+        this.photo = photo ?? defaultProfile.photo,
+        //ignore: unnecessary_this
+        this.associateEntityId =
+            associateEntityId ?? defaultProfile.associateEntityId,
+        super(
+          id: defaultProfile.id,
+          databasePath: defaultProfile.databasePath,
+          storageRequired: defaultProfile.storageRequired,
           // setOwnerRequired: false
         );
 
@@ -63,7 +112,6 @@ class ProfileModel extends BaseDataModel<ProfileModel> implements BaseStorageDat
     io.File? photo,
     List<String>? associateEntityId,
   }) {
-    
     return ProfileModel(
       name: name ?? this.name,
       email: email ?? this.email,
@@ -114,15 +162,18 @@ class ProfileModel extends BaseDataModel<ProfileModel> implements BaseStorageDat
   Future<Map<String, dynamic>> toFirestore(
       {required DataController ownerController}) async {
     return {
-      if (name != null) 'name': name,
-      if (email != null) 'email': email,
-      if (color != null) 'color': color,
-      if (nickname != null) 'nickname': nickname,
-      if (slogan != null) 'slogan': slogan,
-      if (introduction != null) 'introduction': introduction,
-      if (tags != null) 'tags': _toFirestoreTag(tags!),
-      if (tags != null) 'tag_contents': _toFirestoreTagContent(tags!),
-      if (associateEntityId != null) 'associate_entity_id': associateEntityId,
+      if (name != defaultProfile.name) 'name': name,
+      if (email != defaultProfile.email) 'email': email,
+      if (color != defaultProfile.color) 'color': color,
+      if (nickname != defaultProfile.nickname) 'nickname': nickname,
+      if (slogan != defaultProfile.slogan) 'slogan': slogan,
+      if (introduction != defaultProfile.introduction)
+        'introduction': introduction,
+      if (tags != defaultProfile.tags) 'tags': _toFirestoreTag(tags),
+      if (tags != defaultProfile.tags)
+        'tag_contents': _toFirestoreTagContent(tags),
+      if (associateEntityId != defaultProfile.associateEntityId)
+        'associate_entity_id': associateEntityId,
     };
   }
 
@@ -135,19 +186,19 @@ class ProfileModel extends BaseDataModel<ProfileModel> implements BaseStorageDat
       required Map<String, dynamic> data,
       required DataController ownerController}) async {
     ProfileModel processData = ProfileModel(
-        name: data['name'],
-        email: data['email'],
-        color: data['color'],
-        nickname: data['nickname'],
-        slogan: data['slogan'],
-        introduction: data['introduction'],
+        name: data['name'] ?? defaultProfile.name,
+        email: data['email'] ?? defaultProfile.email,
+        color: data['color'] ?? defaultProfile.color,
+        nickname: data['nickname'] ?? defaultProfile.nickname,
+        slogan: data['slogan'] ?? defaultProfile.slogan,
+        introduction: data['introduction'] ?? defaultProfile.introduction,
         tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
             ? _fromFirestoreTags(
                 List.from(data['tags']), List.from(data['tag_contents']))
-            : null,
+            : defaultProfile.tags,
         associateEntityId: data['associate_entity_id'] is Iterable
             ? List.from(data['associate_entity_id'])
-            : null);
+            : defaultProfile.associateEntityId);
 
     return processData;
   }
@@ -156,31 +207,27 @@ class ProfileModel extends BaseDataModel<ProfileModel> implements BaseStorageDat
   /// * ***DO NOT*** use this method in frontend
   @override
   Map<String, io.File> toStorage() {
-    return {if (photo != null) 'photo': photo!};
+    return {if (photo != defaultProfile.photo) 'photo': photo};
   }
 
   /// ### set the data in this instance which need to downlaod from storage
   /// * ***DO NOT*** use this method in frontend
   @override
   void setAttributeFromStorage({required Map<String, io.File> data}) {
-    photo = data['photo'];
+    photo = data['photo'] ?? defaultProfile.photo;
   }
 
   /// ### add an associate entity id to this profile
   void addEntity(String id) {
-    associateEntityId ??= [];
-    if (associateEntityId?.contains(id) == false) {
-      associateEntityId?.add(id);
+    if (associateEntityId.contains(id) == false) {
+      associateEntityId.add(id);
     }
   }
 
   /// ### remove an associate entity id to this profile
   void removeEntity(String id) {
-    if (associateEntityId?.contains(id) == true) {
-      associateEntityId?.remove(id);
-    }
-    if (associateEntityId?.isEmpty == true) {
-      associateEntityId = null;
+    if (associateEntityId.contains(id) == true) {
+      associateEntityId.remove(id);
     }
   }
 }
