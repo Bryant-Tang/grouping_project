@@ -28,9 +28,17 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
             brightness: Brightness.light,
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.amber,
+              backgroundColor: Colors.white,),
             primarySwatch: Colors.amber,
-            // 將 NotoSansTC 設為 default font family
-            fontFamily: 'NotoSansTC'),
+            fontFamily: 'NotoSansTC',
+            useMaterial3: true,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            dividerColor: Colors.black26,
+            navigationBarTheme: const NavigationBarThemeData(
+              backgroundColor: Colors.white,
+            )),
         debugShowCheckedModeBanner: false,
         // 呼叫 home_page.dart
         home: const CoverPage()

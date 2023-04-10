@@ -11,72 +11,55 @@ class NavigationAppBar extends StatefulWidget {
   State<NavigationAppBar> createState() => _NavigationAppBarState();
 }
 
-class _NavigationAppBarState extends State<NavigationAppBar>{
+class _NavigationAppBarState extends State<NavigationAppBar> {
+  int currentPageIndex = 0;
+  // "assets/icons/appBar/home.svg"
+  final Color selectedColor = Colors.white;
+  final Color unselectedColor = Colors.black;
+  final homeSvgPath = "assets/icons/appBar/home.svg";
+  final calendarSvgPath = "assets/icons/appBar/calendar.svg";
+  final messagesPath = "assets/icons/appBar/messages1.svg";
+  final noteSvgPath = "assets/icons/appBar/note1.svg";
+  Widget getSelectedSvgIcon({required String path}) {
+    return SvgPicture.asset(path,
+        colorFilter: ColorFilter.mode(selectedColor, BlendMode.srcIn));
+  }
+
+  Widget getUnselectedSvgIcon({required String path}) {
+    return SvgPicture.asset(path,
+        colorFilter: ColorFilter.mode(unselectedColor, BlendMode.srcIn));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/appBar/home.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-                // color: Colors.grey,
-              ),
-              activeIcon: SvgPicture.asset(
-                "assets/icons/appBar/home.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                // color: Colors.black,
-              ),
-              label: 'Home'),
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/appBar/calendar.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-                // color: Colors.grey,
-              ),
-              activeIcon: SvgPicture.asset(
-                "assets/icons/appBar/calendar.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                // color: Colors.black,
-              ),
-              label: 'Calendar'),
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/appBar/messages1.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-                // color: Colors.grey,
-              ),
-              activeIcon: SvgPicture.asset(
-                "assets/icons/appBar/messages1.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                // color: Colors.black,
-              ),
-              label: 'Message'),
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/appBar/note1.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-                // color: Colors.grey,
-              ),
-              activeIcon: SvgPicture.asset(
-                "assets/icons/appBar/note1.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                // color: Colors.black,
-              ),
-              label: 'Note'),
-        ],
-        currentIndex: widget.currentIndex,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        onTap: widget.onTap);
+    return NavigationBar(
+      onDestinationSelected: (index) {
+        setState(() {
+          currentPageIndex = index;
+        });
+        widget.onTap(index);
+      },
+      selectedIndex: currentPageIndex,
+      destinations: [
+        NavigationDestination(
+          icon: getUnselectedSvgIcon(path: homeSvgPath),
+          selectedIcon: getSelectedSvgIcon(path: homeSvgPath),
+          // color: Colors.black,
+          label: 'Home',
+        ),
+        NavigationDestination(
+            icon: getUnselectedSvgIcon(path: calendarSvgPath),
+            selectedIcon: getSelectedSvgIcon(path: calendarSvgPath),
+            label: 'Calendar'),
+        NavigationDestination(
+            icon: getUnselectedSvgIcon(path: messagesPath),
+            selectedIcon: getSelectedSvgIcon(path: messagesPath),
+            label: 'Message'),
+        NavigationDestination(
+            icon: getUnselectedSvgIcon(path: noteSvgPath),
+            selectedIcon: getSelectedSvgIcon(path: noteSvgPath),
+            label: 'Note')
+      ],
+    );
   }
 }
