@@ -14,8 +14,6 @@ import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboar
 import 'package:grouping_project/pages/templates/page_not_found.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
-import 'package:grouping_project/pages/home/home_page/empty.dart';
-
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);
 
@@ -25,8 +23,6 @@ class BasePage extends StatefulWidget {
 
 class _BasePageState extends State<BasePage> {
   late Future<void> _dataFuture;
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
   final _pageController = PageController();
   final _pages = const <Widget>[
     HomePage(),
@@ -103,7 +99,7 @@ class _BasePageState extends State<BasePage> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             CircleAvatar(
-                              radius: 15,
+                              radius: 20,
                               backgroundImage: profile.photo != null
                                   ? Image.file(File(profile.photo!.path)).image
                                   : Image.asset(
@@ -114,7 +110,7 @@ class _BasePageState extends State<BasePage> {
                               width: 10,
                             ),
                             Text(
-                              "${profile.nickname ?? "Unknown"} 的個人工作區",
+                              profile.nickname ?? "Unknown",
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
@@ -135,9 +131,24 @@ class _BasePageState extends State<BasePage> {
                             });
                       },
                     ),
-                    backgroundColor: Colors.white,
                     automaticallyImplyLeading: false,
                     actions: [
+                      IconButton(
+                          //temp remove async for quick test
+                          onPressed: () {
+                            Brightness b = Theme.of(context).brightness;
+                            final ValueNotifier<Brightness> _notifier =
+                                ValueNotifier(b == Brightness.light
+                                    ? Brightness.dark
+                                    : Brightness.light);
+                            setState(() {
+                              // ThemeBuilder.of(context).changeTheme()
+                            });
+                          },
+                          icon: Icon(
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Icons.wb_sunny
+                                  : Icons.nightlight_round)),
                       IconButton(
                           //temp remove async for quick test
                           onPressed: () async {
@@ -163,8 +174,7 @@ class _BasePageState extends State<BasePage> {
                   ),
                   extendBody: true,
                   floatingActionButton: const CreateButton(),
-                  floatingActionButtonLocation:
-                      FloatingActionButtonLocation.centerDocked,
+                  // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
                   bottomNavigationBar: NavigationAppBar(
                       currentIndex: _currentPageIndex,
                       onTap: (index) {

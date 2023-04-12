@@ -2,77 +2,69 @@ import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/pages/auth/user.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   LoginPage({Key? key}) : super(key: key);
-  final headLineText = "登入";
-  final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
-  final buttonUI = {
-    "Google": {"fileName": "google.png", "name": "google"},
-    "Github": {"fileName": "github.png", "name": "github"},
-    "Facebook": {"fileName": "facebook.png", "name": "facebook"}
-  };
-  List<Widget> buttonBuilder(BuildContext context) {
-    List<Widget> authButtonList = [];
-    for (dynamic button in buttonUI.values) {
-      authButtonList.add(AuthButton(
-          fileName: button["fileName"],
-          name: button["name"],
-          onPressed: () async {
-            AuthService authService = AuthService();
-            await authService.thridPartyLogin(button["name"]).then((value) {
-              if (value != null) {
-                // debugPrint("${value.uid}\n");
-                // DataController d = DataController();
-                // d.download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!).onError((error, stackTrace){
-                //   // if(error is ){
-                //     Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => RecommendPage(forward: () {  },)));
-                //   // }
-                // });
-                // TODO: check if user has profile
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const BasePage()));
-              }
-            });
-          }));
-    }
-    return authButtonList;
-  }
 
-  @override
-  State<LoginPage> createState() => _LogInState();
-}
-
-class _LogInState extends State<LoginPage> {
   final AuthService authService = AuthService();
+
+  final headLineText = "登入";
+
+  final content = "已經辦理過 Grouping 帳號了嗎？\n連結其他帳號來取用 Grouping 的服務";
+
+  // TODO: Change auth button icon
+
+  final List<String> authButtonNameList = [
+    "google",
+    "github",
+    "facebook",
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       body: Container(
-        padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0,0.0),
+        padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0, 0.0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              HeadlineWithContent(
-                  headLineText: widget.headLineText, content: widget.content),
+              HeadlineWithContent(headLineText: headLineText, content: content),
               const SizedBox(height: 50),
               _EmailForm(),
               const SizedBox(height: 50),
               const HintTextWithLine(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
-                child: Column(children: widget.buttonBuilder(context)),
+                child: Column(
+                  children: authButtonNameList
+                      .map((name) => AuthButton(
+                          fileName: "$name.png",
+                          name: name,
+                          onPressed: () async {
+                            AuthService authService = AuthService();
+                            await authService
+                                .thridPartyLogin(name)
+                                .then((value) {
+                              if (value != null) {
+                                // TODO: check if user has profile
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const BasePage()));
+                              }
+                            });
+                          }))
+                      .toList(),
+                ),
               )
             ],
           ),
@@ -141,9 +133,7 @@ class _EmailFormState extends State<_EmailForm> {
         .emailLogIn(userInputEmail, userInputPassword)
         .then((value) {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const BasePage()));
+          context, MaterialPageRoute(builder: (context) => const BasePage()));
     }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {
@@ -198,18 +188,22 @@ class _EmailFormState extends State<_EmailForm> {
           passwordInputBox,
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-            child: MaterialButton(
+            child: ElevatedButton(
               onPressed: _onPress,
-              color: Colors.amber,
-              shape: const RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.amber, width: 2),
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
-              child: const Text(
-                "Continue with email",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.inverseSurface,
+              ),
+
+              // color: Colors.amber,
+              // shape: const RoundedRectangleBorder(
+              //     side: BorderSide(width: 2),
+              //     borderRadius: BorderRadius.all(Radius.circular(20))),
+              child: Text(
+                "用此信箱登入",
+                style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onInverseSurface,
+                    ),
               ),
             ),
           )
@@ -234,31 +228,35 @@ class AuthButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-      child: MaterialButton(
+      child: ElevatedButton(
           onPressed: () {
             onPressed();
           },
-          color: Colors.white,
-          shape: const RoundedRectangleBorder(
-              side: BorderSide(color: Colors.grey, width: 2),
-              borderRadius: BorderRadius.all(Radius.circular(40))),
+          style: ElevatedButton.styleFrom(
+            // foregroundColor: Theme.of(context).primaryColor,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Image.asset("assets/images/$fileName"),
-                const SizedBox(width: 10),
-                Text(
-                  "${name.toUpperCase()} 帳號登入",
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold),
-                ),
-              ],
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Image.asset(
+                    "assets/icons/authIcon/$fileName",
+                    width: 30,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "${name.toUpperCase()} 帳號登入",
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface),
+                  ),
+                ],
+              ),
             ),
           )),
     );
@@ -274,43 +272,26 @@ class HintTextWithLine extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Expanded(
-          flex: 2,
-          child: Container(
-            height: 2,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: const Color(0xff707070),
-                width: 1,
-              ),
-            ),
-          ),
-        ),
         const Expanded(
-          flex: 3,
-          child: Text(
-            "連接其他帳號",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(0xff707070),
-              fontSize: 14,
-              fontFamily: "Noto Sans TC",
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
+            flex: 2,
+            child: Divider(
+              thickness: 4,
+            )),
         Expanded(
-          flex: 2,
-          child: Container(
-            height: 2,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: const Color(0xff707070),
-                width: 1,
-              ),
-            ),
-          ),
-        ),
+            flex: 3,
+            child: Text(
+              "連接其他帳號",
+              textAlign: TextAlign.center,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(fontWeight: FontWeight.bold),
+            )),
+        const Expanded(
+            flex: 2,
+            child: Divider(
+              thickness: 4,
+            )),
       ],
     );
   }

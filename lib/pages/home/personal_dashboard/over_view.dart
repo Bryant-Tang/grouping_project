@@ -10,7 +10,7 @@ import 'package:grouping_project/pages/home/personal_dashboard/personal_event_pa
 import 'package:grouping_project/pages/home/personal_dashboard/home_mission_page.dart';
 
 class OverView extends StatefulWidget {
-  OverView({super.key});
+  const OverView({super.key});
 
   @override
   State<OverView> createState() => _OverViewState();

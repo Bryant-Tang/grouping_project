@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
 import 'package:grouping_project/pages/templates/building.dart';
+import 'package:grouping_project/theme/color_schemes.dart';
 // import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 import 'firebase_options.dart';
 
@@ -25,26 +26,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
         theme: ThemeData(
-            brightness: Brightness.light,
-            colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: Colors.amber,
-              backgroundColor: Colors.white,),
-            primarySwatch: Colors.amber,
-            fontFamily: 'NotoSansTC',
-            useMaterial3: true,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            dividerColor: Colors.black26,
-            navigationBarTheme: const NavigationBarThemeData(
-              backgroundColor: Colors.white,
-            )),
+          brightness: Brightness.light,
+          useMaterial3: true,
+          // primarySwatch: Colors.amber,
+          colorSchemeSeed: Colors.amber,
+          fontFamily: 'NotoSansTC',
+          // colorScheme: lightColorScheme
+        ),
+        // darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+        // themeMode: ThemeMode.dark,
         debugShowCheckedModeBanner: false,
         // 呼叫 home_page.dart
-        home: const CoverPage()
-        // NotFoundPage.fromError("errorMessage"),
-        // home: EditPersonalProfilePage(),
-        // home: const BuildingPage(errorMessage: "測試頁面",),
-        );
+        home: const CoverPage());
   }
 }

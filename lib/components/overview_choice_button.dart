@@ -23,14 +23,22 @@ class OverViewChoiceButton extends StatefulWidget {
 }
 
 class _OverViewChoiceButtonState extends State<OverViewChoiceButton> {
-  final Color labelColor = const Color(0XFF5C5C5C);
-  final Color iconColor = const Color(0XFF5C5C5C);
-  final Color numberColor = const Color(0XFFFCBF49);
-  final Color backgroundColor = const Color(0XFFFFFDF9);
-  final Color selectedLabelColor = const Color(0XFFFFFDF9);
-  final Color selectedIconColor = const Color(0XFFFFFDF9);
-  final Color selectedNumberColor = const Color(0XFFFFFDF9);
-  final Color selectedBackgroundColor = const Color(0XFFFCBF49);
+  Color getTextColor(BuildContext context) {
+    return widget.isSelected 
+      ? Theme.of(context).colorScheme.onPrimaryContainer 
+      : Theme.of(context).colorScheme.onSecondaryContainer;
+  }
+  Color getBackgroundColor(BuildContext context) {
+    return widget.isSelected
+        ? Theme.of(context).colorScheme.primaryContainer
+        : Theme.of(context).colorScheme.surface;
+  }
+  Color getNumberColor(BuildContext context) {
+    return widget.isSelected
+        ? Theme.of(context).colorScheme.onPrimaryContainer
+        : Theme.of(context).colorScheme.primaryContainer;
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -38,16 +46,14 @@ class _OverViewChoiceButtonState extends State<OverViewChoiceButton> {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color:
-                widget.isSelected ? selectedBackgroundColor : backgroundColor,
+            color: getBackgroundColor(context),
             boxShadow: [
               BoxShadow(
                   color: const Color(0XFF000000).withOpacity(0.25),
                   offset: const Offset(0, 4),
                   blurRadius: 4,
                   spreadRadius: 0)
-            ]
-        ),
+            ]),
         padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -57,15 +63,16 @@ class _OverViewChoiceButtonState extends State<OverViewChoiceButton> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SvgPicture.asset(widget.iconPath, width: 25, height: 25,
+                SvgPicture.asset(widget.iconPath,
+                    width: 25,
+                    height: 25,
                     colorFilter: ColorFilter.mode(
-                        widget.isSelected ? selectedIconColor : iconColor,
+                        getTextColor(context),
                         BlendMode.srcIn)),
                 Text(
                   widget.numberText.toString(),
                   style: TextStyle(
-                      color:
-                          widget.isSelected ? selectedNumberColor : numberColor,
+                      color: getNumberColor(context),
                       fontSize: MediaQuery.of(context).size.width / 14,
                       fontWeight: FontWeight.bold),
                 ),
@@ -74,7 +81,7 @@ class _OverViewChoiceButtonState extends State<OverViewChoiceButton> {
             Text(
               widget.labelText,
               style: TextStyle(
-                  color: widget.isSelected ? selectedLabelColor : labelColor,
+                  color: getTextColor(context),
                   fontSize: MediaQuery.of(context).size.width / 30,
                   fontWeight: FontWeight.bold),
             )
