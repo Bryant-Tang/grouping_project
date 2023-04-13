@@ -1,3 +1,4 @@
+import 'package:grouping_project/ViewModel/ThemeViewModel.dart';
 import 'package:grouping_project/pages/auth/cover.dart';
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
 import 'package:grouping_project/pages/templates/building.dart';
 import 'package:grouping_project/theme/color_schemes.dart';
+import 'package:provider/provider.dart';
 // import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 import 'firebase_options.dart';
 
@@ -25,19 +27,24 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: ThemeData(
-          brightness: Brightness.light,
-          useMaterial3: true,
-          // primarySwatch: Colors.amber,
-          colorSchemeSeed: Colors.amber,
-          fontFamily: 'NotoSansTC',
-          // colorScheme: lightColorScheme
-        ),
-        // darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-        // themeMode: ThemeMode.dark,
-        debugShowCheckedModeBanner: false,
-        // 呼叫 home_page.dart
-        home: const CoverPage());
+    return ChangeNotifierProvider<ThemeManager>(
+      create: (_) => ThemeManager(),
+      child: Consumer<ThemeManager>(
+        builder: (context, themeManager, child) => MaterialApp(
+            theme: ThemeData(
+              brightness: themeManager.brightness,
+              useMaterial3: true,
+              // primarySwatch: Colors.amber,
+              colorSchemeSeed: Colors.amber,
+              fontFamily: 'NotoSansTC',
+              // colorScheme: lightColorScheme
+            ),
+            // darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+            // themeMode: ThemeMode.dark,
+            debugShowCheckedModeBanner: false,
+            // 呼叫 home_page.dart
+            home: const CoverPage()),
+      ),
+    );
   }
 }
