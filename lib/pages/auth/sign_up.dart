@@ -64,7 +64,7 @@ class _SignUpPageState extends State<SignUpPage> {
         backward: backward,
       ),
       RecommendPage(forward: () {
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const BasePage()));
       })
     ];
@@ -107,9 +107,8 @@ class _SignUpPageState extends State<SignUpPage> {
             .createUser(userProfile: user)
             .then((value) => {debugPrint('upload successfully')})
             .catchError((error) {
-              debugPrint(error.toString());
-            }
-        );
+          debugPrint(error.toString());
+        });
         forward();
       }
     }).catchError((error) {
@@ -414,7 +413,7 @@ class _RecommendPageState extends State<RecommendPage> {
                       .then((value) => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  EditPersonalProfilePage(
+                              builder: (context) => EditPersonalProfilePage(
                                     profile: value,
                                   ))));
                 },
@@ -465,7 +464,7 @@ class _RecommendPageState extends State<RecommendPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const BuildingPage(

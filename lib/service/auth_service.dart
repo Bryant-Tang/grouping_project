@@ -60,6 +60,7 @@ class AuthService {
     // debugPrint(
     //     '${user.displayName} ${user.providerData[0].email} ${user.photoURL}');
     return ProfileModel(
+        name: user.displayName,
         nickname: user.displayName,
         email: user.providerData[0].email,
         photo: photoFile);
