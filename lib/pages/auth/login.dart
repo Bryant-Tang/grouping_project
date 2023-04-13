@@ -5,8 +5,13 @@ import 'package:grouping_project/pages/auth/user.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
-import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:math';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -36,7 +41,7 @@ class LoginPage extends StatefulWidget {
                 //   // }
                 // });
                 // TODO: check if user has profile
-                Navigator.push(context,
+                Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => const BasePage()));
               }
             });
@@ -58,7 +63,7 @@ class _LogInState extends State<LoginPage> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.white,
       body: Container(
-        padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0,0.0),
+        padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0, 0.0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -140,10 +145,8 @@ class _EmailFormState extends State<_EmailForm> {
     await authService
         .emailLogIn(userInputEmail, userInputPassword)
         .then((value) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const BasePage()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const BasePage()));
     }).catchError((error) {
       // debugPrint(error.toString());
       switch (error.code) {

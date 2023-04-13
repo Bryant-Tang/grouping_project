@@ -1,3 +1,5 @@
+import 'package:grouping_project/model/data_controller.dart';
+import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/user_model.dart';
 
 import 'dart:io';
@@ -6,6 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 
 /// For all auth service, you need an AuthService instance
 ///
@@ -20,7 +24,7 @@ class AuthService {
         .map((User? user) => _userModelFromAuth(user));
   }
 
-  /// Change Auth User into UserModel
+  /// return custom user model, only for backend
   UserModel? _userModelFromAuth(User? user) {
     if (user != null) {
       debugPrint('Uid is ${user.uid}');
@@ -36,15 +40,33 @@ class AuthService {
     return cur;
   }
 
-  /// get thrid party account profile names, returns string
-  Future<String?> getProfileName() async {
-    String? name = _auth.currentUser!.displayName;
-    return name;
+  /// get thrid party account profile including email, name, photo
+  ///
+  /// return ProfileModel if logged in, return null if not
+  Future<ProfileModel?> getProfile() async {
+    User? user = _auth.currentUser;
+    File? photoFile;
+    if (user == null) {
+      return null;
+    }
+    if (user.photoURL != null && !kIsWeb) {
+      photoFile = File('${(await getTemporaryDirectory()).path}/temp-photo');
+      // debugPrint(user.photoURL);
+      http.Response response = await http.get(Uri.parse(user.photoURL!));
+      debugPrint('response code: ${response.statusCode.toString()}');
+
+      await photoFile.writeAsBytes(response.bodyBytes);
+    }
+    // debugPrint(
+    //     '${user.displayName} ${user.providerData[0].email} ${user.photoURL}');
+    return ProfileModel(
+        nickname: user.displayName,
+        email: user.providerData[0].email,
+        photo: photoFile);
   }
 
-  // TODO: Add return profile method here(to get every information)
-
   /// get correct googlesignin depend on platform
+  /// return GoogleSignIn, only for backend
   GoogleSignIn? getCorrectGoogleSignIn() {
     if (kIsWeb) {
       return GoogleSignIn(
@@ -235,7 +257,9 @@ class AuthService {
     }
   }
 
-  /// Facebook login, but will try to link with existed google account in default
+  /// Facebook login
+  ///
+  /// return UserModel if succeed, return null if any error catched.
   Future<UserModel?> facebookLogin() async {
     debugPrint('========> Entered Facebook Login');
     bool kisweb;
@@ -350,7 +374,9 @@ class AuthService {
     }
   }
 
-  /// Github login, CAN NOT link any account
+  /// Github login
+  ///
+  /// return UserModel if succeed, return null if any error catched.
   Future<UserModel?> githubLogin() async {
     bool kisweb;
     try {
@@ -387,8 +413,9 @@ class AuthService {
     }
   }
 
-  /// Google Login, but will try to link with existed Facebook account in default
-  /// return UserModel if succeed, no return if failed
+  /// Google Login
+  ///
+  /// return UserModel if succeed, return null if any error catched.
   Future<UserModel?> googleLogin() async {
     debugPrint('========> Entered Google Login');
     bool kisweb;

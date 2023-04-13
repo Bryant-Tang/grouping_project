@@ -73,10 +73,14 @@ class _BasePageState extends State<BasePage> {
             if (snapshot.error is GroupingProjectException) {
               if ((snapshot.error as GroupingProjectException).code ==
                   GroupingProjectExceptionCode.notExistInDatabase) {
-                DataController().createUser(userProfile: ProfileModel());
                 // TODO : 拿到第三方認證 Profile 後，將資料傳入 createProfile
-                setState(() {
-                  _dataFuture = refresh();
+                _authService.getProfile().then((value) async {
+                  if (value != null) {
+                    await DataController().createUser(userProfile: value);
+                    setState(() {
+                      _dataFuture = refresh();
+                    });
+                  }
                 });
               }
               return Scaffold(body: NotFoundPage.fromError("ERROR"));

@@ -55,6 +55,7 @@ dependencies:
   syncfusion_flutter_datepicker: ^21.0.0
   day_night_time_picker: ^1.2.0
   path: ^1.8.3
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:
