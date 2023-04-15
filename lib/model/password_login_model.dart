@@ -8,6 +8,7 @@ class PasswordLoginFormModel {
   bool isEmailValid = true;
   bool isPasswordValid = true;
   bool get isFormValid => isEmailValid && isPasswordValid;
+  final AuthService authService = AuthService();
 
   void validateEmail(String value) {
     // isEmailValid = EmailValidator.validate(value);
@@ -20,9 +21,7 @@ class PasswordLoginFormModel {
     password = value;
   }
 
-  Future<LoginState> submitLogin(String email, String password) async {
-    final AuthService authService = AuthService();
-
+  Future<LoginState> passwordLogin(String email, String password) async {
     try {
       await authService.emailLogIn(email, password);
       // debugPrint("login successfully");
@@ -41,6 +40,12 @@ class PasswordLoginFormModel {
           return LoginState.loginFaild;
       }
     }
+  }
+
+  Future<LoginState> thirdPartyLogin(String name) async {
+    await authService.thridPartyLogin(name);
+    // debugPrint("login successfully");
+    return LoginState.loginSuccess;
   }
 
   Map<String, dynamic> toJson() {

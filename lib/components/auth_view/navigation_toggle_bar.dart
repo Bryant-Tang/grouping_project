@@ -31,25 +31,26 @@ class NavigationToggleBar extends StatelessWidget {
               children: [
                 Icon(
                   goBackButtonIcon,
-                  color: Colors.amber,
+                  // color: Colors.amber,
                 ),
                 Text(
                   goBackButtonText,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.amber,
+                    // color: Colors.amber,
                   ),
                 ),
               ],
             ),
           ),
         ),
-        MaterialButton(
+        ElevatedButton(
             onPressed: goToNextButtonHandler,
-            color: Colors.amber,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
@@ -58,15 +59,15 @@ class NavigationToggleBar extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     goToNextButtonText,
-                    style: const TextStyle(
-                      fontSize: 14,
+                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
                     ),
                   ),
                   Icon(
                     goToNextButtonIcon,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    // color: Colors.white,
                   ),
                 ],
               ),
@@ -93,10 +94,11 @@ class SingleButtonNavigationBar extends StatelessWidget {
       children: <Widget>[
         MaterialButton(
           onPressed: goToNextButtonHandler,
-          color: Colors.amber,
+          color: Theme.of(context).colorScheme.primaryContainer,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
-              side: const BorderSide(color: Colors.amber)),
+              // side: const BorderSide(color: Colors.amber)),
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0),
             child: Row(
@@ -104,15 +106,15 @@ class SingleButtonNavigationBar extends StatelessWidget {
               children: [
                 Text(
                   goToNextButtonText,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
                 Icon(
                   goToNextButtonIcon,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  // color: Colors.white,
                 ),
               ],
             ),
