@@ -141,11 +141,12 @@ class _BasePageState extends State<BasePage> {
                       IconButton(
                           //temp remove async for quick test
                           onPressed: () async {
-                            _authService.signOut().then((value) =>
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => LoginPage())));
+                            // _authService.signOut().then((value) =>
+                            //     Navigator.pushReplacement(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //             builder: (context) => LoginPage())));
+                            Navigator.push(context, MaterialPageRoute(builder: (_)=>EmptyWidget()));
                           },
                           icon:
                               const Icon(Icons.settings_accessibility_rounded)),
