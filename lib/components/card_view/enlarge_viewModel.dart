@@ -80,22 +80,109 @@ class TitleDateOfEvent extends StatelessWidget {
         ),
         Row(
           children: [
-            const Icon(
+            Icon(
               Icons.access_time,
               size: 20,
-              color: Colors.amber,
+              color: color,
             ),
             Text(
               diff(endTime),
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Colors.amber),
+                  color: color),
             )
           ],
         )
       ],
     );
+  }
+}
+
+class TitleDateOfMission extends StatelessWidget {
+  const TitleDateOfMission(
+      {super.key,
+      required this.title,
+      required this.deadline,
+      required this.group,
+      required this.color,
+      required this.stage,
+      required this.stateName});
+
+  final String title;
+  final DateTime deadline;
+  final String group;
+  final Color color;
+  final String stage;
+  final String stateName;
+
+  @override
+  Widget build(BuildContext context) {
+    DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AntiLabel(group: group, color: color),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        Text('deadline: ${parseDate.format(deadline)}',
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+        Row(
+          children: [
+            Icon(
+              Icons.access_time,
+              size: 20,
+              color: color,
+            ),
+            Text(
+              diff(deadline),
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: color),
+            )
+          ],
+        ),
+        StateOfMission(stage: stage, stateName: stateName)
+      ],
+    );
+  }
+}
+
+class StateOfMission extends StatelessWidget {
+  const StateOfMission({super.key, required this.stage, required this.stateName});
+
+  final String stage;
+  final String stateName;
+
+  Color stageToColor(String stage){
+    if(stage == stageToString(MissionStage.progress)){
+      return Colors.blue.withOpacity(0.2);
+    }
+    else if(stage == stageToString(MissionStage.pending)){
+      return Colors.purple.withOpacity(0.2);
+    }
+    else if(stage == stageToString(MissionStage.close)){
+      return Colors.red.withOpacity(0.2);
+    }
+    else{
+      return Colors.black38;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context){
+    Color color = stageToColor(stage);
+    return Container(
+        decoration: BoxDecoration(
+            color: color, borderRadius: BorderRadius.circular(10)),
+        child: Text(
+          ' •$stateName ',
+          style: const TextStyle(color: Colors.black, fontSize: 15),
+        ));
   }
 }
 

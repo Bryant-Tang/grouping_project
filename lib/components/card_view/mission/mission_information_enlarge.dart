@@ -1,36 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/enlarge_viewModel.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/components/card_view/mission_information.dart';
 
 /*
-* this file is used to create event enlarge view
+* this file is used to create mission enlarge view
 */
 
-class EventInformationEnlarge extends StatefulWidget {
-  /// 這個 class 實現了 event 放大時要展現的資訊
+class MissionInformationEnlarge extends StatefulWidget {
+  /// 這個 class 實現了 mission 放大時要展現的資訊
   /// 藉由創建時得到的資料來回傳一個 Container 回去
   /// ps. 需與 cardViewTemplate 一起使用
-  const EventInformationEnlarge({super.key, required this.eventModel});
+  const MissionInformationEnlarge({super.key, required this.missionModel});
 
-  final EventModel eventModel;
+  final MissionModel missionModel;
 
 
   @override
-  State<EventInformationEnlarge> createState() =>
-      _EventInformationEnlargeState();
+  State<MissionInformationEnlarge> createState() =>
+      _MissionInformationEnlargeState();
 }
 
-class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
+class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
   @override
   Widget build(BuildContext context) {
-    String group = widget.eventModel.ownerName;
-    String title =  widget.eventModel.title ?? 'unknown';
-    String descript =  widget.eventModel.introduction ?? 'unknown';
-    DateTime startTime =  widget.eventModel.startTime ?? DateTime(0);
-    DateTime endTime =  widget.eventModel.endTime ?? DateTime(0);
-    List<String> contributorIds =  widget.eventModel.contributorIds ?? [];
-    Color color = Color(widget.eventModel.color);
+    String group = widget.missionModel.ownerName;
+    String title =  widget.missionModel.title ?? 'unknown';
+    String descript =  widget.missionModel.introduction ?? 'unknown';
+    DateTime deadline =  widget.missionModel.deadline ?? DateTime(0);
+    List<String> contributorIds =  widget.missionModel.contributorIds ?? [];
+    String missionStage =
+        stageToString(widget.missionModel.stage ?? MissionStage.progress);
+    String stateName = widget.missionModel.stateName ?? 'progress';
+    Color color = Color(widget.missionModel.color);
 
     return Container(
       width: MediaQuery.of(context).size.width - 30,
@@ -55,8 +57,8 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                         await Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EventEditPage(
-                                    eventModel: widget.eventModel)));
+                                builder: (context) => MissionEditPage(
+                                    missionModel: widget.missionModel)));
                         setState(() {});
                       },
                       icon: const Icon(
@@ -80,12 +82,13 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
             thickness: 1.5,
             color: Color.fromARGB(255, 170, 170, 170),
           ),
-          TitleDateOfEvent(
+          TitleDateOfMission(
               title: title,
-              startTime: startTime,
-              endTime: endTime,
+              deadline: deadline,
               group: group,
-              color: color),
+              color: color,
+              stage: missionStage,
+              stateName: stateName,),
           EnlargeObjectTemplate(
               title: '參與成員',
               contextOfTitle: Contributors(

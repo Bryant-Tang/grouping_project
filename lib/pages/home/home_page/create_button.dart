@@ -14,7 +14,7 @@ class _CreateButtonState extends State<CreateButton> {
     AddTopic(), //not yet
     AddEvent(),
     AddNote(), //not yet
-    AddMission() //not yet
+    AddMission()
   ];
   @override
   Widget build(BuildContext context) {

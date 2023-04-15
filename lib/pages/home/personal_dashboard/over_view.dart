@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grouping_project/components/card_view/card_view_template.dart';
+import 'package:grouping_project/components/card_view/event/event_card_view.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/overview_choice_button.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/home_mission_page.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/personal_mission_page.dart';
 
 class OverView extends StatefulWidget {
   const OverView({super.key});
@@ -19,17 +19,21 @@ class OverView extends StatefulWidget {
 class _OverViewState extends State<OverView> {
   int overViewIndex = 0;
   late int eventNumbers = 0;
+  late int missionNumbers = 0;
+
+  DataController dataController = DataController();
 
   List<Widget> pages = [
     const EventPage(),
-    ListView(
-      children: [
-        Container(
-          height: 100,
-          decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-        ),
-      ],
-    ),
+    const MissionPage(),
+    // ListView(
+    //   children: [
+    //     Container(
+    //       height: 100,
+    //       decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+    //     ),
+    //   ],
+    // ),
     ListView(
       children: [
         Container(
@@ -43,10 +47,19 @@ class _OverViewState extends State<OverView> {
   @override
   void initState() {
     super.initState();
-    DataController().downloadAll(dataTypeToGet: EventModel()).then((value) {
+    dataController.downloadAll(dataTypeToGet: EventModel()).then((value) {
       eventNumbers = value.length;
       setState(() {});
     });
+    dataController.downloadAll(dataTypeToGet: MissionModel()).then((value) {
+      missionNumbers = value.length;
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose(){
+    super.dispose();
   }
 
   final headLine = const Text(
@@ -109,7 +122,7 @@ class _OverViewState extends State<OverView> {
                       },
                       labelText: '任務 - 追蹤中',
                       iconPath: 'assets/icons/task.svg',
-                      numberText: eventNumbers,
+                      numberText: missionNumbers,
                       isSelected: isSelectedList[1],
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/components/card_view/enlarge_viewModel.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'dart:io' as io show File;
 
@@ -209,6 +210,122 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
             )
           ],
         ),
+      ],
+    );
+  }
+}
+
+class TitleDateOfMission extends StatefulWidget {
+  const TitleDateOfMission(
+      {super.key,
+      required this.titleController,
+      required this.group,
+      required this.color,
+      required this.deadline,
+      required this.callback});
+
+  final TextEditingController titleController;
+  final String group;
+  final Color color;
+  final DateTime deadline;
+  final Function(DateTime) callback;
+
+  @override
+  State<TitleDateOfMission> createState() => TitleDateOfMissionState();
+}
+
+class TitleDateOfMissionState extends State<TitleDateOfMission> {
+  late DateTime deadline;
+
+  @override
+  void initState() {
+    super.initState();
+    deadline = widget.deadline;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    void timePickerDialog(DateTime show) {
+      Time tmp = Time(hour: 0, minute: 0);
+      Navigator.of(context).push(
+        showPicker(
+          value: tmp,
+          onChange: (time) {
+            setState(() {
+              deadline = DateTime(show.year, show.month, show.day, time.hour, time.minute);
+              widget.callback(deadline);
+            });
+          },
+        ),
+      );
+    }
+
+    void confirmChange(Object? value) {
+      DateTime tmp = DateTime(0);
+      if (value is DateTime) {
+        tmp = value;
+      }
+      Navigator.pop(context);
+      timePickerDialog(tmp);
+    }
+
+    void cancelChange() {
+      setState(() {
+        Navigator.pop(context);
+      });
+    }
+
+    void selectTime() {
+      showDialog(
+          context: context,
+          builder: ((BuildContext context) {
+            return AlertDialog(
+              title: const Text('選擇時間'),
+              content: SizedBox(
+                  width: 200,
+                  height: 400,
+                  child: SfDateRangePicker(
+                    // onSelectionChanged: _onSelected,
+                    onSubmit: confirmChange,
+                    onCancel: cancelChange,
+                    initialSelectedRange:
+                        PickerDateRange(DateTime.now(), DateTime.now()),
+                    showActionButtons: true,
+                  )),
+            );
+          }));
+    }
+
+    DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AntiLabel(group: widget.group, color: widget.color),
+        // Text(
+        //   title,
+        //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        // ),
+        TextField(
+          controller: widget.titleController,
+          onChanged: (value) {
+            widget.titleController.text = value;
+            widget.titleController.selection =
+                TextSelection.fromPosition(TextPosition(offset: value.length));
+            setState(() {});
+          },
+          decoration: InputDecoration(
+              hintText: '輸入標題',
+              errorText: widget.titleController.text.isEmpty ? '不可為空' : null,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 2),
+              border: const OutlineInputBorder()),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        TextButton(onPressed: selectTime, child: Text(parseDate.format(deadline),style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF000000)),))
       ],
     );
   }

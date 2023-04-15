@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/card_view/enlarge_controller_view.dart';
+import 'package:grouping_project/components/card_view/enlarge_viewModel.dart';
 import 'package:grouping_project/model/model_lib.dart';
 
 import 'package:intl/intl.dart';
@@ -38,27 +38,20 @@ class EventInformationShrink extends StatelessWidget {
     String descript = eventModel.introduction ?? 'unknown';
     DateTime startTime = eventModel.startTime ?? DateTime(0);
     DateTime endTime = eventModel.endTime ?? DateTime(0);
-    List<String> contributorIds = eventModel.contributorIds ?? [];
+    // List<String> contributorIds = eventModel.contributorIds ?? [];
     Color color = Color(eventModel.color);
-    // String group = 'personal';
-    // String title = 'Test titel';
-    // String descript = 'This is a information test';
-    // DateTime startTime = DateTime(0);
-    // DateTime endTime = DateTime.now();
-    // List<String> contributorIds = [];
-    // Color color = Colors.amber;
 
     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
 
     return Container(
       width: MediaQuery.of(context).size.width - 30,
-      height: 100,
+      // height: 100,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AntiLabel(
             group: group,
-            color: Colors.amber,
+            color: color,
           ),
           const SizedBox(
             height: 1,

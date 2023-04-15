@@ -1,27 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
-import 'package:grouping_project/components/card_view/event_information.dart';
-import 'package:grouping_project/components/card_view/enlarge_controller_edit.dart';
+import 'package:grouping_project/components/card_view/mission_information.dart';
+import 'package:grouping_project/components/card_view/enlarge_edit_viewModel.dart';
+import 'dart:math';
 
 /*
-* this file is used to create event or edit existed event 
+* this file is used to create mission or edit existed mission 
 */
+List<Color> allColors = const <Color>[
+  Color(0xFFFF6565),
+  Color(0xFFFF61DF),
+  Color(0xFFFCBF49),
+  Color(0xFF73C0FF),
+  Color(0xFFB3FFB7)
+];
 
-class EventEditPage extends StatefulWidget {
-  const EventEditPage({super.key, this.eventModel});
+class MissionEditPage extends StatefulWidget {
+  const MissionEditPage({super.key, this.missionModel});
 
-  final EventModel? eventModel;
+  final MissionModel? missionModel;
 
   @override
-  State<EventEditPage> createState() => _EventEditPageState();
+  State<MissionEditPage> createState() => _MissionEditPageState();
 }
 
-class _EventEditPageState extends State<EventEditPage> {
+class _MissionEditPageState extends State<MissionEditPage> {
   late TextEditingController titleController;
   late TextEditingController descriptController;
   late String group;
-  late DateTime startTime, endTime;
+  late DateTime deadline;
   // TODO: check color is random or not
   late Color color;
   late List<String> contributorIds;
@@ -29,24 +37,22 @@ class _EventEditPageState extends State<EventEditPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.eventModel == null) {
+    if (widget.missionModel == null) {
       titleController = TextEditingController(text: '');
       descriptController = TextEditingController(text: '');
       // TODO: check is group or personal
       group = 'personal';
-      startTime = DateTime.now();
-      endTime = DateTime.now().add(const Duration(days: 1));
-      color = const Color(0xFFFCBF49);
+      deadline = DateTime.now().add(const Duration(days: 1));
+      color = allColors[Random().nextInt(allColors.length)];
       contributorIds = [];
     } else {
-      titleController = TextEditingController(text: widget.eventModel!.title);
+      titleController = TextEditingController(text: widget.missionModel!.title);
       descriptController =
-          TextEditingController(text: widget.eventModel!.introduction);
-      group = widget.eventModel!.ownerName;
-      startTime = widget.eventModel!.startTime!;
-      endTime = widget.eventModel!.endTime!;
-      color = Color(widget.eventModel!.color);
-      contributorIds = widget.eventModel!.contributorIds ?? [];
+          TextEditingController(text: widget.missionModel!.introduction);
+      group = widget.missionModel!.ownerName;
+      deadline = widget.missionModel!.deadline!;
+      color = Color(widget.missionModel!.color);
+      contributorIds = widget.missionModel!.contributorIds ?? [];
     }
   }
 
@@ -60,39 +66,32 @@ class _EventEditPageState extends State<EventEditPage> {
   @override
   Widget build(BuildContext context) {
 
-    void createEvent() async {
+    Future<void> createMission() async {
       await DataController().upload(
-          uploadData: EventModel(
+          uploadData: MissionModel(
         title: titleController.text,
         introduction: descriptController.text,
-        startTime: startTime,
-        endTime: endTime,
+        deadline: deadline,
         contributorIds: contributorIds
       ));
     }
 
-    void updateEvent() async {
-      // TODO: check it's the same event and has been modified to new data
+    void updateMission() async {
       await DataController().upload(
-          uploadData: EventModel(
-        id: widget.eventModel!.id,
+          uploadData: MissionModel(
+        id: widget.missionModel!.id,
         title: titleController.text,
         introduction: descriptController.text,
-        startTime: startTime,
-        endTime: endTime,
+        deadline: deadline,
         contributorIds: contributorIds
       ));
     }
 
-    void removeEvent() async {
-      await DataController().remove(removeData: widget.eventModel!);
+    void removeMission() async {
+      await DataController().remove(removeData: widget.missionModel!);
     }
 
     return Scaffold(
-      // body: Container(
-      //   padding: const EdgeInsets.only(left: 10, top: 18),
-      //   width: MediaQuery.of(context).size.width - 30,
-      //   height: MediaQuery.of(context).size.height,
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
         child: ListView(
@@ -111,12 +110,12 @@ class _EventEditPageState extends State<EventEditPage> {
                     IconButton(
                         onPressed: () {
                           debugPrint('remove');
-                          if (widget.eventModel != null) {
-                            removeEvent();
+                          if (widget.missionModel != null) {
+                            removeMission();
                             // Navigator.pop(context);
                             Navigator.pushAndRemoveUntil(
                                 context,
-                                MaterialPageRoute(builder: (_) => BasePage()),
+                                MaterialPageRoute(builder: (_) => const BasePage()),
                                 (route) => false);
                           } else {
                             showDialog(
@@ -124,31 +123,29 @@ class _EventEditPageState extends State<EventEditPage> {
                                 builder: ((context) {
                                   return const AlertDialog(
                                     content: Text(
-                                        "You can't delete the event which is not existed yet."),
+                                        "You can't delete the mission which is not existed yet."),
                                   );
                                 }));
                           }
                         },
                         icon: const Icon(Icons.delete)),
                     IconButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (titleController.text.isNotEmpty &&
                               descriptController.text.isNotEmpty &&
-                              startTime.isBefore(endTime)) {
-                            debugPrint('Done');
-                            // TODO: eventModel isn't null == update the data
-                            if (widget.eventModel != null) {
-                              updateEvent();
+                              deadline.isAfter(DateTime.now())) {
+                            // debugPrint('Done');
+                            if (widget.missionModel != null) {
+                              updateMission();
                             }
-                            // TODO: eventModel is null == create the data
                             else {
-                              createEvent();
+                              await createMission();
                             }
                             // Navigator.pop(context);
-                            Navigator.pushAndRemoveUntil(
+                            if(context.mounted) {Navigator.pushAndRemoveUntil(
                                 context,
-                                MaterialPageRoute(builder: (_) => BasePage()),
-                                (route) => false);
+                                MaterialPageRoute(builder: (_) => const BasePage()),
+                                (route) => false);}
                           } else {
                             debugPrint('error occur');
                           }
@@ -162,15 +159,13 @@ class _EventEditPageState extends State<EventEditPage> {
               thickness: 1.5,
               color: Color.fromARGB(255, 170, 170, 170),
             ),
-            TitleDateOfEvent(
+            TitleDateOfMission(
                 titleController: titleController,
-                startTime: startTime,
-                endTime: endTime,
+                deadline: deadline,
                 group: group,
                 color: color,
-                callback: (p0, p1) {
-                  startTime = p0;
-                  endTime = p1;
+                callback: (p0) {
+                  deadline = p0;
                 }),
             EnlargeObjectTemplate(
                 title: '參與成員',
@@ -193,7 +188,6 @@ class _EventEditPageState extends State<EventEditPage> {
                   descriptController.text = value;
                   descriptController.selection = TextSelection.fromPosition(
                       TextPosition(offset: value.length));
-                  // debugPrint(descriptController.text);
                   setState(() {});
                 },
                 decoration: InputDecoration(
@@ -204,18 +198,11 @@ class _EventEditPageState extends State<EventEditPage> {
                     border: const OutlineInputBorder()),
                 style: const TextStyle(fontSize: 15),
               ),
-              // contextOfTitle: Text(
-              //   descript,
-              //   style: const TextStyle(
-              //     fontSize: 15,
-              //   ),
-              //   softWrap: true,
-              //   maxLines: 5,
-              // ),
             ),
             const SizedBox(
               height: 2,
             ),
+            // TODO: connect mission and mission
             const EnlargeObjectTemplate(
               title: '相關任務',
               contextOfTitle: CollabMissons(),
@@ -223,11 +210,13 @@ class _EventEditPageState extends State<EventEditPage> {
             const SizedBox(
               height: 2,
             ),
+            // TODO: connect note and mission
             const EnlargeObjectTemplate(
                 title: '相關共筆', contextOfTitle: CollabNotes()),
             const SizedBox(
               height: 2,
             ),
+            // TODO: connect mission and meeting
             const EnlargeObjectTemplate(
               title: '相關會議',
               contextOfTitle: CollabMeetings(),
