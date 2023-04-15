@@ -1,23 +1,19 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:grouping_project/ViewModel/theme_view_model.dart';
-import 'package:grouping_project/exception.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:grouping_project/ViewModel/view_model_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/auth/login.dart';
+import 'package:grouping_project/View/auth/login.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
-import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
 
 import 'package:grouping_project/pages/view_template/building.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
-import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
-import 'package:grouping_project/pages/view_template/page_not_found.dart';
-import 'package:grouping_project/service/service_lib.dart';
 import 'package:provider/provider.dart';
-import 'package:grouping_project/pages/calendar/calendar.dart';
-
-import 'package:grouping_project/pages/home/home_page/empty.dart';
+import 'package:grouping_project/pages/home/calendar/calendar.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);
@@ -27,7 +23,7 @@ class BasePage extends StatefulWidget {
 }
 
 class _BasePageState extends State<BasePage> {
-  late Future<void> _dataFuture;
+  // late Future<void> _dataFuture;
   final _pageController = PageController();
   final _pages = const <Widget>[
     HomePage(),
@@ -35,14 +31,15 @@ class _BasePageState extends State<BasePage> {
     Center(child: BuildingPage(errorMessage: "Message Page")),
     Center(child: BuildingPage(errorMessage: "Note Page")),
   ];
-  final AuthService _authService = AuthService();
-  late ProfileModel profile;
-  int _currentPageIndex = 0;
+  final filename = ["home", "calendar", "messages", "note"];
+  Widget getSvgIcon({required String path, required BuildContext context}) {
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    return SvgPicture.asset(path,
+        colorFilter: ColorFilter.mode(color, BlendMode.srcIn));
+  }
 
-  @override
-  void initState() {
-    super.initState();
-    _dataFuture = refresh();
+  String getPath(filename) {
+    return "assets/icons/appBar/$filename.svg";
   }
 
   @override
@@ -51,38 +48,17 @@ class _BasePageState extends State<BasePage> {
     super.dispose();
   }
 
-  Future<void> refresh() async {
-    await DataController()
-        .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!)
-        .then((value) {
-      setState(() {
-        profile = value;
-      });
-      debugPrint(profile.name);
-      debugPrint(profile.associateEntityId.toString());
-      // debugPrint all Profile data
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-      future: _dataFuture,
-      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return Scaffold(body: NotFoundPage.fromError("ERROR"));
-          } else {
-            // data loaded successfully, build the widget tree here
-            return Consumer<ThemeManager>(
-              builder: (context, themeManager, child) => InheritedProfile(
-                profile: profile,
-                updateProfile: (ProfileModel newProfile) {
-                  setState(() {
-                    profile = newProfile;
-                  });
-                },
-                child: Scaffold(
+    return ChangeNotifierProvider<PersonalDashboardViewModel>(
+        create: (context) => PersonalDashboardViewModel()..updateProfile(),
+        child: Consumer<ThemeManager>(
+          builder: (context, themeManager, child) =>
+              Consumer<PersonalDashboardViewModel>(
+            builder: (context, model, child) => model.isLoading
+                ? const Scaffold(
+                    body: Center(child: CircularProgressIndicator()))
+                : Scaffold(
                     appBar: AppBar(
                       title: MaterialButton(
                         child: Padding(
@@ -94,9 +70,8 @@ class _BasePageState extends State<BasePage> {
                             children: [
                               CircleAvatar(
                                 radius: 20,
-                                backgroundImage: profile.photo != null
-                                    ? Image.file(File(profile.photo!.path))
-                                        .image
+                                backgroundImage: model.profileImage != null
+                                    ? Image.file(model.profileImage!).image
                                     : Image.asset(
                                             "assets/images/profile_male.png")
                                         .image,
@@ -105,9 +80,11 @@ class _BasePageState extends State<BasePage> {
                                 width: 10,
                               ),
                               Text(
-                                profile.nickname ?? "Unknown",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 18),
+                                model.userName,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge!
+                                    .copyWith(fontWeight: FontWeight.bold),
                               ),
                               const Icon(Icons.unfold_more),
                             ],
@@ -130,18 +107,16 @@ class _BasePageState extends State<BasePage> {
                       actions: [
                         IconButton(
                             //temp remove async for quick test
-                            onPressed: () {
-                              themeManager.toggleTheme();
-                            },
+                            onPressed: themeManager.toggleTheme,
                             icon: Icon(themeManager.icon)),
                         IconButton(
                             //temp remove async for quick test
                             onPressed: () async {
-                              _authService.signOut().then((value) =>
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => LoginPage())));
+                              await model.signOut();
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginPage()));
                             },
                             icon: const Icon(
                                 Icons.settings_accessibility_rounded)),
@@ -149,38 +124,31 @@ class _BasePageState extends State<BasePage> {
                     ),
                     body: PageView(
                       controller: _pageController,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentPageIndex = index;
-                          debugPrint("page index: $_currentPageIndex");
-                        });
-                      },
+                      onPageChanged: model.updateSelectedIndex,
                       children: _pages,
                     ),
                     extendBody: true,
                     floatingActionButton: const CreateButton(),
                     // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-                    bottomNavigationBar: NavigationAppBar(
-                        currentIndex: _currentPageIndex,
-                        onTap: (index) {
-                          setState(() {
-                            _currentPageIndex = index;
-                            _pageController.animateToPage(index,
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut);
-                          });
-                        })),
-              ),
-            );
-          }
-        } else {
-          // show a loading indicator while waiting for the data to load
-          return Container(
-              color: Colors.white,
-              child: const Center(child: CircularProgressIndicator()));
-        }
-      },
-    );
+                    bottomNavigationBar: NavigationBar(
+                        onDestinationSelected: (index) {
+                          model.updateSelectedIndex(index);
+                          _pageController.animateToPage(index,
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut);
+                        },
+                        selectedIndex: model.selectedIndex,
+                        destinations: filename
+                            .map((name) => NavigationDestination(
+                                  icon: getSvgIcon(
+                                      path: getPath(name), context: context),
+                                  // color: Colors.black,
+                                  label: name,
+                                ))
+                            .toList()),
+                  ),
+          ),
+        ));
   }
 }
 
