@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/card_view/enlarge_viewModel.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'dart:io' as io show File;
 
