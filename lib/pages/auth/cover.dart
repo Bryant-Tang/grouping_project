@@ -40,17 +40,16 @@ class _CoverPageState extends State<CoverPage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-          color: Colors.white,
-          image: DecorationImage(
-              image: const AssetImage("assets/images/cover.png"),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(
-                  Colors.white.withOpacity(0.1), BlendMode.modulate))),
-      child: Column(
+    // debugPrint(Theme.of(context).colorScheme.primary.toString());
+    return Scaffold(
+      // decoration: BoxDecoration(
+      //     // color: Colors.white,
+      //     image: DecorationImage(
+      //         image: const AssetImage("assets/images/cover.png"),
+      //         fit: BoxFit.cover,
+      //         colorFilter: ColorFilter.mode(
+      //             Colors.white.withOpacity(0.1), BlendMode.modulate))),
+      body: Column(
         children: [
           const SizedBox(width: 10, height: 315),
           const GroupingLogo(),

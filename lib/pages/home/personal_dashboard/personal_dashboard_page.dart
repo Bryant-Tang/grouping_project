@@ -49,13 +49,13 @@ class _TestPageState extends State<PeronalDashboardPage> {
       height: MediaQuery.of(context).size.height - 120,
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            Expanded(
+          children: [
+            const Expanded(
               flex: 2,
               child: Progress(),
             ),
             // Progress 位置
-            SizedBox(
+            const SizedBox(
               height: 3,
             ),
             Expanded(flex: 5, child: OverView()),
