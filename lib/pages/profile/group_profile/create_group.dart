@@ -73,6 +73,7 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
   }
 
   void backward() {
+    FocusScope.of(context).requestFocus(FocusNode());
     final pageIndex = _pageController.page!.round();
     debugPrint(pageIndex.toString());
     if (pageIndex > 0) {
@@ -82,6 +83,7 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
   }
 
   void forward() {
+    FocusScope.of(context).requestFocus(FocusNode());
     final pageIndex = _pageController.page!.round();
     if (pageIndex < _pages.length - 1) {
       _pageController.animateToPage(pageIndex + 1,
@@ -104,6 +106,7 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: InheritedProfile(
         profile: profile,
         updateProfile: (ProfileModel newProfile) {
@@ -111,15 +114,20 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
             profile = newProfile;
           });
         },
-        child: PageView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: _pageController,
-          children: _pages,
-          onPageChanged: (int index) {
-            setState(() {
-              _currentPageIndex = index;
-            });
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
           },
+          child: PageView(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: _pageController,
+            children: _pages,
+            onPageChanged: (int index) {
+              setState(() {
+                _currentPageIndex = index;
+              });
+            },
+          ),
         ),
       ),
     );
@@ -266,7 +274,7 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final headLineText = "小組標籤";
   final content = "為你的小組選擇一個或多個標籤";
-  final List<ProfileTag> tags = [
+  final List<String> tags = [
     "#社團",
     "#課程",
     "#打工",
@@ -276,12 +284,14 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
     "#讀書會",
     "#期末報告",
     "#其他"
-  ].map((tagString) => ProfileTag(tag: tagString, content: tagString)).toList();
+  ];
+
   // TODO : let user add their own tags
   @override
   Widget build(BuildContext context) {
     final profile = InheritedProfile.of(context)!.profile;
-    final selectedTags = profile.tags ?? [];
+    final List<String> selectedTags =
+        (profile.tags ?? []).map((t) => t.tag).toList();
     return SignUpPageTemplate(
       titleWithContent: HeadlineWithContent(
         headLineText: headLineText,
@@ -297,7 +307,7 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
                       child: ChoiceChip(
                         backgroundColor: Colors.grey.shade300,
                         selectedColor: Colors.amber,
-                        label: Text(tag.tag,
+                        label: Text(tag,
                             style: TextStyle(
                               color: selectedTags.contains(tag)
                                   ? Colors.white
@@ -312,7 +322,10 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
                                 // implement change label text color
                                 InheritedProfile.of(context)!.updateProfile(
                                     profile.copyWith(
-                                        tags: selectedTags..add(tag)));
+                                        tags: (selectedTags..add(tag))
+                                            .map((e) =>
+                                                ProfileTag(tag: e, content: e))
+                                            .toList()));
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
@@ -323,7 +336,10 @@ class _WorkspaceTagRegisterPageState extends State<WorkspaceTagRegisterPage> {
                             } else {
                               InheritedProfile.of(context)!.updateProfile(
                                   profile.copyWith(
-                                      tags: selectedTags..remove(tag)));
+                                      tags: (selectedTags..remove(tag))
+                                          .map((e) =>
+                                              ProfileTag(tag: e, content: e))
+                                          .toList()));
                             }
                           });
                         },

@@ -42,34 +42,6 @@ class _GroupingInputFieldState extends State<GroupingInputField> {
     super.initState();
     inputText = widget.textController.text;
     // Start listening to changes.
-    inputFied = TextFormField(
-        controller: widget.textController..text = inputText,
-        validator: widget.validator,
-        maxLength: widget.maxLength == -1 ? null : widget.maxLength,
-        maxLines: widget.maxLines == -1 ? null : widget.maxLines,
-        decoration: InputDecoration(
-            // isDense 為必要, contentPadding 越大，則 textfield 越大
-            contentPadding: const EdgeInsets.all(15),
-            isDense: true,
-            border: const OutlineInputBorder(
-                gapPadding: 1.0,
-                borderRadius: BorderRadius.all(Radius.circular(30))),
-            label: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(widget.boxIcon, color: widget.boxColor),
-                const SizedBox(width: 10),
-                Text(
-                  widget.labelText,
-                  style: TextStyle(
-                    color: widget.boxColor,
-                    fontFamily: "NotoSansTC",
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                )
-              ],
-            )));
     widget.textController.addListener(
         () => setState(() => inputText = widget.textController.text));
   }
@@ -84,7 +56,29 @@ class _GroupingInputFieldState extends State<GroupingInputField> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 15),
-      child: inputFied,
+      child: TextFormField(
+        controller: widget.textController..text = inputText,
+        validator: widget.validator,
+        maxLength: widget.maxLength == -1 ? null : widget.maxLength,
+        maxLines: widget.maxLines == -1 ? null : widget.maxLines,
+        decoration: InputDecoration(
+            // isDense 為必要, contentPadding 越大，則 textfield 越大
+            contentPadding: const EdgeInsets.all(15),
+            isDense: true,
+            border: const OutlineInputBorder(
+              gapPadding: 1.0,
+            ),
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(widget.boxIcon),
+                const SizedBox(width: 10),
+                Text(
+                  widget.labelText,
+                  style: Theme.of(context).textTheme.labelMedium,
+                )
+              ],
+            ))),
     );
   }
 }
