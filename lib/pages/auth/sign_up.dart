@@ -1,4 +1,4 @@
-import 'package:grouping_project/ViewModel/SignUpViewModel.dart';
+import 'package:grouping_project/ViewModel/signup_view_model.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/password_register_model.dart';

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:grouping_project/ViewModel/ThemeViewModel.dart';
+import 'package:grouping_project/ViewModel/theme_view_model.dart';
 import 'package:grouping_project/exception.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/login.dart';
