@@ -11,72 +11,38 @@ class NavigationAppBar extends StatefulWidget {
   State<NavigationAppBar> createState() => _NavigationAppBarState();
 }
 
-class _NavigationAppBarState extends State<NavigationAppBar>{
+class _NavigationAppBarState extends State<NavigationAppBar> {
+  int currentPageIndex = 0;
+  final filename = ["home", "calendar", "messages", "note"];
+
+  Widget getSvgIcon(
+      {required String path, required BuildContext context}) {
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    return SvgPicture.asset(path,
+        colorFilter: ColorFilter.mode(color, BlendMode.srcIn));
+  }
+
+  String getPath(filename) {
+    return "assets/icons/appBar/$filename.svg";
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/appBar/home.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-                // color: Colors.grey,
-              ),
-              activeIcon: SvgPicture.asset(
-                "assets/icons/appBar/home.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+    return NavigationBar(
+      onDestinationSelected: (index) {
+        setState(() {
+          currentPageIndex = index;
+        });
+        widget.onTap(index);
+      },
+      selectedIndex: currentPageIndex,
+      destinations: filename
+          .map((name) => NavigationDestination(
+                icon: getSvgIcon(path: getPath(name), context: context),
                 // color: Colors.black,
-              ),
-              label: 'Home'),
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/appBar/calendar.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-                // color: Colors.grey,
-              ),
-              activeIcon: SvgPicture.asset(
-                "assets/icons/appBar/calendar.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                // color: Colors.black,
-              ),
-              label: 'Calendar'),
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/appBar/messages1.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-                // color: Colors.grey,
-              ),
-              activeIcon: SvgPicture.asset(
-                "assets/icons/appBar/messages1.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                // color: Colors.black,
-              ),
-              label: 'Message'),
-          BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/appBar/note1.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
-                // color: Colors.grey,
-              ),
-              activeIcon: SvgPicture.asset(
-                "assets/icons/appBar/note1.svg",
-                colorFilter:
-                    const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                // color: Colors.black,
-              ),
-              label: 'Note'),
-        ],
-        currentIndex: widget.currentIndex,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        onTap: widget.onTap);
+                label: name,
+              ))
+          .toList(),
+    );
   }
 }
