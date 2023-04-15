@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:grouping_project/ViewModel/personal_dashBord_view_model.dart';
+import 'package:provider/provider.dart';
 
 class NavigationAppBar extends StatefulWidget {
-  final int currentIndex;
-  final void Function(int) onTap;
-  const NavigationAppBar(
-      {super.key, required this.currentIndex, required this.onTap});
+  // final int currentIndex;
+  // final void Function(int) onTap;
+  const NavigationAppBar({
+    super.key,
+  });
 
   @override
   State<NavigationAppBar> createState() => _NavigationAppBarState();
@@ -15,8 +18,7 @@ class _NavigationAppBarState extends State<NavigationAppBar> {
   int currentPageIndex = 0;
   final filename = ["home", "calendar", "messages", "note"];
 
-  Widget getSvgIcon(
-      {required String path, required BuildContext context}) {
+  Widget getSvgIcon({required String path, required BuildContext context}) {
     final color = Theme.of(context).colorScheme.onSurfaceVariant;
     return SvgPicture.asset(path,
         colorFilter: ColorFilter.mode(color, BlendMode.srcIn));
@@ -28,14 +30,12 @@ class _NavigationAppBarState extends State<NavigationAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      onDestinationSelected: (index) {
-        setState(() {
-          currentPageIndex = index;
-        });
-        widget.onTap(index);
-      },
-      selectedIndex: currentPageIndex,
+    final model = context.watch<PersonalDashboardViewModel>();
+    return // Cosumer<PersonalDashboardViewModel>(
+        // builder: (context, model, child) =>
+      NavigationBar(
+      onDestinationSelected: context.watch<PersonalDashboardViewModel>().updateSelectedIndex,
+      selectedIndex: context.watch<PersonalDashboardViewModel>().selectedIndex,
       destinations: filename
           .map((name) => NavigationDestination(
                 icon: getSvgIcon(path: getPath(name), context: context),
