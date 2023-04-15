@@ -22,7 +22,7 @@ class _SignUpPageTemplateState extends State<SignUpPageTemplate> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 120),
         child: Column(
@@ -40,3 +40,4 @@ class _SignUpPageTemplateState extends State<SignUpPageTemplate> {
     );
   }
 }
+

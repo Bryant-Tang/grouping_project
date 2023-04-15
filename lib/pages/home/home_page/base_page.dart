@@ -8,11 +8,11 @@ import 'package:grouping_project/pages/auth/login.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
 import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
 
-import 'package:grouping_project/pages/templates/building.dart';
+import 'package:grouping_project/pages/view_template/building.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
 import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
-import 'package:grouping_project/pages/templates/page_not_found.dart';
+import 'package:grouping_project/pages/view_template/page_not_found.dart';
 import 'package:grouping_project/service/service_lib.dart';
 import 'package:provider/provider.dart';
 

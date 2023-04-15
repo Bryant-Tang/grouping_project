@@ -4,7 +4,7 @@ import 'package:grouping_project/pages/auth/cover.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
-import 'package:grouping_project/pages/templates/building.dart';
+import 'package:grouping_project/pages/view_template/building.dart';
 import 'package:grouping_project/theme/color_schemes.dart';
 import 'package:provider/provider.dart';
 // import 'package:grouping_project/pages/profile/profile_edit_page.dart';
