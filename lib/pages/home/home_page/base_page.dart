@@ -16,8 +16,10 @@ import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboar
 import 'package:grouping_project/pages/view_template/page_not_found.dart';
 import 'package:grouping_project/service/service_lib.dart';
 import 'package:provider/provider.dart';
+import 'package:grouping_project/pages/calendar/calendar.dart';
 
-// class ThemeControl extends
+import 'package:grouping_project/pages/home/home_page/empty.dart';
+
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);
 
@@ -30,7 +32,7 @@ class _BasePageState extends State<BasePage> {
   final _pageController = PageController();
   final _pages = const <Widget>[
     HomePage(),
-    Center(child: BuildingPage(errorMessage: "Calendar Page")),
+    CalendarPage(),
     Center(child: BuildingPage(errorMessage: "Message Page")),
     Center(child: BuildingPage(errorMessage: "Note Page")),
   ];
