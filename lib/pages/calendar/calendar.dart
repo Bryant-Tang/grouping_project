@@ -43,57 +43,85 @@ class _CalendarPageState extends State<CalendarPage> {
                   padding: const EdgeInsets.all(10),
                   child: Column(
                     children: [
-                      TableCalendar(
-                        // center Header Title,
-                        headerStyle: const HeaderStyle(
-                          formatButtonVisible: false,
-                          titleCentered: true,
-                        ),
-                        firstDay: DateTime.utc(2010, 10, 16),
-                        lastDay: DateTime.utc(2030, 3, 14),
-                        focusedDay: _focusedDay,
-                        availableCalendarFormats: _calendarFormat,
-                        daysOfWeekHeight: 20,
-                        calendarStyle: CalendarStyle(
-                          selectedDecoration: BoxDecoration(
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                            shape: BoxShape.circle,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: TableCalendar(
+                          // center Header Title,
+                          headerStyle: const HeaderStyle(
+                            formatButtonVisible: false,
+                            titleCentered: true,
                           ),
-                          selectedTextStyle:
-                              Theme.of(context).textTheme.labelLarge!.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                          todayDecoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer,
-                            shape: BoxShape.circle,
+                          firstDay: DateTime.utc(2010, 10, 16),
+                          lastDay: DateTime.utc(2030, 3, 14),
+                          focusedDay: _focusedDay,
+                          availableCalendarFormats: _calendarFormat,
+                          daysOfWeekHeight: 20,
+                          calendarStyle: CalendarStyle(
+                            // Decoration for today
+                            todayDecoration: BoxDecoration(
+                              border: Border.all(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                                width: 2,
+                              ),
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            // Decoration for weekend
+                            weekendDecoration: BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            // Decoration for outside days
+                            outsideDecoration: BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            // Decoration for default day
+                            defaultDecoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            // Decoration for selected day
+                            selectedDecoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            selectedTextStyle: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                            todayTextStyle: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
-                          todayTextStyle:
-                              Theme.of(context).textTheme.labelLarge!.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onPrimaryContainer,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        selectedDayPredicate: (day) {
-                          return isSameDay(_selectedDay, day);
-                        },
-                        onDaySelected: (selectedDay, focusedDay) {
-                          setState(() {
-                            _selectedDay = selectedDay;
+                          selectedDayPredicate: (day) {
+                            return isSameDay(_selectedDay, day);
+                          },
+                          onDaySelected: (selectedDay, focusedDay) {
+                            setState(() {
+                              _selectedDay = selectedDay;
+                              _focusedDay = focusedDay;
+                              model.getEventsByDate(selectedDay);
+                            });
+                          },
+                          onPageChanged: (focusedDay) {
                             _focusedDay = focusedDay;
-                            model.getEventsByDate(selectedDay);
-                          });
-                        },
-                        onPageChanged: (focusedDay) {
-                          _focusedDay = focusedDay;
-                        },
+                          },
+                        ),
                       ),
                       Expanded(
                         child: ListView.builder(
