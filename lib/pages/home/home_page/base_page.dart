@@ -71,23 +71,7 @@ class _BasePageState extends State<BasePage> {
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasError) {
-            if (snapshot.error is GroupingProjectException) {
-              if ((snapshot.error as GroupingProjectException).code ==
-                  GroupingProjectExceptionCode.notExistInDatabase) {
-                // TODO : 拿到第三方認證 Profile 後，將資料傳入 createProfile
-                _authService.getProfile().then((value) async {
-                  if (value != null) {
-                    await DataController().createUser(userProfile: value);
-                    setState(() {
-                      _dataFuture = refresh();
-                    });
-                  }
-                });
-              }
-              return Scaffold(body: NotFoundPage.fromError("ERROR"));
-            } else {
-              return Scaffold(body: NotFoundPage.fromError("ERROR"));
-            }
+            return Scaffold(body: NotFoundPage.fromError("ERROR"));
           } else {
             // data loaded successfully, build the widget tree here
             return Consumer<ThemeManager>(

@@ -307,6 +307,11 @@ class AuthService {
 
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
+          if (result.additionalUserInfo?.isNewUser == true) {
+            await DataController().createUser(
+                userProfile:
+                    await getProfile() ?? ProfileModel(nickname: 'unknown'));
+          }
           return _userModelFromAuth(result.user);
         }
       } on FirebaseAuthException catch (e) {
@@ -367,6 +372,11 @@ class AuthService {
 
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
+          if (result.additionalUserInfo?.isNewUser == true) {
+            await DataController().createUser(
+                userProfile:
+                    await getProfile() ?? ProfileModel(nickname: 'unknown'));
+          }
           return _userModelFromAuth(result.user);
         }
       } catch (e) {
@@ -401,11 +411,21 @@ class AuthService {
       if (kIsWeb) {
         UserCredential result =
             await FirebaseAuth.instance.signInWithPopup(githubProvider);
+        if (result.additionalUserInfo?.isNewUser == true) {
+          await DataController().createUser(
+              userProfile:
+                  await getProfile() ?? ProfileModel(nickname: 'unknown'));
+        }
 
         return _userModelFromAuth(result.user);
       } else if (Platform.isAndroid || Platform.isIOS) {
         UserCredential result =
             await FirebaseAuth.instance.signInWithProvider(githubProvider);
+        if (result.additionalUserInfo?.isNewUser == true) {
+          await DataController().createUser(
+              userProfile:
+                  await getProfile() ?? ProfileModel(nickname: 'unknown'));
+        }
 
         return _userModelFromAuth(result.user);
       }
@@ -460,6 +480,11 @@ class AuthService {
         // }
 
         UserCredential result = await _auth.signInWithCredential(credential);
+        if (result.additionalUserInfo?.isNewUser == true) {
+          await DataController().createUser(
+              userProfile:
+                  await getProfile() ?? ProfileModel(nickname: 'unknown'));
+        }
 
         return _userModelFromAuth(result.user);
       }
@@ -492,6 +517,11 @@ class AuthService {
         // }
 
         UserCredential result = await _auth.signInWithCredential(credential);
+        if (result.additionalUserInfo?.isNewUser == true) {
+          await DataController().createUser(
+              userProfile:
+                  await getProfile() ?? ProfileModel(nickname: 'unknown'));
+        }
 
         return _userModelFromAuth(result.user);
       }
