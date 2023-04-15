@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:grouping_project/ViewModel/ThemeViewModel.dart';
 import 'package:grouping_project/exception.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/login.dart';
@@ -13,9 +14,9 @@ import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
 import 'package:grouping_project/pages/templates/page_not_found.dart';
 import 'package:grouping_project/service/service_lib.dart';
+import 'package:provider/provider.dart';
 
-import 'package:grouping_project/pages/home/home_page/empty.dart';
-
+// class ThemeControl extends
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);
 
@@ -25,8 +26,6 @@ class BasePage extends StatefulWidget {
 
 class _BasePageState extends State<BasePage> {
   late Future<void> _dataFuture;
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
   final _pageController = PageController();
   final _pages = const <Widget>[
     HomePage(),
@@ -85,97 +84,105 @@ class _BasePageState extends State<BasePage> {
             }
           } else {
             // data loaded successfully, build the widget tree here
-            return InheritedProfile(
-              profile: profile,
-              updateProfile: (ProfileModel newProfile) {
-                setState(() {
-                  profile = newProfile;
-                });
-              },
-              child: Scaffold(
-                  appBar: AppBar(
-                    title: MaterialButton(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            CircleAvatar(
-                              radius: 15,
-                              backgroundImage: profile.photo != null
-                                  ? Image.file(File(profile.photo!.path)).image
-                                  : Image.asset(
-                                          "assets/images/profile_male.png")
-                                      .image,
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "${profile.nickname ?? "Unknown"} 的個人工作區",
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                            ),
-                            const Icon(Icons.unfold_more),
-                          ],
+            return Consumer<ThemeManager>(
+              builder: (context, themeManager, child) => 
+              InheritedProfile(
+                profile: profile,
+                updateProfile: (ProfileModel newProfile) {
+                  setState(() {
+                    profile = newProfile;
+                  });
+                },
+                child: Scaffold(
+                    appBar: AppBar(
+                      title: MaterialButton(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              CircleAvatar(
+                                radius: 20,
+                                backgroundImage: profile.photo != null
+                                    ? Image.file(File(profile.photo!.path)).image
+                                    : Image.asset(
+                                            "assets/images/profile_male.png")
+                                        .image,
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                profile.nickname ?? "Unknown",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 18),
+                              ),
+                              const Icon(Icons.unfold_more),
+                            ],
+                          ),
                         ),
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              barrierColor: Colors.black.withOpacity(0.1),
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(20),
+                                      topRight: Radius.circular(20))),
+                              builder: (BuildContext context) {
+                                return SwitchWorkSpaceSheet();
+                              });
+                        },
                       ),
-                      onPressed: () {
-                        showModalBottomSheet(
-                            context: context,
-                            barrierColor: Colors.black.withOpacity(0.1),
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(20),
-                                    topRight: Radius.circular(20))),
-                            builder: (BuildContext context) {
-                              return SwitchWorkSpaceSheet();
-                            });
-                      },
+                      automaticallyImplyLeading: false,
+                      actions: [
+                        IconButton(
+                            //temp remove async for quick test
+                            onPressed: () {
+                              themeManager.toggleTheme();
+                            },
+                            icon: Icon(
+                                themeManager.icon)
+                        ),
+                        IconButton(
+                            //temp remove async for quick test
+                            onPressed: () async {
+                              _authService.signOut().then((value) =>
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => LoginPage())));
+                            },
+                            icon:
+                                const Icon(Icons.settings_accessibility_rounded)),
+                      ],
                     ),
-                    backgroundColor: Colors.white,
-                    automaticallyImplyLeading: false,
-                    actions: [
-                      IconButton(
-                          //temp remove async for quick test
-                          onPressed: () async {
-                            // _authService.signOut().then((value) =>
-                            //     Navigator.pushReplacement(
-                            //         context,
-                            //         MaterialPageRoute(
-                            //             builder: (context) => LoginPage())));
-                            Navigator.push(context, MaterialPageRoute(builder: (_)=>EmptyWidget()));
-                          },
-                          icon:
-                              const Icon(Icons.settings_accessibility_rounded)),
-                    ],
-                  ),
-                  body: PageView(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      setState(() {
-                        _currentPageIndex = index;
-                        debugPrint("page index: $_currentPageIndex");
-                      });
-                    },
-                    children: _pages,
-                  ),
-                  extendBody: true,
-                  floatingActionButton: const CreateButton(),
-                  floatingActionButtonLocation:
-                      FloatingActionButtonLocation.centerDocked,
-                  bottomNavigationBar: NavigationAppBar(
-                      currentIndex: _currentPageIndex,
-                      onTap: (index) {
+                    body: PageView(
+                      controller: _pageController,
+                      onPageChanged: (index) {
                         setState(() {
                           _currentPageIndex = index;
-                          _pageController.animateToPage(index,
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut);
+                          debugPrint("page index: $_currentPageIndex");
                         });
-                      })),
+                      },
+                      children: _pages,
+                    ),
+                    extendBody: true,
+                    floatingActionButton: const CreateButton(),
+                    // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                    bottomNavigationBar: NavigationAppBar(
+                        currentIndex: _currentPageIndex,
+                        onTap: (index) {
+                          setState(() {
+                            _currentPageIndex = index;
+                            _pageController.animateToPage(index,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut);
+                          });
+                        })),
+              ),
             );
           }
         } else {
