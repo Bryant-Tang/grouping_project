@@ -1,7 +1,7 @@
 import 'package:grouping_project/pages/home/personal_dashboard/card_edit_page.dart';
 
 // progress card
-import 'package:grouping_project/components/card_view/progress.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/progress.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/over_view.dart';
 
 // show frame of widget
