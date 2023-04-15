@@ -63,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
         backward: backward,
       ),
       RecommendPage(forward: () {
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const BasePage()));
       })
     ];
@@ -113,7 +113,8 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (BuildContext context) => SignUpViewModel()..onEmailChange(widget.registeredEmail),
+      create: (BuildContext context) =>
+          SignUpViewModel()..onEmailChange(widget.registeredEmail),
       child: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
@@ -175,8 +176,7 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
                 labelText: "使用者名稱",
                 hintText: "請輸入使用者名稱",
               ),
-            )
-        ),
+            )),
         toggleBar: NavigationToggleBar(
           goBackButtonText: "上一步",
           goToNextButtonText: "下一步",
@@ -313,18 +313,18 @@ class _SignUpFinishPageState extends State<_SignUpFinishPage> {
       builder: (context, model, child) => SignUpPageTemplate(
         titleWithContent:
             HeadlineWithContent(headLineText: headLineText, content: content),
-        body: model.isLoading ?
-        const Center(child: CircularProgressIndicator())
-        : Image.asset("assets/images/welcome.png"),
+        body: model.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Image.asset("assets/images/welcome.png"),
         toggleBar: NavigationToggleBar(
           goBackButtonText: "修改資料",
           goToNextButtonText: "完成註冊",
           goBackButtonHandler: widget.backward,
           goToNextButtonHandler: () async {
             await model.register();
-            if(model.registerState == RegisterState.success){
+            if (model.registerState == RegisterState.success) {
               widget.forward();
-            }else{
+            } else {
               showErrorDialog("註冊失敗", "失敗");
             }
           },
@@ -432,7 +432,7 @@ class _RecommendPageState extends State<RecommendPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const BuildingPage(

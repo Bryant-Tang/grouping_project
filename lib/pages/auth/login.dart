@@ -5,10 +5,10 @@ import 'package:grouping_project/components/button/auth_button.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
 import 'package:grouping_project/model/password_register_model.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
-import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/model/password_login_model.dart';
+import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -69,18 +69,20 @@ class LoginPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 20.0),
                   child: Column(
                     children: authButtonNameList
-                        .map((name) => 
-                              AuthButton(
-                                fileName: "$name.png",
-                                name: name,
-                                onPressed: () async {
-                                  await loginViewModel.onThirdPartyLogin(name);
-                                  if(loginViewModel.loginState == LoginState.loginSuccess){
-                                      Navigator.pushReplacement( context,
-                                        MaterialPageRoute( builder: (context) => const BasePage()));
-                                  }
-                                }
-                              ))
+                        .map((name) => AuthButton(
+                            fileName: "$name.png",
+                            name: name,
+                            onPressed: () async {
+                              await loginViewModel.onThirdPartyLogin(name);
+                              if (loginViewModel.loginState ==
+                                  LoginState.loginSuccess) {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const BasePage()));
+                              }
+                            }))
                         .toList(),
                   ),
                 )
@@ -109,6 +111,7 @@ class _EmailFormState extends State<_EmailForm> {
       duration: const Duration(seconds: 2),
     ));
   }
+
   @override
   void dispose() {
     emailController.dispose();
@@ -165,7 +168,7 @@ class _EmailFormState extends State<_EmailForm> {
                     if (!loginViewModel.isLoading) {
                       switch (loginViewModel.loginState) {
                         case LoginState.loginSuccess:
-                        showBanner('登入成功');
+                          showBanner('登入成功');
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -180,8 +183,8 @@ class _EmailFormState extends State<_EmailForm> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => SignUpPage(
-                                    registeredEmail: loginViewModel.email,
-                                  )));
+                                        registeredEmail: loginViewModel.email,
+                                      )));
                           break;
                         case LoginState.wrongPassword:
                           break;
@@ -213,5 +216,3 @@ class _EmailFormState extends State<_EmailForm> {
     );
   }
 }
-
-
