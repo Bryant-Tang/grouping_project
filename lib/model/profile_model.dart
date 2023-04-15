@@ -1,8 +1,10 @@
+// ignore_for_file: unnecessary_this
 import 'data_controller.dart';
 import 'data_model.dart';
 
 import 'dart:io' as io show File;
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:flutter/services.dart' as flutter_services show AssetBundle;
 
 /// ## the type for [ProfileModel.tags]
 /// * [tag] : the key for this tag
@@ -38,23 +40,14 @@ class ProfileModel extends BaseDataModel<ProfileModel>
 
   /// default constructor, only for default profile
   ProfileModel._default()
-      //ignore: unnecessary_this
       : this.name = 'unknown',
-        //ignore: unnecessary_this
         this.color = 0xFFFCBF49,
-        //ignore: unnecessary_this
         this.email = 'unknown',
-        //ignore: unnecessary_this
         this.nickname = 'unknown',
-        //ignore: unnecessary_this
         this.slogan = 'unknown',
-        //ignore: unnecessary_this
         this.introduction = 'unknown',
-        //ignore: unnecessary_this
         this.tags = [],
-        //ignore: unnecessary_this
-        this.photo = io.File('../assets/images/profile_male.png'),
-        //ignore: unnecessary_this
+        this.photo = io.File(''),
         this.associateEntityId = [],
         super(
             id: 'profile_default',
@@ -74,23 +67,14 @@ class ProfileModel extends BaseDataModel<ProfileModel>
       List<ProfileTag>? tags,
       io.File? photo,
       List<String>? associateEntityId})
-      //ignore: unnecessary_this
       : this.name = name ?? defaultProfile.name,
-        //ignore: unnecessary_this
         this.email = email ?? defaultProfile.email,
-        //ignore: unnecessary_this
         this.color = color ?? defaultProfile.color,
-        //ignore: unnecessary_this
         this.nickname = nickname ?? defaultProfile.nickname,
-        //ignore: unnecessary_this
         this.slogan = slogan ?? defaultProfile.slogan,
-        //ignore: unnecessary_this
         this.introduction = introduction ?? defaultProfile.introduction,
-        //ignore: unnecessary_this
         this.tags = tags ?? defaultProfile.tags,
-        //ignore: unnecessary_this
         this.photo = photo ?? defaultProfile.photo,
-        //ignore: unnecessary_this
         this.associateEntityId =
             associateEntityId ?? defaultProfile.associateEntityId,
         super(
@@ -186,19 +170,19 @@ class ProfileModel extends BaseDataModel<ProfileModel>
       required Map<String, dynamic> data,
       required DataController ownerController}) async {
     ProfileModel processData = ProfileModel(
-        name: data['name'] ?? defaultProfile.name,
-        email: data['email'] ?? defaultProfile.email,
-        color: data['color'] ?? defaultProfile.color,
-        nickname: data['nickname'] ?? defaultProfile.nickname,
-        slogan: data['slogan'] ?? defaultProfile.slogan,
-        introduction: data['introduction'] ?? defaultProfile.introduction,
+        name: data['name'],
+        email: data['email'],
+        color: data['color'],
+        nickname: data['nickname'],
+        slogan: data['slogan'],
+        introduction: data['introduction'],
         tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
             ? _fromFirestoreTags(
                 List.from(data['tags']), List.from(data['tag_contents']))
-            : defaultProfile.tags,
+            : null,
         associateEntityId: data['associate_entity_id'] is Iterable
             ? List.from(data['associate_entity_id'])
-            : defaultProfile.associateEntityId);
+            : null);
 
     return processData;
   }

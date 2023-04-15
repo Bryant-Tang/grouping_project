@@ -61,12 +61,12 @@ class DataController {
   /// ## download *'one'* data from database.
   /// * retrun one object of the type you specify.
   /// * [dataTypeToGet] : the data type you want to get, suppose to be
-  /// `T<T extends DataModel>()`
+  /// `T<T extends DataModel>.defaultModel`
   /// * [dataId] : the id of the data
   /// ------
   /// **Notice below :**
   /// * remember to use ***await*** in front of this method.
-  /// * if you want to get [ProfileModel] , just pass `ProfileModel().id!` to [dataId]
+  /// * if you want to get `ProfileModel` , just pass `ProfileModel.defaultProfile.id!` to [dataId]
   Future<T> download<T extends BaseDataModel<T>>(
       {required T dataTypeToGet, required String dataId}) async {
     var firestoreSnap =
@@ -135,7 +135,8 @@ class DataController {
 
     if (_forUser == true) {
       ProfileModel ownerProfile = await download(
-          dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!);
+          dataTypeToGet: ProfileModel.defaultProfile,
+          dataId: ProfileModel.defaultProfile.id!);
       for (var groupId in ownerProfile.associateEntityId) {
         var dataListForGroup = await DataController(groupId: groupId)
             .downloadAll(dataTypeToGet: dataTypeToGet);
@@ -209,7 +210,8 @@ class DataController {
     String groupId = await FirestoreController.createGroup();
 
     var userProfile = await download(
-        dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!);
+        dataTypeToGet: ProfileModel.defaultProfile,
+        dataId: ProfileModel.defaultProfile.id!);
     userProfile.addEntity(groupId);
     await upload(uploadData: userProfile);
 

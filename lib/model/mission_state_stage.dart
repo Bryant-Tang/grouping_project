@@ -1,10 +1,8 @@
-import 'package:grouping_project/exception.dart';
-
 /// Stage of mission state
 enum MissionStage { progress, pending, close }
 
 /// convert `MissionStage` to `String`
-String stageToString(MissionStage stage) {
+String? stageToString(MissionStage stage) {
   if (stage == MissionStage.progress) {
     return 'progress';
   } else if (stage == MissionStage.pending) {
@@ -12,12 +10,7 @@ String stageToString(MissionStage stage) {
   } else if (stage == MissionStage.close) {
     return 'close';
   }
-  throw GroupingProjectException(
-      message:
-          'Some thing went wrong during convert the type of mission stage. '
-          'Please contact developer.',
-      code: GroupingProjectExceptionCode.wrongParameter,
-      stackTrace: StackTrace.current);
+  return null;
 }
 
 /// convert `String` to `MissionStage`

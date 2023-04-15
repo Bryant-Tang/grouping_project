@@ -1,3 +1,4 @@
+// ignore_for_file: unnecessary_this
 import 'data_controller.dart';
 import 'data_model.dart';
 import 'profile_model.dart';
@@ -10,68 +11,93 @@ import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 /// ## a data model for misison
 /// * to upload/download, use `DataController`
 class MissionModel extends BaseDataModel<MissionModel> {
-  String? title;
-  DateTime? deadline;
-  List<String>? contributorIds;
-  String? introduction;
-  String? stateModelId;
-  MissionStage? stage;
-  String? stateName;
-  List<String>? tags;
-  List<DateTime>? notifications;
-  List<String>? parentMissionIds;
-  List<String>? childMissionIds;
-  String ownerName = 'unknown';
-  int color = 0xFFFCBF49;
+  String title;
+  DateTime deadline;
+  List<String> contributorIds;
+  String introduction;
+  String stateModelId;
+  MissionStage stage;
+  String stateName;
+  List<String> tags;
+  List<DateTime> notifications;
+  List<String> parentMissionIds;
+  List<String> childMissionIds;
+  String ownerName;
+  int color;
+
+  static final MissionModel defaultMission = MissionModel._default();
+
+  MissionModel._default()
+      : this.title = 'unknown',
+        this.deadline = DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true),
+        this.contributorIds = [],
+        this.introduction = 'unknown',
+        this.stateModelId = MissionStateModel.defaultProgressState.id!,
+        this.stage = MissionStateModel.defaultProgressState.stage,
+        this.stateName = MissionStateModel.defaultProgressState.stateName,
+        this.tags = [],
+        this.notifications = [],
+        this.parentMissionIds = [],
+        this.childMissionIds = [],
+        this.color = ProfileModel.defaultProfile.color,
+        this.ownerName = ProfileModel.defaultProfile.name,
+        super(id: null, databasePath: 'missions', storageRequired: false);
 
   /// ## a data model for mission
   /// * to upload/download, use `DataController`
   /// -----
   /// - recommend to pass state using [state]
-  /// - if [state] is not given, will then seek default state by [stage]
-  MissionModel({
-    super.id,
-    this.title,
-    this.deadline,
-    this.contributorIds,
-    this.introduction,
-    MissionStateModel? state,
-    this.stateModelId,
-    this.stage,
-    this.stateName,
-    this.tags,
-    this.notifications,
-    this.parentMissionIds,
-    this.childMissionIds,
-  }) : super(
-          databasePath: 'missions',
-          storageRequired: false,
+  /// - if [state] is not given, will then seek [stateModelId], [stage], [stateName]
+  /// - if all above is not given, seek the attribute of [defaultMission]
+  MissionModel(
+      {super.id,
+      String? title,
+      DateTime? deadline,
+      List<String>? contributorIds,
+      String? introduction,
+      MissionStateModel? state,
+      String? stateModelId,
+      MissionStage? stage,
+      String? stateName,
+      List<String>? tags,
+      List<DateTime>? notifications,
+      List<String>? parentMissionIds,
+      List<String>? childMissionIds,
+      int? color,
+      String? ownerName})
+      : this.title = title ?? defaultMission.title,
+        this.deadline = deadline ?? defaultMission.deadline,
+        this.contributorIds = contributorIds ?? defaultMission.contributorIds,
+        this.introduction = introduction ?? defaultMission.introduction,
+        this.stateModelId =
+            state?.id ?? (stateModelId ?? defaultMission.stateModelId),
+        this.stage = state?.stage ?? (stage ?? defaultMission.stage),
+        this.stateName =
+            state?.stateName ?? (stateName ?? defaultMission.stateName),
+        this.tags = tags ?? defaultMission.tags,
+        this.notifications = notifications ?? defaultMission.notifications,
+        this.parentMissionIds =
+            parentMissionIds ?? defaultMission.parentMissionIds,
+        this.childMissionIds =
+            childMissionIds ?? defaultMission.childMissionIds,
+        this.color = defaultMission.color,
+        this.ownerName = defaultMission.ownerName,
+        super(
+          databasePath: defaultMission.databasePath,
+          storageRequired: defaultMission.storageRequired,
           // setOwnerRequired: true
-        ) {
-    if (state != null) {
-      setStateByStateModel(state);
-    } else if (stage != null) {
-      if (stage == MissionStage.progress) {
-        setStateByStateModel(MissionStateModel.defaultProgressState);
-      } else if (stage == MissionStage.pending) {
-        setStateByStateModel(MissionStateModel.defaultPendingState);
-      } else if (stage == MissionStage.close) {
-        setStateByStateModel(MissionStateModel.defaultFinishState);
-      }
-    }
-  }
+        );
 
   /// ### This is the perfered method to change state of mission
   /// - please make sure the [stateModel] is a correct model in database
   void setStateByStateModel(MissionStateModel stateModel) {
-    if (stateModel.stage == null || stateModel.stateName == null) {
+    if (stateModel.id == null) {
       throw GroupingProjectException(
-          message: 'The state model is lack of stage or stateName, '
-              'please make sure you are using the correct state.',
+          message: 'This state model is not from the database.',
           code: GroupingProjectExceptionCode.wrongParameter,
           stackTrace: StackTrace.current);
     }
-    stateModelId = stateModel.id;
+    stateModelId = stateModel.id!;
     stage = stateModel.stage;
     stateName = stateModel.stateName;
   }
@@ -95,17 +121,19 @@ class MissionModel extends BaseDataModel<MissionModel> {
   }
 
   /// check if the state of this instance is exist in the database
-  Future<String?> _checkIfStateExist(DataController ownerController) async {
-    List<MissionStateModel> stateModelList =
-        await ownerController.downloadAll(dataTypeToGet: MissionStateModel());
+  Future<MissionStateModel?> _checkIfStateExist(
+      {String? stateModelId,
+      MissionStage? stage,
+      String? stateName,
+      required DataController ownerController}) async {
+    List<MissionStateModel> stateModelList = await ownerController.downloadAll(
+        dataTypeToGet: MissionStateModel.defaultProgressState);
     for (var stateModel in stateModelList) {
       if (stateModel.id != null && stateModelId == stateModel.id) {
-        return stateModel.id;
-      } else if (stateModel.stage != null &&
-          stage == stateModel.stage &&
-          stateModel.stateName != null &&
+        return stateModel;
+      } else if (stage == stateModel.stage &&
           stateName == stateModel.stateName) {
-        return stateModel.id;
+        return stateModel;
       }
     }
     return null;
@@ -116,12 +144,12 @@ class MissionModel extends BaseDataModel<MissionModel> {
   @override
   Future<Map<String, dynamic>> toFirestore(
       {required DataController ownerController}) async {
-    if (stateModelId == null && stage == null && stateName == null) {
-      setStateByStateModel(MissionStateModel.defaultProgressState);
-    }
-
-    String? stateModelCheckedId = await _checkIfStateExist(ownerController);
-    if (stateModelCheckedId == null) {
+    MissionStateModel? stateModelChecked = await _checkIfStateExist(
+        stateModelId: stateModelId,
+        stage: stage,
+        stateName: stateName,
+        ownerController: ownerController);
+    if (stateModelChecked == null) {
       throw GroupingProjectException(
           message: 'The state of this mission is not exist in the state model '
               'pool for this entity. Please make sure assign a correct state.',
@@ -129,16 +157,21 @@ class MissionModel extends BaseDataModel<MissionModel> {
           stackTrace: StackTrace.current);
     }
     return {
-      if (title != null) 'title': title,
-      if (deadline != null) 'deadline': Timestamp.fromDate(deadline!),
-      if (contributorIds != null) 'contributor_ids': contributorIds,
-      if (introduction != null) 'introduction': introduction,
-      'state_model_id': stateModelCheckedId,
-      if (tags != null) 'tags': tags,
-      if (parentMissionIds != null) 'parent_mission_ids': parentMissionIds,
-      if (childMissionIds != null) 'child_mission_ids': childMissionIds,
-      if (notifications != null)
-        'notifications': _toFirestoreTimeList(notifications!),
+      if (title != defaultMission.title) 'title': title,
+      if (deadline != defaultMission.deadline)
+        'deadline': Timestamp.fromDate(deadline),
+      if (contributorIds != defaultMission.contributorIds)
+        'contributor_ids': contributorIds,
+      if (introduction != defaultMission.introduction)
+        'introduction': introduction,
+      'state_model_id': stateModelChecked.id,
+      if (tags != defaultMission.tags) 'tags': tags,
+      if (parentMissionIds != defaultMission.parentMissionIds)
+        'parent_mission_ids': parentMissionIds,
+      if (childMissionIds != defaultMission.childMissionIds)
+        'child_mission_ids': childMissionIds,
+      if (notifications != defaultMission.notifications)
+        'notifications': _toFirestoreTimeList(notifications),
     };
   }
 
@@ -150,23 +183,9 @@ class MissionModel extends BaseDataModel<MissionModel> {
       {required String id,
       required Map<String, dynamic> data,
       required DataController ownerController}) async {
-    List<MissionStateModel> stateModelList =
-        await ownerController.downloadAll(dataTypeToGet: MissionStateModel());
-    MissionStateModel? stateModelChecked;
-    for (var stateModel in stateModelList) {
-      if (stateModel.id != null && data['state_model_id'] == stateModel.id) {
-        stateModelChecked = stateModel;
-        break;
-      }
-    }
-    if (stateModelChecked == null) {
-      throw GroupingProjectException(
-          message: 'The state of this mission record in database is not exist '
-              'in the state model pool for this entity. This is not suppose '
-              'to happend, please contact developer.',
-          code: GroupingProjectExceptionCode.notExistInDatabase,
-          stackTrace: StackTrace.current);
-    }
+    MissionStateModel? stateModelChecked = await _checkIfStateExist(
+        stateModelId: data['state_model_id'], ownerController: ownerController);
+
     MissionModel processData = MissionModel(
       id: id,
       title: data['title'],
@@ -177,9 +196,7 @@ class MissionModel extends BaseDataModel<MissionModel> {
           ? List.from(data['contributor_ids'])
           : null,
       introduction: data['introduction'],
-      stateModelId: stateModelChecked.id,
-      stage: stateModelChecked.stage,
-      stateName: stateModelChecked.stateName,
+      state: stateModelChecked,
       tags: data['tags'] is Iterable ? List.from(data['tags']) : null,
       parentMissionIds: data['parent_mission_ids'] is Iterable
           ? List.from(data['parent_mission_ids'])
@@ -193,7 +210,8 @@ class MissionModel extends BaseDataModel<MissionModel> {
     );
 
     processData._setOwner(await ownerController.download(
-        dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!));
+        dataTypeToGet: ProfileModel.defaultProfile,
+        dataId: ProfileModel.defaultProfile.id!));
 
     return processData;
   }

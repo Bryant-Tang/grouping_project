@@ -1,3 +1,4 @@
+// ignore_for_file: unnecessary_this
 import 'data_controller.dart';
 import 'data_model.dart';
 import 'profile_model.dart';
@@ -22,8 +23,8 @@ class EventModel extends BaseDataModel<EventModel> {
 
   EventModel._default()
       : this.title = 'unknown',
-        this.startTime = DateTime(0),
-        this.endTime = DateTime(0),
+        this.startTime = DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true),
+        this.endTime = DateTime.fromMicrosecondsSinceEpoch(0, isUtc: true),
         this.contributorIds = [],
         this.introduction = 'unknown',
         this.tags = [],
@@ -86,14 +87,19 @@ class EventModel extends BaseDataModel<EventModel> {
   Future<Map<String, dynamic>> toFirestore(
       {required DataController ownerController}) async {
     return {
-      if (title != null) 'title': title,
-      if (startTime != null) 'start_time': Timestamp.fromDate(startTime),
-      if (endTime != null) 'end_time': Timestamp.fromDate(endTime),
-      if (contributorIds != null) 'contributor_ids': contributorIds,
-      if (introduction != null) 'introduction': introduction,
-      if (tags != null) 'tags': tags,
-      if (relatedMissionIds != null) 'related_mission_ids': relatedMissionIds,
-      if (notifications != null)
+      if (title != defaultEvent.title) 'title': title,
+      if (startTime != defaultEvent.startTime)
+        'start_time': Timestamp.fromDate(startTime),
+      if (endTime != defaultEvent.endTime)
+        'end_time': Timestamp.fromDate(endTime),
+      if (contributorIds != defaultEvent.contributorIds)
+        'contributor_ids': contributorIds,
+      if (introduction != defaultEvent.introduction)
+        'introduction': introduction,
+      if (tags != defaultEvent.tags) 'tags': tags,
+      if (relatedMissionIds != defaultEvent.relatedMissionIds)
+        'related_mission_ids': relatedMissionIds,
+      if (notifications != defaultEvent.notifications)
         'notifications': _toFirestoreTimeList(notifications),
     };
   }
@@ -129,7 +135,8 @@ class EventModel extends BaseDataModel<EventModel> {
     );
 
     processData._setOwner(await ownerController.download(
-        dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!));
+        dataTypeToGet: ProfileModel.defaultProfile,
+        dataId: ProfileModel.defaultProfile.id!));
 
     return processData;
   }
