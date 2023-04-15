@@ -42,12 +42,7 @@ class CalendarViewModel extends ChangeNotifier {
               event.endTime!.isAtSameMomentAs(
                   DateTime(date.year, date.month, date.day, 0, 0, 0))));
     }).toList();
+    debugPrint('The events are: $eventsByDate');
     notifyListeners();
-  }
-
-  void onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    _selectedDay = selectedDay;
-    _focusedDay = focusedDay;
-    getEventsByDate(selectedDay);
   }
 }

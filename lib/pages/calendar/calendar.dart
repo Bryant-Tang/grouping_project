@@ -12,9 +12,11 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  late DateTime _selectedDay;
-  late DateTime _focusedDay;
+  late DateTime _selectedDay = DateTime.now();
+  late DateTime _focusedDay = DateTime.now();
+  late List _eventToday;
   List eventsToday = [];
+  CalendarViewModel model = CalendarViewModel();
   final Map<CalendarFormat, String> _calendarFormat = {
     CalendarFormat.month: 'month'
   };
@@ -24,16 +26,15 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     // TODO: implement initState
-    _selectedDay = DateTime.now();
-    _focusedDay = DateTime.now();
-    CalendarViewModel().getEventsByDate(DateTime.now());
     super.initState();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => model.getEventsByDate(DateTime.now()));
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (context) => CalendarViewModel(),
+        create: (context) => model,
         child: Consumer<CalendarViewModel>(
           builder: (context, model, child) {
             return RefreshIndicator(
@@ -61,8 +62,13 @@ class _CalendarPageState extends State<CalendarPage> {
                     selectedDayPredicate: (day) {
                       return isSameDay(_selectedDay, day);
                     },
-                    onDaySelected: (selectedDay, focusedDay) =>
-                        model.onDaySelected(selectedDay, focusedDay),
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay;
+                        model.getEventsByDate(selectedDay);
+                      });
+                    },
                     onPageChanged: (focusedDay) {
                       _focusedDay = focusedDay;
                     },
@@ -71,14 +77,19 @@ class _CalendarPageState extends State<CalendarPage> {
                     child: ListView.builder(
                       itemCount: model.eventsByDate.length,
                       itemBuilder: (context, index) {
-                        return Card(
-                          child: ListTile(
-                            title: Text(
-                                model.eventsByDate[index].title.toString()),
-                            subtitle: Text(model
-                                .eventsByDate[index].introduction
-                                .toString()),
-                          ),
+                        return Column(
+                          children: [
+                            Card(
+                              child: ListTile(
+                                title: Text(
+                                    model.eventsByDate[index].title.toString()),
+                                subtitle: Text(model
+                                    .eventsByDate[index].introduction
+                                    .toString()),
+                              ),
+                            ),
+                            // Text(model.eventsByDate.length.toString())
+                          ],
                         );
                       },
                     ),
