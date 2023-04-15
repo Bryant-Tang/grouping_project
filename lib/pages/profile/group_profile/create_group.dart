@@ -6,7 +6,7 @@ import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart
 import 'package:grouping_project/model/data_controller.dart';
 import 'package:grouping_project/model/profile_model.dart';
 import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
-import 'package:grouping_project/pages/templates/sing_up_page_template.dart';
+import 'package:grouping_project/pages/view_template/sing_up_page_template.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreateWorkspacePage extends StatefulWidget {

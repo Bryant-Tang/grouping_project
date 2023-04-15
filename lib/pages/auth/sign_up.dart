@@ -1,36 +1,39 @@
+import 'package:grouping_project/ViewModel/signup_view_model.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/auth/user.dart';
-import 'package:grouping_project/pages/templates/sing_up_page_template.dart';
-import 'package:grouping_project/pages/templates/building.dart';
+import 'package:grouping_project/model/password_register_model.dart';
+import 'package:grouping_project/pages/view_template/sing_up_page_template.dart';
+import 'package:grouping_project/pages/view_template/building.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/pages/profile/personal_profile/profile_edit_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class InhertedSignUpData extends InheritedWidget {
-  final SignUpDataModel data;
-  const InhertedSignUpData({
-    Key? key,
-    required Widget child,
-    required this.data,
-  }) : super(key: key, child: child);
+// class InhertedSignUpData extends InheritedWidget {
+//   final SignUpDataModel data;
+//   const InhertedSignUpData({
+//     Key? key,
+//     required Widget child,
+//     required this.data,
+//   }) : super(key: key, child: child);
 
-  static InhertedSignUpData? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<InhertedSignUpData>();
-  }
+//   static InhertedSignUpData? of(BuildContext context) {
+//     return context.dependOnInheritedWidgetOfExactType<InhertedSignUpData>();
+//   }
 
-  @override
-  bool updateShouldNotify(InhertedSignUpData oldWidget) {
-    return data != oldWidget.data;
-  }
-}
+//   @override
+//   bool updateShouldNotify(InhertedSignUpData oldWidget) {
+//     return data != oldWidget.data;
+//   }
+// }
 
 class SignUpPage extends StatefulWidget {
-  final SignUpDataModel data;
+  // final SignUpDataModel data;
+  final String registeredEmail;
   const SignUpPage({
     super.key,
-    required this.data,
+    required this.registeredEmail,
   });
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -48,23 +51,19 @@ class _SignUpPageState extends State<SignUpPage> {
         backward: Navigator.of(context).pop,
       ),
       _UserNameRegisterPage(
-          forward: forward,
-          backward: backward,
-          callback: (userName) {
-            setState(() => widget.data.userName = userName);
-          }),
+        forward: forward,
+        backward: backward,
+      ),
       _UserPasswordRegisterPage(
-          forward: forward,
-          backward: backward,
-          callback: (password) {
-            setState(() => widget.data.password = password);
-          }),
+        forward: forward,
+        backward: backward,
+      ),
       _SignUpFinishPage(
-        forward: register,
+        forward: forward,
         backward: backward,
       ),
       RecommendPage(forward: () {
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => const BasePage()));
       })
     ];
@@ -93,30 +92,6 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  void register() async {
-    String email = widget.data.email;
-    String password = widget.data.password;
-    String userName = widget.data.userName;
-    debugPrint('註冊信箱: $email\n使用者密碼: $password');
-    AuthService authService = AuthService();
-    await authService.emailSignUp(email, password).then((value) {
-      if (context.mounted) {
-        debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
-        final ProfileModel user = ProfileModel(name: userName, email: email);
-        DataController()
-            .createUser(userProfile: user)
-            .then((value) => {debugPrint('upload successfully')})
-            .catchError((error) {
-              debugPrint(error.toString());
-            }
-        );
-        forward();
-      }
-    }).catchError((error) {
-      showErrorDialog(error.code, error.toString());
-    });
-  }
-
   void showErrorDialog(String errorTitle, String errorMessage) {
     showDialog<String>(
         context: context,
@@ -137,11 +112,10 @@ class _SignUpPageState extends State<SignUpPage> {
   // final PageStorageBucket _bucket = PageStorageBucket();
   @override
   Widget build(BuildContext context) {
-    return InhertedSignUpData(
-      data: widget.data,
-      child: // PageStorage(
-          // bucket: _bucket,
-          PageView(
+    return ChangeNotifierProvider(
+      create: (BuildContext context) =>
+          SignUpViewModel()..onEmailChange(widget.registeredEmail),
+      child: PageView(
         controller: _pageController,
         physics: const NeverScrollableScrollPhysics(),
         children: _pages,
@@ -175,9 +149,7 @@ class _SignUpHomePage extends StatelessWidget {
 class _UserNameRegisterPage extends StatefulWidget {
   final void Function() forward;
   final void Function() backward;
-  final void Function(String) callback;
-  const _UserNameRegisterPage(
-      {required this.forward, required this.backward, required this.callback});
+  const _UserNameRegisterPage({required this.forward, required this.backward});
 
   @override
   State<_UserNameRegisterPage> createState() => _UserNameRegisterPageState();
@@ -187,35 +159,34 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final headLineText = "使用者名稱";
   final content = "請輸入此帳號的使用者名稱";
-  final inputBox = GroupingInputField(
-    labelText: "USERNAME 使用者名稱",
-    boxIcon: Icons.people,
-    boxColor: Colors.grey,
-    validator: (value) {
-      if (value == null || value.isEmpty) {
-        return "使用者名稱請勿留空";
-      } else {
-        return null;
-      }
-    },
-  );
-  String userName = "";
   @override
   Widget build(BuildContext context) {
-    return SignUpPageTemplate(
-      titleWithContent:
-          HeadlineWithContent(headLineText: headLineText, content: content),
-      body: Form(key: _formKey, child: inputBox),
-      toggleBar: NavigationToggleBar(
-        goBackButtonText: "上一步",
-        goToNextButtonText: "下一步",
-        goBackButtonHandler: widget.backward,
-        goToNextButtonHandler: () {
-          if (_formKey.currentState!.validate()) {
-            widget.callback(inputBox.text ?? "");
-            widget.forward();
-          }
-        },
+    return Consumer<SignUpViewModel>(
+      builder: (context, model, child) => SignUpPageTemplate(
+        titleWithContent:
+            HeadlineWithContent(headLineText: headLineText, content: content),
+        body: Form(
+            key: _formKey,
+            child: TextFormField(
+              initialValue: model.userName,
+              validator: model.userNameValidator,
+              onChanged: model.onUserNameChange,
+              decoration: const InputDecoration(
+                icon: Icon(Icons.person),
+                labelText: "使用者名稱",
+                hintText: "請輸入使用者名稱",
+              ),
+            )),
+        toggleBar: NavigationToggleBar(
+          goBackButtonText: "上一步",
+          goToNextButtonText: "下一步",
+          goBackButtonHandler: widget.backward,
+          goToNextButtonHandler: () {
+            if (_formKey.currentState!.validate()) {
+              widget.forward();
+            }
+          },
+        ),
       ),
     );
   }
@@ -224,9 +195,8 @@ class _UserNameRegisterPageState extends State<_UserNameRegisterPage> {
 class _UserPasswordRegisterPage extends StatefulWidget {
   final void Function() forward;
   final void Function() backward;
-  final void Function(String) callback;
   const _UserPasswordRegisterPage(
-      {required this.forward, required this.backward, required this.callback});
+      {required this.forward, required this.backward});
   @override
   State<_UserPasswordRegisterPage> createState() =>
       _UserPasswordRegisterPageState();
@@ -236,42 +206,6 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final headLineText = "使用者密碼";
   final content = "請輸入此帳號的使用者密碼";
-  late final GroupingInputField passwordField;
-  late final GroupingInputField passwordConfirmField;
-  @override
-  void initState() {
-    super.initState();
-    setState(() {
-      passwordField = GroupingInputField(
-        labelText: "PASSWORD 使用者密碼",
-        boxIcon: Icons.password,
-        boxColor: Colors.grey,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "密碼請勿留空";
-          } else if (value.length <= 6) {
-            return "密碼長度必須大於6個字元";
-          }
-          return null;
-        },
-      );
-      passwordConfirmField = GroupingInputField(
-        labelText: "再次輸入密碼",
-        boxIcon: Icons.password,
-        boxColor: Colors.grey,
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return "確認欄位請勿留空";
-          }
-          if (value != passwordField.text) {
-            return "兩次密碼輸入不同";
-          } else {
-            return null;
-          }
-        },
-      );
-    });
-  }
 
   void dialog() {
     showDialog<String>(
@@ -292,31 +226,53 @@ class _UserPasswordRegisterPageState extends State<_UserPasswordRegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SignUpPageTemplate(
-      titleWithContent:
-          HeadlineWithContent(headLineText: headLineText, content: content),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: <Widget>[
-            passwordField,
-            const SizedBox(
-              height: 15,
-            ),
-            passwordConfirmField
-          ],
+    return Consumer<SignUpViewModel>(
+      builder: (context, model, child) => SignUpPageTemplate(
+        titleWithContent:
+            HeadlineWithContent(headLineText: headLineText, content: content),
+        body: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                obscureText: true,
+                initialValue: model.password,
+                validator: model.passwordValidator,
+                onChanged: model.onPasswordChange,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.lock),
+                  labelText: "密碼",
+                  hintText: "請輸入密碼",
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              TextFormField(
+                obscureText: true,
+                initialValue: model.passwordConfirm,
+                validator: model.passwordConfirmValidator,
+                onChanged: model.onPasswordConfirmChange,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.lock),
+                  labelText: "確認密碼",
+                  hintText: "請再次輸入密碼",
+                ),
+              ),
+            ],
+          ),
         ),
+        toggleBar: NavigationToggleBar(
+            goBackButtonText: "上一步",
+            goToNextButtonText: "下一步",
+            goBackButtonHandler: widget.backward,
+            goToNextButtonHandler: () {
+              if (_formKey.currentState!.validate()) {
+                // widget.callback(passwordField.text);
+                widget.forward();
+              }
+            }),
       ),
-      toggleBar: NavigationToggleBar(
-          goBackButtonText: "上一步",
-          goToNextButtonText: "下一步",
-          goBackButtonHandler: widget.backward,
-          goToNextButtonHandler: () {
-            if (_formKey.currentState!.validate()) {
-              widget.callback(passwordField.text);
-              widget.forward();
-            }
-          }),
     );
   }
 }
@@ -353,15 +309,26 @@ class _SignUpFinishPageState extends State<_SignUpFinishPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SignUpPageTemplate(
-      titleWithContent:
-          HeadlineWithContent(headLineText: headLineText, content: content),
-      body: Image.asset("assets/images/welcome.png"),
-      toggleBar: NavigationToggleBar(
-        goBackButtonText: "修改資料",
-        goToNextButtonText: "完成註冊",
-        goBackButtonHandler: widget.backward,
-        goToNextButtonHandler: widget.forward,
+    return Consumer<SignUpViewModel>(
+      builder: (context, model, child) => SignUpPageTemplate(
+        titleWithContent:
+            HeadlineWithContent(headLineText: headLineText, content: content),
+        body: model.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Image.asset("assets/images/welcome.png"),
+        toggleBar: NavigationToggleBar(
+          goBackButtonText: "修改資料",
+          goToNextButtonText: "完成註冊",
+          goBackButtonHandler: widget.backward,
+          goToNextButtonHandler: () async {
+            await model.register();
+            if (model.registerState == RegisterState.success) {
+              widget.forward();
+            } else {
+              showErrorDialog("註冊失敗", "失敗");
+            }
+          },
+        ),
       ),
     );
   }
@@ -369,7 +336,7 @@ class _SignUpFinishPageState extends State<_SignUpFinishPage> {
 
 class RecommendPage extends StatefulWidget {
   final void Function() forward;
-  const RecommendPage({required this.forward});
+  const RecommendPage({super.key, required this.forward});
   @override
   State<RecommendPage> createState() => _RecommendPageState();
 }
@@ -414,7 +381,7 @@ class _RecommendPageState extends State<RecommendPage> {
                       .then((value) => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  EditPersonalProfilePage(
+                              builder: (context) => EditPersonalProfilePage(
                                     profile: value,
                                   ))));
                 },
@@ -465,7 +432,7 @@ class _RecommendPageState extends State<RecommendPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)),
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const BuildingPage(

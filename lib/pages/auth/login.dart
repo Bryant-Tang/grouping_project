@@ -1,14 +1,14 @@
-import 'package:grouping_project/ViewModel/LoginViewModel.dart';
-import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/model/user_model.dart';
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:grouping_project/ViewModel/login_view_model.dart';
+import 'package:grouping_project/components/button/auth_button.dart';
 import 'package:grouping_project/pages/auth/sign_up.dart';
-import 'package:grouping_project/pages/auth/user.dart';
+import 'package:grouping_project/model/password_register_model.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
-import 'package:grouping_project/service/auth_service.dart';
-import 'package:flutter/material.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/model/password_login_model.dart';
+import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -73,18 +73,15 @@ class LoginPage extends StatelessWidget {
                             fileName: "$name.png",
                             name: name,
                             onPressed: () async {
-                              AuthService authService = AuthService();
-                              await authService
-                                  .thridPartyLogin(name)
-                                  .then((value) {
-                                if (value != null) {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const BasePage()));
-                                }
-                              });
+                              await loginViewModel.onThirdPartyLogin(name);
+                              if (loginViewModel.loginState ==
+                                  LoginState.loginSuccess) {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const BasePage()));
+                              }
                             }))
                         .toList(),
                   ),
@@ -106,26 +103,15 @@ class _EmailForm extends StatefulWidget {
 
 class _EmailFormState extends State<_EmailForm> {
   final _formKey = GlobalKey<FormState>();
-
-  void showErrorDialog(String errorTitle, String errorMessage) {
-    showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-              title: Text(errorTitle),
-              content: Text(errorMessage),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('確認'),
-                ),
-              ],
-            ));
-  }
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  void showBanner(String errorMessage) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(errorMessage),
+      duration: const Duration(seconds: 2),
+    ));
+  }
+
   @override
   void dispose() {
     emailController.dispose();
@@ -182,16 +168,23 @@ class _EmailFormState extends State<_EmailForm> {
                     if (!loginViewModel.isLoading) {
                       switch (loginViewModel.loginState) {
                         case LoginState.loginSuccess:
-                          debugPrint('login successfully');
-                          // ignore: use_build_context_synchronously
+                          showBanner('登入成功');
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const BasePage()));
                           break;
                         case LoginState.loginFaild:
+                          showBanner('登入失敗');
                           break;
                         case LoginState.userNotFound:
+                          showBanner('沒有此帳號');
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => SignUpPage(
+                                        registeredEmail: loginViewModel.email,
+                                      )));
                           break;
                         case LoginState.wrongPassword:
                           break;
@@ -220,56 +213,6 @@ class _EmailFormState extends State<_EmailForm> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class AuthButton extends StatelessWidget {
-  final AuthService authService = AuthService();
-  final String fileName;
-  final String name;
-  final void Function() onPressed;
-  AuthButton({
-    super.key,
-    required this.fileName,
-    required this.name,
-    required this.onPressed,
-  });
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
-      child: ElevatedButton(
-          onPressed: () {
-            onPressed();
-          },
-          style: ElevatedButton.styleFrom(
-            // foregroundColor: Theme.of(context).primaryColor,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Image.asset(
-                    "assets/icons/authIcon/$fileName",
-                    width: 30,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    "${name.toUpperCase()} 帳號登入",
-                    style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface),
-                  ),
-                ],
-              ),
-            ),
-          )),
     );
   }
 }

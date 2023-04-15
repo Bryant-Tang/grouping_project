@@ -55,8 +55,13 @@ dependencies:
   syncfusion_flutter_datepicker: ^21.0.0
   day_night_time_picker: ^1.2.0
   path: ^1.8.3
+<<<<<<< HEAD
   qr_flutter: ^4.0.0
   mobile_scanner: ^3.2.0
+=======
+  http: ^0.13.5
+  table_calendar: ^3.0.8
+>>>>>>> upstream/master
 
 dev_dependencies:
   flutter_test:

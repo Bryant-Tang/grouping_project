@@ -1,22 +1,24 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:grouping_project/ViewModel/ThemeViewModel.dart';
+import 'package:grouping_project/ViewModel/theme_view_model.dart';
 import 'package:grouping_project/exception.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
 import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
 
-import 'package:grouping_project/pages/templates/building.dart';
+import 'package:grouping_project/pages/view_template/building.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
 import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
-import 'package:grouping_project/pages/templates/page_not_found.dart';
+import 'package:grouping_project/pages/view_template/page_not_found.dart';
 import 'package:grouping_project/service/service_lib.dart';
 import 'package:provider/provider.dart';
+import 'package:grouping_project/pages/calendar/calendar.dart';
 
-// class ThemeControl extends
+import 'package:grouping_project/pages/home/home_page/empty.dart';
+
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);
 
@@ -29,7 +31,7 @@ class _BasePageState extends State<BasePage> {
   final _pageController = PageController();
   final _pages = const <Widget>[
     HomePage(),
-    Center(child: BuildingPage(errorMessage: "Calendar Page")),
+    CalendarPage(),
     Center(child: BuildingPage(errorMessage: "Message Page")),
     Center(child: BuildingPage(errorMessage: "Note Page")),
   ];
@@ -72,10 +74,14 @@ class _BasePageState extends State<BasePage> {
             if (snapshot.error is GroupingProjectException) {
               if ((snapshot.error as GroupingProjectException).code ==
                   GroupingProjectExceptionCode.notExistInDatabase) {
-                DataController().createUser(userProfile: ProfileModel());
                 // TODO : 拿到第三方認證 Profile 後，將資料傳入 createProfile
-                setState(() {
-                  _dataFuture = refresh();
+                _authService.getProfile().then((value) async {
+                  if (value != null) {
+                    await DataController().createUser(userProfile: value);
+                    setState(() {
+                      _dataFuture = refresh();
+                    });
+                  }
                 });
               }
               return Scaffold(body: NotFoundPage.fromError("ERROR"));
@@ -85,8 +91,7 @@ class _BasePageState extends State<BasePage> {
           } else {
             // data loaded successfully, build the widget tree here
             return Consumer<ThemeManager>(
-              builder: (context, themeManager, child) => 
-              InheritedProfile(
+              builder: (context, themeManager, child) => InheritedProfile(
                 profile: profile,
                 updateProfile: (ProfileModel newProfile) {
                   setState(() {
@@ -106,7 +111,8 @@ class _BasePageState extends State<BasePage> {
                               CircleAvatar(
                                 radius: 20,
                                 backgroundImage: profile.photo != null
-                                    ? Image.file(File(profile.photo!.path)).image
+                                    ? Image.file(File(profile.photo!.path))
+                                        .image
                                     : Image.asset(
                                             "assets/images/profile_male.png")
                                         .image,
@@ -143,9 +149,7 @@ class _BasePageState extends State<BasePage> {
                             onPressed: () {
                               themeManager.toggleTheme();
                             },
-                            icon: Icon(
-                                themeManager.icon)
-                        ),
+                            icon: Icon(themeManager.icon)),
                         IconButton(
                             //temp remove async for quick test
                             onPressed: () async {
@@ -155,8 +159,8 @@ class _BasePageState extends State<BasePage> {
                                       MaterialPageRoute(
                                           builder: (context) => LoginPage())));
                             },
-                            icon:
-                                const Icon(Icons.settings_accessibility_rounded)),
+                            icon: const Icon(
+                                Icons.settings_accessibility_rounded)),
                       ],
                     ),
                     body: PageView(
