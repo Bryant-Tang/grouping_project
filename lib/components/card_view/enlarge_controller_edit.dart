@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/model/model_lib.dart';
+import 'dart:io' as io show File;
 
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -212,45 +214,78 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
   }
 }
 
-class Contributors extends StatelessWidget {
+class Contributors extends StatefulWidget {
   //參與的所有使用者
-
-  const Contributors({super.key, required this.contributorIds});
+  const Contributors(
+      {super.key,
+      required this.contributorIds,
+      this.eventModel,
+      required this.callback});
   final List<String> contributorIds;
+  final EventModel? eventModel;
+  final Function(List<String>) callback;
 
-  Container createHeadShot(String person) {
+  @override
+  State<Contributors> createState() => _ContributorState();
+}
+
+class _ContributorState extends State<Contributors> {
+  // TODO: 創建者必定要有? 如何判斷? 可以刪除?
+  List<RawChip> people = [];
+  List<String> peopleIds = [];
+
+  Future<RawChip> createHeadShot(String person) async {
     /// 回傳 contributor 的頭貼
-    return Container(
-      height: 30,
-      width: 30,
-      decoration: const ShapeDecoration(
-          shape: CircleBorder(side: BorderSide(color: Colors.black)),
-          color: Colors.blueAccent),
+
+    var userData = await DataController()
+        .download(dataTypeToGet: ProfileModel(), dataId: person);
+    io.File photo = userData.photo ?? io.File('assets/images/cover.png');
+    bool selected = false;
+    if (widget.eventModel != null) {
+      selected = widget.eventModel!.contributorIds!.contains(person);
+      if (selected) peopleIds.add(person);
+    }
+
+    return RawChip(
+      label: Text(userData.name ?? 'unknown'),
+      avatar: CircleAvatar(child: Image.file(photo)),
+      selected: selected,
+      onSelected: (value) {
+        setState(() {
+          selected = value;
+          if (value) {
+            peopleIds.add(person);
+          } else {
+            peopleIds.remove(person);
+          }
+          widget.callback(peopleIds);
+        });
+      },
+      elevation: 4,
+      selectedColor: const Color(0xFF2196F3),
     );
   }
 
-  List<Container> datas() {
-    List<Container> tmp = [];
-    for (int i = 0; i < contributorIds.length; i++) {
-      tmp.add(createHeadShot(contributorIds[i]));
+  Future<void> datas() async {
+    if (widget.eventModel != null){
+      for (int i = 0; i < widget.eventModel!.contributorIds!.length; i++) {
+        people.add(await createHeadShot(widget.contributorIds[i]));
+      }
     }
-    // TODO: only for test!!!!
-    if (tmp.isEmpty) {
-      tmp.add(Container(
-        height: 30,
-        width: 30,
-        decoration: const ShapeDecoration(
-            shape: CircleBorder(side: BorderSide(color: Colors.black)),
-            color: Colors.greenAccent),
-      ));
-    }
-    return tmp;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    datas().then((value) => setState(
+          () {},
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: datas(),
+      children: people,
     );
   }
 }

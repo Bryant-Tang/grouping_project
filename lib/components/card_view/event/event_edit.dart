@@ -4,6 +4,10 @@ import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/card_view/enlarge_controller_edit.dart';
 
+/*
+* this file is used to create event or edit existed event 
+*/
+
 class EventEditPage extends StatefulWidget {
   const EventEditPage({super.key, this.eventModel});
 
@@ -20,6 +24,7 @@ class _EventEditPageState extends State<EventEditPage> {
   late DateTime startTime, endTime;
   // TODO: check color is random or not
   late Color color;
+  late List<String> contributorIds;
 
   @override
   void initState() {
@@ -32,6 +37,7 @@ class _EventEditPageState extends State<EventEditPage> {
       startTime = DateTime.now();
       endTime = DateTime.now().add(const Duration(days: 1));
       color = const Color(0xFFFCBF49);
+      contributorIds = [];
     } else {
       titleController = TextEditingController(text: widget.eventModel!.title);
       descriptController =
@@ -40,14 +46,8 @@ class _EventEditPageState extends State<EventEditPage> {
       startTime = widget.eventModel!.startTime!;
       endTime = widget.eventModel!.endTime!;
       color = Color(widget.eventModel!.color);
+      contributorIds = widget.eventModel!.contributorIds ?? [];
     }
-
-    // group = 'personal';
-    // startTime = DateTime.now();
-    // endTime = DateTime.now().add(const Duration(days: 1));
-    // titleController = TextEditingController(text: 'Test Title');
-    // descriptController =
-    //     TextEditingController(text: 'this is a test introduction');
   }
 
   @override
@@ -59,10 +59,6 @@ class _EventEditPageState extends State<EventEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    // String group = 'personal';
-    // DateTime startTime = DateTime.now().subtract(const Duration(days: 1));
-    // DateTime endTime = DateTime.now().add(const Duration(days: 1));
-    List<String> contributorIds = [];
 
     void createEvent() async {
       await DataController().upload(
@@ -71,6 +67,7 @@ class _EventEditPageState extends State<EventEditPage> {
         introduction: descriptController.text,
         startTime: startTime,
         endTime: endTime,
+        contributorIds: contributorIds
       ));
     }
 
@@ -83,6 +80,7 @@ class _EventEditPageState extends State<EventEditPage> {
         introduction: descriptController.text,
         startTime: startTime,
         endTime: endTime,
+        contributorIds: contributorIds
       ));
     }
 
@@ -178,6 +176,9 @@ class _EventEditPageState extends State<EventEditPage> {
                 title: '參與成員',
                 contextOfTitle: Contributors(
                   contributorIds: contributorIds,
+                  callback: (p0) {
+                    contributorIds = p0;
+                  },
                 )),
             const SizedBox(
               height: 1,

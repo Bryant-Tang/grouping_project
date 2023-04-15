@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/model/model_lib.dart';
 
 import 'package:intl/intl.dart';
+import 'dart:io' as io show File;
 
 String diff(DateTime end) {
   Duration difference = end.difference(DateTime.now());
@@ -97,45 +99,53 @@ class TitleDateOfEvent extends StatelessWidget {
   }
 }
 
-class Contributors extends StatelessWidget {
+class Contributors extends StatefulWidget {
   //參與的所有使用者
-
   const Contributors({super.key, required this.contributorIds});
   final List<String> contributorIds;
 
-  Container createHeadShot(String person) {
-    /// 回傳 contributor 的頭貼
-    return Container(
-      height: 30,
-      width: 30,
-      decoration: const ShapeDecoration(
-          shape: CircleBorder(side: BorderSide(color: Colors.black)),
-          color: Colors.blueAccent),
-    );
-  }
+  @override
+  State<Contributors> createState() => _ContributorState();
+}
 
-  List<Container> datas() {
-    List<Container> tmp = [];
-    for (int i = 0; i < contributorIds.length; i++) {
-      tmp.add(createHeadShot(contributorIds[i]));
-    }
-    // only for test!!!!
-    if (tmp.isEmpty) {
-      tmp.add(Container(
+class _ContributorState extends State<Contributors> {
+  List<Container> people = [];
+
+  Future<Container> createHeadShot(String person) async {
+    /// 回傳 contributor 的頭貼
+
+    var userData = await DataController()
+        .download(dataTypeToGet: ProfileModel(), dataId: person);
+    io.File photo = userData.photo ?? io.File('assets/images/cover.png');
+
+    return Container(
         height: 30,
         width: 30,
-        decoration: const ShapeDecoration(
-            shape: CircleBorder(side: BorderSide(color: Colors.black)),
-            color: Colors.greenAccent),
-      ));
+        decoration: ShapeDecoration(
+          shape: const CircleBorder(side: BorderSide(color: Colors.black)),
+          color: Colors.blueAccent,
+          image: DecorationImage(image: FileImage(photo)),
+        ));
+  }
+
+  Future<void> datas() async {
+    for (int i = 0; i < widget.contributorIds.length; i++) {
+      people.add(await createHeadShot(widget.contributorIds[i]));
     }
-    return tmp;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    datas().then((value) => setState(
+          () {},
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: datas(),
+      children: people,
     );
   }
 }
@@ -153,7 +163,9 @@ class CollabMissons extends StatelessWidget {
           decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
-              boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 2)]),
+              boxShadow: const [
+                BoxShadow(color: Colors.black26, blurRadius: 2)
+              ]),
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Column(

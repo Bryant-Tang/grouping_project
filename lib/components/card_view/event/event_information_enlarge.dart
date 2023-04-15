@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/enlarge_controller_view.dart';
-import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 
+/*
+* this file is used to create event enlarge view
+*/
+
 class EventInformationEnlarge extends StatefulWidget {
-  /// (未完成!!)
   /// 這個 class 實現了 event 放大時要展現的資訊
   /// 藉由創建時得到的資料來回傳一個 Container 回去
   /// ps. 需與 cardViewTemplate 一起使用
   const EventInformationEnlarge({super.key, required this.eventModel});
 
   final EventModel eventModel;
+
 
   @override
   State<EventInformationEnlarge> createState() =>
@@ -58,7 +61,6 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                 children: [
                   IconButton(
                       onPressed: () async {
-                        debugPrint('go to edit page');
                         await Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -72,6 +74,7 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                       )),
                   IconButton(
                       onPressed: () {
+                        // TODO: make notification
                         debugPrint('go to notification page');
                       },
                       icon: const Icon(
