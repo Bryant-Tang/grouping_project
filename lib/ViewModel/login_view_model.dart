@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/ViewModel/state.dart';
 import 'package:grouping_project/model/password_login_model.dart';
 
 import 'package:grouping_project/model/user_model.dart';
@@ -41,10 +42,30 @@ class LoginViewModel extends ChangeNotifier {
     try {
       isLoading = true;
       notifyListeners();
-      var result = await passwordLoginModel.submitLogin(email, password);
+      var result = await passwordLoginModel.passwordLogin(email, password);
       loginState = result;
       isLoading = false;
       debugPrint(loginState.toString());
+      notifyListeners();
+    } catch (e) {
+      // Handle any errors that occur during the login process
+      debugPrint(e.toString());
+      loginState = LoginState.loginFaild;
+      isLoading = false;
+      notifyListeners();
+    }
+    // debugPrint(loginState.toString());
+  }
+  Future<void> onThirdPartyLogin(String name) async {
+    // debugPrint("登入測試");
+    // debugPrint("Email: $email , Password: $password");
+    try {
+      isLoading = true;
+      notifyListeners();
+      var result = await passwordLoginModel.thirdPartyLogin(name);
+      loginState = result;
+      isLoading = false;
+      // debugPrint(loginState.toString());
       notifyListeners();
     } catch (e) {
       // Handle any errors that occur during the login process

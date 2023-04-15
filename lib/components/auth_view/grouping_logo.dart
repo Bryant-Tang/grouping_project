@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grouping_project/ViewModel/ThemeViewModel.dart';
+import 'package:grouping_project/ViewModel/theme_view_model.dart';
 import 'package:provider/provider.dart';
 
 class GroupingLogo extends StatefulWidget {

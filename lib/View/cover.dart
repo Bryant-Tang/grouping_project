@@ -1,5 +1,5 @@
 import 'package:grouping_project/components/auth_view/grouping_logo.dart';
-import 'package:grouping_project/pages/auth/login.dart';
+import 'package:grouping_project/View/auth/login.dart';
 
 import 'package:flutter/material.dart';
 
