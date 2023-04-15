@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/ViewModel/ThemeViewModel.dart';
 import 'package:grouping_project/exception.dart';
-import 'package:grouping_project/main.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/auth/login.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
@@ -145,9 +144,8 @@ class _BasePageState extends State<BasePage> {
                               themeManager.toggleTheme();
                             },
                             icon: Icon(
-                                Theme.of(context).brightness == Brightness.light
-                                    ? Icons.wb_sunny
-                                    : Icons.nightlight_round)),
+                                themeManager.icon)
+                        ),
                         IconButton(
                             //temp remove async for quick test
                             onPressed: () async {

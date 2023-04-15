@@ -106,38 +106,6 @@ class _EmailForm extends StatefulWidget {
 
 class _EmailFormState extends State<_EmailForm> {
   final _formKey = GlobalKey<FormState>();
-  // final AuthService authService = AuthService();
-  // void checkUserInput(String email, String password) async {
-  //   await authService
-  //       .emailLogIn(userInputEmail, userInputPassword)
-  //       .then((value) {
-  //     Navigator.push(
-  //         context, MaterialPageRoute(builder: (context) => const BasePage()));
-  //   }).catchError((error) {
-  //     // debugPrint(error.toString());
-  //     switch (error.code) {
-  //       case 'invalid-email':
-  //         debugPrint('invalid-email');
-  //         showErrorDialog('信箱格式錯誤', '請使用正確的信箱登入');
-  //         break;
-  //       case 'user-disabled':
-  //         debugPrint('user-disabled');
-  //         showErrorDialog('帳號認證錯誤', '無法使用$userInputEmail登入Grouping服務');
-  //         break;
-  //       case 'user-not-found':
-  //         debugPrint('user-not-found');
-  //         SignUpDataModel data = SignUpDataModel(email: email);
-  //         Navigator.push(context,
-  //             MaterialPageRoute(builder: (context) => SignUpPage(data: data)));
-  //         break;
-  //       case 'wrong-password':
-  //         showErrorDialog('密碼錯誤', '請確認帳號$userInputEmail密碼是否正確');
-  //         break;
-  //       default:
-  //         debugPrint(error.toString());
-  //     }
-  //   });
-  // }
 
   void showErrorDialog(String errorTitle, String errorMessage) {
     showDialog<String>(
