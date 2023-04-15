@@ -13,8 +13,9 @@ import 'package:grouping_project/pages/home/home_page/navigation_bar.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
 import 'package:grouping_project/pages/templates/page_not_found.dart';
 import 'package:grouping_project/service/service_lib.dart';
+import 'package:grouping_project/pages/calendar/calendar.dart';
 
-import 'package:grouping_project/pages/home/home_page/empty.dart';
+// import 'package:grouping_project/pages/home/home_page/empty.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class _BasePageState extends State<BasePage> {
   final _pageController = PageController();
   final _pages = const <Widget>[
     HomePage(),
-    Center(child: BuildingPage(errorMessage: "Calendar Page")),
+    CalendarPage(),
     Center(child: BuildingPage(errorMessage: "Message Page")),
     Center(child: BuildingPage(errorMessage: "Note Page")),
   ];

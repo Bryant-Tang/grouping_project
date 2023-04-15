@@ -6,12 +6,7 @@ import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboar
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/components/component_lib.dart';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'dart:math';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
