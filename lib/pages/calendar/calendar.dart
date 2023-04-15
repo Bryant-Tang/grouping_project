@@ -47,17 +47,30 @@ class _CalendarPageState extends State<CalendarPage> {
                     lastDay: DateTime.utc(2030, 3, 14),
                     focusedDay: _focusedDay,
                     availableCalendarFormats: _calendarFormat,
+                    daysOfWeekHeight: 20,
                     calendarStyle: CalendarStyle(
                       selectedDecoration: BoxDecoration(
-                        color: lightColorScheme.primaryContainer,
+                        color: Theme.of(context).colorScheme.primaryContainer,
                         shape: BoxShape.circle,
                       ),
-                      selectedTextStyle: const TextStyle(color: Colors.white),
+                      selectedTextStyle:
+                          Theme.of(context).textTheme.labelLarge!.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                                fontWeight: FontWeight.w500,
+                              ),
                       todayDecoration: BoxDecoration(
                         color: lightColorScheme.secondaryContainer,
                         shape: BoxShape.circle,
                       ),
-                      todayTextStyle: const TextStyle(color: Colors.white),
+                      todayTextStyle:
+                          Theme.of(context).textTheme.labelLarge!.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                     selectedDayPredicate: (day) {
                       return isSameDay(_selectedDay, day);
