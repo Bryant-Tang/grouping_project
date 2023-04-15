@@ -11,6 +11,7 @@
 /// }
 /// ```
 /// -----
+/// * if [code] is not given, auto set to `'unknown'`
 /// * if you want to throw a `GroupingProjectException`, here is an example:
 ///
 /// ```
@@ -33,6 +34,7 @@ class GroupingProjectException implements Exception {
   /// }
   /// ```
   /// -----
+  /// * if [code] is not given, auto set to `'unknown'`
   /// * if you want to throw a `GroupingProjectException`, here is an example:
   ///
   /// ```

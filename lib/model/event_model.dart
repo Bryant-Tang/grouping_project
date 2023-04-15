@@ -1,7 +1,6 @@
 // ignore_for_file: unnecessary_this
-import 'data_controller.dart';
 import 'data_model.dart';
-import 'profile_model.dart';
+import 'account_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 
@@ -30,9 +29,9 @@ class EventModel extends BaseDataModel<EventModel> {
         this.tags = [],
         this.relatedMissionIds = [],
         this.notifications = [],
-        this.color = ProfileModel.defaultProfile.color,
-        this.ownerName = ProfileModel.defaultProfile.name,
-        super(id: null, databasePath: 'events', storageRequired: false);
+        this.color = AccountModel.defaultAccount.color,
+        this.ownerName = AccountModel.defaultAccount.name,
+        super(id: null, databasePath: 'event', storageRequired: false);
 
   /// ## a data model for event
   /// * to upload/download, use `DataController`
@@ -84,8 +83,7 @@ class EventModel extends BaseDataModel<EventModel> {
   /// ### convert data from this instance to the type accepted for firestore
   /// * ***DO NOT*** use this method in frontend
   @override
-  Future<Map<String, dynamic>> toFirestore(
-      {required DataController ownerController}) async {
+  Map<String, dynamic> toFirestore() {
     return {
       if (title != defaultEvent.title) 'title': title,
       if (startTime != defaultEvent.startTime)
@@ -108,10 +106,8 @@ class EventModel extends BaseDataModel<EventModel> {
   /// * also seting attribute about owner if given
   /// * ***DO NOT*** use this method in frontend
   @override
-  Future<EventModel> fromFirestore(
-      {required String id,
-      required Map<String, dynamic> data,
-      required DataController ownerController}) async {
+  EventModel fromFirestore(
+      {required String id, required Map<String, dynamic> data}) {
     EventModel processData = EventModel(
       id: id,
       title: data['title'],
@@ -134,16 +130,12 @@ class EventModel extends BaseDataModel<EventModel> {
           : null,
     );
 
-    processData._setOwner(await ownerController.download(
-        dataTypeToGet: ProfileModel.defaultProfile,
-        dataId: ProfileModel.defaultProfile.id!));
-
     return processData;
   }
 
   /// set the data about owner for this instance
-  void _setOwner(ProfileModel ownerProfile) {
-    ownerName = ownerProfile.name;
-    color = ownerProfile.color;
+  void setOwner({required AccountModel ownerAccount}) {
+    ownerName = ownerAccount.name;
+    color = ownerAccount.color;
   }
 }
