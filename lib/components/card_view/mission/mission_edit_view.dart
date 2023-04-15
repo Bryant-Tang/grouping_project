@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/components/card_view/mission_information.dart';
-import 'package:grouping_project/components/card_view/enlarge_edit_viewModel.dart';
+import 'package:grouping_project/ViewModel/enlarge_edit_viewmodel.dart';
 import 'dart:math';
 
 /*

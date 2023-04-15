@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/card_view/enlarge_viewModel.dart';
+import 'package:grouping_project/ViewModel/enlarge_viewmodel.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 
