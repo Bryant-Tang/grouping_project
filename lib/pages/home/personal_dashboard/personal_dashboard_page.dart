@@ -1,7 +1,7 @@
 import 'package:grouping_project/pages/home/personal_dashboard/card_edit_page.dart';
 
 // progress card
-import 'package:grouping_project/components/card_view/progress.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/progress.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/over_view.dart';
 
 // show frame of widget
@@ -49,13 +49,13 @@ class _TestPageState extends State<PeronalDashboardPage> {
       height: MediaQuery.of(context).size.height - 120,
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Expanded(
+          children: const[
+             Expanded(
               flex: 2,
               child: Progress(),
             ),
             // Progress 位置
-            const SizedBox(
+            SizedBox(
               height: 3,
             ),
             Expanded(flex: 5, child: OverView()),
