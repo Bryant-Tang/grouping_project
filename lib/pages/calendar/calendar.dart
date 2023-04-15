@@ -61,7 +61,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                 fontWeight: FontWeight.w500,
                               ),
                       todayDecoration: BoxDecoration(
-                        color: lightColorScheme.secondaryContainer,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                         shape: BoxShape.circle,
                       ),
                       todayTextStyle:
