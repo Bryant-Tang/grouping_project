@@ -3,18 +3,11 @@ import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/components/card_view/mission_information.dart';
 import 'package:grouping_project/ViewModel/enlarge_edit_viewmodel.dart';
-import 'dart:math';
+import 'package:grouping_project/ViewModel/mission_card_view_model.dart';
 
 /*
 * this file is used to create mission or edit existed mission 
 */
-List<Color> allColors = const <Color>[
-  Color(0xFFFF6565),
-  Color(0xFFFF61DF),
-  Color(0xFFFCBF49),
-  Color(0xFF73C0FF),
-  Color(0xFFB3FFB7)
-];
 
 class MissionEditPage extends StatefulWidget {
   const MissionEditPage({super.key, this.missionModel});
@@ -30,9 +23,10 @@ class _MissionEditPageState extends State<MissionEditPage> {
   late TextEditingController descriptController;
   late String group;
   late DateTime deadline;
-  // TODO: check color is random or not
   late Color color;
   late List<String> contributorIds;
+
+  late MissionCardViewModel missionCardViewModel;
 
   @override
   void initState() {
@@ -43,16 +37,18 @@ class _MissionEditPageState extends State<MissionEditPage> {
       // TODO: check is group or personal
       group = 'personal';
       deadline = DateTime.now().add(const Duration(days: 1));
-      color = allColors[Random().nextInt(allColors.length)];
+      color = const Color(0xFFFCBF49);
       contributorIds = [];
     } else {
-      titleController = TextEditingController(text: widget.missionModel!.title);
+      missionCardViewModel = MissionCardViewModel(widget.missionModel!);
+
+      titleController = TextEditingController(text: missionCardViewModel.title);
       descriptController =
-          TextEditingController(text: widget.missionModel!.introduction);
-      group = widget.missionModel!.ownerName;
-      deadline = widget.missionModel!.deadline!;
-      color = Color(widget.missionModel!.color);
-      contributorIds = widget.missionModel!.contributorIds ?? [];
+          TextEditingController(text: missionCardViewModel.descript);
+      group = missionCardViewModel.group;
+      deadline = missionCardViewModel.deadline;
+      color = missionCardViewModel.color;
+      contributorIds = missionCardViewModel.contributorIds;
     }
   }
 
@@ -76,20 +72,7 @@ class _MissionEditPageState extends State<MissionEditPage> {
       ));
     }
 
-    void updateMission() async {
-      await DataController().upload(
-          uploadData: MissionModel(
-        id: widget.missionModel!.id,
-        title: titleController.text,
-        introduction: descriptController.text,
-        deadline: deadline,
-        contributorIds: contributorIds
-      ));
-    }
 
-    void removeMission() async {
-      await DataController().remove(removeData: widget.missionModel!);
-    }
 
     return Scaffold(
       body: Padding(
@@ -111,7 +94,7 @@ class _MissionEditPageState extends State<MissionEditPage> {
                         onPressed: () {
                           debugPrint('remove');
                           if (widget.missionModel != null) {
-                            removeMission();
+                            missionCardViewModel.removeMission();
                             // Navigator.pop(context);
                             Navigator.pushAndRemoveUntil(
                                 context,
@@ -136,7 +119,7 @@ class _MissionEditPageState extends State<MissionEditPage> {
                               deadline.isAfter(DateTime.now())) {
                             // debugPrint('Done');
                             if (widget.missionModel != null) {
-                              updateMission();
+                              missionCardViewModel.updateMission(titleController, descriptController, deadline, contributorIds);
                             }
                             else {
                               await createMission();
@@ -180,24 +163,25 @@ class _MissionEditPageState extends State<MissionEditPage> {
             ),
             EnlargeObjectTemplate(
               title: '敘述',
-              contextOfTitle: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLines: 10,
-                controller: descriptController,
-                onChanged: (value) {
-                  descriptController.text = value;
-                  descriptController.selection = TextSelection.fromPosition(
-                      TextPosition(offset: value.length));
-                  setState(() {});
-                },
-                decoration: InputDecoration(
-                    hintText: '輸入標題',
-                    errorText: descriptController.text.isEmpty ? '不可為空' : null,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 2),
-                    border: const OutlineInputBorder()),
-                style: const TextStyle(fontSize: 15),
-              ),
+              contextOfTitle: Descript(descriptController: descriptController,)
+              // TextField(
+              //   keyboardType: TextInputType.multiline,
+              //   maxLines: 10,
+              //   controller: descriptController,
+              //   onChanged: (value) {
+              //     descriptController.text = value;
+              //     descriptController.selection = TextSelection.fromPosition(
+              //         TextPosition(offset: value.length));
+              //     setState(() {});
+              //   },
+              //   decoration: InputDecoration(
+              //       hintText: '輸入標題',
+              //       errorText: descriptController.text.isEmpty ? '不可為空' : null,
+              //       isDense: true,
+              //       contentPadding: const EdgeInsets.symmetric(vertical: 2),
+              //       border: const OutlineInputBorder()),
+              //   style: const TextStyle(fontSize: 15),
+              // ),
             ),
             const SizedBox(
               height: 2,

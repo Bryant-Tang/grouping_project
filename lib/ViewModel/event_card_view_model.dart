@@ -17,7 +17,7 @@ class EventCardViewModel extends ChangeNotifier {
   List<String> get contributorIds => eventModel.contributorIds ?? [];
   Color get color => Color(eventModel.color);
 
-  void updateEvent(TextEditingController titleCrtl, TextEditingController descriptCrtl) async {
+  void updateEvent(TextEditingController titleCrtl, TextEditingController descriptCrtl, DateTime startTime, DateTime endTime, List<String> contributorIds) async {
     await DataController().upload(
         uploadData: EventModel(
             id: id,

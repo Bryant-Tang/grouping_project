@@ -119,7 +119,7 @@ class _EventEditPageState extends State<EventEditPage> {
                               startTime.isBefore(endTime)) {
                             // debugPrint('Done');
                             if (widget.eventModel != null) {
-                              eventCardViewModel.updateEvent(titleController, descriptController);
+                              eventCardViewModel.updateEvent(titleController, descriptController, startTime, endTime, contributorIds);
                             } else {
                               createEvent();
                             }
@@ -164,7 +164,7 @@ class _EventEditPageState extends State<EventEditPage> {
             ),
             EnlargeObjectTemplate(
               title: '敘述',
-              contextOfTitle: DescriptOfEvent(descriptController: descriptController,)
+              contextOfTitle: Descript(descriptController: descriptController,)
             ),
             const SizedBox(
               height: 2,

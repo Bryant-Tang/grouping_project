@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/ViewModel/enlarge_viewmodel.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/ViewModel/mission_card_view_model.dart';
 
 import 'package:intl/intl.dart';
 
@@ -16,15 +17,15 @@ class MissionInformationShrink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String group = missionModel.ownerName;
-    String title = missionModel.title ?? 'unknown';
-    String descript = missionModel.introduction ?? 'unknown';
-    String missionStage =
-        stageToString(missionModel.stage ?? MissionStage.progress);
-    String stateName = missionModel.stateName ?? 'progress';
-    DateTime deadline = missionModel.deadline ?? DateTime(0);
+    MissionCardViewModel missionCardViewModel = MissionCardViewModel(missionModel);
 
-    Color color = Color(missionModel.color);
+    String group = missionCardViewModel.group;
+    String title = missionCardViewModel.title;
+    String descript = missionCardViewModel.descript;
+    String missionStage = missionCardViewModel.missionStage;
+    String stateName = missionCardViewModel.stateName;
+    DateTime deadline = missionCardViewModel.deadline;
+    Color color = missionCardViewModel.color;
 
     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
 

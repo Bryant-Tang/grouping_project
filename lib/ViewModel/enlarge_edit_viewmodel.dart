@@ -214,16 +214,16 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
   }
 }
 
-class DescriptOfEvent extends StatefulWidget {
-  const DescriptOfEvent({super.key, required this.descriptController});
+class Descript extends StatefulWidget {
+  const Descript({super.key, required this.descriptController});
 
   final TextEditingController descriptController;
 
   @override
-  State<DescriptOfEvent> createState() => _DescriptOfEventState();
+  State<Descript> createState() => _DescriptState();
 }
 
-class _DescriptOfEventState extends State<DescriptOfEvent> {
+class _DescriptState extends State<Descript> {
   @override
   Widget build(BuildContext context) {
     return TextField(

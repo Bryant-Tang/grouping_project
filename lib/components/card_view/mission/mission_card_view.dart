@@ -15,6 +15,7 @@ class MissionCardViewTemplate extends StatelessWidget {
     final MissionInformationShrink detailShrink = MissionInformationShrink(missionModel: missionModel);
     final MissionInformationEnlarge detailEnlarge = MissionInformationEnlarge(missionModel: missionModel);
     return Container(
+      // TODO: use padding
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -27,14 +28,14 @@ class MissionCardViewTemplate extends StatelessWidget {
                     transitionDuration: const Duration(milliseconds: 700),
                     reverseTransitionDuration:
                         const Duration(milliseconds: 700),
-                    pageBuilder: (_, __, ___) => _enlarge(
+                    pageBuilder: (_, __, ___) => _Enlarge(
                         detail: detailEnlarge, usingColor: color)));
           },
           child: Hero(
             tag: 'change${detailShrink.missionModel.id}',
             child: Material(
               type: MaterialType.transparency,
-              child: _shrink(
+              child: _Shrink(
                 detail: detailShrink,
                 usingColor: color,
                 height: 84,
@@ -45,10 +46,9 @@ class MissionCardViewTemplate extends StatelessWidget {
   }
 }
 
-class _shrink extends StatelessWidget {
-  _shrink(
-      {super.key,
-      required this.detail,
+class _Shrink extends StatelessWidget {
+  const _Shrink(
+      {required this.detail,
       required this.usingColor,
       required this.height});
 
@@ -99,8 +99,8 @@ class _shrink extends StatelessWidget {
   }
 }
 
-class _enlarge extends StatelessWidget {
-  _enlarge({super.key, required this.detail, required this.usingColor});
+class _Enlarge extends StatelessWidget {
+  const _Enlarge({required this.detail, required this.usingColor});
 
   final MissionInformationEnlarge detail;
   final Color usingColor;

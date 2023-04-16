@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/ViewModel/enlarge_viewmodel.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/mission_information.dart';
+import 'package:grouping_project/ViewModel/mission_card_view_model.dart';
 
 /*
 * this file is used to create mission enlarge view
 */
 
 class MissionInformationEnlarge extends StatefulWidget {
-  /// 這個 class 實現了 mission 放大時要展現的資訊
-  /// 藉由創建時得到的資料來回傳一個 Container 回去
-  /// ps. 需與 cardViewTemplate 一起使用
   const MissionInformationEnlarge({super.key, required this.missionModel});
 
   final MissionModel missionModel;
@@ -24,16 +22,18 @@ class MissionInformationEnlarge extends StatefulWidget {
 class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
   @override
   Widget build(BuildContext context) {
-    String group = widget.missionModel.ownerName;
-    String title =  widget.missionModel.title ?? 'unknown';
-    String descript =  widget.missionModel.introduction ?? 'unknown';
-    DateTime deadline =  widget.missionModel.deadline ?? DateTime(0);
-    List<String> contributorIds =  widget.missionModel.contributorIds ?? [];
-    String missionStage =
-        stageToString(widget.missionModel.stage ?? MissionStage.progress);
-    String stateName = widget.missionModel.stateName ?? 'progress';
-    Color color = Color(widget.missionModel.color);
+    MissionCardViewModel missionCardViewModel = MissionCardViewModel(widget.missionModel);
 
+    String group = missionCardViewModel.group;
+    String title =  missionCardViewModel.title;
+    String descript = missionCardViewModel.descript;
+    DateTime deadline =  missionCardViewModel.deadline;
+    List<String> contributorIds = missionCardViewModel.contributorIds;
+    String missionStage = missionCardViewModel.missionStage;
+    String stateName = missionCardViewModel.stateName;
+    Color color = missionCardViewModel.color;
+
+    // TODO: use Padding
     return Container(
       width: MediaQuery.of(context).size.width - 30,
       height: MediaQuery.of(context).size.height,
