@@ -64,13 +64,13 @@ class _OverViewState extends State<OverView> {
 
   final headLine = const Text(
     'OVERVIEW',
-    style: TextStyle(
-        fontSize: 16, fontWeight: FontWeight.bold, color: Color(0XFF717171)),
+    // style: TextStyle(
+    //     fontSize: 16, fontWeight: FontWeight.bold, color: Color(0XFF717171)),
   );
   final line = const Divider(
     height: 1,
-    thickness: 1,
-    color: Color(0XFF999898),
+    thickness: 2,
+    // color: Color(0XFF999898),
   );
   List<bool> isSelectedList = [true, false, false];
   setEnable(int index) {
@@ -93,7 +93,12 @@ class _OverViewState extends State<OverView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          headLine,
+          Text(
+            'OVERVIEW',
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              fontWeight: FontWeight.bold,
+            )
+          ),
           line,
           Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

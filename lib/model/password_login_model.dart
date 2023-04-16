@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:grouping_project/ViewModel/state.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 class PasswordLoginFormModel {
@@ -54,11 +55,4 @@ class PasswordLoginFormModel {
       'password': password,
     };
   }
-}
-
-enum LoginState { 
-  loginSuccess,
-  loginFaild, 
-  userNotFound, 
-  wrongPassword,
 }

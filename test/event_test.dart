@@ -1,6 +1,5 @@
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/auth/cover.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
