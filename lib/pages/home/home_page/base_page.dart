@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/ViewModel/view_model_lib.dart';
+import 'package:grouping_project/components/color_tag_chip.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/View/auth/login.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
@@ -37,6 +38,7 @@ class _BasePageState extends State<BasePage> {
     return SvgPicture.asset(path,
         colorFilter: ColorFilter.mode(color, BlendMode.srcIn));
   }
+
   String getPath(filename) {
     return "assets/icons/appBar/$filename.svg";
   }
@@ -50,7 +52,7 @@ class _BasePageState extends State<BasePage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<PersonalDashboardViewModel>(
-        create: (context) => PersonalDashboardViewModel()..updateProfile(),
+        create: (context) => PersonalDashboardViewModel()..getAllData(),
         child: Consumer<ThemeManager>(
           builder: (context, themeManager, child) =>
               Consumer<PersonalDashboardViewModel>(
@@ -69,8 +71,8 @@ class _BasePageState extends State<BasePage> {
                             children: [
                               CircleAvatar(
                                 radius: 20,
-                                backgroundImage: model.profileImage != null
-                                    ? Image.file(model.profileImage!).image
+                                backgroundImage: model.profile.photo != null
+                                    ? Image.file(model.profile.photo!).image
                                     : Image.asset(
                                             "assets/images/profile_male.png")
                                         .image,
@@ -79,7 +81,7 @@ class _BasePageState extends State<BasePage> {
                                 width: 10,
                               ),
                               Text(
-                                model.userName,
+                                model.profile.nickname ?? "Unknown",
                                 style: Theme.of(context)
                                     .textTheme
                                     .labelLarge!
@@ -337,31 +339,3 @@ class GroupSwitcherView extends StatelessWidget {
   }
 }
 
-class ColorTagChip extends StatelessWidget {
-  const ColorTagChip(
-      {Key? key, required this.tagString, this.color = Colors.amber})
-      : super(key: key);
-  final Color color;
-  final String tagString;
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 4, 6, 4),
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: color.withOpacity(0.5), width: 1),
-            borderRadius: BorderRadius.circular(20),
-            color: color.withOpacity(0.1)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          child: Center(
-            child: Text(tagString,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: color, fontWeight: FontWeight.bold, fontSize: 10)),
-          ),
-        ),
-      ),
-    );
-  }
-}
