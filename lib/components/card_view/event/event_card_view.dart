@@ -4,16 +4,17 @@ import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/model/model_lib.dart';
 
 class EventCardViewTemplate extends StatelessWidget {
-  const EventCardViewTemplate(
-      {super.key, required this.eventModel});
+  const EventCardViewTemplate({super.key, required this.eventModel});
 
   final EventModel eventModel;
 
   @override
   Widget build(BuildContext context) {
     final Color color = Color(eventModel.color);
-    final EventInformationShrink detailShrink = EventInformationShrink(eventModel: eventModel);
-    final EventInformationEnlarge detailEnlarge = EventInformationEnlarge(eventModel: eventModel);
+    final EventInformationShrink detailShrink =
+        EventInformationShrink(eventModel: eventModel);
+    final EventInformationEnlarge detailEnlarge =
+        EventInformationEnlarge(eventModel: eventModel);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: const BoxDecoration(
@@ -27,14 +28,14 @@ class EventCardViewTemplate extends StatelessWidget {
                     transitionDuration: const Duration(milliseconds: 700),
                     reverseTransitionDuration:
                         const Duration(milliseconds: 700),
-                    pageBuilder: (_, __, ___) => _enlarge(
-                        detail: detailEnlarge, usingColor: color)));
+                    pageBuilder: (_, __, ___) =>
+                        _Enlarge(detail: detailEnlarge, usingColor: color)));
           },
           child: Hero(
             tag: 'change${detailShrink.eventModel.id}',
             child: Material(
               type: MaterialType.transparency,
-              child: _shrink(
+              child: _Shrink(
                 detail: detailShrink,
                 usingColor: color,
                 height: 84,
@@ -45,12 +46,9 @@ class EventCardViewTemplate extends StatelessWidget {
   }
 }
 
-class _shrink extends StatelessWidget {
-  _shrink(
-      {super.key,
-      required this.detail,
-      required this.usingColor,
-      required this.height});
+class _Shrink extends StatelessWidget {
+  const _Shrink(
+      {required this.detail, required this.usingColor, required this.height});
 
   final EventInformationShrink detail;
   final Color usingColor;
@@ -62,6 +60,7 @@ class _shrink extends StatelessWidget {
   Widget build(BuildContext context) {
     //debugPrint('it is shrink');
     return Container(
+      // TODO: use padding
         width: MediaQuery.of(context).size.width - 20,
         height: height,
         decoration: BoxDecoration(
@@ -99,8 +98,8 @@ class _shrink extends StatelessWidget {
   }
 }
 
-class _enlarge extends StatelessWidget {
-  _enlarge({super.key, required this.detail, required this.usingColor});
+class _Enlarge extends StatelessWidget {
+  const _Enlarge({required this.detail, required this.usingColor});
 
   final EventInformationEnlarge detail;
   final Color usingColor;

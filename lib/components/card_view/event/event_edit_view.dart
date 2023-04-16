@@ -3,19 +3,11 @@ import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/ViewModel/enlarge_edit_viewmodel.dart';
-import 'dart:math';
+import 'package:grouping_project/ViewModel/event_card_view_model.dart';
 
 /*
 * this file is used to create event or edit existed event 
 */
-
-List<Color> allColors = const <Color>[
-  Color(0xFFFF6565),
-  Color(0xFFFF61DF),
-  Color(0xFFFCBF49),
-  Color(0xFF73C0FF),
-  Color(0xFFB3FFB7)
-];
 
 class EventEditPage extends StatefulWidget {
   const EventEditPage({super.key, this.eventModel});
@@ -31,9 +23,10 @@ class _EventEditPageState extends State<EventEditPage> {
   late TextEditingController descriptController;
   late String group;
   late DateTime startTime, endTime;
-  // TODO: check color is random or not
   late Color color;
   late List<String> contributorIds;
+
+  late EventCardViewModel eventCardViewModel;
 
   @override
   void initState() {
@@ -45,17 +38,19 @@ class _EventEditPageState extends State<EventEditPage> {
       group = 'personal';
       startTime = DateTime.now();
       endTime = DateTime.now().add(const Duration(days: 1));
-      color = allColors[Random().nextInt(allColors.length)];
+      color = const Color(0xFFFCBF49);
       contributorIds = [];
     } else {
-      titleController = TextEditingController(text: widget.eventModel!.title);
+      eventCardViewModel = EventCardViewModel(widget.eventModel!);
+
+      titleController = TextEditingController(text: eventCardViewModel.title);
       descriptController =
-          TextEditingController(text: widget.eventModel!.introduction);
-      group = widget.eventModel!.ownerName;
-      startTime = widget.eventModel!.startTime!;
-      endTime = widget.eventModel!.endTime!;
-      color = Color(widget.eventModel!.color);
-      contributorIds = widget.eventModel!.contributorIds ?? [];
+          TextEditingController(text: eventCardViewModel.descript);
+      group = eventCardViewModel.group;
+      startTime = eventCardViewModel.startTime;
+      endTime = eventCardViewModel.endTime;
+      color = eventCardViewModel.color;
+      contributorIds = eventCardViewModel.contributorIds;
     }
   }
 
@@ -66,41 +61,20 @@ class _EventEditPageState extends State<EventEditPage> {
     descriptController.dispose();
   }
 
+  // TODO: move to viewModel without creating redundent eventModel
+  void createEvent() async {
+    await DataController().upload(
+        uploadData: EventModel(
+            title: titleController.text,
+            introduction: descriptController.text,
+            startTime: startTime,
+            endTime: endTime,
+            contributorIds: contributorIds));
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    void createEvent() async {
-      await DataController().upload(
-          uploadData: EventModel(
-        title: titleController.text,
-        introduction: descriptController.text,
-        startTime: startTime,
-        endTime: endTime,
-        contributorIds: contributorIds
-      ));
-    }
-
-    void updateEvent() async {
-      await DataController().upload(
-          uploadData: EventModel(
-        id: widget.eventModel!.id,
-        title: titleController.text,
-        introduction: descriptController.text,
-        startTime: startTime,
-        endTime: endTime,
-        contributorIds: contributorIds
-      ));
-    }
-
-    void removeEvent() async {
-      await DataController().remove(removeData: widget.eventModel!);
-    }
-
     return Scaffold(
-      // body: Container(
-      //   padding: const EdgeInsets.only(left: 10, top: 18),
-      //   width: MediaQuery.of(context).size.width - 30,
-      //   height: MediaQuery.of(context).size.height,
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
         child: ListView(
@@ -120,11 +94,11 @@ class _EventEditPageState extends State<EventEditPage> {
                         onPressed: () {
                           debugPrint('remove');
                           if (widget.eventModel != null) {
-                            removeEvent();
-                            // Navigator.pop(context);
+                            eventCardViewModel.removeEvent();
                             Navigator.pushAndRemoveUntil(
                                 context,
-                                MaterialPageRoute(builder: (_) => const BasePage()),
+                                MaterialPageRoute(
+                                    builder: (_) => const BasePage()),
                                 (route) => false);
                           } else {
                             showDialog(
@@ -145,15 +119,14 @@ class _EventEditPageState extends State<EventEditPage> {
                               startTime.isBefore(endTime)) {
                             // debugPrint('Done');
                             if (widget.eventModel != null) {
-                              updateEvent();
-                            }
-                            else {
+                              eventCardViewModel.updateEvent(titleController, descriptController);
+                            } else {
                               createEvent();
                             }
-                            // Navigator.pop(context);
                             Navigator.pushAndRemoveUntil(
                                 context,
-                                MaterialPageRoute(builder: (_) => const BasePage()),
+                                MaterialPageRoute(
+                                    builder: (_) => const BasePage()),
                                 (route) => false);
                           } else {
                             debugPrint('error occur');
@@ -166,7 +139,7 @@ class _EventEditPageState extends State<EventEditPage> {
             ),
             const Divider(
               thickness: 1.5,
-              color: Color.fromARGB(255, 170, 170, 170),
+            color: Color(0xFFAAAAAA),
             ),
             TitleDateOfEvent(
                 titleController: titleController,
@@ -191,24 +164,7 @@ class _EventEditPageState extends State<EventEditPage> {
             ),
             EnlargeObjectTemplate(
               title: '敘述',
-              contextOfTitle: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLines: 10,
-                controller: descriptController,
-                onChanged: (value) {
-                  descriptController.text = value;
-                  descriptController.selection = TextSelection.fromPosition(
-                      TextPosition(offset: value.length));
-                  setState(() {});
-                },
-                decoration: InputDecoration(
-                    hintText: '輸入標題',
-                    errorText: descriptController.text.isEmpty ? '不可為空' : null,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 2),
-                    border: const OutlineInputBorder()),
-                style: const TextStyle(fontSize: 15),
-              ),
+              contextOfTitle: DescriptOfEvent(descriptController: descriptController,)
             ),
             const SizedBox(
               height: 2,

@@ -1,48 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/ViewModel/enlarge_viewmodel.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/ViewModel/event_card_view_model.dart';
 
 import 'package:intl/intl.dart';
 
-Map monthDigitToLetter = <int, String>{
-  1: "JAN",
-  2: "FEB",
-  3: "MAR",
-  4: "APR",
-  5: "MAY",
-  6: "JUN",
-  7: "JUL",
-  8: "AUG",
-  9: "SEP",
-  10: "OCT",
-  11: "NOV",
-  12: "DEC"
-};
-
-String intFixed(int n, int count) => n.toString().padLeft(count, "0");
-
-// anti-label pass color data?
-// this is for shrink card
 class EventInformationShrink extends StatelessWidget {
-  /// 這個 class 實現了 event 縮小時要展現的資訊
-  /// 藉由創建時得到的資料來回傳一個 Container 回去
-  /// ps. 需與 cardViewTemplate 一起使用
   const EventInformationShrink({super.key, required this.eventModel});
 
   final EventModel eventModel;
 
   @override
   Widget build(BuildContext context) {
-    String group = eventModel.ownerName;
-    String title = eventModel.title ?? 'unknown';
-    String descript = eventModel.introduction ?? 'unknown';
-    DateTime startTime = eventModel.startTime ?? DateTime(0);
-    DateTime endTime = eventModel.endTime ?? DateTime(0);
-    // List<String> contributorIds = eventModel.contributorIds ?? [];
-    Color color = Color(eventModel.color);
+    EventCardViewModel eventCardViewModel = EventCardViewModel(eventModel);
+    
+    String group = eventCardViewModel.group;
+    String title = eventCardViewModel.title;
+    String descript = eventCardViewModel.descript;
+    DateTime startTime = eventCardViewModel.startTime;
+    DateTime endTime = eventCardViewModel.endTime;
+    Color color = eventCardViewModel.color;
 
     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
 
+    // TODO: use Padding
     return Container(
       width: MediaQuery.of(context).size.width - 30,
       // height: 100,
@@ -78,10 +59,10 @@ class EventInformationShrink extends StatelessWidget {
                   style: const TextStyle(
                       fontSize: 12, fontWeight: FontWeight.bold),
                 ),
-                const Icon(
+                Icon(
                   Icons.arrow_right_alt,
                   size: 20,
-                  color: Colors.amber,
+                  color: color,
                 ),
                 Text(
                   parseDate.format(endTime),

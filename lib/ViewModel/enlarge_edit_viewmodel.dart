@@ -214,6 +214,39 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
   }
 }
 
+class DescriptOfEvent extends StatefulWidget {
+  const DescriptOfEvent({super.key, required this.descriptController});
+
+  final TextEditingController descriptController;
+
+  @override
+  State<DescriptOfEvent> createState() => _DescriptOfEventState();
+}
+
+class _DescriptOfEventState extends State<DescriptOfEvent> {
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      keyboardType: TextInputType.multiline,
+      maxLines: 10,
+      controller: widget.descriptController,
+      onChanged: (value) {
+        widget.descriptController.text = value;
+        widget.descriptController.selection =
+            TextSelection.fromPosition(TextPosition(offset: value.length));
+        setState(() {});
+      },
+      decoration: InputDecoration(
+          hintText: '輸入標題',
+          errorText: widget.descriptController.text.isEmpty ? '不可為空' : null,
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 2),
+          border: const OutlineInputBorder()),
+      style: const TextStyle(fontSize: 15),
+    );
+  }
+}
+
 class TitleDateOfMission extends StatefulWidget {
   const TitleDateOfMission(
       {super.key,
@@ -251,7 +284,8 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
           value: tmp,
           onChange: (time) {
             setState(() {
-              deadline = DateTime(show.year, show.month, show.day, time.hour, time.minute);
+              deadline = DateTime(
+                  show.year, show.month, show.day, time.hour, time.minute);
               widget.callback(deadline);
             });
           },
@@ -321,10 +355,15 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
               border: const OutlineInputBorder()),
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        TextButton(onPressed: selectTime, child: Text(parseDate.format(deadline),style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF000000)),))
+        TextButton(
+            onPressed: selectTime,
+            child: Text(
+              parseDate.format(deadline),
+              style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF000000)),
+            ))
       ],
     );
   }
@@ -383,7 +422,7 @@ class _ContributorState extends State<Contributors> {
   }
 
   Future<void> datas() async {
-    if (widget.eventModel != null){
+    if (widget.eventModel != null) {
       for (int i = 0; i < widget.eventModel!.contributorIds!.length; i++) {
         people.add(await createHeadShot(widget.contributorIds[i]));
       }

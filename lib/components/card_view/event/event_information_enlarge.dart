@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/ViewModel/enlarge_viewmodel.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/ViewModel/event_card_view_model.dart';
 
 /*
 * this file is used to create event enlarge view
 */
 
 class EventInformationEnlarge extends StatefulWidget {
-  /// 這個 class 實現了 event 放大時要展現的資訊
-  /// 藉由創建時得到的資料來回傳一個 Container 回去
-  /// ps. 需與 cardViewTemplate 一起使用
   const EventInformationEnlarge({super.key, required this.eventModel});
 
   final EventModel eventModel;
@@ -22,16 +20,20 @@ class EventInformationEnlarge extends StatefulWidget {
 }
 
 class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
+
   @override
   Widget build(BuildContext context) {
-    String group = widget.eventModel.ownerName;
-    String title =  widget.eventModel.title ?? 'unknown';
-    String descript =  widget.eventModel.introduction ?? 'unknown';
-    DateTime startTime =  widget.eventModel.startTime ?? DateTime(0);
-    DateTime endTime =  widget.eventModel.endTime ?? DateTime(0);
-    List<String> contributorIds =  widget.eventModel.contributorIds ?? [];
-    Color color = Color(widget.eventModel.color);
+    EventCardViewModel eventCardViewModel = EventCardViewModel(widget.eventModel);
 
+    String group = eventCardViewModel.group;
+    String title =  eventCardViewModel.title;
+    String descript =  eventCardViewModel.descript;
+    DateTime startTime =  eventCardViewModel.startTime;
+    DateTime endTime =  eventCardViewModel.endTime;
+    List<String> contributorIds =  eventCardViewModel.contributorIds;
+    Color color = eventCardViewModel.color;
+
+    // TODO: use Padding
     return Container(
       width: MediaQuery.of(context).size.width - 30,
       height: MediaQuery.of(context).size.height,
@@ -78,7 +80,7 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
           ),
           const Divider(
             thickness: 1.5,
-            color: Color.fromARGB(255, 170, 170, 170),
+            color: Color(0xFFAAAAAA),
           ),
           TitleDateOfEvent(
               title: title,
