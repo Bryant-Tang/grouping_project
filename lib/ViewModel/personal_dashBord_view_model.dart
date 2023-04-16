@@ -22,6 +22,33 @@ class PersonalDashboardViewModel extends ChangeNotifier {
   String get userName => profile.nickname ?? "";
   File? get profileImage => profile.photo;
   bool isLoading = false;
+  final allGroupProfile = [
+    ProfileModel(
+        name: "服務學習課程",
+        color: 0xFF00417D,
+        introduction: "python 程式教育課程小組",
+        tags: ["#Python", "#程式基礎教育", "#工作"]
+            .map((t) => ProfileTag(tag: t, content: t))
+            .toList()),
+    ProfileModel(
+        name: "服務學習課程",
+        color: 0xFF993300,
+        introduction: "python 程式教育課程小組",
+        tags: ["#Python", "#程式基礎教育", "#工作"]
+            .map((t) => ProfileTag(tag: t, content: t))
+            .toList()),
+    ProfileModel(
+        name: "服務學習課程",
+        color: 0xFFFFB782,
+        introduction: "python 程式教育課程小組",
+        tags: ["#Python", "#程式基礎教育", "#工作"]
+            .map((t) => ProfileTag(tag: t, content: t))
+            .toList()),
+  ];
+
+  void switchGroup() {
+    debugPrint("SWITCH");
+  }
 
   void updateSelectedIndex(int index) {
     debugPrint(index.toString());

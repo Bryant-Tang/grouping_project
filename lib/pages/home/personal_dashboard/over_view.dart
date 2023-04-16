@@ -41,16 +41,7 @@ class _OverViewState extends State<OverView> {
       ],
     ),
   ];
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   DataController().downloadAll(dataTypeToGet: EventModel()).then((value) {
-  //     eventNumbers = value.length;
-  //     setState(() {});
-  //   });
-  // }
-
+  
   final line = const Divider(
     height: 1,
     thickness: 2,
@@ -104,52 +95,6 @@ class _OverViewState extends State<OverView> {
                       ),
                     ),
                   )).toList()
-                // [
-                //   Expanded(
-                //     child: Padding(
-                //       padding: const EdgeInsets.all(4.0),
-                //       child: OverViewChoiceButton(
-                //         onTap: () {
-                //           model.updateOverViewIndex(0);
-                //           // setEnable(0);
-                //         },
-                //         labelText: '事件 - 即將到來',
-                //         iconPath: 'assets/icons/calendartick.svg',
-                //         numberText: eventNumbers,
-                //         isSelected: isSelectedList[0],
-                //       ),
-                //     ),
-                //   ),
-                //   Expanded(
-                //     child: Padding(
-                //       padding: const EdgeInsets.all(4.0),
-                //       child: OverViewChoiceButton(
-                //         onTap: () {
-                //           setEnable(1);
-                //           model.updateOverViewIndex(1);
-                //         },
-                //         labelText: '任務 - 追蹤中',
-                //         iconPath: 'assets/icons/task.svg',
-                //         numberText: eventNumbers,
-                //         isSelected: isSelectedList[1],
-                //       ),
-                //     ),
-                //   ),
-                //   Expanded(
-                //     child: Padding(
-                //       padding: const EdgeInsets.all(4.0),
-                //       child: OverViewChoiceButton(
-                //         onTap: () {
-                //           model.updateOverViewIndex(2);
-                //         },
-                //         labelText: '話題 - 代回覆',
-                //         iconPath: 'assets/icons/messagetick.svg',
-                //         numberText: eventNumbers,
-                //         isSelected: 2 == model.overViewIndex,
-                //       ),
-                //     ),
-                //   ),
-                // ]
             ),
             Expanded(
               flex: 4,

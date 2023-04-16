@@ -16,7 +16,7 @@ class _ProgressState extends State<Progress> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -27,13 +27,9 @@ class _ProgressState extends State<Progress> {
           const Divider(
             thickness: 2,
           ),
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Container(
-                constraints: const BoxConstraints.expand(),
-                child: const ProgressingPageView()),
-          ))
+          const Expanded(
+            child: ProgressingPageView(),
+          )
         ],
       ),
     );
@@ -102,6 +98,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
           decoration: BoxDecoration(
             color: themeData.colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: themeData.colorScheme.primary, width: 1),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -117,7 +114,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
                 '個人專區 - 事件',
                 style: themeData.textTheme.labelSmall!.copyWith(
                     color: themeData.colorScheme.onPrimaryContainer,
-                    fontSize: 12,
+                    fontSize: 10,
                     fontWeight: FontWeight.bold),
               ),
             ],
@@ -129,7 +126,8 @@ class _ProgressingCardState extends State<ProgressingCard> {
     return Text(
       eventTitle,
       style: themeData.textTheme.titleLarge!.copyWith(
-          color: themeData.colorScheme.onPrimaryContainer,
+          color: themeData.colorScheme.onSurface,
+          fontSize: 16,
           fontWeight: FontWeight.bold),
     );
   }
@@ -146,13 +144,13 @@ class _ProgressingCardState extends State<ProgressingCard> {
     final seconds = duration.inSeconds % 60;
     return Row(
       children: [
-        Icon(Icons.timer, color: themeData.colorScheme.primary, size: 16),
+        Icon(Icons.timer, color: themeData.colorScheme.secondary, size: 16),
         const SizedBox(width: 4),
         Text(
-          '剩餘 ${days.toString().padLeft(2, '0')} D ${hours.toString().padLeft(2, '0')} H ${minutes.toString().padLeft(2, '0')} M ${seconds.toString().padLeft(2, '0')} S',
+          '${days.toString().padLeft(2, '0')} D ${hours.toString().padLeft(2, '0')} H ${minutes.toString().padLeft(2, '0')} M ${seconds.toString().padLeft(2, '0')} S',
           style: themeData.textTheme.labelSmall!.copyWith(
               fontSize: 12,
-              color: themeData.colorScheme.primary,
+              color: themeData.colorScheme.secondary,
               fontWeight: FontWeight.bold),
         )
       ],
@@ -160,8 +158,13 @@ class _ProgressingCardState extends State<ProgressingCard> {
   }
 
   Widget getDashBoard() {
-    final filter =
-        ColorFilter.mode(themeData.colorScheme.outline, BlendMode.srcIn);
+    final filter = ColorFilter.mode(themeData.colorScheme.secondary, BlendMode.srcIn);
+    const iconSize = 25.0;
+    final iconLabelStyle = themeData.textTheme.labelSmall!.copyWith(fontSize: 8);
+    final numberStyle =  themeData.textTheme.titleLarge!.copyWith(
+                fontSize: 20,
+                color: themeData.colorScheme.primary,
+                fontWeight: FontWeight.bold);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
       child: Row(
@@ -169,38 +172,47 @@ class _ProgressingCardState extends State<ProgressingCard> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SvgPicture.asset(
-            'assets/icons/task.svg',
-            width: 25,
-            colorFilter: filter,
+          Column(
+            children: [
+              SvgPicture.asset(
+                'assets/icons/task.svg',
+                width: iconSize,
+                colorFilter: filter,
+              ),
+              Text('相關任務',style: iconLabelStyle)
+            ],
           ),
           Text(
             relatedMissionNumber.toString(),
-            style: themeData.textTheme.titleLarge!.copyWith(
-                color: themeData.colorScheme.primary,
-                fontWeight: FontWeight.bold),
+            style: numberStyle,
           ),
-          SvgPicture.asset(
-            'assets/icons/messagetick.svg',
-            width: 25,
-            colorFilter: filter,
+          Column(
+            children: [
+              SvgPicture.asset(
+                'assets/icons/messagetick.svg',
+                width: iconSize,
+                colorFilter: filter,
+              ),
+              Text('相關話題', style: iconLabelStyle)
+            ],
           ),
           Text(
             relatedMessageNumber.toString(),
-            style: themeData.textTheme.titleLarge!.copyWith(
-                color: themeData.colorScheme.primary,
-                fontWeight: FontWeight.bold),
+            style: numberStyle,
           ),
-          SvgPicture.asset(
-            'assets/icons/appBar/note.svg',
-            width: 25,
-            colorFilter: filter,
+          Column(
+            children: [
+              SvgPicture.asset(
+                'assets/icons/appBar/note.svg',
+                width: iconSize,
+                colorFilter: filter,
+              ),
+              Text('相關筆記', style: iconLabelStyle)
+            ],
           ),
           Text(
             relatedNoteNumber.toString(),
-            style: themeData.textTheme.titleLarge!.copyWith(
-                color: themeData.colorScheme.primary,
-                fontWeight: FontWeight.bold),
+            style: numberStyle,
           ),
         ],
       ),
@@ -252,34 +264,34 @@ class _ProgressingCardState extends State<ProgressingCard> {
           brightness: themeManager.brightness);
       return StreamBuilder<DateTime>(
           stream: _currentTimeStream,
-          builder: (context, snapshot){
-              return Card(
-                  color: themeData.colorScheme.surface,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          // data part of the info card
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              getTagWidget(),
-                              getTitle(),
-                              getDateTime(),
-                              getDashBoard(),
-                            ],
-                          ),
+          builder: (context, snapshot) {
+            return Card(
+                color: themeData.colorScheme.surface,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        // data part of the info card
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            getTagWidget(),
+                            getTitle(),
+                            getDateTime(),
+                            getDashBoard(),
+                          ],
                         ),
-                        Expanded(
-                            flex: 1,
-                            child: Center(
-                              child: getCircularProgresIndicator(),
-                            )),
-                      ],
-                    ),
-                  ));
+                      ),
+                      Expanded(
+                          flex: 1,
+                          child: Center(
+                            child: getCircularProgresIndicator(),
+                          )),
+                    ],
+                  ),
+                ));
           });
     });
   }
