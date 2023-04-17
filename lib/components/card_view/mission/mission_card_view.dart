@@ -1,47 +1,21 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
-import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/components/card_view/mission_information.dart';
+import 'package:grouping_project/model/model_lib.dart';
 
-List<Color> randomColor = const [
-  /// 顏色固定用色碼
-  Color(0xFFFCBF49),
-  Color(0xFFFF5252),
-  Color(0xFF03A9F4),
-  Color(0xFF69F0AE),
-  Color(0xFFFFAB40),
-  Color(0xFFFF4081),
-  Color(0xFF972CB0)
-];
+class MissionCardViewTemplate extends StatelessWidget {
+  const MissionCardViewTemplate(
+      {super.key, required this.missionModel});
 
-// class CardViewTemplate extends StatefulWidget {
-//   /// 這個 class 將會創立一個點擊能放大的 card view template，再點擊則能縮小
-//   /// 因此要使用這個 widget 必須要給予實現縮小的 widget (也就是 shrink)
-//   /// 以及放大的 widget (也就是 enlarge)
-//   ///
-//   const CardViewTemplate({super.key, required this.detailShrink, required this.detailEnlarge});
-
-//   final StatelessWidget detailShrink;
-//   final StatelessWidget detailEnlarge;
-
-//   @override
-//   State<CardViewTemplate> createState() => _CardViewTemplateState();
-// }
-
-class EventCardViewTemplate extends StatelessWidget {
-  EventCardViewTemplate(
-      {super.key, required this.detailShrink, required this.detailEnlarge});
-
-  final EventInformationShrink detailShrink;
-  final EventInformationEnlarge detailEnlarge;
-
-  /// 隨機選擇使用的顏色
-  final Color usingColor = randomColor[Random().nextInt(randomColor.length)];
+  final MissionModel missionModel;
 
   @override
   Widget build(BuildContext context) {
-    // StatelessWidget detail = detailShrink;
+    final Color color = Color(missionModel.color);
+    final MissionInformationShrink detailShrink = MissionInformationShrink(missionModel: missionModel);
+    final MissionInformationEnlarge detailEnlarge = MissionInformationEnlarge(missionModel: missionModel);
     return Container(
+      // TODO: use padding
       margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -54,16 +28,16 @@ class EventCardViewTemplate extends StatelessWidget {
                     transitionDuration: const Duration(milliseconds: 700),
                     reverseTransitionDuration:
                         const Duration(milliseconds: 700),
-                    pageBuilder: (_, __, ___) => _enlarge(
-                        detail: detailEnlarge, usingColor: usingColor)));
+                    pageBuilder: (_, __, ___) => _Enlarge(
+                        detail: detailEnlarge, usingColor: color)));
           },
           child: Hero(
-            tag: 'change${detailShrink.eventModel.id}',
+            tag: 'change${detailShrink.missionModel.id}',
             child: Material(
               type: MaterialType.transparency,
-              child: _shrink(
+              child: _Shrink(
                 detail: detailShrink,
-                usingColor: usingColor,
+                usingColor: color,
                 height: 84,
               ),
             ),
@@ -72,14 +46,13 @@ class EventCardViewTemplate extends StatelessWidget {
   }
 }
 
-class _shrink extends StatelessWidget {
-  _shrink(
-      {super.key,
-      required this.detail,
+class _Shrink extends StatelessWidget {
+  const _Shrink(
+      {required this.detail,
       required this.usingColor,
       required this.height});
 
-  final EventInformationShrink detail;
+  final MissionInformationShrink detail;
   final Color usingColor;
 
   // height should vary according to detailed of differet card(Upcoming, mission, message)
@@ -126,10 +99,10 @@ class _shrink extends StatelessWidget {
   }
 }
 
-class _enlarge extends StatelessWidget {
-  _enlarge({super.key, required this.detail, required this.usingColor});
+class _Enlarge extends StatelessWidget {
+  const _Enlarge({required this.detail, required this.usingColor});
 
-  final EventInformationEnlarge detail;
+  final MissionInformationEnlarge detail;
   final Color usingColor;
 
   @override
@@ -137,7 +110,7 @@ class _enlarge extends StatelessWidget {
     //debugPrint('it is enlarge');
     return Scaffold(
       body: Hero(
-        tag: 'change${detail.eventModel.id}',
+        tag: 'change${detail.missionModel.id}',
         child: Material(
           type: MaterialType.transparency,
           child: Container(
