@@ -36,30 +36,19 @@ class _HomePageState extends State<HomePage> {
 class PeronalDashboardPage extends StatefulWidget {
   const PeronalDashboardPage({super.key});
   @override
-  State<PeronalDashboardPage> createState() => _TestPageState();
+  State<PeronalDashboardPage> createState() => _PeosonalDashboardPageState();
 }
 
-class _TestPageState extends State<PeronalDashboardPage> {
+class _PeosonalDashboardPageState extends State<PeronalDashboardPage> {
   @override
   Widget build(BuildContext context) {
     // show the from of widget
     // debugPaintSizeEnabled = true;
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height - 120,
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const[
-             Expanded(
-              flex: 2,
-              child: Progress(),
-            ),
-            // Progress 位置
-            SizedBox(
-              height: 3,
-            ),
-            Expanded(flex: 5, child: OverView()),
-          ]),
-    );
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: const[
+          Expanded( flex: 1, child: Progress()),
+          Expanded(flex: 3, child: OverView()),
+        ]);
   }
 }
