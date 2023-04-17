@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/components/card_view/mission_information.dart';
 
-class AddMission extends StatelessWidget {
+class AddMission extends StatefulWidget {
   const AddMission({super.key});
 
+  @override
+  State<AddMission> createState() => _AddMissionState();
+}
+
+class _AddMissionState extends State<AddMission> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(5),
-      onTap: () {
-        debugPrint('create Mission');
+      onTap: () async {
+        debugPrint('create mission');
+        await Navigator.push(context,
+            MaterialPageRoute(builder: ((context) => const MissionEditPage())));
+        setState(() {});
       },
       splashFactory: InkRipple.splashFactory,
       child: Card(
