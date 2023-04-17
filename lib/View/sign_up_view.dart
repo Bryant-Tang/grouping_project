@@ -1,10 +1,10 @@
-import 'package:grouping_project/ViewModel/signup_view_model.dart';
-import 'package:grouping_project/ViewModel/state.dart';
+import 'package:grouping_project/VM/signup_view_model.dart';
+import 'package:grouping_project/VM/state.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/view_template/sing_up_page_template.dart';
 import 'package:grouping_project/pages/view_template/building.dart';
-import 'package:grouping_project/pages/home/home_page/base_page.dart';
+import 'package:grouping_project/View/workspace_view.dart';
 import 'package:grouping_project/pages/profile/personal_profile/profile_edit_page.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:flutter/material.dart';

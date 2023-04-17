@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:grouping_project/ViewModel/personal_dashBord_view_model.dart';
+import 'package:grouping_project/VM/workspace_dashboard_view_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
+import 'package:grouping_project/View/workspace_dashboard_page_view.dart';
 import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
 
 import 'package:grouping_project/pages/profile/personal_profile/profile_edit_page.dart';

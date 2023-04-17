@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:grouping_project/ViewModel/state.dart';
+import 'package:grouping_project/VM/state.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 class LoginModel {

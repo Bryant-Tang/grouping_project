@@ -1,11 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:grouping_project/View/auth/sign_up.dart';
-import 'package:grouping_project/ViewModel/login_view_model.dart';
-import 'package:grouping_project/ViewModel/state.dart';
+import 'package:grouping_project/View/sign_up_view.dart';
+import 'package:grouping_project/VM/login_view_model.dart';
+import 'package:grouping_project/VM/state.dart';
 import 'package:grouping_project/components/button/auth_button.dart';
 
-import 'package:grouping_project/pages/home/home_page/base_page.dart';
+import 'package:grouping_project/View/workspace_view.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/model/login_model.dart';

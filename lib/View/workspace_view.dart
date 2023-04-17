@@ -4,17 +4,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grouping_project/ViewModel/view_model_lib.dart';
+import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/color_tag_chip.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/View/auth/login.dart';
+import 'package:grouping_project/View/login_view.dart';
 import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
 
 import 'package:grouping_project/pages/view_template/building.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
+import 'package:grouping_project/View/workspace_dashboard_page_view.dart';
 import 'package:provider/provider.dart';
-import 'package:grouping_project/pages/home/calendar/calendar.dart';
+import 'package:grouping_project/View/workspace_calendar_page_view.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);

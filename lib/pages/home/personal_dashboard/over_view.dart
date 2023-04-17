@@ -2,10 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grouping_project/ViewModel/view_model_lib.dart';
+import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/card_view/card_view_template.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
-import 'package:grouping_project/components/overview_choice_button.dart';
+import 'package:grouping_project/components/button/overview_choice_button.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/home_mission_page.dart';
