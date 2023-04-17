@@ -5,11 +5,10 @@ import 'package:grouping_project/ViewModel/login_view_model.dart';
 import 'package:grouping_project/ViewModel/state.dart';
 import 'package:grouping_project/components/button/auth_button.dart';
 
-import 'package:grouping_project/model/password_register_model.dart';
 import 'package:grouping_project/pages/home/home_page/base_page.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:provider/provider.dart';
-import 'package:grouping_project/model/password_login_model.dart';
+import 'package:grouping_project/model/login_model.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
@@ -76,13 +75,23 @@ class LoginPage extends StatelessWidget {
                             name: name,
                             onPressed: () async {
                               await loginViewModel.onThirdPartyLogin(name);
-                              if (loginViewModel.loginState ==
-                                  LoginState.loginSuccess) {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const BasePage()));
+                              switch(loginViewModel.loginState){
+                                case LoginState.loginSuccess:
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const BasePage()));
+                                  break;
+                                case LoginState.loginFaild:
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(const SnackBar(
+                                    content: Text("登入失敗"),
+                                    duration: Duration(seconds: 2),
+                                  ));
+                                  break;
+                                default:
+                                  break;
                               }
                             }))
                         .toList(),

@@ -4,7 +4,7 @@ import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/service/auth_service.dart';
 
-class PasswordRegisterFormModel {
+class RegisterModel {
   String password = "";
   String passwordConfirm = "";
   String userName = "";

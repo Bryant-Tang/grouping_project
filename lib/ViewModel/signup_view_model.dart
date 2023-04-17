@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/ViewModel/state.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/model/password_login_model.dart';
-import 'package:grouping_project/model/password_register_model.dart';
+import 'package:grouping_project/model/login_model.dart';
+import 'package:grouping_project/model/register_model.dart';
 import 'package:grouping_project/service/auth_service.dart';
 
 class SignUpViewModel extends ChangeNotifier {
   // final AuthService authService = AuthService();
-  PasswordRegisterFormModel passwordRegisterModel = PasswordRegisterFormModel();
+  RegisterModel passwordRegisterModel = RegisterModel();
 
   String get password => passwordRegisterModel.password;
   String get passwordConfirm => passwordRegisterModel.passwordConfirm;

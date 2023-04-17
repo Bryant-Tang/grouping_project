@@ -3,11 +3,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/components/card_view/event/event_card_view.dart';
+import 'package:grouping_project/ViewModel/view_model_lib.dart';
+import 'package:grouping_project/components/card_view/card_view_template.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/overview_choice_button.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_mission_page.dart';
+import 'package:grouping_project/pages/home/personal_dashboard/home_mission_page.dart';
+import 'package:provider/provider.dart';
 
 class OverView extends StatefulWidget {
   const OverView({super.key});
@@ -43,119 +47,71 @@ class _OverViewState extends State<OverView> {
       ],
     ),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    dataController.downloadAll(dataTypeToGet: EventModel()).then((value) {
-      eventNumbers = value.length;
-      setState(() {});
-    });
-    dataController.downloadAll(dataTypeToGet: MissionModel()).then((value) {
-      missionNumbers = value.length;
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose(){
-    super.dispose();
-  }
-
-  final headLine = const Text(
-    'OVERVIEW',
-    // style: TextStyle(
-    //     fontSize: 16, fontWeight: FontWeight.bold, color: Color(0XFF717171)),
-  );
+  
   final line = const Divider(
     height: 1,
     thickness: 2,
-    // color: Color(0XFF999898),
   );
-  List<bool> isSelectedList = [true, false, false];
-  setEnable(int index) {
-    overViewIndex = index;
-    setState(() {
-      for (int i = 0; i < isSelectedList.length; i++) {
-        if (i == index) {
-          isSelectedList[i] = true;
-        } else {
-          isSelectedList[i] = false;
-        }
-      }
-    });
-  }
 
+  final buttonInfo = {
+    'event': {
+      'label': '事件 - 即將到來',
+      'icon': 'assets/icons/calendartick.svg',
+      'number': '0',
+    },
+    'mission': {
+      'label': '任務 - 即將到來',
+      'icon': 'assets/icons/task.svg',
+      'number': '1',
+    },
+    'group': {
+      'label': '群組 - 即將到來',
+      'icon': 'assets/icons/messagetick.svg',
+      'number': '2',
+    },
+  };
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'OVERVIEW',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-              fontWeight: FontWeight.bold,
+      child: Consumer<PersonalDashboardViewModel>(
+        builder: (context, model, child) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('OVERVIEW',
+                style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    )),
+            line,
+            Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: buttonInfo.entries.map((entry) => 
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: OverViewChoiceButton(
+                        onTap: () {
+                          model.updateOverViewIndex(int.parse(entry.value['number']!));// setEnable(0);
+                        },
+                        labelText: entry.value['label']!,
+                        iconPath: entry.value['icon']!,
+                        numberText: model.eventList.length,
+                        isSelected: int.parse(entry.value['number']!) == model.overView,
+                      ),
+                    ),
+                  )).toList()
+            ),
+            Expanded(
+              flex: 4,
+              child: Container(child: pages[model.overViewIndex]),
+              // child: Container(
+              //   decoration:
+              //       BoxDecoration(border: Border.all(color: Colors.black)),
+              // ),
             )
-          ),
-          line,
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: OverViewChoiceButton(
-                      onTap: () {
-                        setEnable(0);
-                      },
-                      labelText: '事件 - 即將到來',
-                      iconPath: 'assets/icons/calendartick.svg',
-                      numberText: eventNumbers,
-                      isSelected: isSelectedList[0],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: OverViewChoiceButton(
-                      onTap: () {
-                        setEnable(1);
-                      },
-                      labelText: '任務 - 追蹤中',
-                      iconPath: 'assets/icons/task.svg',
-                      numberText: missionNumbers,
-                      isSelected: isSelectedList[1],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: OverViewChoiceButton(
-                      onTap: () {
-                        setEnable(2);
-                      },
-                      labelText: '話題 - 代回覆',
-                      iconPath: 'assets/icons/messagetick.svg',
-                      numberText: eventNumbers,
-                      isSelected: isSelectedList[2],
-                    ),
-                  ),
-                ),
-              ]),
-          Expanded(
-            flex: 4,
-            child: Container(child: pages[overViewIndex]),
-            // child: Container(
-            //   decoration:
-            //       BoxDecoration(border: Border.all(color: Colors.black)),
-            // ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

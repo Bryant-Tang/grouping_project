@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/ViewModel/state.dart';
-import 'package:grouping_project/model/password_login_model.dart';
+import 'package:grouping_project/model/login_model.dart';
 
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/service/auth_service.dart';
 
 class LoginViewModel extends ChangeNotifier {
   // final AuthService authService = AuthService();
-  PasswordLoginFormModel passwordLoginModel = PasswordLoginFormModel();
+  LoginModel passwordLoginModel = LoginModel();
 
   String get password => passwordLoginModel.password;
   String get email => passwordLoginModel.email;
@@ -56,6 +56,7 @@ class LoginViewModel extends ChangeNotifier {
     }
     // debugPrint(loginState.toString());
   }
+
   Future<void> onThirdPartyLogin(String name) async {
     // debugPrint("登入測試");
     // debugPrint("Email: $email , Password: $password");
