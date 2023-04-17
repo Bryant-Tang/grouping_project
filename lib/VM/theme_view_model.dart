@@ -1,31 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:grouping_project/model/theme_model.dart';
 
 class ThemeManager with ChangeNotifier {
   // 這是 ViewModel
   // brightness 用來切換主題是Model
-  Brightness _brightness = Brightness.light;
-  Brightness get brightness => _brightness;
-  IconData themeIcon = Icons.wb_sunny;
-  IconData get icon => themeIcon;
-  Widget coverLogo = SvgPicture.asset(
-    "assets/images/logo_light.svg",
-    semanticsLabel: 'Grouping Logo',
-  );
+  ThemeModel theme = ThemeModel();
+  Brightness get brightness => theme.brightness;
+  IconData get icon => theme.themeIcon;
+  Widget get coverLogo => theme.coverLogo;
+  Color get colorSchemeSeed => theme.colorSchemeSeed;
+
   Widget get logo => coverLogo;
   void toggleTheme() {
-    themeIcon =
-        _brightness == Brightness.light ? Icons.nightlight_round : Icons.wb_sunny;
-    coverLogo =
-       _brightness == Brightness.light ? SvgPicture.asset(
-        "assets/images/logo_dark.svg",
-        semanticsLabel: 'Grouping Logo',
-      ) : SvgPicture.asset(
-        "assets/images/logo_light.svg",
-        semanticsLabel: 'Grouping Logo',
-      );
-    _brightness =
-        _brightness == Brightness.light ? Brightness.dark : Brightness.light;
+    theme.toggleBritenss();
+    notifyListeners();
+  }
+  void updateColorSchemeSeed(Color color) {
+    theme.m3ColorSchemeSeed = color;
     notifyListeners();
   }
 }

@@ -30,7 +30,7 @@ class CardEditDoneState extends State<CardEditDone> {
   @override
   Widget build(BuildContext context) {
     // final profile = InheritedProfile.of(context)!.profile;
-    return Consumer<PersonalDashboardViewModel>(
+    return Consumer<WorkspaceDashboardViewModel>(
       builder: (context, model, child) => SafeArea(
         bottom: true,
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -72,7 +72,11 @@ class CardEditDoneState extends State<CardEditDone> {
                                 HeadShot(
                                     name: model.profile.name ?? 'unknown',
                                     nickName: model.profile.nickname ?? 'None',
-                                    imageShot: model.profile.photo != null ? Image.file(File(model.profile.photo!.path)) : Image.asset('assets/images/profile_male.png'),
+                                    imageShot: model.profile.photo != null
+                                        ? Image.file(
+                                            File(model.profile.photo!.path))
+                                        : Image.asset(
+                                            'assets/images/profile_male.png'),
                                     motto: model.profile.slogan ?? 'None'),
                                 CustomLabel(
                                     title: '自我介紹',
@@ -107,11 +111,11 @@ class CardEditDoneState extends State<CardEditDone> {
                     onPressed: () {
                       debugPrint('edit');
                       Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      EditPersonalProfilePage(profile: model.profile)))
-                          .then((value) {
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  EditPersonalProfilePage(
+                                      profile: model.profile))).then((value) {
                         if (value is ProfileModel) {
                           InheritedProfile.of(context)!.updateProfile(value);
                         }

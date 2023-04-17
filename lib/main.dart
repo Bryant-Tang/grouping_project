@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
               brightness: themeManager.brightness,
               useMaterial3: true,
               // primarySwatch: Colors.amber,
-              colorSchemeSeed: Colors.amber,
+              colorSchemeSeed: themeManager.colorSchemeSeed,
               fontFamily: 'NotoSansTC',
               // colorScheme: lightColorScheme
             ),
