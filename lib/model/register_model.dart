@@ -12,6 +12,10 @@ class RegisterModel {
   bool isPasswordValid = false;
   bool isPasswordConfirmValid = false;
   bool isUserNameValid = false;
+  ProfileModel get tempProfile => ProfileModel(
+        nickname: userName,
+        email: email,
+      );
   void updateEmail(String value) {
     email = value;
   }
@@ -32,22 +36,22 @@ class RegisterModel {
   }
 
   Future<RegisterState> register(email, password, userName) async {
-    debugPrint('註冊信箱: $email\n使用者密碼: $password');
-    AuthService authService = AuthService();
     try {
+      // debugPrint('註冊信箱: $email\n使用者密碼: $password');
+      AuthService authService = AuthService();
       await authService.emailSignUp(email, password);
-      debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
-      final ProfileModel user = ProfileModel(nickname: userName, email: email);
-      DataController()
-          .createUser(userProfile: user)
+      // debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
+      // final ProfileModel user = ProfileModel(nickname: userName, email: email);
+      await DataController()
+          .createUser(userProfile: tempProfile)
           .then((value) => {debugPrint('upload successfully')})
           .catchError((error) {
         debugPrint(error.toString());
       });
       return RegisterState.success;
     } catch (error) {
-      debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊失敗');
-      debugPrint(error.toString());
+      // debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊失敗');
+      // debugPrint(error.toString());
       return RegisterState.faild;
     }
   }

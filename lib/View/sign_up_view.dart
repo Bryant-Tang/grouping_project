@@ -1,12 +1,10 @@
-import 'package:grouping_project/VM/signup_view_model.dart';
-import 'package:grouping_project/VM/state.dart';
+import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/component_lib.dart';
-import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/view_template/sing_up_page_template.dart';
 import 'package:grouping_project/pages/view_template/building.dart';
 import 'package:grouping_project/View/workspace_view.dart';
-import 'package:grouping_project/pages/profile/personal_profile/profile_edit_page.dart';
-import 'package:grouping_project/service/auth_service.dart';
+import 'package:grouping_project/View/profile/profile_edit_view.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -112,7 +110,7 @@ class _SignUpPageState extends State<SignUpPage> {
   // final PageStorageBucket _bucket = PageStorageBucket();
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
+    return ChangeNotifierProvider<SignUpViewModel>(
       create: (BuildContext context) =>
           SignUpViewModel()..onEmailChange(widget.registeredEmail),
       child: PageView(
@@ -347,128 +345,133 @@ class _RecommendPageState extends State<RecommendPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SignUpPageTemplate(
-      titleWithContent:
-          HeadlineWithContent(headLineText: headLineText, content: content),
-      body: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 150,
-            height: 200,
-            // padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xffD9D9D9),
-                  spreadRadius: 3,
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: MaterialButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                onPressed: () {
-                  DataController()
-                      .download(
-                          dataTypeToGet: ProfileModel(),
-                          dataId: ProfileModel().id!)
-                      .then((value) => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditPersonalProfilePage(
-                                    profile: value,
-                                  ))));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Image.asset(
-                        "assets/images/profile_male.png",
-                        height: 120,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Text(
-                        "修改個人資訊",
-                        style: TextStyle(
-                            color: Colors.amber,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
+    return Consumer<SignUpViewModel>(
+      builder: (context, model, child) => SignUpPageTemplate(
+        titleWithContent:
+            HeadlineWithContent(headLineText: headLineText, content: content),
+        body: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 150,
+              height: 200,
+              // padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0xffD9D9D9),
+                    spreadRadius: 3,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
-                )),
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-          Container(
-            width: 150,
-            height: 200,
-            // padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xffD9D9D9),
-                  spreadRadius: 3,
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
+                ],
+              ),
+              child: MaterialButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  onPressed: () {
+                    // TODO: Fix this problem
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfileEditPageView(
+                            )));
+                    // DataController()
+                    //     .download(
+                    //         dataTypeToGet: ProfileModel(),
+                    //         dataId: ProfileModel().id!)
+                    //     .then((value) => Navigator.push(context,
+                    //         MaterialPageRoute(
+                    //             builder: (context) => const EditPersonalProfilePage())));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Image.asset(
+                          "assets/images/profile_male.png",
+                          height: 120,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          "修改個人資訊",
+                          style: TextStyle(
+                              color: Colors.amber,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  )),
             ),
-            child: MaterialButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const BuildingPage(
-                                errorMessage: "創建小組",
-                              )));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Image.asset(
-                        "assets/images/conference.png",
-                        height: 120,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const Text(
-                        "創建小組",
-                        style: TextStyle(
-                            color: Colors.amber,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      )
-                    ],
+            const SizedBox(
+              width: 20,
+            ),
+            Container(
+              width: 150,
+              height: 200,
+              // padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0xffD9D9D9),
+                    spreadRadius: 3,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
-                )),
-          ),
-        ],
-      ),
-      // Image.asset("assets/images/welcome.png"),
-      toggleBar: SingleButtonNavigationBar(
-        goToNextButtonText: "前往主頁",
-        goToNextButtonHandler: widget.forward,
+                ],
+              ),
+              child: MaterialButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const BuildingPage(
+                                  errorMessage: "創建小組",
+                                )));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Image.asset(
+                          "assets/images/conference.png",
+                          height: 120,
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          "創建小組",
+                          style: TextStyle(
+                              color: Colors.amber,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        )
+                      ],
+                    ),
+                  )),
+            ),
+          ],
+        ),
+        // Image.asset("assets/images/welcome.png"),
+        toggleBar: SingleButtonNavigationBar(
+          goToNextButtonText: "前往主頁",
+          goToNextButtonHandler: widget.forward,
+        ),
       ),
     );
   }

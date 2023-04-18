@@ -8,7 +8,7 @@ import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/color_tag_chip.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/View/login_view.dart';
-import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
+import 'package:grouping_project/View/create_group_view.dart';
 
 import 'package:grouping_project/pages/view_template/building.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
@@ -28,7 +28,7 @@ class _BasePageState extends State<BasePage> {
   final _pageController = PageController();
   // final model = WorkspaceDashboardViewModel();
   final _pages = const <Widget>[
-    HomePage(),
+    DashboardPage(),
     CalendarPage(),
     Center(child: BuildingPage(errorMessage: "Message Page")),
     Center(child: BuildingPage(errorMessage: "Note Page")),
@@ -135,26 +135,30 @@ class _BasePageState extends State<BasePage> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<WorkspaceDashboardViewModel>(
-        create: (context) => WorkspaceDashboardViewModel()..getAllData(),
-        child: Consumer<ThemeManager>(
-          builder: (context, themeManager, child) =>
-              Consumer<WorkspaceDashboardViewModel>(
-                builder: (context, model, child) => Scaffold(
-                    appBar: getAppBar(model, themeManager, context),
-                    body:PageView(
-                      controller: _pageController,
-                      onPageChanged: model.updateSelectedIndex,
-                      children: _pages,
-                    ),
-                    extendBody: true,
-                    floatingActionButton: const CreateButton(),
-                    // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-                    bottomNavigationBar:
-                        getNavigationBar(model, themeManager, context),
-                  )
-              ),
-          ),
-        );
+      create: (context) => WorkspaceDashboardViewModel()..getAllData(),
+      child: Consumer<ThemeManager>(
+        builder: (context, themeManager, child) =>
+            Consumer<WorkspaceDashboardViewModel>(
+                builder: (context, model, child) => WillPopScope(
+                      onWillPop: () async {
+                        return false; // 禁用返回鍵
+                      },
+                      child: Scaffold(
+                        appBar: getAppBar(model, themeManager, context),
+                        body: PageView(
+                          controller: _pageController,
+                          onPageChanged: model.updateSelectedIndex,
+                          children: _pages,
+                        ),
+                        extendBody: true,
+                        floatingActionButton: const CreateButton(),
+                        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                        bottomNavigationBar:
+                            getNavigationBar(model, themeManager, context),
+                      ),
+                    )),
+      ),
+    );
   }
 }
 

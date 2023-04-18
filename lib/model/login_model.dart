@@ -44,12 +44,12 @@ class LoginModel {
   }
 
   Future<LoginState> thirdPartyLogin(String name) async {
-    try{
+    try {
       final result = await authService.thridPartyLogin(name);
-      if(result == null){
+      if (result == null) {
         return LoginState.loginFaild;
       }
-    }catch(e){
+    } catch (e) {
       debugPrint(e.toString());
       return LoginState.loginFaild;
     }

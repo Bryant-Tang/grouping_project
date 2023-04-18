@@ -38,8 +38,6 @@ class MyApp extends StatelessWidget {
               fontFamily: 'NotoSansTC',
               // colorScheme: lightColorScheme
             ),
-            // darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-            // themeMode: ThemeMode.dark,
             debugShowCheckedModeBanner: false,
             // 呼叫 home_page.dart
             home: const CoverPage()),
