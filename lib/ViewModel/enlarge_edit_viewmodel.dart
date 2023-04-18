@@ -254,13 +254,19 @@ class TitleDateOfMission extends StatefulWidget {
       required this.group,
       required this.color,
       required this.deadline,
-      required this.callback});
+      required this.stage,
+      required this.stateName,
+      required this.callback,
+      required this.cbStage});
 
   final TextEditingController titleController;
   final String group;
   final Color color;
   final DateTime deadline;
+  final MissionStage stage;
+  final String stateName;
   final Function(DateTime) callback;
+  final Function(MissionStage stage, String stateName) cbStage;
 
   @override
   State<TitleDateOfMission> createState() => TitleDateOfMissionState();
@@ -363,9 +369,166 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF000000)),
-            ))
+            )),
+        StateOfMission(
+          stage: widget.stage,
+          stateName: widget.stateName,
+          callback: (stage, stateName) {
+            widget.cbStage(stage, stateName);
+          },
+        )
       ],
     );
+  }
+}
+
+class StateOfMission extends StatefulWidget {
+  const StateOfMission(
+      {super.key,
+      required this.stage,
+      required this.stateName,
+      required this.callback});
+
+  final MissionStage stage;
+  final String stateName;
+  final Function(MissionStage stage, String stateName) callback;
+
+  @override
+  State<StateOfMission> createState() => _StateOfMissionState();
+}
+
+class _StateOfMissionState extends State<StateOfMission> {
+  late List<MissionStateModel> stageDatas;
+  late MissionStage stage;
+  late String stateName = 'Error';
+  late Color color = Colors.black38;
+// TODO: can't upload statename, seperate user and group
+  @override
+  void initState() {
+    super.initState();
+    DataController()
+        .downloadAll(dataTypeToGet: MissionStateModel())
+        .then((value) {
+      stageDatas = value;
+      setState(() {});
+    });
+    stage = widget.stage;
+    stateName = widget.stateName;
+    color = stageToColor(widget.stage);
+  }
+
+  Color stageToColor(MissionStage stage) {
+    // TODO: color discussion
+    if (stage == MissionStage.progress) {
+      return Colors.blue.withOpacity(0.2);
+    } else if (stage == MissionStage.pending) {
+      return Colors.purple.withOpacity(0.2);
+    } else if (stage == MissionStage.close) {
+      return Colors.red.withOpacity(0.2);
+    } else {
+      return Colors.black38;
+    }
+  }
+
+  Column contextTemple(
+      String title, List<MissionStateModel> datas, MissionStage stage) {
+    List<Widget> chips = [];
+
+    for (int i = 0; i < datas.length; i++) {
+      chips
+          .add(chip(stageToColor(stage), datas[i].stateName!, stage));
+      chips.add(const SizedBox(
+        height: 4,
+      ));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            const Divider(
+              height: 7,
+              thickness: 3,
+            )
+          ] +
+          chips,
+    );
+  }
+
+  ListView chooseState() {
+    List<MissionStateModel> inProgress = [];
+    List<MissionStateModel> pending = [];
+    List<MissionStateModel> close = [];
+
+    for (int i = 0; i < stageDatas.length; i++) {
+      if (stageDatas[i].stage == MissionStage.progress) {
+        inProgress.add(stageDatas[i]);
+      } else if (stageDatas[i].stage == MissionStage.pending) {
+        pending.add(stageDatas[i]);
+      } else if (stageDatas[i].stage == MissionStage.close) {
+        close.add(stageDatas[i]);
+      }
+    }
+
+    return ListView(
+      children: [
+        contextTemple('進行中 In Progress', inProgress, MissionStage.progress),
+        contextTemple('待討論 Pending', pending, MissionStage.pending),
+        contextTemple('已結束 Close', close, MissionStage.close)
+      ],
+    );
+  }
+
+  InkWell chip(Color color, String stateName, MissionStage stage) {
+    return InkWell(
+        onTap: () {
+          this.stage = stage;
+          this.stateName = stateName;
+          this.color = stageToColor(stage);
+          widget.callback(stage, stateName);
+          // debugPrint(color.toString());
+          setState(() {
+            Navigator.pop(context);
+          });
+        },
+        child: Container(
+            decoration: BoxDecoration(
+                color: color, borderRadius: BorderRadius.circular(10)),
+            child: Text(
+              ' •$stateName ',
+              style: const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+            )));
+  }
+
+  Container chipView(Color color, String stateName) {
+    return Container(
+        decoration: BoxDecoration(
+            color: color, borderRadius: BorderRadius.circular(10)),
+        child: Text(
+          ' •$stateName ',
+          style: const TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return Dialog(
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: chooseState(),
+                  ),
+                );
+              });
+        },
+        child: chipView(color, stateName));
   }
 }
 
