@@ -264,12 +264,106 @@ class DatabaseService {
     return eventList;
   }
 
-  Future<List<MissionModel>> getAllMisison() async {
-    //un implement
-    return [MissionModel.defaultMission, MissionModel.defaultMission];
+  Future<void> setMission({required MissionModel mission}) async {
+    String missionId = await _setDataModelFirestore(mission);
+    await _setMapDataFirestore(
+        data: {'account_id': await _getOwnerAccountId()},
+        collectionPath: 'mission_account_relation',
+        dataId: missionId);
+    return;
   }
 
-  Future<List<MissionStateModel>> getAllState() async {
+  Future<MissionModel> getMission({required String missionId}) async {
+    String ownerAccountId = await _getOwnerAccountId();
+    String? missionBelongAccountId = (await _getDocSnapFirestore(
+            collectionPath: 'mission_account_relation', dataId: missionId))
+        .data()?['account_id'];
+    if (missionBelongAccountId == null) {
+      throw GroupingProjectException(
+          message: 'The mission is not exist.',
+          code: GroupingProjectExceptionCode.notExistInDatabase,
+          stackTrace: StackTrace.current);
+    } else if (missionBelongAccountId != ownerAccountId) {
+      throw GroupingProjectException(
+          message: 'The mission is not belong to this account.',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
+    }
+
+    var docSnap = await _getDocSnapFirestore(
+        collectionPath: MissionModel.defaultMission.databasePath,
+        dataId: missionId);
+
+    MissionModel mission = MissionModel.defaultMission
+        .fromFirestore(id: docSnap.id, data: docSnap.data() ?? {});
+
+    mission.setOwner(
+        ownerAccount: await _getSingleAccount(accountId: ownerAccountId));
+
+    //!!!unimplement!!!
+    mission.setStateByStateModel(MissionStateModel.defaultUnknownState);
+
+    return mission;
+  }
+
+  Future<List<MissionModel>> _getSingleAccountAllMission() async {
+    String ownerAccountId = await _getOwnerAccountId();
+    var missionSnapList = await _getDataFitMapFirestore(
+        collectionPath: 'mission_account_relation',
+        condition: {'account_id': ownerAccountId});
+
+    List<String> missionIdList = [];
+    for (var docSnap in missionSnapList) {
+      missionIdList.add(docSnap.id);
+    }
+
+    List<MissionModel> missionList = [];
+
+    for (var missionId in missionIdList) {
+      var docSnap = await _getDocSnapFirestore(
+          collectionPath: MissionModel.defaultMission.databasePath,
+          dataId: missionId);
+      MissionModel mission = MissionModel.defaultMission
+          .fromFirestore(id: docSnap.id, data: docSnap.data() ?? {});
+      mission.setOwner(
+          ownerAccount: await _getSingleAccount(accountId: ownerAccountId));
+      //!!!unimplement!!!
+      mission.setStateByStateModel(MissionStateModel.defaultUnknownState);
+      missionList.add(mission);
+    }
+
+    return missionList;
+  }
+
+  Future<List<MissionModel>> getAllMission() async {
+    List<MissionModel> missionList = await _getSingleAccountAllMission();
+    AccountModel ownerAccount = await getAccount();
+    if (_forUser) {
+      for (var associateGroupId in ownerAccount.associateEntityId) {
+        missionList.addAll(
+            await DatabaseService(ownerUid: associateGroupId, forUser: false)
+                .getAllMission());
+      }
+    }
+    return missionList;
+  }
+
+  Future<void> setMissionState({required MissionStateModel state}) async {}
+
+  Future<MissionStateModel> getMissionState({required String stateId}) async {
+    return MissionStateModel.defaultUnknownState;
+  }
+
+  Future<List<MissionStateModel>> _getSingleAccountAllMissionState() async {
+    return [
+      MissionStateModel.defaultFinishState,
+      MissionStateModel.defaultPendingState,
+      MissionStateModel.defaultProgressState,
+      MissionStateModel.defaultTimeOutState
+    ];
+  }
+
+  Future<List<MissionStateModel>> getAllMissionState() async {
     return [
       MissionStateModel.defaultFinishState,
       MissionStateModel.defaultPendingState,

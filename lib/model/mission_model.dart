@@ -154,9 +154,9 @@ class MissionModel extends BaseDataModel<MissionModel> {
   }
 
   /// set the data about owner for this instance
-  void setOwner({required AccountModel account}) {
-    ownerName = account.name;
-    color = account.color;
+  void setOwner({required AccountModel ownerAccount}) {
+    ownerName = ownerAccount.name;
+    color = ownerAccount.color;
   }
 
   /// ### This is the perfered method to change state of mission
