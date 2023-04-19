@@ -3,6 +3,7 @@ import 'package:grouping_project/pages/home/personal_dashboard/personal_event_pa
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -21,10 +22,19 @@ class _CalendarPageState extends State<CalendarPage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
+  Future<DateTime?> selectDay() async {
+    return await showDatePicker(
+        context: context,
+        initialDate: _focusedDay,
+        firstDate: DateTime(2010),
+        lastDate: DateTime(2030));
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    initializeDateFormatting();
     WidgetsBinding.instance
         .addPostFrameCallback((_) => model.getEventsByDate(DateTime.now()));
     showEvents();
@@ -51,11 +61,15 @@ class _CalendarPageState extends State<CalendarPage> {
                             formatButtonVisible: false,
                             titleCentered: true,
                           ),
+                          locale: 'zh_TW',
                           firstDay: DateTime.utc(2010, 10, 16),
                           lastDay: DateTime.utc(2030, 3, 14),
                           focusedDay: _focusedDay,
                           availableCalendarFormats: _calendarFormat,
                           daysOfWeekHeight: 20,
+                          onHeaderTapped: (focusedDay) async {
+                            focusedDay = await selectDay() ?? focusedDay;
+                          },
                           calendarStyle: CalendarStyle(
                             // Decoration for today
                             todayDecoration: BoxDecoration(
@@ -125,9 +139,9 @@ class _CalendarPageState extends State<CalendarPage> {
                       ),
                       Expanded(
                         child: ListView.builder(
-                          itemCount: model.eventCards.length,
+                          itemCount: model.eventAndMissionCards.length,
                           itemBuilder: (context, index) {
-                            return model.eventCards[index];
+                            return model.eventAndMissionCards[index];
                             // Column(
                             //   children: [
                             //     ListTile(

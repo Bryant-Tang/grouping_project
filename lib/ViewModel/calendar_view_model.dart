@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/model/data_controller.dart';
-import 'package:grouping_project/model/event_model.dart';
-import 'package:grouping_project/components/card_view/event_information_shrink.dart';
-import 'package:grouping_project/components/card_view/event_information_enlarge.dart';
-import 'package:grouping_project/components/card_view/card_view_template.dart';
+import 'package:grouping_project/components/card_view/mission/mission_card_view.dart';
+import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/components/card_view/event_information.dart';
 
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarViewModel extends ChangeNotifier {
   final DataController dataController = DataController();
   List<EventModel> events = [];
+  List<MissionModel> missions = [];
   List<EventModel> eventsByDate = [];
-  List<Widget> eventCards = [];
+  List<MissionModel> missionsByDate = [];
+  List<Widget> eventAndMissionCards = [];
   DateTime? _selectedDay;
   DateTime? _focusedDay;
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -21,10 +21,6 @@ class CalendarViewModel extends ChangeNotifier {
     _focusedDay = DateTime.now();
     getEvents();
   }
-
-  DateTime? get selectedDay => _selectedDay;
-  DateTime? get focusedDay => _focusedDay;
-  CalendarFormat get calendarFormat => _calendarFormat;
 
   /// This is the function used for getting all event data from the database, backend only
   Future<void> getEvents() async {
@@ -53,25 +49,53 @@ class CalendarViewModel extends ChangeNotifier {
                   DateTime(date.year, date.month, date.day, 0, 0, 0))));
     }).toList();
     debugPrint('The events are: $eventsByDate');
-    showEvents();
+    showCards();
+    notifyListeners();
+    getMissinosByDate(date);
+  }
+
+  /// get all missions
+  Future<void> getMissions() async {
+    missions = await dataController.downloadAll(dataTypeToGet: MissionModel());
     notifyListeners();
   }
 
-  /// This is the function used for expanding the event card
-  Future<void> showEvents() async {
-    eventCards = [];
-    for (int index = 0; index < eventsByDate.length; index++) {
-      debugPrint(index.toString());
-      eventCards.add(const SizedBox(
+  /// get mission by date
+  Future<void> getMissinosByDate(DateTime date) async {
+    await getMissions();
+    debugPrint('The date is: $date');
+    missionsByDate = missions.where((mission) {
+      return (mission.deadline != null &&
+          mission.deadline!.isBefore(
+              DateTime(date.year, date.month, date.day, 23, 59, 59)) &&
+          mission.deadline!
+              .isAfter(DateTime(date.year, date.month, date.day, 0, 0, 0)));
+    }).toList();
+    debugPrint('The missions are: $missionsByDate');
+    showCards();
+  }
+
+  /// This is the function used for showing the event and mission cards
+  Future<void> showCards() async {
+    eventAndMissionCards = [];
+    for (int index = 0; index < missionsByDate.length; index++) {
+      // debugPrint(index.toString());
+      eventAndMissionCards.add(const SizedBox(
         height: 10,
       ));
-      EventInformationShrink shrink =
-          EventInformationShrink(eventModel: eventsByDate[index]);
-      EventInformationEnlarge enlarge =
-          EventInformationEnlarge(eventModel: eventsByDate[index]);
+      eventAndMissionCards.add(MissionCardViewTemplate(
+        missionModel: missionsByDate[index],
+      ));
+    }
+    for (int index = 0; index < eventsByDate.length; index++) {
+      // debugPrint(index.toString());
+      eventAndMissionCards.add(const SizedBox(
+        height: 10,
+      ));
 
-      eventCards.add(
-          EventCardViewTemplate(detailShrink: shrink, detailEnlarge: enlarge));
+      eventAndMissionCards.add(EventCardViewTemplate(
+        eventModel: eventsByDate[index],
+      ));
     }
   }
 }

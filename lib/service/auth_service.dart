@@ -308,9 +308,12 @@ class AuthService {
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
           if (result.additionalUserInfo?.isNewUser == true) {
-            await DataController().createUser(
-                userProfile:
-                    await getProfile() ?? ProfileModel(nickname: 'unknown'));
+            await DataController()
+                .createUser(userProfile: await getProfile() ?? ProfileModel())
+                .then((value) {
+              debugPrint('User profile created');
+              return _userModelFromAuth(result.user);
+            });
           }
           return _userModelFromAuth(result.user);
         }
@@ -373,9 +376,12 @@ class AuthService {
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
           if (result.additionalUserInfo?.isNewUser == true) {
-            await DataController().createUser(
-                userProfile:
-                    await getProfile() ?? ProfileModel(nickname: 'unknown'));
+            await DataController()
+                .createUser(userProfile: await getProfile() ?? ProfileModel())
+                .then((value) {
+              debugPrint('User profile created');
+              return _userModelFromAuth(result.user);
+            });
           }
           return _userModelFromAuth(result.user);
         }
@@ -412,9 +418,12 @@ class AuthService {
         UserCredential result =
             await FirebaseAuth.instance.signInWithPopup(githubProvider);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DataController().createUser(
-              userProfile:
-                  await getProfile() ?? ProfileModel(nickname: 'unknown'));
+          await DataController()
+              .createUser(userProfile: await getProfile() ?? ProfileModel())
+              .then((value) {
+            debugPrint('User profile created');
+            return _userModelFromAuth(result.user);
+          });
         }
 
         return _userModelFromAuth(result.user);
@@ -422,9 +431,12 @@ class AuthService {
         UserCredential result =
             await FirebaseAuth.instance.signInWithProvider(githubProvider);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DataController().createUser(
-              userProfile:
-                  await getProfile() ?? ProfileModel(nickname: 'unknown'));
+          await DataController()
+              .createUser(userProfile: await getProfile() ?? ProfileModel())
+              .then((value) {
+            debugPrint('User profile created');
+            return _userModelFromAuth(result.user);
+          });
         }
 
         return _userModelFromAuth(result.user);
@@ -481,9 +493,12 @@ class AuthService {
 
         UserCredential result = await _auth.signInWithCredential(credential);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DataController().createUser(
-              userProfile:
-                  await getProfile() ?? ProfileModel(nickname: 'unknown'));
+          await DataController()
+              .createUser(userProfile: await getProfile() ?? ProfileModel())
+              .then((value) {
+            debugPrint('User profile created');
+            return _userModelFromAuth(result.user);
+          });
         }
 
         return _userModelFromAuth(result.user);
@@ -518,9 +533,12 @@ class AuthService {
 
         UserCredential result = await _auth.signInWithCredential(credential);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DataController().createUser(
-              userProfile:
-                  await getProfile() ?? ProfileModel(nickname: 'unknown'));
+          await DataController()
+              .createUser(userProfile: await getProfile() ?? ProfileModel())
+              .then((value) {
+            debugPrint('User profile created');
+            return _userModelFromAuth(result.user);
+          });
         }
 
         return _userModelFromAuth(result.user);

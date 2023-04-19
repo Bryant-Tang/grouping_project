@@ -38,7 +38,7 @@ class RegisterModel {
       await authService.emailSignUp(email, password);
       debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
       final ProfileModel user = ProfileModel(nickname: userName, email: email);
-      DataController()
+      await DataController()
           .createUser(userProfile: user)
           .then((value) => {debugPrint('upload successfully')})
           .catchError((error) {
