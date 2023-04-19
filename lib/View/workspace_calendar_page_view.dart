@@ -1,4 +1,5 @@
 import 'package:grouping_project/VM/calendar_view_model.dart';
+import 'package:grouping_project/VM/workspace_dashboard_view_model.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -15,7 +16,8 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
-  CalendarViewModel model = CalendarViewModel();
+  CalendarViewModel calendarViewModel = CalendarViewModel();
+  WorkspaceDashboardViewModel model = WorkspaceDashboardViewModel();
   final Map<CalendarFormat, String> _calendarFormat = {
     CalendarFormat.month: 'month'
   };
@@ -44,20 +46,19 @@ class _CalendarPageState extends State<CalendarPage> {
   void initState() {
     super.initState();
     initializeDateFormatting();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => model.getEventsByDate(DateTime.now()));
-    showEvents();
+    calendarViewModel.init(model);
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (context) => model,
-        child: Consumer<CalendarViewModel>(
+        child: Consumer<WorkspaceDashboardViewModel>(
           builder: (context, model, child) {
             return RefreshIndicator(
                 key: _refreshIndicatorKey,
-                onRefresh: () => model.getEventsByDate(DateTime.now()),
+                onRefresh: () => calendarViewModel.getEventsAndMissionsByDate(
+                    DateTime.now(), model),
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Column(
@@ -141,7 +142,8 @@ class _CalendarPageState extends State<CalendarPage> {
                             setState(() {
                               _selectedDay = selectedDay;
                               _focusedDay = focusedDay;
-                              model.getEventsByDate(selectedDay);
+                              calendarViewModel.getEventsAndMissionsByDate(
+                                  selectedDay, model);
                             });
                           },
                           onPageChanged: (focusedDay) {
@@ -151,9 +153,11 @@ class _CalendarPageState extends State<CalendarPage> {
                       ),
                       Expanded(
                         child: ListView.builder(
-                          itemCount: model.eventAndMissionCards.length,
+                          itemCount:
+                              calendarViewModel.eventAndMissionCards.length,
                           itemBuilder: (context, index) {
-                            return model.eventAndMissionCards[index];
+                            return calendarViewModel
+                                .eventAndMissionCards[index];
                             // Column(
                             //   children: [
                             //     ListTile(
