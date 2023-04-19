@@ -101,37 +101,3 @@ class _OverViewState extends State<OverView> {
   }
 }
 
-// 待確認是否應該是要將 listview 放在 container 裡面
-// List<Widget> pages = [
-// Expanded(child: ListView(children: const [EventPage()])),
-// Expanded(child: ListView(
-//   children: const [MissionPage()],
-// )),
-// ListView(
-//   children: [
-//     Container(
-//       height: 100,
-//       decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-//     ),
-//     const EventPage(),
-//     // CardViewTemplate(detailShrink: EventInformationShrink(eventModel: EventModel()), detailEnlarge: EventInformationEnlarge(eventModel: EventModel()))
-//   ],
-// ),
-//   const EventPage(),
-//   ListView(
-//     children: [
-//       Container(
-//         height: 100,
-//         decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-//       ),
-//     ],
-//   ),
-//   ListView(
-//     children: [
-//       Container(
-//         height: 100,
-//         decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-//       ),
-//     ],
-//   ),
-// ];
