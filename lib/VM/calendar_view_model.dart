@@ -1,30 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/mission/mission_card_view.dart';
+import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
-
-import 'package:table_calendar/table_calendar.dart';
+import 'package:grouping_project/service/service_lib.dart';
 
 class CalendarViewModel extends ChangeNotifier {
-  final DataController dataController = DataController();
+  final DatabaseService databaseService =
+      DatabaseService(ownerUid: AuthService().getUid());
   List<EventModel> events = [];
   List<MissionModel> missions = [];
   List<EventModel> eventsByDate = [];
   List<MissionModel> missionsByDate = [];
+  List<BaseDataModel> eventsAndMissionsByDate = [];
   List<Widget> eventAndMissionCards = [];
-  DateTime? _selectedDay;
-  DateTime? _focusedDay;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-
-  CalendarViewModel() {
-    _selectedDay = DateTime.now();
-    _focusedDay = DateTime.now();
-    getEvents();
-  }
 
   /// This is the function used for getting all event data from the database, backend only
   Future<void> getEvents() async {
-    events = await dataController.downloadAll(dataTypeToGet: EventModel());
+    events = await databaseService.getAllEvent();
     notifyListeners();
   }
 
@@ -36,42 +29,44 @@ class CalendarViewModel extends ChangeNotifier {
     await getEvents();
     debugPrint('The date is: $date');
     eventsByDate = events.where((event) {
-      // TODO: Make time of a day for checking to be midnight or else it will only check show those events that goes the whole
-      return (event.startTime != null &&
-          event.endTime != null &&
-          (event.startTime!.isBefore(
+      return ((event.startTime.isBefore(
                   DateTime(date.year, date.month, date.day, 23, 59, 59)) ||
-              event.startTime!.isAtSameMomentAs(
+              event.startTime.isAtSameMomentAs(
                   DateTime(date.year, date.month, date.day, 23, 59, 59))) &&
-          (event.endTime!.isAfter(
+          (event.endTime.isAfter(
                   DateTime(date.year, date.month, date.day, 0, 0, 0)) ||
-              event.endTime!.isAtSameMomentAs(
+              event.endTime.isAtSameMomentAs(
                   DateTime(date.year, date.month, date.day, 0, 0, 0))));
     }).toList();
     debugPrint('The events are: $eventsByDate');
-    showCards();
+    // showCards();
     notifyListeners();
     getMissinosByDate(date);
   }
 
   /// get all missions
   Future<void> getMissions() async {
-    missions = await dataController.downloadAll(dataTypeToGet: MissionModel());
+    missions = await databaseService.getAllMission();
     notifyListeners();
   }
 
   /// get mission by date
+  /// - [missionsByDate] is the list of missions that will be shown on the calendar but in list of **MissionModel** format
+  /// - [eventAndMissionCards] is the list of missions and events that will be shown on the calendar but in list of **Widget** format
   Future<void> getMissinosByDate(DateTime date) async {
     await getMissions();
     debugPrint('The date is: $date');
     missionsByDate = missions.where((mission) {
-      return (mission.deadline != null &&
-          mission.deadline!.isBefore(
+      return (mission.deadline.isBefore(
               DateTime(date.year, date.month, date.day, 23, 59, 59)) &&
-          mission.deadline!
+          mission.deadline
               .isAfter(DateTime(date.year, date.month, date.day, 0, 0, 0)));
     }).toList();
     debugPrint('The missions are: $missionsByDate');
+    // merge two list
+    eventsAndMissionsByDate = [];
+    eventsAndMissionsByDate.addAll(missionsByDate);
+    eventsAndMissionsByDate.addAll(eventsByDate);
     showCards();
   }
 
