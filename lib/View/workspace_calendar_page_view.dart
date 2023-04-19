@@ -1,6 +1,5 @@
 import 'package:grouping_project/VM/calendar_view_model.dart';
 import 'package:grouping_project/VM/workspace_dashboard_view_model.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
