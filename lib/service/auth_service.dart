@@ -1,4 +1,4 @@
-import 'package:grouping_project/model/data_controller.dart';
+import 'package:grouping_project/service/database_service.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/user_model.dart';
 
@@ -43,23 +43,22 @@ class AuthService {
   /// get thrid party account profile including email, name, photo
   ///
   /// return ProfileModel if logged in, return null if not
-  Future<ProfileModel?> getProfile() async {
+  Future<AccountModel?> getProfile() async {
     User? user = _auth.currentUser;
-    File? photoFile;
+    Uint8List photoFile = Uint8List(0);
     if (user == null) {
       return null;
     }
     if (user.photoURL != null && !kIsWeb) {
-      photoFile = File('${(await getTemporaryDirectory()).path}/temp-photo');
       // debugPrint(user.photoURL);
       http.Response response = await http.get(Uri.parse(user.photoURL!));
       debugPrint('response code: ${response.statusCode.toString()}');
 
-      await photoFile.writeAsBytes(response.bodyBytes);
+      photoFile = response.bodyBytes;
     }
     // debugPrint(
     //     '${user.displayName} ${user.providerData[0].email} ${user.photoURL}');
-    return ProfileModel(
+    return AccountModel(
         name: user.displayName,
         nickname: user.displayName,
         email: user.providerData[0].email,
@@ -308,12 +307,10 @@ class AuthService {
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
           if (result.additionalUserInfo?.isNewUser == true) {
-            await DataController()
-                .createUser(userProfile: await getProfile() ?? ProfileModel())
-                .then((value) {
-              debugPrint('User profile created');
-              return _userModelFromAuth(result.user);
-            });
+            await DatabaseService(ownerUid: result.user!.uid)
+                .createUserAccount();
+            await DatabaseService(ownerUid: result.user!.uid)
+                .setAccount(account: await getProfile() ?? AccountModel());
           }
           return _userModelFromAuth(result.user);
         }
@@ -376,12 +373,10 @@ class AuthService {
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
           if (result.additionalUserInfo?.isNewUser == true) {
-            await DataController()
-                .createUser(userProfile: await getProfile() ?? ProfileModel())
-                .then((value) {
-              debugPrint('User profile created');
-              return _userModelFromAuth(result.user);
-            });
+            await DatabaseService(ownerUid: result.user!.uid)
+                .createUserAccount();
+            await DatabaseService(ownerUid: result.user!.uid)
+                .setAccount(account: await getProfile() ?? AccountModel());
           }
           return _userModelFromAuth(result.user);
         }
@@ -418,12 +413,9 @@ class AuthService {
         UserCredential result =
             await FirebaseAuth.instance.signInWithPopup(githubProvider);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DataController()
-              .createUser(userProfile: await getProfile() ?? ProfileModel())
-              .then((value) {
-            debugPrint('User profile created');
-            return _userModelFromAuth(result.user);
-          });
+          await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          await DatabaseService(ownerUid: result.user!.uid)
+              .setAccount(account: await getProfile() ?? AccountModel());
         }
 
         return _userModelFromAuth(result.user);
@@ -431,12 +423,9 @@ class AuthService {
         UserCredential result =
             await FirebaseAuth.instance.signInWithProvider(githubProvider);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DataController()
-              .createUser(userProfile: await getProfile() ?? ProfileModel())
-              .then((value) {
-            debugPrint('User profile created');
-            return _userModelFromAuth(result.user);
-          });
+          await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          await DatabaseService(ownerUid: result.user!.uid)
+              .setAccount(account: await getProfile() ?? AccountModel());
         }
 
         return _userModelFromAuth(result.user);
@@ -493,12 +482,9 @@ class AuthService {
 
         UserCredential result = await _auth.signInWithCredential(credential);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DataController()
-              .createUser(userProfile: await getProfile() ?? ProfileModel())
-              .then((value) {
-            debugPrint('User profile created');
-            return _userModelFromAuth(result.user);
-          });
+          await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          await DatabaseService(ownerUid: result.user!.uid)
+              .setAccount(account: await getProfile() ?? AccountModel());
         }
 
         return _userModelFromAuth(result.user);
@@ -533,12 +519,9 @@ class AuthService {
 
         UserCredential result = await _auth.signInWithCredential(credential);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DataController()
-              .createUser(userProfile: await getProfile() ?? ProfileModel())
-              .then((value) {
-            debugPrint('User profile created');
-            return _userModelFromAuth(result.user);
-          });
+          await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          await DatabaseService(ownerUid: result.user!.uid)
+              .setAccount(account: await getProfile() ?? AccountModel());
         }
 
         return _userModelFromAuth(result.user);
