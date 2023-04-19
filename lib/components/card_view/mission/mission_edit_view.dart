@@ -25,6 +25,8 @@ class _MissionEditPageState extends State<MissionEditPage> {
   late DateTime deadline;
   late Color color;
   late List<String> contributorIds;
+  late MissionStage missionStage;
+  late String stateName;
 
   late MissionCardViewModel missionCardViewModel;
 
@@ -39,6 +41,8 @@ class _MissionEditPageState extends State<MissionEditPage> {
       deadline = DateTime.now().add(const Duration(days: 1));
       color = const Color(0xFFFCBF49);
       contributorIds = [];
+      missionStage = MissionStage.progress;
+      stateName = 'progress';
     } else {
       missionCardViewModel = MissionCardViewModel(widget.missionModel!);
 
@@ -49,6 +53,8 @@ class _MissionEditPageState extends State<MissionEditPage> {
       deadline = missionCardViewModel.deadline;
       color = missionCardViewModel.color;
       contributorIds = missionCardViewModel.contributorIds;
+      missionStage = missionCardViewModel.missionStage;
+      stateName = missionCardViewModel.stateName;
     }
   }
 
@@ -119,7 +125,7 @@ class _MissionEditPageState extends State<MissionEditPage> {
                               deadline.isAfter(DateTime.now())) {
                             // debugPrint('Done');
                             if (widget.missionModel != null) {
-                              missionCardViewModel.updateMission(titleController, descriptController, deadline, contributorIds);
+                              missionCardViewModel.updateMission(titleController, descriptController, deadline, contributorIds, missionStage, stateName);
                             }
                             else {
                               await createMission();
@@ -147,9 +153,15 @@ class _MissionEditPageState extends State<MissionEditPage> {
                 deadline: deadline,
                 group: group,
                 color: color,
+                stage: missionStage,
+                stateName: stateName,
                 callback: (p0) {
                   deadline = p0;
-                }),
+                },
+                cbStage: (stage, stateName) {
+                  missionStage = stage;
+                  this.stateName = stateName;
+                },),
             EnlargeObjectTemplate(
                 title: '參與成員',
                 contextOfTitle: Contributors(
