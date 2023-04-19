@@ -1,23 +1,23 @@
 //import 'package:grouping_project/components/card_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 
-import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/components/card_view/mission_information.dart';
 
 import 'package:flutter/material.dart';
 
-class EventPage extends StatefulWidget {
-  const EventPage({super.key});
+class MissionPage extends StatefulWidget {
+  const MissionPage({super.key});
   @override
-  State<EventPage> createState() => EventPageState();
+  State<MissionPage> createState() => MissionPageState();
 }
 
-List<Widget> eventCards = [];
+List<Widget> missionCards = [];
 
-class EventPageState extends State<EventPage> {
+class MissionPageState extends State<MissionPage> {
   @override
   void initState() {
     super.initState();
-    showEvents().then((value) {
+    showMissions().then((value) {
       if(mounted) setState(() {});
     });
   }
@@ -31,23 +31,23 @@ class EventPageState extends State<EventPage> {
         children: [
           Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: eventCards)
+              children: missionCards)
         ],
       ),
     );
   }
 }
 
-Future<void> showEvents() async {
+Future<void> showMissions() async {
   var allDatas =
-      await DataController().downloadAll(dataTypeToGet: EventModel());
+      await DataController().downloadAll(dataTypeToGet: MissionModel());
 
-  eventCards = [];
+  missionCards = [];
   for (int index = 0; index < allDatas.length; index++) {
-    var event = allDatas[index];
-    eventCards.add(const SizedBox(
+    var mission = allDatas[index];
+    missionCards.add(const SizedBox(
       height: 10,
     ));
-    eventCards.add(EventCardViewTemplate(eventModel: event));
+    missionCards.add(MissionCardViewTemplate(missionModel: mission));
   }
 }

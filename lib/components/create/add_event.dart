@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/card_view/event_edit.dart';
+import 'package:grouping_project/components/card_view/event_information.dart';
 
 class AddEvent extends StatefulWidget {
   const AddEvent({super.key});

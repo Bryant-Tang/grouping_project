@@ -5,148 +5,120 @@ This is a empty test Widget, it's only used as test. Therefore, please don't del
 
 */
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:intl/intl.dart';
-import 'package:day_night_time_picker/day_night_time_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'dart:math';
 
 class EmptyWidget extends StatefulWidget {
   const EmptyWidget({super.key});
 
   @override
-  State<EmptyWidget> createState() => _StartEndState();
+  State<EmptyWidget> createState() => _QrCodeState();
 }
 
-class _StartEndState extends State<EmptyWidget> {
-  DateTime _start = DateTime(0);
-  DateTime _end = DateTime.now();
+class _QrCodeState extends State<EmptyWidget> {
+  List<Text> items = [];
+  int data = Random().nextInt(100000);
+
+  void getQrcodeData() async {
+    final result = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const QrCodeScanner()));
+    setState(() {
+      items.add(Text('$result'));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    void timePickerDialog(DateTime show, int state) {
-      Time tmp = Time(hour: 0, minute: 0);
-      Navigator.of(context).push(
-        showPicker(
-          value: tmp,
-          onChange: (time) {
-            setState(() {
-              if(state == 0){
-                _start = DateTime(show.year, show.month, show.day, time.hour, time.minute);
-              }
-              else if(state == 1){
-                _end = DateTime(show.year, show.month, show.day, time.hour, time.minute);
-              }
-            });
-          },
-        ),
-      );
-    }
-
-    void startConfirmChange(Object? value) {
-      DateTime tmp = DateTime(0);
-      if (value is DateTime) {
-        tmp = value;
-      }
-      Navigator.pop(context);
-      timePickerDialog(tmp, 0);
-    }
-
-    void endConfirmChange(Object? value) {
-      DateTime tmp = DateTime(0);
-      if (value is DateTime) {
-        tmp = value;
-      }
-      Navigator.pop(context);
-      timePickerDialog(tmp, 1);
-    }
-
-    void cancelChange() {
-      setState(() {
-        Navigator.pop(context);
-      });
-    }
-
-    DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
-
     return Scaffold(
-      appBar: AppBar(title: Text('title'),),
-      body: Center(
-        child: Column(children: [
-          Text(
-            parseDate.format(_start),
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-          const Icon(
-            Icons.arrow_right_alt_outlined,
-            size: 13,
-          ),
-          Text(
-            parseDate.format(_end),
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          TextButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: ((BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Please select range time'),
-                        content: SizedBox(
-                            width: 200,
-                            height: 400,
-                            child: SfDateRangePicker(
-                              // onSelectionChanged: _onSelected,
-                              onSubmit: startConfirmChange,
-                              onCancel: cancelChange,
-                              initialSelectedRange: PickerDateRange(
-                                  DateTime.now(), DateTime.now()),
-                              showActionButtons: true,
-                            )),
-                      );
-                    }));
-              },
-              child: const Text('change Start Time')),
-          TextButton(
-              onPressed: () {
-                showDialog(
-                    context: context,
-                    builder: ((BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Please select range time'),
-                        content: SizedBox(
-                            width: 200,
-                            height: 400,
-                            child: SfDateRangePicker(
-                              // onSelectionChanged: _onSelected,
-                              onSubmit: endConfirmChange,
-                              onCancel: cancelChange,
-                              initialSelectedRange: PickerDateRange(
-                                  DateTime.now(), DateTime.now()),
-                              showActionButtons: true,
-                            )),
-                      );
-                    }));
-              },
-              child: const Text('change Start Time')),
-        ]),
+      body: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+                flex: 1,
+                child: ListView(
+                  key: ValueKey(items.length),
+                  children: items,
+                )),
+            Expanded(
+                flex: 1,
+                child: QrImage(
+                  data: 'data $data',
+                  version: QrVersions.auto,
+                  size: 300,
+                  gapless: false,
+                )),
+            Expanded(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                TextButton(
+                    onPressed: () => setState(() {
+                          data = Random().nextInt(100000);
+                          debugPrint(data.toString());
+                        }),
+                    child: const Text('New QrCode')),
+                TextButton(
+                    onPressed: getQrcodeData, child: const Text('Scan QrCode')),
+                TextButton(
+                    onPressed: () => setState(() {
+                          items = [];
+                        }),
+                    child: const Text('Reset Items'))
+              ],
+            ))
+          ],
+        ),
       ),
     );
   }
 }
 
-// class EmptyWidget extends StatelessWidget {
-//   EmptyWidget({super.key});
+class QrCodeScanner extends StatefulWidget {
+  const QrCodeScanner({super.key});
 
+  @override
+  State<QrCodeScanner> createState() => _QrCodeScannerState();
+}
 
+class _QrCodeScannerState extends State<QrCodeScanner> {
+  MobileScannerController controller = MobileScannerController();
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: 
-//       ),
-//     );
-//   }
-// }
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Column(
+          children: [
+            Expanded(
+              flex: 8,
+              child: MobileScanner(
+                  controller: controller,
+                  onDetect: (capture) {
+                    Navigator.of(context).pop(capture.barcodes[0].rawValue);
+                    controller.stop();
+                    // Navigator.pop(context, capture.barcodes[0].rawValue);
+                    // debugPrint(capture.barcodes[0].rawValue);
+                  }),
+            ),
+            Expanded(
+                child: TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: const Text('Cancel'),
+            ))
+          ],
+        ),
+      ),
+    );
+  }
+}
