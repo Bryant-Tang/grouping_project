@@ -8,3 +8,8 @@ enum LoginState {
   userNotFound,
   wrongPassword,
 }
+enum TagEditMode{
+  create,
+  edit,
+  delete,
+}

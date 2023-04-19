@@ -1,22 +1,20 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:grouping_project/ViewModel/personal_dashBord_view_model.dart';
+import 'package:grouping_project/VM/view_model_lib.dart';
+import 'package:grouping_project/VM/workspace_dashboard_view_model.dart';
+import 'package:grouping_project/View/profile_edit_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
-import 'package:grouping_project/pages/profile/personal_profile/inherited_profile.dart';
-
-import 'package:grouping_project/pages/profile/personal_profile/profile_edit_page.dart';
 import 'package:grouping_project/components/personal_detail_template.dart';
 import 'package:provider/provider.dart';
 
-class CardEditDone extends StatefulWidget {
-  const CardEditDone({super.key});
+class ProfileDispalyPageView extends StatefulWidget {
+  const ProfileDispalyPageView({super.key});
   @override
-  State<CardEditDone> createState() => CardEditDoneState();
+  State<ProfileDispalyPageView> createState() => ProfileDispalyPageViewState();
 }
 
-class CardEditDoneState extends State<CardEditDone> {
+class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
   // late ProfileModel profile;
   List<CustomLabel> allProfileTag(List<ProfileTag>? tags) {
     List<CustomLabel> datas = [];
@@ -30,7 +28,7 @@ class CardEditDoneState extends State<CardEditDone> {
   @override
   Widget build(BuildContext context) {
     // final profile = InheritedProfile.of(context)!.profile;
-    return Consumer<PersonalDashboardViewModel>(
+    return Consumer<WorkspaceDashboardViewModel>(
       builder: (context, model, child) => SafeArea(
         bottom: true,
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -70,16 +68,19 @@ class CardEditDoneState extends State<CardEditDone> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                                 HeadShot(
-                                    name: model.profile.name ?? 'unknown',
-                                    nickName: model.profile.nickname ?? 'None',
-                                    imageShot: model.profile.photo != null ? Image.file(File(model.profile.photo!.path)) : Image.asset('assets/images/profile_male.png'),
-                                    motto: model.profile.slogan ?? 'None'),
+                                    name: model.realName,
+                                    nickName: model.userName,
+                                    imageShot: model.profile.photo != null
+                                        ? Image.file(
+                                            File(model.profile.photo!.path))
+                                        : Image.asset(
+                                            'assets/images/profile_male.png'),
+                                    motto: model.slogan),
                                 CustomLabel(
                                     title: '自我介紹',
-                                    information: model.profile.introduction ??
-                                        'No Introduction'),
+                                    information: model.introduction),
                               ] +
-                              allProfileTag(model.profile.tags),
+                              allProfileTag(model.tags),
                         ),
                       ))
                 ],
@@ -92,48 +93,21 @@ class CardEditDoneState extends State<CardEditDone> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                    onPressed: () {
-                      debugPrint('share');
-                    },
-                    style: ButtonStyle(
-                        shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)))),
-                    child: const Text(
-                      'SHARE',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       debugPrint('edit');
-                      Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      EditPersonalProfilePage(profile: model.profile)))
-                          .then((value) {
-                        if (value is ProfileModel) {
-                          InheritedProfile.of(context)!.updateProfile(value);
-                        }
-                      });
+                      await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                ProfileEditPageView(model: ProfileEditViewModel()..profile = model.profile),
+                          ));
+                      model.getAllData();
                     },
                     style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)))),
                     child: const Text(
                       'EDIT',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      debugPrint('theme');
-                    },
-                    style: ButtonStyle(
-                        shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)))),
-                    child: const Text(
-                      'THEME',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/ViewModel/enlarge_viewmodel.dart';
+import 'package:grouping_project/VM/enlarge_viewmodel.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/mission_information.dart';
-import 'package:grouping_project/ViewModel/mission_card_view_model.dart';
+import 'package:grouping_project/VM/mission_card_view_model.dart';
 
 /*
 * this file is used to create mission enlarge view

@@ -1,4 +1,4 @@
-import 'package:grouping_project/ViewModel/calendar_view_model.dart';
+import 'package:grouping_project/VM/calendar_view_model.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:grouping_project/pages/home/personal_dashboard/card_edit_page.dart';
+import 'package:grouping_project/View/profile_display_view.dart';
 
 // progress card
 import 'package:grouping_project/pages/home/personal_dashboard/progress.dart';
@@ -12,21 +12,21 @@ import 'package:grouping_project/pages/home/home_page/empty.dart';
 
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class DashboardPage extends StatefulWidget {
+  const DashboardPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<DashboardPage> createState() => _DashboardPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return PageView(
       scrollDirection: Axis.vertical,
-      controller: PageController(initialPage: 1), 
+      controller: PageController(initialPage: 1),
       children: const [
-        CardEditDone(),
+        ProfileDispalyPageView(),
         PeronalDashboardPage(),
       ],
     );
@@ -46,8 +46,8 @@ class _PeosonalDashboardPageState extends State<PeronalDashboardPage> {
     // debugPaintSizeEnabled = true;
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: const[
-          Expanded( flex: 1, child: Progress()),
+        children: const [
+          Expanded(flex: 1, child: Progress()),
           Expanded(flex: 3, child: OverView()),
         ]);
   }

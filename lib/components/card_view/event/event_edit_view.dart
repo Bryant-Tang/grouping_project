@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/home/home_page/base_page.dart';
+import 'package:grouping_project/View/workspace_view.dart';
+import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:day_night_time_picker/day_night_time_picker.dart';
+// import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
-import 'package:grouping_project/ViewModel/enlarge_edit_viewmodel.dart';
-import 'package:grouping_project/ViewModel/event_card_view_model.dart';
+import 'package:grouping_project/VM/enlarge_edit_viewmodel.dart';
+import 'package:grouping_project/VM/event_card_view_model.dart';
 
 /*
 * this file is used to create event or edit existed event 
