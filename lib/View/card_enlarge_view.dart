@@ -159,15 +159,9 @@ class StateOfMission extends StatelessWidget {
 
   final MissionStage stage;
   final String stateName;
-<<<<<<< HEAD:lib/VM/enlarge_view_model.dart
-  
-  Color stageToColor(String stage){
-    if(stage == stageToString(MissionStage.progress)){
-=======
 
   Color stageToColor(MissionStage stage){
     if(stage == MissionStage.progress){
->>>>>>> 44e4a87173cf4555dd4f882e7b0ebbc7d445e37c:lib/VM/enlarge_viewmodel.dart
       return Colors.blue.withOpacity(0.2);
     }
     else if(stage == MissionStage.pending){
