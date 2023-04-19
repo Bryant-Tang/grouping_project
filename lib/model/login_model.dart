@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/ViewModel/state.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
-class PasswordLoginFormModel {
+class LoginModel {
   String email = "";
   String password = "";
   bool isEmailValid = true;
@@ -31,7 +31,7 @@ class PasswordLoginFormModel {
       // debugPrint(error.toString());
       switch ((error as FirebaseAuthException).code) {
         case 'wrong-password':
-        debugPrint('user-not-found');
+          debugPrint('user-not-found');
           return LoginState.wrongPassword;
         case 'user-not-found':
           debugPrint('user-not-found');
@@ -44,7 +44,15 @@ class PasswordLoginFormModel {
   }
 
   Future<LoginState> thirdPartyLogin(String name) async {
-    await authService.thridPartyLogin(name);
+    try{
+      final result = await authService.thridPartyLogin(name);
+      if(result == null){
+        return LoginState.loginFaild;
+      }
+    }catch(e){
+      debugPrint(e.toString());
+      return LoginState.loginFaild;
+    }
     // debugPrint("login successfully");
     return LoginState.loginSuccess;
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/model/model_lib.dart';
+import 'dart:io' as io show File;
 
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -212,45 +214,233 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
   }
 }
 
-class Contributors extends StatelessWidget {
+class Descript extends StatefulWidget {
+  const Descript({super.key, required this.descriptController});
+
+  final TextEditingController descriptController;
+
+  @override
+  State<Descript> createState() => _DescriptState();
+}
+
+class _DescriptState extends State<Descript> {
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      keyboardType: TextInputType.multiline,
+      maxLines: 10,
+      controller: widget.descriptController,
+      onChanged: (value) {
+        widget.descriptController.text = value;
+        widget.descriptController.selection =
+            TextSelection.fromPosition(TextPosition(offset: value.length));
+        setState(() {});
+      },
+      decoration: InputDecoration(
+          hintText: '輸入標題',
+          errorText: widget.descriptController.text.isEmpty ? '不可為空' : null,
+          isDense: true,
+          contentPadding: const EdgeInsets.symmetric(vertical: 2),
+          border: const OutlineInputBorder()),
+      style: const TextStyle(fontSize: 15),
+    );
+  }
+}
+
+class TitleDateOfMission extends StatefulWidget {
+  const TitleDateOfMission(
+      {super.key,
+      required this.titleController,
+      required this.group,
+      required this.color,
+      required this.deadline,
+      required this.callback});
+
+  final TextEditingController titleController;
+  final String group;
+  final Color color;
+  final DateTime deadline;
+  final Function(DateTime) callback;
+
+  @override
+  State<TitleDateOfMission> createState() => TitleDateOfMissionState();
+}
+
+class TitleDateOfMissionState extends State<TitleDateOfMission> {
+  late DateTime deadline;
+
+  @override
+  void initState() {
+    super.initState();
+    deadline = widget.deadline;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    void timePickerDialog(DateTime show) {
+      Time tmp = Time(hour: 0, minute: 0);
+      Navigator.of(context).push(
+        showPicker(
+          value: tmp,
+          onChange: (time) {
+            setState(() {
+              deadline = DateTime(
+                  show.year, show.month, show.day, time.hour, time.minute);
+              widget.callback(deadline);
+            });
+          },
+        ),
+      );
+    }
+
+    void confirmChange(Object? value) {
+      DateTime tmp = DateTime(0);
+      if (value is DateTime) {
+        tmp = value;
+      }
+      Navigator.pop(context);
+      timePickerDialog(tmp);
+    }
+
+    void cancelChange() {
+      setState(() {
+        Navigator.pop(context);
+      });
+    }
+
+    void selectTime() {
+      showDialog(
+          context: context,
+          builder: ((BuildContext context) {
+            return AlertDialog(
+              title: const Text('選擇時間'),
+              content: SizedBox(
+                  width: 200,
+                  height: 400,
+                  child: SfDateRangePicker(
+                    // onSelectionChanged: _onSelected,
+                    onSubmit: confirmChange,
+                    onCancel: cancelChange,
+                    initialSelectedRange:
+                        PickerDateRange(DateTime.now(), DateTime.now()),
+                    showActionButtons: true,
+                  )),
+            );
+          }));
+    }
+
+    DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AntiLabel(group: widget.group, color: widget.color),
+        // Text(
+        //   title,
+        //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        // ),
+        TextField(
+          controller: widget.titleController,
+          onChanged: (value) {
+            widget.titleController.text = value;
+            widget.titleController.selection =
+                TextSelection.fromPosition(TextPosition(offset: value.length));
+            setState(() {});
+          },
+          decoration: InputDecoration(
+              hintText: '輸入標題',
+              errorText: widget.titleController.text.isEmpty ? '不可為空' : null,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 2),
+              border: const OutlineInputBorder()),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        TextButton(
+            onPressed: selectTime,
+            child: Text(
+              parseDate.format(deadline),
+              style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF000000)),
+            ))
+      ],
+    );
+  }
+}
+
+class Contributors extends StatefulWidget {
   //參與的所有使用者
-
-  const Contributors({super.key, required this.contributorIds});
+  const Contributors(
+      {super.key,
+      required this.contributorIds,
+      this.eventModel,
+      required this.callback});
   final List<String> contributorIds;
+  final EventModel? eventModel;
+  final Function(List<String>) callback;
 
-  Container createHeadShot(String person) {
+  @override
+  State<Contributors> createState() => _ContributorState();
+}
+
+class _ContributorState extends State<Contributors> {
+  // TODO: 創建者必定要有? 如何判斷? 可以刪除?
+  List<RawChip> people = [];
+  List<String> peopleIds = [];
+
+  Future<RawChip> createHeadShot(String person) async {
     /// 回傳 contributor 的頭貼
-    return Container(
-      height: 30,
-      width: 30,
-      decoration: const ShapeDecoration(
-          shape: CircleBorder(side: BorderSide(color: Colors.black)),
-          color: Colors.blueAccent),
+
+    var userData = await DataController()
+        .download(dataTypeToGet: ProfileModel(), dataId: person);
+    io.File photo = userData.photo ?? io.File('assets/images/cover.png');
+    bool selected = false;
+    if (widget.eventModel != null) {
+      selected = widget.eventModel!.contributorIds!.contains(person);
+      if (selected) peopleIds.add(person);
+    }
+
+    return RawChip(
+      label: Text(userData.name ?? 'unknown'),
+      avatar: CircleAvatar(child: Image.file(photo)),
+      selected: selected,
+      onSelected: (value) {
+        setState(() {
+          selected = value;
+          if (value) {
+            peopleIds.add(person);
+          } else {
+            peopleIds.remove(person);
+          }
+          widget.callback(peopleIds);
+        });
+      },
+      elevation: 4,
+      selectedColor: const Color(0xFF2196F3),
     );
   }
 
-  List<Container> datas() {
-    List<Container> tmp = [];
-    for (int i = 0; i < contributorIds.length; i++) {
-      tmp.add(createHeadShot(contributorIds[i]));
+  Future<void> datas() async {
+    if (widget.eventModel != null) {
+      for (int i = 0; i < widget.eventModel!.contributorIds!.length; i++) {
+        people.add(await createHeadShot(widget.contributorIds[i]));
+      }
     }
-    // TODO: only for test!!!!
-    if (tmp.isEmpty) {
-      tmp.add(Container(
-        height: 30,
-        width: 30,
-        decoration: const ShapeDecoration(
-            shape: CircleBorder(side: BorderSide(color: Colors.black)),
-            color: Colors.greenAccent),
-      ));
-    }
-    return tmp;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    datas().then((value) => setState(
+          () {},
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: datas(),
+      children: people,
     );
   }
 }

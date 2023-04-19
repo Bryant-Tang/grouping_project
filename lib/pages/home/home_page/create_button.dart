@@ -14,7 +14,7 @@ class _CreateButtonState extends State<CreateButton> {
     AddTopic(), //not yet
     AddEvent(),
     AddNote(), //not yet
-    AddMission() //not yet
+    AddMission()
   ];
   @override
   Widget build(BuildContext context) {
@@ -53,20 +53,17 @@ class _CreateButtonState extends State<CreateButton> {
                                 fontWeight: FontWeight.bold, fontSize: 20),
                           )),
                         ),
-                        Positioned(
-                          bottom: 0,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            height: 390,
-                            child: GridView.builder(
-                                itemCount: 4,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2),
-                                itemBuilder: (context, index) {
-                                  return createsPng[index];
-                                }),
-                          ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 390,
+                          child: GridView.builder(
+                              itemCount: 4,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2),
+                              itemBuilder: (context, index) {
+                                return createsPng[index];
+                              }),
                         ),
                       ]));
                 });
