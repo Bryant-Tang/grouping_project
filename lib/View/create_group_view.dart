@@ -4,11 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/create_group_view_model.dart';
 import 'package:grouping_project/components/auth_view/headline_with_content.dart';
 import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart';
-import 'package:grouping_project/model/data_controller.dart';
-import 'package:grouping_project/model/profile_model.dart';
 import 'package:grouping_project/pages/view_template/sing_up_page_template.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
+// This View is Create Group Form Page View 
+// View Model is CreateGroupViewModel
+// Model is ProfileModel
+// Create Group
+
+// Creat Group Process include 4 Part
+// The First Page is the strating page which shows the information that what will be done on following page, it construct by StartingPage Widget
+// The Second Page is to ask user input group name, it construct by WorkspaceNameRegisterPage Widget
+// The Third Page is to ask user input group description, it construct by WorkspaceDescriptionRegisterPage Widget
+// The Fourth Page is to ask user input group tag, it construct by WorkspaceTagRegisterPage Widget
+// The Fifth Page is to ask user input group image, it construct by WorkspaceImageRegisterPage Widget
+
 
 class CreateWorkspacePage extends StatefulWidget {
   const CreateWorkspacePage({Key? key}) : super(key: key);
@@ -19,50 +30,13 @@ class CreateWorkspacePage extends StatefulWidget {
 // implement the state class
 class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
   final PageController _pageController = PageController();
-  late final List<Widget> _pages;
-  late final StartingPage startingPage;
-  late final WorkspaceDescriptionRegisterPage workspaceDescriptionRegisterPage;
-  late final WorkspaceNameRegisterPage workspaceNameRegisterPage;
-  late final WorkspaceTagRegisterPage workspaceTagRegisterPage;
-  late final WorkspaceImageRegisterPage workspaceImageRegisterPage;
-  late final EndingPage endingPage;
+  void popBack() {
+    Navigator.pop(context);
+  }
+
   @override
   void initState() {
     super.initState();
-    startingPage = StartingPage(
-      forward: forward,
-      backward: () {
-        Navigator.pop(context);
-      },
-    );
-    workspaceNameRegisterPage = WorkspaceNameRegisterPage(
-      forward: forward,
-      backward: backward,
-    );
-    workspaceDescriptionRegisterPage = WorkspaceDescriptionRegisterPage(
-      forward: forward,
-      backward: backward,
-    );
-    workspaceTagRegisterPage = WorkspaceTagRegisterPage(
-      forward: forward,
-      backward: backward,
-    );
-    workspaceImageRegisterPage = WorkspaceImageRegisterPage(
-      forward: register,
-      backward: backward,
-    );
-    // endingPage = EndingPage(
-    //   forward: register,
-    //   backward: backward,
-    // );
-    _pages = <Widget>[
-      startingPage,
-      workspaceNameRegisterPage,
-      workspaceDescriptionRegisterPage,
-      workspaceTagRegisterPage,
-      workspaceImageRegisterPage,
-      // endingPage,
-    ];
   }
 
   @override
@@ -71,25 +45,28 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
     super.dispose();
   }
 
-  void backward() {
+  void backward(CreateGroupViewModel model) {
     FocusScope.of(context).requestFocus(FocusNode());
-    final pageIndex = _pageController.page!.round();
-    if (pageIndex > 0) {
-      _pageController.animateToPage(pageIndex - 1,
+    if (model.currentPageIndex > 0) {
+      model.onPageChange(model.currentPageIndex - 1);
+      _pageController.animateToPage(model.currentPageIndex,
+          duration: const Duration(milliseconds: 300), curve: Curves.linear);
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  void forward(CreateGroupViewModel model) {
+    FocusScope.of(context).requestFocus(FocusNode());
+    if (model.currentPageIndex < 5) {
+      model.onPageChange(model.currentPageIndex + 1);
+      _pageController.animateToPage(model.currentPageIndex,
           duration: const Duration(milliseconds: 300), curve: Curves.linear);
     }
   }
 
-  void forward() {
-    FocusScope.of(context).requestFocus(FocusNode());
-    final pageIndex = _pageController.page!.round();
-    if (pageIndex < _pages.length - 1) {
-      _pageController.animateToPage(pageIndex + 1,
-          duration: const Duration(milliseconds: 300), curve: Curves.linear);
-    }
-  }
-
-  void register() {
+  void register(CreateGroupViewModel model) {
+    model.createGroup();
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text("小組建立成功")));
     Navigator.of(context).pop(true);
@@ -107,11 +84,30 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
               FocusScope.of(context).requestFocus(FocusNode());
             },
             child: PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: _pageController,
-              onPageChanged: model.onPageChange,
-              children: _pages,
-            ),
+                physics: const NeverScrollableScrollPhysics(),
+                controller: _pageController,
+                onPageChanged: model.onPageChange,
+                children: [
+                  StartingPage(
+                      forward: () => forward(model),
+                      backward: () => backward(model)),
+                  WorkspaceNameRegisterPage(
+                    forward: () => forward(model),
+                    backward: () => backward(model),
+                  ),
+                  WorkspaceDescriptionRegisterPage(
+                    forward: () => forward(model),
+                    backward: () => backward(model),
+                  ),
+                  WorkspaceTagRegisterPage(
+                    forward: () => forward(model),
+                    backward: () => backward(model),
+                  ),
+                  WorkspaceImageRegisterPage(
+                    forward: () => register(model),
+                    backward: () => backward(model),
+                  ),
+                ]),
           ),
         ),
       ),
@@ -172,7 +168,9 @@ class _WorkspaceNameRegisterPageState extends State<WorkspaceNameRegisterPage> {
                 label: Text("小組名稱 / User Name"),
                 icon: Icon(Icons.person_pin_outlined),
               ),
-              onChanged: model.updateUserName),
+              onChanged: model.updateUserName,
+              validator: model.groupIntroductionValidator,
+          ),
         ),
         toggleBar: NavigationToggleBar(
           goBackButtonText: "上一步",
@@ -222,6 +220,7 @@ class _WorkspaceDescriptionRegisterPageState
               icon: Icon(Icons.person_pin_outlined),
             ),
             onChanged: model.updateIntroduction,
+            validator: model.groupIntroductionValidator,
           ),
         ),
         toggleBar: NavigationToggleBar(
@@ -388,41 +387,38 @@ class _WorkspaceImageRegisterPageState
           goBackButtonText: "上一步",
           goToNextButtonText: "完成",
           goBackButtonHandler: widget.backward,
-          goToNextButtonHandler: () {
-            model.createGroup();
-            widget.forward();
-          },
+          goToNextButtonHandler: widget.forward
         ),
       ),
     );
   }
 }
 
-class EndingPage extends StatelessWidget {
-  const EndingPage({super.key, required this.backward, required this.forward});
-  final void Function() forward;
-  final void Function() backward;
-  @override
-  Widget build(BuildContext context) {
-    return SignUpPageTemplate(
-      titleWithContent: const HeadlineWithContent(
-        headLineText: "確認小組訊息",
-        content: "即將完成小組註冊",
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          // HeadlineWithContent(headLineText: "Name", content: )
-          Text("你可以在小組頁面中編輯小組資訊"),
-          Text("或是在小組列表中找到你的小組"),
-        ],
-      ),
-      toggleBar: NavigationToggleBar(
-        goBackButtonText: "上一步",
-        goToNextButtonText: "完成",
-        goBackButtonHandler: backward,
-        goToNextButtonHandler: forward,
-      ),
-    );
-  }
-}
+// class EndingPage extends StatelessWidget {
+//   const EndingPage({super.key, required this.backward, required this.forward});
+//   final void Function() forward;
+//   final void Function() backward;
+//   @override
+//   Widget build(BuildContext context) {
+//     return SignUpPageTemplate(
+//       titleWithContent: const HeadlineWithContent(
+//         headLineText: "確認小組訊息",
+//         content: "即將完成小組註冊",
+//       ),
+//       body: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: const [
+//           // HeadlineWithContent(headLineText: "Name", content: )
+//           Text("你可以在小組頁面中編輯小組資訊"),
+//           Text("或是在小組列表中找到你的小組"),
+//         ],
+//       ),
+//       toggleBar: NavigationToggleBar(
+//         goBackButtonText: "上一步",
+//         goToNextButtonText: "完成",
+//         goBackButtonHandler: backward,
+//         goToNextButtonHandler: forward,
+//       ),
+//     );
+//   }
+// }

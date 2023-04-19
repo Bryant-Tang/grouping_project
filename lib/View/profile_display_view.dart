@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/VM/workspace_dashboard_view_model.dart';
-import 'package:grouping_project/View/profile/profile_edit_view.dart';
+import 'package:grouping_project/View/profile_edit_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/personal_detail_template.dart';
 import 'package:provider/provider.dart';
@@ -99,7 +99,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                           context,
                           MaterialPageRoute(
                             builder: (BuildContext context) =>
-                                const ProfileEditPageView(),
+                                ProfileEditPageView(model: ProfileEditViewModel()..profile = model.profile),
                           ));
                       model.getAllData();
                     },
