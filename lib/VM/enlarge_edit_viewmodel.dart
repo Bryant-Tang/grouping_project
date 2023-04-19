@@ -501,7 +501,7 @@ class _StateOfMissionState extends State<StateOfMission> {
                       builder: ((context, setNewState) {
                         return Container(
                             padding: const EdgeInsets.all(2),
-                            height: 130,
+                            height: 180,
                             width: 300,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
