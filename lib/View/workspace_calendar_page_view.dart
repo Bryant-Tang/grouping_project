@@ -42,7 +42,6 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initializeDateFormatting();
     WidgetsBinding.instance
@@ -77,6 +76,9 @@ class _CalendarPageState extends State<CalendarPage> {
                           focusedDay: _focusedDay,
                           availableCalendarFormats: _calendarFormat,
                           daysOfWeekHeight: 20,
+                          // eventLoader: (day) {
+                          //   return model.eventsAndMissionsByDate;
+                          // },
                           onHeaderTapped: (focusedDay) async {
                             focusedDay = await selectDay() ?? focusedDay;
                           },
