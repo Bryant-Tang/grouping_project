@@ -4,17 +4,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grouping_project/ViewModel/view_model_lib.dart';
+import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/color_tag_chip.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/View/auth/login.dart';
-import 'package:grouping_project/pages/profile/group_profile/create_group.dart';
+import 'package:grouping_project/View/login_view.dart';
+import 'package:grouping_project/View/create_group_view.dart';
 
 import 'package:grouping_project/pages/view_template/building.dart';
 import 'package:grouping_project/pages/home/home_page/create_button.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
+import 'package:grouping_project/View/workspace_dashboard_page_view.dart';
 import 'package:provider/provider.dart';
-import 'package:grouping_project/pages/home/calendar/calendar.dart';
+import 'package:grouping_project/View/workspace_calendar_page_view.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);
@@ -26,8 +26,9 @@ class BasePage extends StatefulWidget {
 class _BasePageState extends State<BasePage> {
   // late Future<void> _dataFuture;
   final _pageController = PageController();
+  // final model = WorkspaceDashboardViewModel();
   final _pages = const <Widget>[
-    HomePage(),
+    DashboardPage(),
     CalendarPage(),
     Center(child: BuildingPage(errorMessage: "Message Page")),
     Center(child: BuildingPage(errorMessage: "Note Page")),
@@ -88,7 +89,8 @@ class _BasePageState extends State<BasePage> {
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20))),
               builder: (BuildContext context) {
-                return ChangeNotifierProvider<PersonalDashboardViewModel>.value(
+                return ChangeNotifierProvider<
+                        WorkspaceDashboardViewModel>.value(
                     value: model,
                     builder: (context, child) => SwitchWorkSpaceSheet());
               });
@@ -132,29 +134,31 @@ class _BasePageState extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<PersonalDashboardViewModel>(
-        create: (context) => PersonalDashboardViewModel()..getAllData(),
-        child: Consumer<ThemeManager>(
-          builder: (context, themeManager, child) =>
-              Consumer<PersonalDashboardViewModel>(
-            builder: (context, model, child) => model.isLoading
-                ? const Scaffold(
-                    body: Center(child: CircularProgressIndicator()))
-                : Scaffold(
-                    appBar: getAppBar(model, themeManager, context),
-                    body: PageView(
-                      controller: _pageController,
-                      onPageChanged: model.updateSelectedIndex,
-                      children: _pages,
-                    ),
-                    extendBody: true,
-                    floatingActionButton: const CreateButton(),
-                    // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-                    bottomNavigationBar:
-                        getNavigationBar(model, themeManager, context),
-                  ),
-          ),
-        ));
+    return ChangeNotifierProvider<WorkspaceDashboardViewModel>(
+      create: (context) => WorkspaceDashboardViewModel()..getAllData(),
+      child: Consumer<ThemeManager>(
+        builder: (context, themeManager, child) =>
+            Consumer<WorkspaceDashboardViewModel>(
+                builder: (context, model, child) => WillPopScope(
+                      onWillPop: () async {
+                        return false; // 禁用返回鍵
+                      },
+                      child: Scaffold(
+                        appBar: getAppBar(model, themeManager, context),
+                        body: PageView(
+                          controller: _pageController,
+                          onPageChanged: model.updateSelectedIndex,
+                          children: _pages,
+                        ),
+                        extendBody: true,
+                        floatingActionButton: const CreateButton(),
+                        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                        bottomNavigationBar:
+                            getNavigationBar(model, themeManager, context),
+                      ),
+                    )),
+      ),
+    );
   }
 }
 
@@ -197,12 +201,12 @@ class SwitchWorkSpaceSheet extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return GroupSwitcherView(
                         groupProfile: context
-                            .watch<PersonalDashboardViewModel>()
+                            .watch<WorkspaceDashboardViewModel>()
                             .allGroupProfile
                             .elementAt(index));
                   },
                   itemCount: context
-                      .watch<PersonalDashboardViewModel>()
+                      .watch<WorkspaceDashboardViewModel>()
                       .allGroupProfile
                       .length,
                   shrinkWrap: true,
@@ -228,8 +232,10 @@ class SwitchWorkSpaceSheet extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
                       Text("創建新的工作小組",
-                          style: Theme.of(context).textTheme.labelLarge!.copyWith(fontWeight: FontWeight.bold)
-                      )
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge!
+                              .copyWith(fontWeight: FontWeight.bold))
                     ],
                   )),
             ]),
@@ -245,69 +251,83 @@ class GroupSwitcherView extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Consumer<PersonalDashboardViewModel>(
-      builder: (context, model, child) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        child: MaterialButton(
-          onPressed: model.switchGroup,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
-              // implement shadow Border
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 7,
-                  offset: const Offset(0, 3), // changes position of shadow
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Color(groupProfile.color ?? 0xFF00417D),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        // mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(groupProfile.name ?? "",
-                              style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold)),
-                          Text(
-                            groupProfile.introduction ?? "",
-                            style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ))
-                        ],
+    return Consumer<WorkspaceDashboardViewModel>(
+        builder: (context, model, child) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+              child: MaterialButton(
+                onPressed: model.switchGroup,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                    // implement shadow Border
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 7,
+                        offset:
+                            const Offset(0, 3), // changes position of shadow
                       ),
-                      const SizedBox(height: 5),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: (groupProfile.tags ?? [])
-                            .map((tag) => ColorTagChip(
-                                tagString: tag.tag,
-                                color: Color(groupProfile.color ?? 0xFF00417D)))
-                            .toList(),
-                      )
                     ],
-                  )
-                ]),
-          ),
-        ),
-      ));
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundColor:
+                              Color(groupProfile.color ?? 0xFF00417D),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              // mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(groupProfile.name ?? "",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(fontWeight: FontWeight.bold)),
+                                Text(groupProfile.introduction ?? "",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall!
+                                        .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ))
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: (groupProfile.tags ?? [])
+                                  .map((tag) => ColorTagChip(
+                                      tagString: tag.tag,
+                                      color: Color(
+                                          groupProfile.color ?? 0xFF00417D)))
+                                  .toList(),
+                            )
+                          ],
+                        )
+                      ]),
+                ),
+              ),
+            ));
   }
 }

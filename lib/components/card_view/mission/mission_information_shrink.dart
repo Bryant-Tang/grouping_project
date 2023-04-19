@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/ViewModel/enlarge_viewmodel.dart';
+import 'package:grouping_project/VM/enlarge_viewmodel.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/ViewModel/mission_card_view_model.dart';
+import 'package:grouping_project/VM/mission_card_view_model.dart';
 
 import 'package:intl/intl.dart';
 
