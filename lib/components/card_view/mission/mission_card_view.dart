@@ -14,12 +14,12 @@ class MissionCardViewTemplate extends StatelessWidget {
     final Color color = Color(missionModel.color);
     final MissionInformationShrink detailShrink = MissionInformationShrink(missionModel: missionModel);
     final MissionInformationEnlarge detailEnlarge = MissionInformationEnlarge(missionModel: missionModel);
-    return Container(
-      // TODO: use padding
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
+    return Padding(
+      // margin: const EdgeInsets.symmetric(horizontal: 5),
+      // decoration: const BoxDecoration(
+      //   borderRadius: BorderRadius.all(Radius.circular(10)),
+      // ),
+      padding: const EdgeInsets.all(2),
       child: InkWell(
           onTap: () {
             Navigator.push(
@@ -38,7 +38,7 @@ class MissionCardViewTemplate extends StatelessWidget {
               child: _Shrink(
                 detail: detailShrink,
                 usingColor: color,
-                height: 84,
+                height: 93,
               ),
             ),
           )),
@@ -61,6 +61,7 @@ class _Shrink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //debugPrint('it is shrink');
+    // TODO: use padding will cause width destory
     return Container(
         width: MediaQuery.of(context).size.width - 20,
         height: height,
