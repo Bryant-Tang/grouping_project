@@ -68,13 +68,13 @@ class _EventEditPageState extends State<EventEditPage> {
 
   // TODO: move to viewModel without creating redundent eventModel
   void createEvent() async {
-    await DataController().upload(
-        uploadData: EventModel(
-            title: titleController.text,
-            introduction: descriptController.text,
-            startTime: startTime,
-            endTime: endTime,
-            contributorIds: contributorIds));
+    // await DataController().upload(
+    //     uploadData: EventModel(
+    //         title: titleController.text,
+    //         introduction: descriptController.text,
+    //         startTime: startTime,
+    //         endTime: endTime,
+    //         contributorIds: contributorIds));
   }
 
   @override

@@ -29,8 +29,8 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
     String descript = missionCardViewModel.descript;
     DateTime deadline =  missionCardViewModel.deadline;
     List<String> contributorIds = missionCardViewModel.contributorIds;
-    MissionStage missionStage = missionCardViewModel.missionStage;
-    String stateName = missionCardViewModel.stateName;
+    // MissionStage missionStage = missionCardViewModel.missionStage;
+    // String stateName = missionCardViewModel.stateName;
     Color color = missionCardViewModel.color;
 
     // TODO: use Padding
@@ -82,13 +82,13 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
             thickness: 1.5,
             color: Color.fromARGB(255, 170, 170, 170),
           ),
-          TitleDateOfMission(
-              title: title,
-              deadline: deadline,
-              group: group,
-              color: color,
-              stage: missionStage,
-              stateName: stateName,),
+          // TitleDateOfMission(
+          //     title: title,
+          //     deadline: deadline,
+          //     group: group,
+          //     color: color,
+          //     stage: missionStage,
+          //     stateName: stateName,),
           EnlargeObjectTemplate(
               title: '參與成員',
               contextOfTitle: Contributors(

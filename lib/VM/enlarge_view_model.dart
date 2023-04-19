@@ -157,15 +157,9 @@ class StateOfMission extends StatelessWidget {
 
   final MissionStage stage;
   final String stateName;
-<<<<<<< HEAD:lib/VM/enlarge_view_model.dart
-  
-  Color stageToColor(String stage){
-    if(stage == stageToString(MissionStage.progress)){
-=======
 
   Color stageToColor(MissionStage stage){
     if(stage == MissionStage.progress){
->>>>>>> 44e4a87173cf4555dd4f882e7b0ebbc7d445e37c:lib/VM/enlarge_viewmodel.dart
       return Colors.blue.withOpacity(0.2);
     }
     else if(stage == MissionStage.pending){
@@ -207,17 +201,17 @@ class _ContributorState extends State<Contributors> {
   Future<Container> createHeadShot(String person) async {
     /// 回傳 contributor 的頭貼
 
-    var userData = await DataController()
-        .download(dataTypeToGet: ProfileModel(), dataId: person);
-    io.File photo = userData.photo ?? io.File('assets/images/cover.png');
+    // var userData = await DataController()
+    //     .download(dataTypeToGet: ProfileModel(), dataId: person);
+    // io.File photo = userData.photo ?? io.File('assets/images/cover.png');
 
     return Container(
         height: 30,
         width: 30,
-        decoration: ShapeDecoration(
-          shape: const CircleBorder(side: BorderSide(color: Colors.black)),
+        decoration: const ShapeDecoration(
+          shape: CircleBorder(side: BorderSide(color: Colors.black)),
           color: Colors.blueAccent,
-          image: DecorationImage(image: FileImage(photo)),
+          // image: DecorationImage(image: FileImage(photo)),
         ));
   }
 

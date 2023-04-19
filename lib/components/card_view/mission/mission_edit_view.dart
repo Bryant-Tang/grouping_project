@@ -53,8 +53,8 @@ class _MissionEditPageState extends State<MissionEditPage> {
       deadline = missionCardViewModel.deadline;
       color = missionCardViewModel.color;
       contributorIds = missionCardViewModel.contributorIds;
-      missionStage = missionCardViewModel.missionStage;
-      stateName = missionCardViewModel.stateName;
+      // missionStage = missionCardViewModel.missionStage;
+      // stateName = missionCardViewModel.stateName;
     }
   }
 
@@ -69,13 +69,13 @@ class _MissionEditPageState extends State<MissionEditPage> {
   Widget build(BuildContext context) {
 
     Future<void> createMission() async {
-      await DataController().upload(
-          uploadData: MissionModel(
-        title: titleController.text,
-        introduction: descriptController.text,
-        deadline: deadline,
-        contributorIds: contributorIds
-      ));
+      // await DataController().upload(
+      //     uploadData: MissionModel(
+      //   title: titleController.text,
+      //   introduction: descriptController.text,
+      //   deadline: deadline,
+      //   contributorIds: contributorIds
+      // ));
     }
 
 
