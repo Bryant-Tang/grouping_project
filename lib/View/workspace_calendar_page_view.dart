@@ -42,7 +42,6 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initializeDateFormatting();
     WidgetsBinding.instance
