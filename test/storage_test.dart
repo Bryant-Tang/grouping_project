@@ -63,5 +63,5 @@ void main() async {
       .download(dataTypeToGet: ProfileModel(), dataId: ProfileModel().id!);
   print('Download test profile finish');
 
-  print('test profile photo exist : ${await testData.photo?.exists()}');
+  print('test profile photo exist : ${await testData.photo.exists()}');
 }
