@@ -299,9 +299,7 @@ class DatabaseService {
 
     mission.setOwner(
         ownerAccount: await _getSingleAccount(accountId: ownerAccountId));
-
-    //!!!unimplement!!!
-    mission.setStateByStateModel(MissionStateModel.defaultUnknownState);
+    mission.setStateByStateModel(await getMissionState(stateId: mission.stateId));
 
     return mission;
   }
@@ -327,8 +325,7 @@ class DatabaseService {
           .fromFirestore(id: docSnap.id, data: docSnap.data() ?? {});
       mission.setOwner(
           ownerAccount: await _getSingleAccount(accountId: ownerAccountId));
-      //!!!unimplement!!!
-      mission.setStateByStateModel(MissionStateModel.defaultUnknownState);
+      mission.setStateByStateModel(await getMissionState(stateId: mission.stateId));
       missionList.add(mission);
     }
 
@@ -348,28 +345,69 @@ class DatabaseService {
     return missionList;
   }
 
-  Future<void> setMissionState({required MissionStateModel state}) async {}
+  Future<void> setMissionState({required MissionStateModel state}) async {
+    String stateId = await _setDataModelFirestore(state);
+    await _setMapDataFirestore(
+        data: {'account_id': await _getOwnerAccountId()},
+        collectionPath: 'state_account_relation',
+        dataId: stateId);
+    return;
+  }
 
   Future<MissionStateModel> getMissionState({required String stateId}) async {
-    return MissionStateModel.defaultUnknownState;
+    String ownerAccountId = await _getOwnerAccountId();
+    String? missionStateBelongAccountId = (await _getDocSnapFirestore(
+            collectionPath: 'mission_state_account_relation', dataId: stateId))
+        .data()?['account_id'];
+    if (missionStateBelongAccountId == null) {
+      throw GroupingProjectException(
+          message: 'The mission_state is not exist.',
+          code: GroupingProjectExceptionCode.notExistInDatabase,
+          stackTrace: StackTrace.current);
+    } else if (missionStateBelongAccountId != ownerAccountId) {
+      throw GroupingProjectException(
+          message: 'The mission_state is not belong to this account.',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
+    }
+
+    var docSnap = await _getDocSnapFirestore(
+        collectionPath: MissionStateModel.defaultUnknownState.databasePath,
+        dataId: stateId);
+
+    MissionStateModel missionState = MissionStateModel.defaultUnknownState
+        .fromFirestore(id: docSnap.id, data: docSnap.data() ?? {});
+
+    return missionState;
   }
 
   Future<List<MissionStateModel>> _getSingleAccountAllMissionState() async {
-    return [
-      MissionStateModel.defaultFinishState,
-      MissionStateModel.defaultPendingState,
-      MissionStateModel.defaultProgressState,
-      MissionStateModel.defaultTimeOutState
-    ];
+    String ownerAccountId = await _getOwnerAccountId();
+    var missionStateSnapList = await _getDataFitMapFirestore(
+        collectionPath: 'missionState_account_relation',
+        condition: {'account_id': ownerAccountId});
+
+    List<String> missionStateIdList = [];
+    for (var docSnap in missionStateSnapList) {
+      missionStateIdList.add(docSnap.id);
+    }
+
+    List<MissionStateModel> missionStateList = [];
+
+    for (var missionStateId in missionStateIdList) {
+      var docSnap = await _getDocSnapFirestore(
+          collectionPath: MissionStateModel.defaultUnknownState.databasePath,
+          dataId: missionStateId);
+      MissionStateModel missionState = MissionStateModel.defaultUnknownState
+          .fromFirestore(id: docSnap.id, data: docSnap.data() ?? {});
+      missionStateList.add(missionState);
+    }
+
+    return missionStateList;
   }
 
   Future<List<MissionStateModel>> getAllMissionState() async {
-    return [
-      MissionStateModel.defaultFinishState,
-      MissionStateModel.defaultPendingState,
-      MissionStateModel.defaultProgressState,
-      MissionStateModel.defaultTimeOutState
-    ];
+    return await _getSingleAccountAllMissionState();
   }
 
   /// ## download *'one'* data from database.
