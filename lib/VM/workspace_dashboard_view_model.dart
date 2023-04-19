@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 class WorkspaceDashboardViewModel extends ChangeNotifier {
@@ -24,7 +22,9 @@ class WorkspaceDashboardViewModel extends ChangeNotifier {
   String get introduction => profile.introduction;
   Uint8List get profileImage => profile.photo;
   List<AccountTag> get tags => profile.tags;
-
+  List<MissionModel> get mission => missionList;
+  List<EventModel> get event => eventList;
+  
   bool isLoading = false;
   List allGroupProfile = [
     // ProfileModel(

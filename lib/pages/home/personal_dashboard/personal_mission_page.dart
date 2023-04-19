@@ -38,13 +38,8 @@ class MissionPageState extends State<MissionPage> {
 }
 
 Future<void> showMissions() async {
-<<<<<<< HEAD
   // var allDatas =
-  //     await DataController().downloadAll(dataTypeToGet: MissionModel());
-=======
-  var allDatas =
-      await 
->>>>>>> 354ccb5105aca68937ad1d2416d4e8389103310b
+  //     await 
 
   // missionCards = [];
   // for (int index = 0; index < allDatas.length; index++) {
