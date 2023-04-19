@@ -24,10 +24,20 @@ class _CalendarPageState extends State<CalendarPage> {
 
   Future<DateTime?> selectDay() async {
     return await showDatePicker(
-        context: context,
-        initialDate: _focusedDay,
-        firstDate: DateTime(2010),
-        lastDate: DateTime(2030));
+      context: context,
+      initialDate: _focusedDay,
+      firstDate: DateTime(2010),
+      lastDate: DateTime(2030),
+      // locale: const Locale('zh', 'TW'),
+      // TODO: Color of the calendar need to be changed
+      builder: (context, child) {
+        return Theme(
+            data: ThemeData(
+              primaryColor: Theme.of(context).colorScheme.primaryContainer,
+            ),
+            child: child!);
+      },
+    );
   }
 
   @override
