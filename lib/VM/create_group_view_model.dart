@@ -1,19 +1,18 @@
-// import 'dart:ffi';
-import 'dart:io';
-
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 // import 'package:grouping_project/VM/state.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/service/service_lib.dart';
 
 class CreateGroupViewModel extends ChangeNotifier {
-  ProfileModel profile = ProfileModel();
+  AccountModel profile = AccountModel();
   bool isLoading = false;
   int currentPageIndex = 0;
-  String get realName => profile.name ?? "";
-  String get userName => profile.nickname = "Unknown";
-  String get introduction => profile.introduction ?? "";
-  File? get profileImage => profile.photo;
-  List<ProfileTag> get tags => profile.tags ?? [];
+  String get realName => profile.name;
+  String get userName => profile.nickname;
+  String get introduction => profile.introduction;
+  Uint8List get profileImage => profile.photo;
+  List<AccountTag> get tags => profile.tags;
   // TODO: 需要移動到Model嗎
   final List<String> labelTags = [
     "#社團",
@@ -28,7 +27,7 @@ class CreateGroupViewModel extends ChangeNotifier {
     "#臨時小組"
   ];
   List<bool> isSelected = [];
-  List<ProfileTag> selectTag = [];
+  List<AccountTag> selectTag = [];
   int maximunTagNumber = 4;
   void onPageChange(int index) {
     currentPageIndex = index;
@@ -39,9 +38,11 @@ class CreateGroupViewModel extends ChangeNotifier {
     profile.name = userName;
     notifyListeners();
   }
-  String? groupNameValidator(String? value){
+
+  String? groupNameValidator(String? value) {
     return value == null || value.isEmpty ? '請輸入小組名稱' : null;
   }
+
   void updateSlogan(String slogan) {
     profile.slogan = slogan;
     notifyListeners();
@@ -51,11 +52,12 @@ class CreateGroupViewModel extends ChangeNotifier {
     profile.introduction = introduction;
     notifyListeners();
   }
+
   String? groupIntroductionValidator(String? value) {
     return value == null || value.isEmpty ? '請輸入小組介紹' : null;
   }
 
-  void updateProfileImage(File imageFile) {
+  void updateProfileImage(Uint8List imageFile) {
     profile.photo = imageFile;
     notifyListeners();
   }
@@ -66,12 +68,18 @@ class CreateGroupViewModel extends ChangeNotifier {
     if (count > 4) {
       isSelected[index] = !value;
       notifyListeners();
+      final selectedIndex = isSelected.where((e) => e == true);
+      profile.tags = List.generate(
+          selectedIndex.length,
+          (index) =>
+              AccountTag(tag: labelTags[index], content: labelTags[index]));
       return false;
     } else {
       notifyListeners();
       return true;
     }
   }
+
   String? groupTagValidator(String? value) {
     return isSelected.where((e) => e == true).isEmpty ? '請至少選則一個標籤' : null;
   }
@@ -83,13 +91,22 @@ class CreateGroupViewModel extends ChangeNotifier {
 
   Future<void> createGroup() async {
     isLoading = true;
+    final uid = AuthService().getUid(); // outh service uid
+    final accountDatabase = DatabaseService(ownerUid: uid); // account db
     notifyListeners();
     try {
-      final selectedIndex = isSelected.where((e) => e == true);
-      profile.tags = List.generate(
-        selectedIndex.length, (index) 
-          => ProfileTag(tag: labelTags[index],content: labelTags[index]));
-      final groupId = await DataController().createGroup(groupProfile: profile);
+       // get user account profile
+      final userAccountModel = await accountDatabase.getAccount();
+      // add user id to group profile entity
+      profile.addEntity(userAccountModel.id!); 
+      // get new group id 
+      final groupId = await accountDatabase.createGroupAccount(); 
+      // set group profile to group account db
+      DatabaseService(ownerUid: groupId).setAccount(account: profile);
+      // add group id to user account profile entity
+      userAccountModel.addEntity(groupId);
+      // upload user account profile to user account db
+      await accountDatabase.setAccount(account: userAccountModel);
       debugPrint('create new group id : $groupId');
     } catch (e) {
       debugPrint(e.toString());
