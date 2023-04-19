@@ -5,6 +5,7 @@ import 'package:grouping_project/components/button/overview_choice_button.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_mission_page.dart';
+import 'package:grouping_project/service/service_lib.dart';
 import 'package:provider/provider.dart';
 
 class OverView extends StatefulWidget {
@@ -19,7 +20,7 @@ class _OverViewState extends State<OverView> {
   late int eventNumbers = 0;
   late int missionNumbers = 0;
 
-  DataController dataController = DataController();
+  // DatabaseService db = DatabaseService();
 
   List<Widget> pages = [
     const EventPage(),

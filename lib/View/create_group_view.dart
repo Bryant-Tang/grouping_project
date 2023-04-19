@@ -8,7 +8,7 @@ import 'package:grouping_project/pages/view_template/sing_up_page_template.dart'
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-// This View is Create Group Form Page View 
+// This View is Create Group Form Page View
 // View Model is CreateGroupViewModel
 // Model is ProfileModel
 // Create Group
@@ -19,7 +19,6 @@ import 'package:provider/provider.dart';
 // The Third Page is to ask user input group description, it construct by WorkspaceDescriptionRegisterPage Widget
 // The Fourth Page is to ask user input group tag, it construct by WorkspaceTagRegisterPage Widget
 // The Fifth Page is to ask user input group image, it construct by WorkspaceImageRegisterPage Widget
-
 
 class CreateWorkspacePage extends StatefulWidget {
   const CreateWorkspacePage({Key? key}) : super(key: key);
@@ -163,13 +162,13 @@ class _WorkspaceNameRegisterPageState extends State<WorkspaceNameRegisterPage> {
         body: Form(
           key: _formKey,
           child: TextFormField(
-              initialValue: model.userName,
-              decoration: const InputDecoration(
-                label: Text("小組名稱 / User Name"),
-                icon: Icon(Icons.person_pin_outlined),
-              ),
-              onChanged: model.updateUserName,
-              validator: model.groupIntroductionValidator,
+            initialValue: model.userName,
+            decoration: const InputDecoration(
+              label: Text("小組名稱 / User Name"),
+              icon: Icon(Icons.person_pin_outlined),
+            ),
+            onChanged: model.updateUserName,
+            validator: model.groupIntroductionValidator,
           ),
         ),
         toggleBar: NavigationToggleBar(
@@ -347,8 +346,9 @@ class _WorkspaceImageRegisterPageState
                         child: CircleAvatar(
                           radius: 120,
                           backgroundColor: Colors.grey[300],
-                          backgroundImage: model.profileImage != null
-                              ? Image.file(model.profileImage!).image
+                          backgroundImage: model.profileImage.isNotEmpty
+                              ? Image.file(File.fromRawPath(model.profileImage))
+                                  .image
                               : defaultImage.image,
                         )),
                     MaterialButton(
@@ -362,7 +362,7 @@ class _WorkspaceImageRegisterPageState
                           final selectedPhoto = await ImagePicker()
                               .pickImage(source: ImageSource.gallery);
                           if (selectedPhoto != null) {
-                            model.updateProfileImage(File(selectedPhoto.path));
+                            model.updateProfileImage(File(selectedPhoto.path).readAsBytesSync());
                           }
                         },
                         child: Row(
@@ -384,11 +384,10 @@ class _WorkspaceImageRegisterPageState
                   ])))
         ]),
         toggleBar: NavigationToggleBar(
-          goBackButtonText: "上一步",
-          goToNextButtonText: "完成",
-          goBackButtonHandler: widget.backward,
-          goToNextButtonHandler: widget.forward
-        ),
+            goBackButtonText: "上一步",
+            goToNextButtonText: "完成",
+            goBackButtonHandler: widget.backward,
+            goToNextButtonHandler: widget.forward),
       ),
     );
   }

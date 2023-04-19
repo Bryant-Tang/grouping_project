@@ -246,7 +246,7 @@ class SwitchWorkSpaceSheet extends StatelessWidget {
 
 class GroupSwitcherView extends StatelessWidget {
   // TODO : 將 color 抽離出來
-  final ProfileModel groupProfile;
+  final AccountModel groupProfile;
   const GroupSwitcherView({Key? key, required this.groupProfile})
       : super(key: key);
   @override
@@ -284,7 +284,7 @@ class GroupSwitcherView extends StatelessWidget {
                         CircleAvatar(
                           radius: 30,
                           backgroundColor:
-                              Color(groupProfile.color ?? 0xFF00417D),
+                              Color(groupProfile.color),
                         ),
                         const SizedBox(width: 10),
                         Column(
@@ -295,12 +295,12 @@ class GroupSwitcherView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(groupProfile.name ?? "",
+                                Text(groupProfile.name,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleMedium!
                                         .copyWith(fontWeight: FontWeight.bold)),
-                                Text(groupProfile.introduction ?? "",
+                                Text(groupProfile.introduction,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleSmall!
@@ -316,11 +316,11 @@ class GroupSwitcherView extends StatelessWidget {
                             Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: (groupProfile.tags ?? [])
+                              children: (groupProfile.tags)
                                   .map((tag) => ColorTagChip(
                                       tagString: tag.tag,
                                       color: Color(
-                                          groupProfile.color ?? 0xFF00417D)))
+                                          groupProfile.color)))
                                   .toList(),
                             )
                           ],

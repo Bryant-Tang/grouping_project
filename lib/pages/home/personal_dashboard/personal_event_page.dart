@@ -39,15 +39,15 @@ class EventPageState extends State<EventPage> {
 }
 
 Future<void> showEvents() async {
-  var allDatas =
-      await DataController().downloadAll(dataTypeToGet: EventModel());
+  // var allDatas =
+  //     await DataController().downloadAll(dataTypeToGet: EventModel());
 
-  eventCards = [];
-  for (int index = 0; index < allDatas.length; index++) {
-    var event = allDatas[index];
-    eventCards.add(const SizedBox(
-      height: 10,
-    ));
-    eventCards.add(EventCardViewTemplate(eventModel: event));
-  }
+  // eventCards = [];
+  // for (int index = 0; index < allDatas.length; index++) {
+  //   var event = allDatas[index];
+  //   eventCards.add(const SizedBox(
+  //     height: 10,
+  //   ));
+  //   eventCards.add(EventCardViewTemplate(eventModel: event));
+  // }
 }

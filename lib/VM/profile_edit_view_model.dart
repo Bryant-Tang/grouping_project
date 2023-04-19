@@ -1,20 +1,20 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/state.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/service/service_lib.dart';
 
 class ProfileEditViewModel extends ChangeNotifier {
-  ProfileModel profile = ProfileModel();
+  AccountModel profile = AccountModel();
   bool isLoading = false;
   int currentPageIndex = 0;
-  String get realName => profile.name ?? "";
-  String get userName => profile.nickname = "Unknown";
-  String get slogan => profile.slogan ?? "";
-  String get introduction => profile.introduction ?? "";
-  File? get profileImage => profile.photo;
-
-  List<ProfileTag> get tags => profile.tags ?? [];
+  String get realName => profile.name;
+  String get userName => profile.nickname;
+  String get slogan => profile.slogan;
+  String get introduction => profile.introduction;
+  Uint8List get profileImage => profile.photo;
+  List<AccountTag> get tags => profile.tags;
   TagEditMode tagEditMode = TagEditMode.create;
   int maximunTagNumber = 4;
 
@@ -43,30 +43,30 @@ class ProfileEditViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateTags(List<ProfileTag> tags) {
+  void updateTags(List<AccountTag> tags) {
     profile.tags = tags;
     notifyListeners();
   }
 
-  void createNewTag(ProfileTag tag) {
-    profile.tags = (profile.tags ?? [])..add(tag);
+  void createNewTag(AccountTag tag) {
+    profile.tags = (profile.tags)..add(tag);
     notifyListeners();
   }
 
-  void editTag(ProfileTag? newTag, int index) {
+  void editTag(AccountTag? newTag, int index) {
     if (newTag != null) {
-      profile.tags![index] = newTag;
+      profile.tags[index] = newTag;
       notifyListeners();
     }
   }
 
   void deleteTag(int index) {
-    profile.tags!.removeAt(index);
+    profile.tags.removeAt(index);
     notifyListeners();
   }
 
-  void updateProfileImage(File imageFile) {
-    debugPrint(imageFile.path);
+  void updateProfileImage(Uint8List imageFile) {
+    debugPrint(imageFile.toString());
     profile.photo = imageFile;
     notifyListeners();
   }
@@ -85,18 +85,21 @@ class ProfileEditViewModel extends ChangeNotifier {
 
   Future<void> init() async {
     isLoading = true;
+    final uid = AuthService().getUid();
+    final db = DatabaseService(ownerUid: uid);
     notifyListeners();
-    profile = await DataController()
-        .download(dataTypeToGet: profile, dataId: profile.id!);
+    profile = await db.getAccount();
     isLoading = false;
     notifyListeners();
   }
 
   Future<void> upload() async {
     isLoading = true;
+    final uid = AuthService().getUid();
+    final db = DatabaseService(ownerUid: uid);
     notifyListeners();
     try {
-      await DataController().upload(uploadData: profile);
+      db.setAccount(account: profile);
     } catch (e) {
       debugPrint(e.toString());
     }

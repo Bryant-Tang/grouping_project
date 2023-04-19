@@ -113,7 +113,7 @@ class TitleDateOfMission extends StatelessWidget {
   final DateTime deadline;
   final String group;
   final Color color;
-  final String stage;
+  final MissionStage stage;
   final String stateName;
 
   @override
@@ -155,17 +155,23 @@ class TitleDateOfMission extends StatelessWidget {
 class StateOfMission extends StatelessWidget {
   const StateOfMission({super.key, required this.stage, required this.stateName});
 
-  final String stage;
+  final MissionStage stage;
   final String stateName;
+<<<<<<< HEAD:lib/VM/enlarge_view_model.dart
   
   Color stageToColor(String stage){
     if(stage == stageToString(MissionStage.progress)){
+=======
+
+  Color stageToColor(MissionStage stage){
+    if(stage == MissionStage.progress){
+>>>>>>> 44e4a87173cf4555dd4f882e7b0ebbc7d445e37c:lib/VM/enlarge_viewmodel.dart
       return Colors.blue.withOpacity(0.2);
     }
-    else if(stage == stageToString(MissionStage.pending)){
+    else if(stage == MissionStage.pending){
       return Colors.purple.withOpacity(0.2);
     }
-    else if(stage == stageToString(MissionStage.close)){
+    else if(stage == MissionStage.close){
       return Colors.red.withOpacity(0.2);
     }
     else{
@@ -181,7 +187,7 @@ class StateOfMission extends StatelessWidget {
             color: color, borderRadius: BorderRadius.circular(10)),
         child: Text(
           ' •$stateName ',
-          style: const TextStyle(color: Colors.black, fontSize: 15),
+          style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
         ));
   }
 }

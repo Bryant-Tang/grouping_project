@@ -1,29 +1,29 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/auth_service.dart';
+import 'package:grouping_project/service/service_lib.dart';
 
 class WorkspaceDashboardViewModel extends ChangeNotifier {
   int _selectedPageIndex = 0;
   int get selectedIndex => _selectedPageIndex;
   int overViewIndex = 0;
   int get overView => overViewIndex;
-
-  ProfileModel profileData = ProfileModel();
+  AccountModel profileData = AccountModel();
   List<MissionModel> missionList = [];
   List<EventModel> eventList = [];
-
-  ProfileModel get profile => profileData;
+  AccountModel get profile => profileData;
   List<MissionModel> get missions => missionList;
   List<EventModel> get events => eventList;
 
-  String get userName => profile.nickname ?? "Unknown";
-  String get realName => profile.name ?? "Unknown";
-  String get slogan => profile.slogan ?? "";
-  String get introduction => profile.introduction ?? "";
-  File? get profileImage => profile.photo;
-  List<ProfileTag> get tags => profile.tags ?? [];
+  String get userName => profile.nickname;
+  String get realName => profile.name;
+  String get slogan => profile.slogan;
+  String get introduction => profile.introduction;
+  Uint8List get profileImage => profile.photo;
+  List<AccountTag> get tags => profile.tags;
 
   bool isLoading = false;
   List allGroupProfile = [
@@ -76,15 +76,14 @@ class WorkspaceDashboardViewModel extends ChangeNotifier {
 
   Future<void> updateProfile() async {
     isLoading = true;
+    final uid = AuthService().getUid();
+    final db = DatabaseService(ownerUid: uid);
+
     notifyListeners();
     try {
-      profileData = await DataController()
-          .download(dataTypeToGet: profile, dataId: profile.id!);
-      // eventList =
-      //     await DataController().downloadAll(dataTypeToGet: EventModel());
-      // missionList =
-      //     await DataController().downloadAll(dataTypeToGet: MissionModel());
-      // debugPrint(profile.toString());
+      profileData = await db.getAccount();
+      // eventList = await db.getAllEvent();
+      // missionList = await db.getAllMission();
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -95,25 +94,13 @@ class WorkspaceDashboardViewModel extends ChangeNotifier {
 
   Future<void> getAllData() async {
     isLoading = true;
+    final uid = AuthService().getUid();
+    final db = DatabaseService(ownerUid: uid);
     notifyListeners();
     try {
-      profileData = await DataController()
-          .download(dataTypeToGet: profile, dataId: profile.id!);
-      // for (dynamic groupId in profileData.associateEntityId ?? []) {
-      //   ProfileModel groupProfile = await DataController()
-      //       .download(dataTypeToGet: ProfileModel(), dataId: groupId);
-      //   allGroupProfile.add(groupProfile);
-      //   debugPrint(allGroupProfile.first.toString());
-      // }
-      debugPrint(profileData.associateEntityId.toString());
-      eventList =
-          await DataController().downloadAll(dataTypeToGet: EventModel());
-      debugPrint(eventList.length.toString());
-      // yield null;
-      missionList =
-          await DataController().downloadAll(dataTypeToGet: MissionModel());
-      debugPrint(missionList.length.toString());
-      // yield null;
+      profileData = await db.getAccount();
+      eventList = await db.getAllEvent();
+      missionList = await db.getAllMission();
     } catch (e) {
       debugPrint(e.toString());
     }

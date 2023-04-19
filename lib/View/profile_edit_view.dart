@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/component_lib.dart';
-import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/model/account_model.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -175,8 +175,8 @@ class _PersonProfileImageUploadgState extends State<ProfileImageUpload> {
                     radius: 120,
                     backgroundColor:
                         Theme.of(context).colorScheme.surfaceVariant,
-                    backgroundImage: model.profileImage != null
-                        ? Image.file(model.profileImage!).image
+                    backgroundImage: model.profileImage.isNotEmpty
+                        ? Image.file(File.fromRawPath(model.profileImage)).image
                         : Image.asset('assets/images/profile_male.png').image),
               ),
               MaterialButton(
@@ -189,7 +189,7 @@ class _PersonProfileImageUploadgState extends State<ProfileImageUpload> {
                   final selectedPhoto = await ImagePicker()
                       .pickImage(source: ImageSource.gallery);
                   if (selectedPhoto != null) {
-                    model.updateProfileImage(File(selectedPhoto.path));
+                    model.updateProfileImage(File(selectedPhoto.path).readAsBytesSync());
                   }
                 },
                 child: Row(
@@ -260,7 +260,7 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
                       children: [TagForm.create()],
                     );
                   }).then((value) {
-                  if (value is ProfileTag) {
+                  if (value is AccountTag) {
                     model.createNewTag(value);
                   }
                 }).catchError((error) {
@@ -360,12 +360,12 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
 class TagForm extends StatefulWidget {
   const TagForm({super.key, required this.mode, required this.tag});
   final String mode;
-  final ProfileTag tag;
+  final AccountTag tag;
   // final ProfileEditViewModel model;
-  factory TagForm.edit({required ProfileTag tag}) =>
+  factory TagForm.edit({required AccountTag tag}) =>
       TagForm(mode: "edit", tag: tag);
   factory TagForm.create() =>
-      TagForm(mode: "create", tag: ProfileTag(tag: "", content: ""));
+      TagForm(mode: "create", tag: AccountTag(tag: "", content: ""));
   @override
   State<TagForm> createState() => _TagFormState();
 }
@@ -457,7 +457,7 @@ class _TagFormState extends State<TagForm> {
                   debugPrint("key: $keyText, value: $valueText");
                   // final newTag = ProfileTag(tag: keyText, content: valueText);
                   Navigator.of(context)
-                      .pop(ProfileTag(tag: keyText, content: valueText));
+                      .pop(AccountTag(tag: keyText, content: valueText));
                 }
               },
               child: Text(widget.mode == "create" ? '新增' : '修改'),
@@ -470,7 +470,7 @@ class _TagFormState extends State<TagForm> {
 }
 
 class PersonalProileTagTextEditView extends StatefulWidget {
-  final ProfileTag tag;
+  final AccountTag tag;
   final void Function() deleteTag;
   final void Function() editTag;
   const PersonalProileTagTextEditView({

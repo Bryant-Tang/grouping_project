@@ -39,15 +39,15 @@ class MissionPageState extends State<MissionPage> {
 }
 
 Future<void> showMissions() async {
-  var allDatas =
-      await DataController().downloadAll(dataTypeToGet: MissionModel());
+  // var allDatas =
+  //     await DataController().downloadAll(dataTypeToGet: MissionModel());
 
-  missionCards = [];
-  for (int index = 0; index < allDatas.length; index++) {
-    var mission = allDatas[index];
-    missionCards.add(const SizedBox(
-      height: 10,
-    ));
-    missionCards.add(MissionCardViewTemplate(missionModel: mission));
-  }
+  // missionCards = [];
+  // for (int index = 0; index < allDatas.length; index++) {
+  //   var mission = allDatas[index];
+  //   missionCards.add(const SizedBox(
+  //     height: 10,
+  //   ));
+  //   missionCards.add(MissionCardViewTemplate(missionModel: mission));
+  // }
 }

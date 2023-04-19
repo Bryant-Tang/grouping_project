@@ -29,7 +29,7 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
     String descript = missionCardViewModel.descript;
     DateTime deadline =  missionCardViewModel.deadline;
     List<String> contributorIds = missionCardViewModel.contributorIds;
-    String missionStage = missionCardViewModel.missionStage;
+    MissionStage missionStage = missionCardViewModel.missionStage;
     String stateName = missionCardViewModel.stateName;
     Color color = missionCardViewModel.color;
 

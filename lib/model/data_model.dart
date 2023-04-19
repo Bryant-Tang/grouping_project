@@ -1,6 +1,4 @@
-import 'data_controller.dart';
-
-import 'dart:io' as io show File;
+import 'dart:typed_data';
 
 /// ## a base class of every data in database, can only use as ***Polymorphism***
 /// every subclass should pass all follow attribute to this superclass
@@ -27,19 +25,15 @@ abstract class BaseDataModel<T extends BaseDataModel<T>> {
 
   /// return a `map` data in order to upload to firestore
   /// * every subclass should override this method
-  Future<Map<String, dynamic>> toFirestore(
-      {required DataController ownerController});
+  Map<String, dynamic> toFirestore();
 
   /// return a `T<T extends DataModel>` data in order to download from firestore
   /// * every subclass should override this method
-  Future<T> fromFirestore(
-      {required String id,
-      required Map<String, dynamic> data,
-      required DataController ownerController});
+  T fromFirestore({required String id, required Map<String, dynamic> data});
 }
 
 /// ## a base class of every data in storage, can only be implement
 abstract class BaseStorageData {
-  Map<String, io.File> toStorage();
-  void setAttributeFromStorage({required Map<String, io.File> data});
+  Map<String, Uint8List> toStorage();
+  void setAttributeFromStorage({required Map<String, Uint8List> data});
 }

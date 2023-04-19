@@ -22,7 +22,7 @@ class MissionInformationShrink extends StatelessWidget {
     String group = missionCardViewModel.group;
     String title = missionCardViewModel.title;
     String descript = missionCardViewModel.descript;
-    String missionStage = missionCardViewModel.missionStage;
+    MissionStage missionStage = missionCardViewModel.missionStage;
     String stateName = missionCardViewModel.stateName;
     DateTime deadline = missionCardViewModel.deadline;
     Color color = missionCardViewModel.color;
@@ -59,7 +59,7 @@ class MissionInformationShrink extends StatelessWidget {
             height: 1,
           ),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('deadline: ${parseDate.format(deadline)}', style: const TextStyle(fontWeight: FontWeight.bold),),
+            Text('deadline: ${parseDate.format(deadline)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),),
             StateOfMission(
               stage: missionStage,
               stateName: stateName,
