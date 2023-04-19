@@ -1,6 +1,5 @@
 //import 'package:grouping_project/components/card_view.dart';
-import 'package:grouping_project/model/model_lib.dart';
-
+import 'package:grouping_project/service/database_service.dart';
 import 'package:grouping_project/components/card_view/mission_information.dart';
 
 import 'package:flutter/material.dart';
@@ -39,8 +38,13 @@ class MissionPageState extends State<MissionPage> {
 }
 
 Future<void> showMissions() async {
+<<<<<<< HEAD
   // var allDatas =
   //     await DataController().downloadAll(dataTypeToGet: MissionModel());
+=======
+  var allDatas =
+      await 
+>>>>>>> 354ccb5105aca68937ad1d2416d4e8389103310b
 
   // missionCards = [];
   // for (int index = 0; index < allDatas.length; index++) {
