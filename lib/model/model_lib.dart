@@ -5,3 +5,4 @@ export 'account_model.dart';
 export 'user_model.dart';
 export 'mission_state_model.dart';
 export 'mission_state_stage.dart';
+export 'register_model.dart';

@@ -3,6 +3,7 @@ import 'package:grouping_project/VM/state.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/user_model.dart';
 import 'package:grouping_project/service/auth_service.dart';
+import 'package:grouping_project/service/service_lib.dart';
 
 class RegisterModel {
   String password = "";
@@ -12,7 +13,7 @@ class RegisterModel {
   bool isPasswordValid = false;
   bool isPasswordConfirmValid = false;
   bool isUserNameValid = false;
-  ProfileModel get tempProfile => ProfileModel(
+  AccountModel get tempProfile => AccountModel(
         nickname: userName,
         email: email,
       );
@@ -42,16 +43,15 @@ class RegisterModel {
       await authService.emailSignUp(email, password);
       // debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
       // final ProfileModel user = ProfileModel(nickname: userName, email: email);
-      await DataController()
-          .createUser(userProfile: tempProfile)
-          .then((value) => {debugPrint('upload successfully')})
-          .catchError((error) {
-        debugPrint(error.toString());
-      });
+      final uid = authService.getUid(); 
+      DatabaseService db = DatabaseService(ownerUid: uid);
+
+      await db.createUserAccount();
+      debugPrint('upload successfully');
       return RegisterState.success;
     } catch (error) {
-      // debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊失敗');
-      // debugPrint(error.toString());
+      debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊失敗');
+      debugPrint(error.toString());
       return RegisterState.faild;
     }
   }

@@ -16,7 +16,7 @@ class ProfileDispalyPageView extends StatefulWidget {
 
 class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
   // late ProfileModel profile;
-  List<CustomLabel> allProfileTag(List<ProfileTag>? tags) {
+  List<CustomLabel> allProfileTag(List<AccountTag>? tags) {
     List<CustomLabel> datas = [];
     int len = tags?.length ?? 0;
     for (int i = 0; i < len; i++) {
@@ -70,9 +70,9 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                                 HeadShot(
                                     name: model.realName,
                                     nickName: model.userName,
-                                    imageShot: model.profile.photo != null
+                                    imageShot: model.profile.photo.isNotEmpty
                                         ? Image.file(
-                                            File(model.profile.photo!.path))
+                                            File.fromRawPath(model.profileImage))
                                         : Image.asset(
                                             'assets/images/profile_male.png'),
                                     motto: model.slogan),

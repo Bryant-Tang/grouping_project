@@ -1,7 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
@@ -11,7 +8,7 @@ import 'package:grouping_project/View/login_view.dart';
 import 'package:grouping_project/View/create_group_view.dart';
 
 import 'package:grouping_project/pages/view_template/building.dart';
-import 'package:grouping_project/pages/home/home_page/create_button.dart';
+import 'package:grouping_project/components/button/create_button.dart';
 import 'package:grouping_project/View/workspace_dashboard_page_view.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/View/workspace_calendar_page_view.dart';
@@ -92,7 +89,7 @@ class _BasePageState extends State<BasePage> {
                 return ChangeNotifierProvider<
                         WorkspaceDashboardViewModel>.value(
                     value: model,
-                    builder: (context, child) => SwitchWorkSpaceSheet());
+                    builder: (context, child) => const SwitchWorkSpaceSheet());
               });
         },
       ),
@@ -246,7 +243,7 @@ class SwitchWorkSpaceSheet extends StatelessWidget {
 
 class GroupSwitcherView extends StatelessWidget {
   // TODO : 將 color 抽離出來
-  final ProfileModel groupProfile;
+  final AccountModel groupProfile;
   const GroupSwitcherView({Key? key, required this.groupProfile})
       : super(key: key);
   @override
@@ -284,7 +281,7 @@ class GroupSwitcherView extends StatelessWidget {
                         CircleAvatar(
                           radius: 30,
                           backgroundColor:
-                              Color(groupProfile.color ?? 0xFF00417D),
+                              Color(groupProfile.color),
                         ),
                         const SizedBox(width: 10),
                         Column(
@@ -295,12 +292,12 @@ class GroupSwitcherView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(groupProfile.name ?? "",
+                                Text(groupProfile.name,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleMedium!
                                         .copyWith(fontWeight: FontWeight.bold)),
-                                Text(groupProfile.introduction ?? "",
+                                Text(groupProfile.introduction,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleSmall!
@@ -316,11 +313,11 @@ class GroupSwitcherView extends StatelessWidget {
                             Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: (groupProfile.tags ?? [])
+                              children: (groupProfile.tags)
                                   .map((tag) => ColorTagChip(
                                       tagString: tag.tag,
                                       color: Color(
-                                          groupProfile.color ?? 0xFF00417D)))
+                                          groupProfile.color)))
                                   .toList(),
                             )
                           ],
