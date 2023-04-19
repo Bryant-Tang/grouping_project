@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'dart:io' as io show File;
+import 'package:grouping_project/VM/card_edit_view_model.dart';
 
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -47,20 +48,17 @@ class TitleDateOfEvent extends StatefulWidget {
 }
 
 class TitleDateOfEventState extends State<TitleDateOfEvent> {
-  // final String title;
-  // final DateTime startTime;
-  // final DateTime endTime;
-  // final String group;
-  // final Color color;
-  // final TextEditingController titleController;
+
+  TitleDateOfEventVM vm = TitleDateOfEventVM();
+
   late DateTime start;
   late DateTime end;
 
   @override
   void initState() {
     super.initState();
-    start = widget.startTime;
-    end = widget.endTime;
+    start = vm.startTime = widget.startTime;
+    end = vm.endTime = widget.endTime;
   }
 
   @override
@@ -71,16 +69,16 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
         showPicker(
           value: tmp,
           onChange: (time) {
-            setState(() {
               if (state == 0) {
-                start = DateTime(
+                start = vm.startTime = DateTime(
                     show.year, show.month, show.day, time.hour, time.minute);
                 // debugPrint(start.toString());
               } else if (state == 1) {
-                end = DateTime(
+                end = vm.endTime = DateTime(
                     show.year, show.month, show.day, time.hour, time.minute);
               }
               widget.callback(start, end);
+            setState(() {
             });
           },
         ),

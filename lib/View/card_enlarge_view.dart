@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/service/auth_service.dart';
+import 'package:grouping_project/service/database_service.dart';
 
 import 'package:intl/intl.dart';
 import 'dart:io' as io show File;
@@ -157,15 +159,9 @@ class StateOfMission extends StatelessWidget {
 
   final MissionStage stage;
   final String stateName;
-<<<<<<< HEAD:lib/VM/enlarge_view_model.dart
-  
-  Color stageToColor(String stage){
-    if(stage == stageToString(MissionStage.progress)){
-=======
 
   Color stageToColor(MissionStage stage){
     if(stage == MissionStage.progress){
->>>>>>> 44e4a87173cf4555dd4f882e7b0ebbc7d445e37c:lib/VM/enlarge_viewmodel.dart
       return Colors.blue.withOpacity(0.2);
     }
     else if(stage == MissionStage.pending){
@@ -207,8 +203,10 @@ class _ContributorState extends State<Contributors> {
   Future<Container> createHeadShot(String person) async {
     /// 回傳 contributor 的頭貼
 
-    var userData = await DataController()
-        .download(dataTypeToGet: ProfileModel(), dataId: person);
+    // TODO: get all user about this event/mission
+    var userData = await DatabaseService(ownerUid: AuthService().getUid()).getAccount();
+    // var userData = await DataController()
+    //     .download(dataTypeToGet: ProfileModel(), dataId: person);
     io.File photo = userData.photo ?? io.File('assets/images/cover.png');
 
     return Container(
