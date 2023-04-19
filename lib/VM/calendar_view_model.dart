@@ -5,8 +5,6 @@ import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
-import 'package:table_calendar/table_calendar.dart';
-
 class CalendarViewModel extends ChangeNotifier {
   final DatabaseService databaseService =
       DatabaseService(ownerUid: AuthService().getUid());
@@ -16,15 +14,6 @@ class CalendarViewModel extends ChangeNotifier {
   List<MissionModel> missionsByDate = [];
   List<BaseDataModel> eventsAndMissionsByDate = [];
   List<Widget> eventAndMissionCards = [];
-  DateTime? _selectedDay;
-  DateTime? _focusedDay;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-
-  CalendarViewModel() {
-    _selectedDay = DateTime.now();
-    _focusedDay = DateTime.now();
-    getEvents();
-  }
 
   /// This is the function used for getting all event data from the database, backend only
   Future<void> getEvents() async {
@@ -43,13 +32,13 @@ class CalendarViewModel extends ChangeNotifier {
       // TODO: Make time of a day for checking to be midnight or else it will only check show those events that goes the whole
       return (event.startTime != null &&
           event.endTime != null &&
-          (event.startTime!.isBefore(
+          (event.startTime.isBefore(
                   DateTime(date.year, date.month, date.day, 23, 59, 59)) ||
-              event.startTime!.isAtSameMomentAs(
+              event.startTime.isAtSameMomentAs(
                   DateTime(date.year, date.month, date.day, 23, 59, 59))) &&
-          (event.endTime!.isAfter(
+          (event.endTime.isAfter(
                   DateTime(date.year, date.month, date.day, 0, 0, 0)) ||
-              event.endTime!.isAtSameMomentAs(
+              event.endTime.isAtSameMomentAs(
                   DateTime(date.year, date.month, date.day, 0, 0, 0))));
     }).toList();
     debugPrint('The events are: $eventsByDate');
@@ -70,9 +59,9 @@ class CalendarViewModel extends ChangeNotifier {
     debugPrint('The date is: $date');
     missionsByDate = missions.where((mission) {
       return (mission.deadline != null &&
-          mission.deadline!.isBefore(
+          mission.deadline.isBefore(
               DateTime(date.year, date.month, date.day, 23, 59, 59)) &&
-          mission.deadline!
+          mission.deadline
               .isAfter(DateTime(date.year, date.month, date.day, 0, 0, 0)));
     }).toList();
     debugPrint('The missions are: $missionsByDate');
