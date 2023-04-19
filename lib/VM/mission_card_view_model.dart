@@ -12,7 +12,7 @@ class MissionCardViewModel extends ChangeNotifier {
   String get group => mission.ownerName;
   String get title => mission.title;
   String get descript => mission.introduction;
-  // MissionStage get missionStage => mission.stage ?? MissionStage.progress;
+  // MissionStage get missionStage => mission.stage;
   // String get stateName => mission.stateName ?? 'progress';
   DateTime get deadline => mission.deadline;
   List<String> get contributorIds => mission.contributorIds;
@@ -25,7 +25,6 @@ class MissionCardViewModel extends ChangeNotifier {
       List<String> contributorIds,
       MissionStage stage,
       String stateName)async {
-        debugPrint(stateName);
     // await DataController().upload(
     //     uploadData: MissionModel(
     //         id: id,

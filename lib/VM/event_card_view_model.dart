@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/service/service_lib.dart';
 
 class EventCardViewModel extends ChangeNotifier {
   late EventModel eventModel;
@@ -18,19 +19,19 @@ class EventCardViewModel extends ChangeNotifier {
   Color get color => Color(eventModel.color);
 
   void updateEvent(TextEditingController titleCrtl, TextEditingController descriptCrtl, DateTime startTime, DateTime endTime, List<String> contributorIds) async {
+    await DatabaseService(ownerUid: AuthService().getUid()).setEvent(event: EventModel(
+id: id,
+            title: titleCrtl.text,
+            introduction: descriptCrtl.text,
+            startTime: startTime,
+            endTime: endTime,
+            contributorIds: contributorIds
 
-    // await DataController().upload(
-    //     uploadData: EventModel(
-    //         id: id,
-    //         title: titleCrtl.text,
-    //         introduction: descriptCrtl.text,
-    //         startTime: startTime,
-    //         endTime: endTime,
-    //         contributorIds: contributorIds));
+    ));
   }
 
   void removeEvent() async {
-    // await DataController().remove(removeData: eventModel);
+    // await DatabaseService(ownerUid: AuthService().getUid()).remove(removeData: eventModel);
   }
 
 }
