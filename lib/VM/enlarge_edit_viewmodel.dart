@@ -798,7 +798,7 @@ class _collabNotesState extends State<CollabNotes> {
             Positioned(
               left: 5,
               top: 8,
-              child: Row(children: [
+              child: Row(children: const[
                 Icon(Icons.menu_book_rounded),
                 SizedBox(
                   width: 1,
