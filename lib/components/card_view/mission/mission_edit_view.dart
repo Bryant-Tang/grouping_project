@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/View/workspace_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/mission_information.dart';
-import 'package:grouping_project/VM/enlarge_edit_viewmodel.dart';
+import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
 import 'package:grouping_project/VM/mission_card_view_model.dart';
 
 /*

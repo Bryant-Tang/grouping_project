@@ -7,7 +7,7 @@ import 'package:day_night_time_picker/day_night_time_picker.dart';
 // import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
-import 'package:grouping_project/VM/enlarge_edit_viewmodel.dart';
+import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
 import 'package:grouping_project/VM/event_card_view_model.dart';
 
 /*

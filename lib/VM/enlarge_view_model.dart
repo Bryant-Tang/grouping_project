@@ -157,7 +157,7 @@ class StateOfMission extends StatelessWidget {
 
   final String stage;
   final String stateName;
-
+  
   Color stageToColor(String stage){
     if(stage == stageToString(MissionStage.progress)){
       return Colors.blue.withOpacity(0.2);
