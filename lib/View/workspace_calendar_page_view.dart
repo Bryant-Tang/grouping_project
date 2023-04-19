@@ -77,6 +77,9 @@ class _CalendarPageState extends State<CalendarPage> {
                           focusedDay: _focusedDay,
                           availableCalendarFormats: _calendarFormat,
                           daysOfWeekHeight: 20,
+                          // eventLoader: (day) {
+                          //   return model.eventsAndMissionsByDate;
+                          // },
                           onHeaderTapped: (focusedDay) async {
                             focusedDay = await selectDay() ?? focusedDay;
                           },

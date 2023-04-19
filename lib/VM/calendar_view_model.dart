@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/mission/mission_card_view.dart';
+import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 
@@ -11,6 +12,7 @@ class CalendarViewModel extends ChangeNotifier {
   List<MissionModel> missions = [];
   List<EventModel> eventsByDate = [];
   List<MissionModel> missionsByDate = [];
+  List<BaseDataModel> eventsAndMissionsByDate = [];
   List<Widget> eventAndMissionCards = [];
   DateTime? _selectedDay;
   DateTime? _focusedDay;
@@ -49,7 +51,7 @@ class CalendarViewModel extends ChangeNotifier {
                   DateTime(date.year, date.month, date.day, 0, 0, 0))));
     }).toList();
     debugPrint('The events are: $eventsByDate');
-    showCards();
+    // showCards();
     notifyListeners();
     getMissinosByDate(date);
   }
@@ -72,6 +74,10 @@ class CalendarViewModel extends ChangeNotifier {
               .isAfter(DateTime(date.year, date.month, date.day, 0, 0, 0)));
     }).toList();
     debugPrint('The missions are: $missionsByDate');
+    // merge two list
+    eventsAndMissionsByDate = [];
+    eventsAndMissionsByDate.addAll(missionsByDate);
+    eventsAndMissionsByDate.addAll(eventsByDate);
     showCards();
   }
 
