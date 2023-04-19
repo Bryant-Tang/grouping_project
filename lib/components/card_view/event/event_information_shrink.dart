@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/VM/enlarge_viewmodel.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/VM/event_card_view_model.dart';
 
 import 'package:intl/intl.dart';
+
+/*
+*   This file is used to display the information of shrink event
+*/
 
 class EventInformationShrink extends StatelessWidget {
   const EventInformationShrink({super.key, required this.eventModel});
@@ -75,5 +78,24 @@ class EventInformationShrink extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class AntiLabel extends StatelessWidget {
+  /// 標籤反白的 group
+
+  const AntiLabel({super.key, required this.group, required this.color});
+  final String group;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        decoration: BoxDecoration(
+            color: color, borderRadius: BorderRadius.circular(10)),
+        child: Text(
+          ' •$group ',
+          style: const TextStyle(color: Colors.white, fontSize: 10),
+        ));
   }
 }

@@ -47,12 +47,6 @@ class TitleDateOfEvent extends StatefulWidget {
 }
 
 class TitleDateOfEventState extends State<TitleDateOfEvent> {
-  // final String title;
-  // final DateTime startTime;
-  // final DateTime endTime;
-  // final String group;
-  // final Color color;
-  // final TextEditingController titleController;
   late DateTime start;
   late DateTime end;
 
