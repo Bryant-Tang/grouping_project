@@ -3,11 +3,13 @@ import 'package:grouping_project/components/card_view/mission/mission_card_view.
 import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/service/service_lib.dart';
 
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarViewModel extends ChangeNotifier {
-  final DataController dataController = DataController();
+  final DatabaseService databaseService =
+      DatabaseService(ownerUid: AuthService().getUid());
   List<EventModel> events = [];
   List<MissionModel> missions = [];
   List<EventModel> eventsByDate = [];
@@ -26,7 +28,7 @@ class CalendarViewModel extends ChangeNotifier {
 
   /// This is the function used for getting all event data from the database, backend only
   Future<void> getEvents() async {
-    events = await dataController.downloadAll(dataTypeToGet: EventModel());
+    events = await databaseService.getAllEvent();
     notifyListeners();
   }
 
@@ -58,7 +60,7 @@ class CalendarViewModel extends ChangeNotifier {
 
   /// get all missions
   Future<void> getMissions() async {
-    missions = await dataController.downloadAll(dataTypeToGet: MissionModel());
+    missions = await databaseService.getAllMission();
     notifyListeners();
   }
 
