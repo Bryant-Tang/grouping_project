@@ -18,7 +18,7 @@ class MissionStateModel extends BaseDataModel<MissionStateModel> {
       MissionStateModel._default(
           id: 'progress',
           stage: MissionStage.progress,
-          stateName: 'in_progress');
+          stateName: 'in progress');
 
   ///the default state of pending stage, called pending
   static final MissionStateModel defaultPendingState =
@@ -32,14 +32,14 @@ class MissionStateModel extends BaseDataModel<MissionStateModel> {
       MissionStateModel._default(
           id: 'finish',
           stage: MissionStage.close,
-          stateName: 'in_progress');
+          stateName: 'finish');
 
   ///the default state of progress stage, called time out
   static final MissionStateModel defaultTimeOutState =
       MissionStateModel._default(
           id: 'time_out',
           stage: MissionStage.progress,
-          stateName: 'time_out');
+          stateName: 'time out');
 
   MissionStateModel._default(
       {String? id, required this.stage, required this.stateName})

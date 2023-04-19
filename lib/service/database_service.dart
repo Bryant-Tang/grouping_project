@@ -264,7 +264,19 @@ class DatabaseService {
     return eventList;
   }
 
-  
+  Future<List<MissionModel>> getAllMisison() async {
+    //un implement
+    return [MissionModel.defaultMission, MissionModel.defaultMission];
+  }
+
+  Future<List<MissionStateModel>> getAllState() async {
+    return [
+      MissionStateModel.defaultFinishState,
+      MissionStateModel.defaultPendingState,
+      MissionStateModel.defaultProgressState,
+      MissionStateModel.defaultTimeOutState
+    ];
+  }
 
   /// ## download *'one'* data from database.
   // /// * retrun one object of the type you specify.
