@@ -62,7 +62,7 @@ class _BasePageState extends State<BasePage> {
               CircleAvatar(
                 radius: 20,
                 backgroundImage: model.profileImage.isNotEmpty
-                    ? Image.file(File.fromRawPath(model.profileImage)).image
+                    ? Image.memory(model.profileImage).image
                     : Image.asset("assets/images/profile_male.png").image,
               ),
               const SizedBox(
@@ -79,8 +79,8 @@ class _BasePageState extends State<BasePage> {
             ],
           ),
         ),
-        onPressed: () {
-          showModalBottomSheet(
+        onPressed: () async {
+          await showModalBottomSheet(
               context: context,
               barrierColor: Colors.black.withOpacity(0.1),
               shape: const RoundedRectangleBorder(
@@ -93,6 +93,7 @@ class _BasePageState extends State<BasePage> {
                     value: model,
                     builder: (context, child) => const SwitchWorkSpaceSheet());
               });
+          await model.updateProfile();
         },
       ),
       automaticallyImplyLeading: false,
@@ -142,7 +143,13 @@ class _BasePageState extends State<BasePage> {
                       onWillPop: () async {
                         return false; // 禁用返回鍵
                       },
-                      child: Scaffold(
+                      child: model.isLoading ?
+                      const Scaffold(
+                        body: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                      : Scaffold(
                         appBar: getAppBar(model, themeManager, context),
                         body: PageView(
                           controller: _pageController,
@@ -154,7 +161,7 @@ class _BasePageState extends State<BasePage> {
                         // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
                         bottomNavigationBar:
                             getNavigationBar(model, themeManager, context),
-                      ),
+                      )
                     )),
       ),
     );
@@ -276,14 +283,13 @@ class GroupSwitcherView extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                   child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         CircleAvatar(
                           radius: 30,
-                          backgroundColor:
-                              Color(groupProfile.color),
+                          backgroundColor: Color(groupProfile.color),
                         ),
                         const SizedBox(width: 10),
                         Column(
@@ -318,8 +324,7 @@ class GroupSwitcherView extends StatelessWidget {
                               children: (groupProfile.tags)
                                   .map((tag) => ColorTagChip(
                                       tagString: tag.tag,
-                                      color: Color(
-                                          groupProfile.color)))
+                                      color: Color(groupProfile.color)))
                                   .toList(),
                             )
                           ],

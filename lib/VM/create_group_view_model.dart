@@ -68,13 +68,14 @@ class CreateGroupViewModel extends ChangeNotifier {
     if (count > 4) {
       isSelected[index] = !value;
       notifyListeners();
+      return false;
+    } else {
       final selectedIndex = isSelected.where((e) => e == true);
       profile.tags = List.generate(
           selectedIndex.length,
           (index) =>
               AccountTag(tag: labelTags[index], content: labelTags[index]));
-      return false;
-    } else {
+      debugPrint(profile.tags.toString());
       notifyListeners();
       return true;
     }
@@ -102,7 +103,7 @@ class CreateGroupViewModel extends ChangeNotifier {
       // get new group id 
       final groupId = await accountDatabase.createGroupAccount(); 
       // set group profile to group account db
-      DatabaseService(ownerUid: groupId).setAccount(account: profile);
+      DatabaseService(ownerUid: groupId).setAccount(account: profile.copyWith(accountId: groupId));
       // add group id to user account profile entity
       userAccountModel.addEntity(groupId);
       // upload user account profile to user account db

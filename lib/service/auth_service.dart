@@ -43,7 +43,7 @@ class AuthService {
   /// get thrid party account profile including email, name, photo
   ///
   /// return ProfileModel if logged in, return null if not
-  Future<AccountModel?> getProfile() async {
+  Future<AccountModel?> getProfile(String newAccountId) async {
     User? user = _auth.currentUser;
     Uint8List photoFile = Uint8List(0);
     if (user == null) {
@@ -59,6 +59,7 @@ class AuthService {
     // debugPrint(
     //     '${user.displayName} ${user.providerData[0].email} ${user.photoURL}');
     return AccountModel(
+        accountId: newAccountId,
         name: user.displayName,
         nickname: user.displayName,
         email: user.providerData[0].email,
@@ -307,10 +308,10 @@ class AuthService {
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
           if (result.additionalUserInfo?.isNewUser == true) {
-            await DatabaseService(ownerUid: result.user!.uid)
+            String i =await DatabaseService(ownerUid: result.user!.uid)
                 .createUserAccount();
             await DatabaseService(ownerUid: result.user!.uid)
-                .setAccount(account: await getProfile() ?? AccountModel());
+                .setAccount(account: await getProfile(i) ?? AccountModel());
           }
           return _userModelFromAuth(result.user);
         }
@@ -373,10 +374,10 @@ class AuthService {
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
           if (result.additionalUserInfo?.isNewUser == true) {
-            await DatabaseService(ownerUid: result.user!.uid)
+            String i = await DatabaseService(ownerUid: result.user!.uid)
                 .createUserAccount();
             await DatabaseService(ownerUid: result.user!.uid)
-                .setAccount(account: await getProfile() ?? AccountModel());
+                .setAccount(account: await getProfile(i) ?? AccountModel());
           }
           return _userModelFromAuth(result.user);
         }
@@ -413,9 +414,9 @@ class AuthService {
         UserCredential result =
             await FirebaseAuth.instance.signInWithPopup(githubProvider);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          String i = await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
           await DatabaseService(ownerUid: result.user!.uid)
-              .setAccount(account: await getProfile() ?? AccountModel());
+              .setAccount(account: await getProfile(i) ?? AccountModel());
         }
 
         return _userModelFromAuth(result.user);
@@ -423,9 +424,9 @@ class AuthService {
         UserCredential result =
             await FirebaseAuth.instance.signInWithProvider(githubProvider);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          String i = await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
           await DatabaseService(ownerUid: result.user!.uid)
-              .setAccount(account: await getProfile() ?? AccountModel());
+              .setAccount(account: await getProfile(i) ?? AccountModel());
         }
 
         return _userModelFromAuth(result.user);
@@ -482,9 +483,9 @@ class AuthService {
 
         UserCredential result = await _auth.signInWithCredential(credential);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          String newAccountId = await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
           await DatabaseService(ownerUid: result.user!.uid)
-              .setAccount(account: await getProfile() ?? AccountModel());
+              .setAccount(account: await getProfile(newAccountId) ?? AccountModel());
         }
 
         return _userModelFromAuth(result.user);
@@ -519,9 +520,9 @@ class AuthService {
 
         UserCredential result = await _auth.signInWithCredential(credential);
         if (result.additionalUserInfo?.isNewUser == true) {
-          await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          String i = await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
           await DatabaseService(ownerUid: result.user!.uid)
-              .setAccount(account: await getProfile() ?? AccountModel());
+              .setAccount(account: await getProfile(i) ?? AccountModel());
         }
 
         return _userModelFromAuth(result.user);

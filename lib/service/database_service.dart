@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/exception.dart';
@@ -299,7 +300,8 @@ class DatabaseService {
 
     mission.setOwner(
         ownerAccount: await _getSingleAccount(accountId: ownerAccountId));
-    mission.setStateByStateModel(await getMissionState(stateId: mission.stateId));
+    mission
+        .setStateByStateModel(await getMissionState(stateId: mission.stateId));
 
     return mission;
   }
@@ -325,7 +327,8 @@ class DatabaseService {
           .fromFirestore(id: docSnap.id, data: docSnap.data() ?? {});
       mission.setOwner(
           ownerAccount: await _getSingleAccount(accountId: ownerAccountId));
-      mission.setStateByStateModel(await getMissionState(stateId: mission.stateId));
+      mission.setStateByStateModel(
+          await getMissionState(stateId: mission.stateId));
       missionList.add(mission);
     }
 

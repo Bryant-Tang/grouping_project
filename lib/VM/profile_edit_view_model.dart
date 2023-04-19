@@ -43,13 +43,14 @@ class ProfileEditViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateTags(List<AccountTag> tags) {
-    profile.tags = tags;
-    notifyListeners();
-  }
+  // void updateTags(List<AccountTag> tags) {
+
+  //   profile.tags = tags;
+  //   notifyListeners();
+  // }
 
   void createNewTag(AccountTag tag) {
-    profile.tags = (profile.tags)..add(tag);
+    profile.tags.add(tag);
     notifyListeners();
   }
 
@@ -97,9 +98,18 @@ class ProfileEditViewModel extends ChangeNotifier {
     isLoading = true;
     final uid = AuthService().getUid();
     final db = DatabaseService(ownerUid: uid);
+    // print all profile data
+    // debugPrint(profile.name.toString());
+    // debugPrint(profile.nickname.toString());
+    // debugPrint(profile.slogan.toString());
+    // debugPrint(profile.introduction.toString());
+    debugPrint("test: ${AccountModel.defaultAccount.tags.toString()}");
+    // debugPrint(profile.id.toString());
+    // debugPrint(profile.photo.toString());
+
     notifyListeners();
     try {
-      db.setAccount(account: profile);
+      await db.setAccount(account: profile);
     } catch (e) {
       debugPrint(e.toString());
     }
