@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/components/card_view/event/event_card.dart';
 import 'package:grouping_project/components/card_view/mission/mission_card_view.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 class CalendarViewModel extends ChangeNotifier {

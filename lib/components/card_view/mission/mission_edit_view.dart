@@ -67,7 +67,6 @@ class _MissionEditPageState extends State<MissionEditPage> {
 
   @override
   Widget build(BuildContext context) {
-
     Future<void> createMission() async {
       // await DataController().upload(
       //     uploadData: MissionModel(
@@ -77,8 +76,6 @@ class _MissionEditPageState extends State<MissionEditPage> {
       //   contributorIds: contributorIds
       // ));
     }
-
-
 
     return Scaffold(
       body: Padding(
@@ -104,7 +101,8 @@ class _MissionEditPageState extends State<MissionEditPage> {
                             // Navigator.pop(context);
                             Navigator.pushAndRemoveUntil(
                                 context,
-                                MaterialPageRoute(builder: (_) => const BasePage()),
+                                MaterialPageRoute(
+                                    builder: (_) => const BasePage()),
                                 (route) => false);
                           } else {
                             showDialog(
@@ -125,16 +123,24 @@ class _MissionEditPageState extends State<MissionEditPage> {
                               deadline.isAfter(DateTime.now())) {
                             // debugPrint('Done');
                             if (widget.missionModel != null) {
-                              missionCardViewModel.updateMission(titleController, descriptController, deadline, contributorIds, missionStage, stateName);
-                            }
-                            else {
+                              missionCardViewModel.updateMission(
+                                  titleController,
+                                  descriptController,
+                                  deadline,
+                                  contributorIds,
+                                  missionStage,
+                                  stateName);
+                            } else {
                               await createMission();
                             }
                             // Navigator.pop(context);
-                            if(context.mounted) {Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(builder: (_) => const BasePage()),
-                                (route) => false);}
+                            if (context.mounted) {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const BasePage()),
+                                  (route) => false);
+                            }
                           } else {
                             debugPrint('error occur');
                           }
@@ -148,74 +154,70 @@ class _MissionEditPageState extends State<MissionEditPage> {
               thickness: 1.5,
               color: Color.fromARGB(255, 170, 170, 170),
             ),
-            TitleDateOfMission(
-                titleController: titleController,
-                deadline: deadline,
-                group: group,
-                color: color,
-                stage: missionStage,
-                stateName: stateName,
-                callback: (p0) {
-                  deadline = p0;
-                },
-                cbStage: (stage, stateName) {
-                  missionStage = stage;
-                  this.stateName = stateName;
-                },),
-            EnlargeObjectTemplate(
+            // TitleDateOfMission(
+            //   titleController: titleController,
+            //   deadline: deadline,
+            //   group: group,
+            //   color: color,
+            //   stage: missionStage,
+            //   stateName: stateName,
+            //   callback: (p0) {
+            //     deadline = p0;
+            //   },
+            //   cbStage: (stage, stateName) {
+            //     missionStage = stage;
+            //     this.stateName = stateName;
+            //   },
+            // ),
+            CardViewTitle(
                 title: '參與成員',
-                contextOfTitle: Contributors(
-                  contributorIds: contributorIds,
-                  callback: (p0) {
-                    contributorIds = p0;
-                  },
-                )),
+                child: Container()
+            ),
             const SizedBox(
               height: 1,
             ),
-            EnlargeObjectTemplate(
-              title: '敘述',
-              contextOfTitle: Descript(descriptController: descriptController,)
-              // TextField(
-              //   keyboardType: TextInputType.multiline,
-              //   maxLines: 10,
-              //   controller: descriptController,
-              //   onChanged: (value) {
-              //     descriptController.text = value;
-              //     descriptController.selection = TextSelection.fromPosition(
-              //         TextPosition(offset: value.length));
-              //     setState(() {});
-              //   },
-              //   decoration: InputDecoration(
-              //       hintText: '輸入標題',
-              //       errorText: descriptController.text.isEmpty ? '不可為空' : null,
-              //       isDense: true,
-              //       contentPadding: const EdgeInsets.symmetric(vertical: 2),
-              //       border: const OutlineInputBorder()),
-              //   style: const TextStyle(fontSize: 15),
-              // ),
-            ),
+            CardViewTitle(
+                title: '敘述',
+                child: Container()
+                // TextField(
+                //   keyboardType: TextInputType.multiline,
+                //   maxLines: 10,
+                //   controller: descriptController,
+                //   onChanged: (value) {
+                //     descriptController.text = value;
+                //     descriptController.selection = TextSelection.fromPosition(
+                //         TextPosition(offset: value.length));
+                //     setState(() {});
+                //   },
+                //   decoration: InputDecoration(
+                //       hintText: '輸入標題',
+                //       errorText: descriptController.text.isEmpty ? '不可為空' : null,
+                //       isDense: true,
+                //       contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                //       border: const OutlineInputBorder()),
+                //   style: const TextStyle(fontSize: 15),
+                // ),
+                ),
             const SizedBox(
               height: 2,
             ),
             // TODO: connect mission and mission
-            const EnlargeObjectTemplate(
+            CardViewTitle(
               title: '相關任務',
-              contextOfTitle: CollabMissons(),
+              child: Container(),
             ),
             const SizedBox(
               height: 2,
             ),
             // TODO: connect note and mission
-            const EnlargeObjectTemplate(
-                title: '相關共筆', contextOfTitle: CollabNotes()),
+            CardViewTitle(title: '相關共筆', child: Container()),
             const SizedBox(
               height: 2,
             ),
             // TODO: connect mission and meeting
-            const EnlargeObjectTemplate(
+            CardViewTitle(
               title: '相關會議',
-              contextOfTitle: CollabMeetings(),
+              child: Container(),
             ),
           ],
         ),

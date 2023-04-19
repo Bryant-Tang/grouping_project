@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/View/event_setting_view.dart';
 
-class AddEvent extends StatefulWidget {
-  const AddEvent({super.key});
+class CreateEvent extends StatefulWidget {
+  const CreateEvent({super.key});
 
   @override
-  State<AddEvent> createState() => _AddEventState();
+  State<CreateEvent> createState() => _CreateEventState();
 }
 
-class _AddEventState extends State<AddEvent> {
+class _CreateEventState extends State<CreateEvent> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -16,7 +16,7 @@ class _AddEventState extends State<AddEvent> {
       onTap: () async {
         debugPrint('create event');
         await Navigator.push(context,
-            MaterialPageRoute(builder: ((context) => const EventEditPage())));
+            MaterialPageRoute(builder: ((context) => EventSettingPageView.create())));
         setState(() {});
       },
       splashFactory: InkRipple.splashFactory,

@@ -57,10 +57,4 @@ class LoginModel {
     return LoginState.loginSuccess;
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'email': email,
-      'password': password,
-    };
-  }
 }

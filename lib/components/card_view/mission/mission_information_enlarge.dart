@@ -13,7 +13,6 @@ class MissionInformationEnlarge extends StatefulWidget {
 
   final MissionModel missionModel;
 
-
   @override
   State<MissionInformationEnlarge> createState() =>
       _MissionInformationEnlargeState();
@@ -22,12 +21,13 @@ class MissionInformationEnlarge extends StatefulWidget {
 class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
   @override
   Widget build(BuildContext context) {
-    MissionCardViewModel missionCardViewModel = MissionCardViewModel(widget.missionModel);
+    MissionCardViewModel missionCardViewModel =
+        MissionCardViewModel(widget.missionModel);
 
     String group = missionCardViewModel.group;
-    String title =  missionCardViewModel.title;
+    String title = missionCardViewModel.title;
     String descript = missionCardViewModel.descript;
-    DateTime deadline =  missionCardViewModel.deadline;
+    DateTime deadline = missionCardViewModel.deadline;
     List<String> contributorIds = missionCardViewModel.contributorIds;
     // MissionStage missionStage = missionCardViewModel.missionStage;
     // String stateName = missionCardViewModel.stateName;
@@ -89,17 +89,17 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
           //     color: color,
           //     stage: missionStage,
           //     stateName: stateName,),
-          EnlargeObjectTemplate(
+          CardViewTitle(
               title: '參與成員',
-              contextOfTitle: Contributors(
+              child: Contributors(
                 contributorIds: contributorIds,
               )),
           const SizedBox(
             height: 1,
           ),
-          EnlargeObjectTemplate(
+          CardViewTitle(
               title: '敘述',
-              contextOfTitle: Text(
+              child: Text(
                 descript,
                 style: const TextStyle(
                   fontSize: 15,
@@ -110,21 +110,20 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
           const SizedBox(
             height: 2,
           ),
-          const EnlargeObjectTemplate(
+          const CardViewTitle(
             title: '相關任務',
-            contextOfTitle: CollabMissons(),
+            child: CollabMissons(),
           ),
           const SizedBox(
             height: 2,
           ),
-          const EnlargeObjectTemplate(
-              title: '相關共筆', contextOfTitle: CollabNotes()),
+          const CardViewTitle(title: '相關共筆', child: CollabNotes()),
           const SizedBox(
             height: 2,
           ),
-          const EnlargeObjectTemplate(
+          const CardViewTitle(
             title: '相關會議',
-            contextOfTitle: CollabMeetings(),
+            child: CollabMeetings(),
           ),
         ],
       ),

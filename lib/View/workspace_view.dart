@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
@@ -47,7 +49,7 @@ class _BasePageState extends State<BasePage> {
     super.dispose();
   }
 
-  AppBar getAppBar(model, themeManager, context) {
+  AppBar getAppBar(WorkspaceDashboardViewModel model, themeManager, context) {
     return AppBar(
       title: MaterialButton(
         child: Padding(
@@ -59,15 +61,15 @@ class _BasePageState extends State<BasePage> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage: model.profile.photo != null
-                    ? Image.file(model.profile.photo!).image
+                backgroundImage: model.profileImage.isNotEmpty
+                    ? Image.file(File.fromRawPath(model.profileImage)).image
                     : Image.asset("assets/images/profile_male.png").image,
               ),
               const SizedBox(
                 width: 10,
               ),
               Text(
-                model.profile.nickname ?? "Unknown",
+                model.profile.nickname,
                 style: Theme.of(context)
                     .textTheme
                     .labelLarge!
