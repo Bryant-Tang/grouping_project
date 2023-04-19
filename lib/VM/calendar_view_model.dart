@@ -29,10 +29,7 @@ class CalendarViewModel extends ChangeNotifier {
     await getEvents();
     debugPrint('The date is: $date');
     eventsByDate = events.where((event) {
-      // TODO: Make time of a day for checking to be midnight or else it will only check show those events that goes the whole
-      return (event.startTime != null &&
-          event.endTime != null &&
-          (event.startTime.isBefore(
+      return ((event.startTime.isBefore(
                   DateTime(date.year, date.month, date.day, 23, 59, 59)) ||
               event.startTime.isAtSameMomentAs(
                   DateTime(date.year, date.month, date.day, 23, 59, 59))) &&
@@ -54,12 +51,13 @@ class CalendarViewModel extends ChangeNotifier {
   }
 
   /// get mission by date
+  /// - [missionsByDate] is the list of missions that will be shown on the calendar but in list of **MissionModel** format
+  /// - [eventAndMissionCards] is the list of missions and events that will be shown on the calendar but in list of **Widget** format
   Future<void> getMissinosByDate(DateTime date) async {
     await getMissions();
     debugPrint('The date is: $date');
     missionsByDate = missions.where((mission) {
-      return (mission.deadline != null &&
-          mission.deadline.isBefore(
+      return (mission.deadline.isBefore(
               DateTime(date.year, date.month, date.day, 23, 59, 59)) &&
           mission.deadline
               .isAfter(DateTime(date.year, date.month, date.day, 0, 0, 0)));
