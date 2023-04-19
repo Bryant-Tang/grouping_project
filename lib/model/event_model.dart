@@ -31,7 +31,7 @@ class EventModel extends BaseDataModel<EventModel> {
         this.notifications = [],
         this.color = AccountModel.defaultAccount.color,
         this.ownerName = AccountModel.defaultAccount.name,
-        super(id: null, databasePath: 'event', storageRequired: false);
+        super(id: 'default_event', databasePath: 'event', storageRequired: false);
 
   /// ## a data model for event
   /// * to upload/download, use `DataController`

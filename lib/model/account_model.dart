@@ -50,7 +50,7 @@ class AccountModel extends BaseDataModel<AccountModel>
         this.associateEntityId = [],
         this.associateEntityAccount = [],
         super(
-            id: 'account_default',
+            id: 'default_account',
             databasePath: 'account',
             storageRequired: true);
 

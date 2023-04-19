@@ -25,26 +25,6 @@ class DatabaseService {
         // ignore: unnecessary_this
         this._forUser = forUser;
 
-  Future<String> _getOwnerAccountId() async {
-    if (_forUser) {
-      var userAccountRelationSnap = await _firestore
-          .collection('user_account_relation')
-          .doc(_ownerUid)
-          .get();
-      if ((userAccountRelationSnap.data())?['account_id'] is String) {
-        return (userAccountRelationSnap.data())?['account_id'];
-      } else {
-        throw GroupingProjectException(
-            message: 'The owner account id is not exist in database, please '
-                'check if it is a user id. Then retry or contact developers.',
-            code: GroupingProjectExceptionCode.wrongParameter,
-            stackTrace: StackTrace.current);
-      }
-    } else {
-      return _ownerUid;
-    }
-  }
-
   Future<String> _setMapDataFirestore(
       {required Map<String, dynamic> data,
       required String collectionPath,
@@ -73,6 +53,42 @@ class DatabaseService {
     return await _firestore.collection(collectionPath).doc(dataId).get();
   }
 
+  Future<int> _getCountFirestore({required String collectionPath}) async {
+    return (await _firestore.collection(collectionPath).count().get()).count;
+  }
+
+  Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
+      _getDataFitMapFirestore(
+          {required String collectionPath,
+          required Map<String, dynamic> condition}) async {
+    var firstKey = condition.keys.first;
+    var query = _firestore
+        .collection(collectionPath)
+        .where(firstKey, isEqualTo: condition[firstKey]);
+    for (var key in condition.keys.skip(1)) {
+      query = query.where(key, isEqualTo: condition[key]);
+    }
+    return (await query.get()).docs;
+  }
+
+  Future<String> _getOwnerAccountId() async {
+    if (_forUser) {
+      var userAccountRelationSnap = await _getDocSnapFirestore(
+          collectionPath: 'user_account_relation', dataId: _ownerUid);
+      if ((userAccountRelationSnap.data())?['account_id'] is String) {
+        return (userAccountRelationSnap.data())?['account_id'];
+      } else {
+        throw GroupingProjectException(
+            message: 'The owner account id is not exist in database, please '
+                'check if it is a user id. Then retry or contact developers.',
+            code: GroupingProjectExceptionCode.wrongParameter,
+            stackTrace: StackTrace.current);
+      }
+    } else {
+      return _ownerUid;
+    }
+  }
+
   Future<void> _setUint8ListStorage(
       {required Uint8List processData, required String dataId}) async {
     await _storage.child(dataId).putData(processData);
@@ -90,11 +106,8 @@ class DatabaseService {
   }
 
   Future<int> _getAccountAmount() async {
-    return (await _firestore
-            .collection(AccountModel.defaultAccount.databasePath)
-            .count()
-            .get())
-        .count;
+    return _getCountFirestore(
+        collectionPath: AccountModel.defaultAccount.databasePath);
   }
 
   Future<String> _createAccount() async {
@@ -143,14 +156,12 @@ class DatabaseService {
   Future<AccountModel> getAccount() async {
     AccountModel account = await _getSingleAccount(
         ownerUid: _ownerUid, accountId: await _getOwnerAccountId());
-    print('get single account data');
     List<String> associateEntityId = account.associateEntityId;
     List<AccountModel> associateEntityAccount = [];
     for (var accountId in associateEntityId) {
       associateEntityAccount.add(await _getSingleAccount(accountId: accountId));
     }
     account.associateEntityAccount = associateEntityAccount;
-    print('get associate account data');
     return account;
   }
 
@@ -215,18 +226,14 @@ class DatabaseService {
 
   Future<List<EventModel>> _getSingleAccountAllEvent() async {
     String ownerAccountId = await _getOwnerAccountId();
-    print('get owner account id');
-    var eventSnapList = (await _firestore
-            .collection('event_account_relation')
-            .where('account_id', isEqualTo: ownerAccountId)
-            .get())
-        .docs;
+    var eventSnapList = await _getDataFitMapFirestore(
+        collectionPath: 'event_account_relation',
+        condition: {'account_id': ownerAccountId});
 
     List<String> eventIdList = [];
     for (var docSnap in eventSnapList) {
       eventIdList.add(docSnap.id);
     }
-    print('get all belong event id');
 
     List<EventModel> eventList = [];
 
@@ -240,26 +247,24 @@ class DatabaseService {
           ownerAccount: await _getSingleAccount(accountId: ownerAccountId));
       eventList.add(event);
     }
-    print('get all belong event data');
 
     return eventList;
   }
 
   Future<List<EventModel>> getAllEvent() async {
     List<EventModel> eventList = await _getSingleAccountAllEvent();
-    print('get single account all event');
     AccountModel ownerAccount = await getAccount();
-    print('get account');
     if (_forUser) {
       for (var associateGroupId in ownerAccount.associateEntityId) {
         eventList.addAll(
             await DatabaseService(ownerUid: associateGroupId, forUser: false)
                 .getAllEvent());
       }
-      print('get associate group event');
     }
     return eventList;
   }
+
+  
 
   /// ## download *'one'* data from database.
   // /// * retrun one object of the type you specify.
