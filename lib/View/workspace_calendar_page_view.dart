@@ -53,50 +53,53 @@ class _CalendarPageState extends State<CalendarPage> {
       eventAndMissionCards.add(Padding(
         padding: const EdgeInsets.only(top: 10),
         child: Card(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              eventAndMission[index].title,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            Text(
-              eventAndMission[index].introduction,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(fontWeight: FontWeight.w400),
-            ),
-            Row(
-              children: [
-                Text(
-                  eventAndMission[index].startTime != null
-                      ? DateFormat('yyyy-MM-dd hh:mm')
-                          .format(eventAndMission[index].startTime)
-                      : DateFormat('yyyy-MM-dd hh:mm')
-                          .format(eventAndMission[index].deadline),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
-                const Icon(Icons.arrow_right_alt_rounded),
-                Text(
-                  eventAndMission[index].endTime != null
-                      ? DateFormat('yyyy-MM-dd hh:mm')
-                          .format(eventAndMission[index].endTime)
-                      : eventAndMission[index].state,
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
-              ],
-            )
-          ],
+            child: Padding(
+          padding: const EdgeInsets.only(left: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                eventAndMission[index].title,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge!
+                    .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Text(
+                eventAndMission[index].introduction,
+                style: Theme.of(context)
+                    .textTheme
+                    .labelLarge!
+                    .copyWith(fontWeight: FontWeight.w400),
+              ),
+              Row(
+                children: [
+                  Text(
+                    eventAndMission[index].startTime != null
+                        ? DateFormat('yyyy-MM-dd hh:mm')
+                            .format(eventAndMission[index].startTime)
+                        : DateFormat('yyyy-MM-dd hh:mm')
+                            .format(eventAndMission[index].deadline),
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const Icon(Icons.arrow_right_alt_rounded),
+                  Text(
+                    eventAndMission[index].endTime != null
+                        ? DateFormat('yyyy-MM-dd hh:mm')
+                            .format(eventAndMission[index].endTime)
+                        : eventAndMission[index].state,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              )
+            ],
+          ),
         )),
       ));
     }
@@ -247,12 +250,33 @@ class _CalendarPageState extends State<CalendarPage> {
                         ),
                       ),
                       Expanded(
-                        child: ListView.builder(
-                          itemCount: eventAndMissionCards.length,
-                          itemBuilder: (context, index) {
-                            return eventAndMissionCards[index];
-                          },
-                        ),
+                        child: model.isMapping
+                            ? Center(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child: Text(
+                                          'Event and Mission Lists are still loading',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .labelLarge!
+                                              .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                        )),
+                                    const Padding(
+                                        padding: EdgeInsets.only(top: 30),
+                                        child: CircularProgressIndicator())
+                                  ],
+                                ),
+                              )
+                            : ListView.builder(
+                                itemCount: eventAndMissionCards.length,
+                                itemBuilder: (context, index) {
+                                  return eventAndMissionCards[index];
+                                },
+                              ),
                       ),
                       // ElevatedButton(
                       //     onPressed: () async {

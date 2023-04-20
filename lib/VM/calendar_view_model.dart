@@ -8,6 +8,8 @@ import 'package:grouping_project/service/service_lib.dart';
 class CalendarViewModel extends ChangeNotifier {
   final DatabaseService databaseService =
       DatabaseService(ownerUid: AuthService().getUid());
+  bool isLoaded = true;
+  bool isMapping = true;
 
   List<EventModel> events = [];
   List<MissionModel> missions = [];
@@ -19,18 +21,26 @@ class CalendarViewModel extends ChangeNotifier {
 
   /// This is the function used for get the initial data
   Future<void> initData() async {
-    events = await databaseService.getAllEvent();
-    missions = await databaseService.getAllMission();
+    isLoaded = true;
+    try {
+      events = await databaseService.getAllEvent();
+      missions = await databaseService.getAllMission();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    isLoaded = false;
   }
 
   Future<void> toMapAMonth({required int year, required int month}) async {
+    isMapping = true;
     eventsMap = {};
     for (int i = 0; i < daysPerMonth[month - 1]; i++) {
       DateTime date = DateTime(year, month, i + 1);
       await getEventsAndMissionsByDate(date);
     }
-    debugPrint('The map is: $eventsMap');
-    // debugPrint('The map is: $map');
+    // debugPrint('The map is: $eventsMap');
+    notifyListeners();
+    isMapping = false;
   }
 
   /// make get by date easier
