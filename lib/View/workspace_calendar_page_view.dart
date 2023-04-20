@@ -1,10 +1,6 @@
 import 'package:grouping_project/VM/calendar_view_model.dart';
-import 'package:grouping_project/VM/workspace_dashboard_view_model.dart';
-import 'package:grouping_project/model/data_model.dart';
-import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/service/service_lib.dart';
-import 'package:intl/intl.dart';
 
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +17,7 @@ class _CalendarPageState extends State<CalendarPage> {
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
   late List<Widget> eventAndMissionCards = [];
-  CalendarViewModel calendarViewModel = CalendarViewModel();
-  WorkspaceDashboardViewModel model = WorkspaceDashboardViewModel();
+  CalendarViewModel model = CalendarViewModel();
   final Map<CalendarFormat, String> _calendarFormat = {
     CalendarFormat.month: 'month'
   };
@@ -53,48 +48,80 @@ class _CalendarPageState extends State<CalendarPage> {
     for (int index = 0; index < eventAndMission.length; index++) {
       // debugPrint(index.toString());
       eventAndMissionCards.add(Padding(
-          padding: const EdgeInsets.only(top: 10),
-          child: Container(
-              decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                children: [
-                  Text(eventAndMission[index].title),
-                  Text(eventAndMission[index].startTime != null
+        padding: const EdgeInsets.only(top: 10),
+        child: Card(
+            child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              eventAndMission[index].title,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            Text(
+              eventAndMission[index].introduction,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(fontWeight: FontWeight.w400),
+            ),
+            Row(
+              children: [
+                Text(
+                  eventAndMission[index].startTime != null
                       ? DateFormat('yyyy-MM-dd hh:mm')
                           .format(eventAndMission[index].startTime)
                       : DateFormat('yyyy-MM-dd hh:mm')
-                          .format(eventAndMission[index].deadline)),
-                  Text(eventAndMission[index].endTime != null
+                          .format(eventAndMission[index].deadline),
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+                const Icon(Icons.arrow_right_alt_rounded),
+                Text(
+                  eventAndMission[index].endTime != null
                       ? DateFormat('yyyy-MM-dd hh:mm')
                           .format(eventAndMission[index].endTime)
-                      : eventAndMission[index].state),
-                ],
-              ))));
+                      : eventAndMission[index].state,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            )
+          ],
+        )),
+      ));
     }
     debugPrint(
         'length of all the cards are: ${eventAndMissionCards.length.toString()}');
+    debugPrint('card content: ${eventAndMissionCards.toString()}');
   }
 
   /// refresh the page
   Future<void> onRefresh() async {
-    calendarViewModel.init(model);
-    showCards(eventAndMission: calendarViewModel.eventsAndMissionsByDate);
+    model.initData();
+    showCards(eventAndMission: model.eventsAndMissionsByDate);
   }
 
   @override
   void initState() {
     super.initState();
     initializeDateFormatting();
-    calendarViewModel.init(model);
+    model.initData().then((value) {
+      showCards(eventAndMission: model.eventsAndMissionsByDate);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (context) => model,
-        child: Consumer<WorkspaceDashboardViewModel>(
+        child: Consumer<CalendarViewModel>(
           builder: (context, model, child) {
             return RefreshIndicator(
                 key: _refreshIndicatorKey,
@@ -118,6 +145,7 @@ class _CalendarPageState extends State<CalendarPage> {
                           availableCalendarFormats: _calendarFormat,
                           daysOfWeekHeight: 20,
                           // eventLoader: (day) {
+                          //   // model.getEventsAndMissionsByDate(day);
                           //   return model.eventsAndMissionsByDate;
                           // },
                           onHeaderTapped: (focusedDay) async {
@@ -182,11 +210,10 @@ class _CalendarPageState extends State<CalendarPage> {
                             setState(() {
                               _selectedDay = selectedDay;
                               _focusedDay = focusedDay;
-                              calendarViewModel.getEventsAndMissionsByDate(
-                                  selectedDay, model);
+                              model.getEventsAndMissionsByDate(selectedDay);
                               showCards(
-                                  eventAndMission: calendarViewModel
-                                      .eventsAndMissionsByDate);
+                                  eventAndMission:
+                                      model.eventsAndMissionsByDate);
                             });
                           },
                           onPageChanged: (focusedDay) {
@@ -196,38 +223,9 @@ class _CalendarPageState extends State<CalendarPage> {
                       ),
                       Expanded(
                         child: ListView.builder(
-                          itemCount:
-                              calendarViewModel.eventAndMissionCards.length,
+                          itemCount: eventAndMissionCards.length,
                           itemBuilder: (context, index) {
-                            showCards(
-                                    eventAndMission:
-                                        calendarViewModel.eventAndMissionCards)
-                                .then((value) {
-                              return eventAndMissionCards[index];
-                            });
-                            // Column(
-                            //   children: [
-                            //     ListTile(
-                            //       title: Text(
-                            //         model.eventsByDate[index].title.toString(),
-                            //         style: Theme.of(context)
-                            //             .textTheme
-                            //             .labelLarge!
-                            //             .copyWith(fontWeight: FontWeight.w500),
-                            //       ),
-                            //       subtitle: Text(
-                            //         model.eventsByDate[index].introduction
-                            //             .toString(),
-                            //         style: Theme.of(context)
-                            //             .textTheme
-                            //             .labelLarge!
-                            //             .copyWith(
-                            //                 fontWeight: FontWeight.normal),
-                            //       ),
-                            //     ),
-                            //     // Text(model.eventsByDate.length.toString())
-                            //   ],
-                            // );
+                            return eventAndMissionCards[index];
                           },
                         ),
                       ),
