@@ -93,9 +93,10 @@ class CalendarViewModel extends ChangeNotifier {
         height: 10,
       ));
 
-      eventAndMissionCards.add(EventCardViewTemplate(
-        eventModel: eventsByDate[index],
-      ));
+      // TODO: fix error
+      // eventAndMissionCards.add(EventCardViewTemplate(
+      //   eventModel: eventsByDate[index],
+      // ));
     }
   }
 }
