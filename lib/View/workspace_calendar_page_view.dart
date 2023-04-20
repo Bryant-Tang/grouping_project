@@ -1,4 +1,6 @@
 import 'package:grouping_project/VM/calendar_view_model.dart';
+import 'package:grouping_project/VM/view_model_lib.dart';
+import 'package:grouping_project/View/workspace_view.dart';
 
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -122,191 +124,201 @@ class _CalendarPageState extends State<CalendarPage> {
   void initState() {
     super.initState();
     initializeDateFormatting();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      model.initData().whenComplete(
-        () {
-          onRefresh();
-        },
-      );
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   model.initData().whenComplete(
+    //     () {
+    //       onRefresh();
+    //     },
+    //   );
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (context) => model,
-        child: Consumer<CalendarViewModel>(
-          builder: (context, model, child) {
-            return RefreshIndicator(
-                key: _refreshIndicatorKey,
-                onRefresh: onRefresh,
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10, right: 10),
-                        child: TableCalendar(
-                          // center Header Title,
-                          headerStyle: const HeaderStyle(
-                            formatButtonVisible: false,
-                            titleCentered: true,
-                          ),
-                          locale: 'zh_TW',
-                          firstDay: DateTime.utc(2010, 10, 16),
-                          lastDay: DateTime.utc(2030, 3, 14),
-                          focusedDay: _focusedDay,
-                          availableCalendarFormats: _calendarFormat,
-                          daysOfWeekHeight: 20,
-                          eventLoader: (day) {
-                            // model.getEventsAndMissionsByDate(day);
-                            return model.eventsMap[
-                                    DateTime(day.year, day.month, day.day)] ??
-                                [];
-                          },
-                          onHeaderTapped: (focusedDay) async {
-                            focusedDay = await selectDay() ?? focusedDay;
-                          },
-                          calendarStyle: CalendarStyle(
-                            // Decoration for today
-                            todayDecoration: BoxDecoration(
-                              border: Border.all(
+        child: Consumer<WorkspaceDashboardViewModel>(
+          builder: (context, value, child) => Consumer<CalendarViewModel>(
+            builder: (context, model, child) {
+              return RefreshIndicator(
+                  key: _refreshIndicatorKey,
+                  onRefresh: onRefresh,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10, right: 10),
+                          child: TableCalendar(
+                            onCalendarCreated: (pageController) {
+                              model
+                                  .initData(
+                                      eventsList: value.event,
+                                      missionsList: value.mission)
+                                  .whenComplete(() => onRefresh());
+                            },
+                            // center Header Title,
+                            headerStyle: const HeaderStyle(
+                              formatButtonVisible: false,
+                              titleCentered: true,
+                            ),
+                            locale: 'zh_TW',
+                            firstDay: DateTime.utc(2010, 10, 16),
+                            lastDay: DateTime.utc(2030, 3, 14),
+                            focusedDay: _focusedDay,
+                            availableCalendarFormats: _calendarFormat,
+                            daysOfWeekHeight: 20,
+                            eventLoader: (day) {
+                              // model.getEventsAndMissionsByDate(day);
+                              return model.eventsMap[
+                                      DateTime(day.year, day.month, day.day)] ??
+                                  [];
+                            },
+                            onHeaderTapped: (focusedDay) async {
+                              focusedDay = await selectDay() ?? focusedDay;
+                            },
+                            calendarStyle: CalendarStyle(
+                              // Decoration for today
+                              todayDecoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer,
+                                  width: 2,
+                                ),
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              // Decoration for weekend
+                              weekendDecoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              // Decoration for outside days
+                              outsideDecoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              // Decoration for default day
+                              defaultDecoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              // Decoration for selected day
+                              selectedDecoration: BoxDecoration(
                                 color: Theme.of(context)
                                     .colorScheme
                                     .primaryContainer,
-                                width: 2,
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(10),
+                              selectedTextStyle: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                              todayTextStyle: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge!
+                                  .copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
-                            // Decoration for weekend
-                            weekendDecoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            // Decoration for outside days
-                            outsideDecoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            // Decoration for default day
-                            defaultDecoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            // Decoration for selected day
-                            selectedDecoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            selectedTextStyle: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                            todayTextStyle: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          selectedDayPredicate: (day) {
-                            return isSameDay(_selectedDay, day);
-                          },
-                          onDaySelected: (selectedDay, focusedDay) async {
-                            if ((selectedDay.month != _focusedDay.month) ||
-                                (selectedDay.year != _focusedDay.year)) {
-                              await model
-                                  .getEventsAndMissionsByDate(selectedDay);
+                            selectedDayPredicate: (day) {
+                              return isSameDay(_selectedDay, day);
+                            },
+                            onDaySelected: (selectedDay, focusedDay) async {
+                              if ((selectedDay.month != _focusedDay.month) ||
+                                  (selectedDay.year != _focusedDay.year)) {
+                                await model
+                                    .getEventsAndMissionsByDate(selectedDay);
+                                await model.toMapAMonth(
+                                    year: selectedDay.year,
+                                    month: selectedDay.month);
+                              }
+                              _selectedDay = selectedDay;
+                              _focusedDay = focusedDay;
+                              await showCards(
+                                  eventAndMission: model.eventsMap[DateTime(
+                                          _focusedDay.year,
+                                          _focusedDay.month,
+                                          _focusedDay.day)] ??
+                                      []);
+                              setState(() {});
+                            },
+                            onPageChanged: (focusedDay) async {
+                              _focusedDay = focusedDay;
                               await model.toMapAMonth(
-                                  year: selectedDay.year,
-                                  month: selectedDay.month);
-                            }
-                            _selectedDay = selectedDay;
-                            _focusedDay = focusedDay;
-                            await showCards(
-                                eventAndMission: model.eventsMap[DateTime(
-                                        _focusedDay.year,
-                                        _focusedDay.month,
-                                        _focusedDay.day)] ??
-                                    []);
-                            setState(() {});
-                          },
-                          onPageChanged: (focusedDay) async {
-                            _focusedDay = focusedDay;
-                            await model.toMapAMonth(
-                                year: _focusedDay.year,
-                                month: _focusedDay.month);
-                          },
+                                  year: _focusedDay.year,
+                                  month: _focusedDay.month);
+                            },
+                          ),
                         ),
-                      ),
-                      Expanded(
-                        child: model.isMapping
-                            ? Center(
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                        padding: const EdgeInsets.only(top: 10),
-                                        child: Text(
-                                          'Event and Mission Lists are still loading',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelLarge!
-                                              .copyWith(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16),
-                                        )),
-                                    const Padding(
-                                        padding: EdgeInsets.only(top: 30),
-                                        child: CircularProgressIndicator())
-                                  ],
+                        Expanded(
+                          child: model.isMapping
+                              ? Center(
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 10),
+                                          child: Text(
+                                            'Event and Mission Lists are still loading',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelLarge!
+                                                .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16),
+                                          )),
+                                      const Padding(
+                                          padding: EdgeInsets.only(top: 30),
+                                          child: CircularProgressIndicator())
+                                    ],
+                                  ),
+                                )
+                              : ListView.builder(
+                                  itemCount: eventAndMissionCards.length,
+                                  itemBuilder: (context, index) {
+                                    return eventAndMissionCards[index];
+                                  },
                                 ),
-                              )
-                            : ListView.builder(
-                                itemCount: eventAndMissionCards.length,
-                                itemBuilder: (context, index) {
-                                  return eventAndMissionCards[index];
-                                },
-                              ),
-                      ),
-                      // ElevatedButton(
-                      //     onPressed: () async {
-                      //       // await DatabaseService(
-                      //       //         ownerUid: AuthService().getUid())
-                      //       //     .setEvent(
-                      //       //         event: EventModel(
-                      //       //   title: 'test event title',
-                      //       //   startTime: DateTime.now(),
-                      //       //   endTime:
-                      //       //       DateTime.now().add(const Duration(days: 7)),
-                      //       //   introduction: 'test event introduction',
-                      //       // ));
-                      //       await DatabaseService(
-                      //               ownerUid: AuthService().getUid())
-                      //           .setMission(
-                      //               mission: MissionModel(
-                      //                   title: 'test mission title',
-                      //                   deadline: DateTime.now()
-                      //                       .add(const Duration(days: 7)),
-                      //                   state: MissionStateModel
-                      //                       .defaultProgressState,
-                      //                   introduction:
-                      //                       'test mission introduction'));
-                      //     },
-                      //     child: const Text('Test add'))
-                    ],
-                  ),
-                ));
-          },
+                        ),
+                        // ElevatedButton(
+                        //     onPressed: () async {
+                        //       // await DatabaseService(
+                        //       //         ownerUid: AuthService().getUid())
+                        //       //     .setEvent(
+                        //       //         event: EventModel(
+                        //       //   title: 'test event title',
+                        //       //   startTime: DateTime.now(),
+                        //       //   endTime:
+                        //       //       DateTime.now().add(const Duration(days: 7)),
+                        //       //   introduction: 'test event introduction',
+                        //       // ));
+                        //       await DatabaseService(
+                        //               ownerUid: AuthService().getUid())
+                        //           .setMission(
+                        //               mission: MissionModel(
+                        //                   title: 'test mission title',
+                        //                   deadline: DateTime.now()
+                        //                       .add(const Duration(days: 7)),
+                        //                   state: MissionStateModel
+                        //                       .defaultProgressState,
+                        //                   introduction:
+                        //                       'test mission introduction'));
+                        //     },
+                        //     child: const Text('Test add'))
+                      ],
+                    ),
+                  ));
+            },
+          ),
         ));
   }
 }

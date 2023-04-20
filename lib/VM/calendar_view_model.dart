@@ -20,11 +20,14 @@ class CalendarViewModel extends ChangeNotifier {
   List<int> daysPerMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
   /// This is the function used for get the initial data
-  Future<void> initData() async {
+  Future<void> initData(
+      {required List<EventModel> eventsList,
+      required List<MissionModel> missionsList}) async {
     isLoaded = true;
+    // debugPrint('Init data: $events, $missions');
     try {
-      events = await databaseService.getAllEvent();
-      missions = await databaseService.getAllMission();
+      events = eventsList;
+      missions = missionsList;
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -39,8 +42,9 @@ class CalendarViewModel extends ChangeNotifier {
       await getEventsAndMissionsByDate(date);
     }
     // debugPrint('The map is: $eventsMap');
-    notifyListeners();
     isMapping = false;
+    // debugPrint('The map is: $eventsMap');
+    notifyListeners();
   }
 
   /// make get by date easier
