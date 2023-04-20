@@ -47,7 +47,7 @@ class _CalendarPageState extends State<CalendarPage> {
   /// This is the function used for showing the event and mission cards
   Future<void> showCards({required List eventAndMission}) async {
     eventAndMissionCards = [];
-    debugPrint(eventAndMission.toString());
+    // debugPrint(eventAndMission.toString());
     for (int index = 0; index < eventAndMission.length; index++) {
       // debugPrint(index.toString());
       eventAndMissionCards.add(Padding(
@@ -103,9 +103,9 @@ class _CalendarPageState extends State<CalendarPage> {
         )),
       ));
     }
-    debugPrint(
-        'length of all the cards are: ${eventAndMissionCards.length.toString()}');
-    debugPrint('card content: ${eventAndMissionCards.toString()}');
+    // debugPrint(
+    //     'length of all the cards are: ${eventAndMissionCards.length.toString()}');
+    // debugPrint('card content: ${eventAndMissionCards.toString()}');
   }
 
   /// refresh the page
