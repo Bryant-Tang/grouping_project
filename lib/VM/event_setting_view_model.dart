@@ -8,7 +8,7 @@ import 'view_model_lib.dart';
 class EventSettingViewModel extends ChangeNotifier {
   EventModel eventData = EventModel();
   AccountModel profile = AccountModel();
-  EventSettingMode settingMode = EventSettingMode.create;
+  SettingMode settingMode = SettingMode.create;
   WorkspaceMode workspaceMode = WorkspaceMode.personal;
 
   String get introduction => eventData.introduction;
@@ -18,10 +18,20 @@ class EventSettingViewModel extends ChangeNotifier {
   List<AccountModel> contributorProfile = [];
   List<AccountModel> get contributors => contributorProfile;
   List<AccountModel> get groupMember => profile.associateEntityAccount;
+  Color get color => Color(eventData.color);
 
   set setModel(EventModel newModel) {
     eventData = newModel;
     notifyListeners();
+  }
+
+  void updateTitle(String newTitle) {
+    eventData.title = newTitle;
+    notifyListeners();
+  }
+
+  String? titleValidator() {
+    return title.isEmpty ? '不可為空' : null;
   }
 
   void updateIntroduction(String newIntro) {
@@ -31,11 +41,6 @@ class EventSettingViewModel extends ChangeNotifier {
 
   String? introductionValidator() {
     return introduction.isEmpty ? '不可為空' : null;
-  }
-
-  void updateTitle(String newTitle) {
-    eventData.title = newTitle;
-    notifyListeners();
   }
 
   void updateStartTime(DateTime newStart) {
@@ -59,14 +64,14 @@ class EventSettingViewModel extends ChangeNotifier {
   }
 
   Future<void> onSave() async {
-    if (settingMode == EventSettingMode.create) {
+    if (settingMode == SettingMode.create) {
       // Create Event
-    } else if (settingMode == EventSettingMode.edit) {
+    } else if (settingMode == SettingMode.edit) {
       // Edit Event
     } else {}
   }
 
-  set setSettingMode(EventSettingMode mode) {
+  set setSettingMode(SettingMode mode) {
     settingMode = mode;
     notifyListeners();
   }
@@ -80,29 +85,4 @@ class EventSettingViewModel extends ChangeNotifier {
     profile = newProfile;
     notifyListeners();
   }
-
-  // Future<void> fetchData() async {
-    // get data from firebase
-    // if (workspaceMode == WorkspaceMode.personal) {
-    //   contributorProfile.add(profile);
-    // } else {
-    //   // TODO: implement group data fetch   
-    //   for(String id in eventData.contributorIds){
-    //     contributorProfile.add(await DatabaseService(ownerUid: id).getAccount());
-    //   }
-    // }
-  // }
-
-  // DateTime get startTime => _startTime;
-  // DateTime get endTime => _endTime;
-
-  // set startTime(DateTime newStart) {
-  //   _startTime = newStart;
-  //   notifyListeners();
-  // }
-
-  // set endTime(DateTime newEnd) {
-  //   _endTime = newEnd;
-  //   notifyListeners();
-  // }
 }

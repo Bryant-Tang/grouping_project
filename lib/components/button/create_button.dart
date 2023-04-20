@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/View/create_sheet_view.dart';
 import 'package:grouping_project/components/create/create_lib.dart';
 
 class CreateButton extends StatefulWidget {
@@ -14,7 +15,7 @@ class _CreateButtonState extends State<CreateButton> {
     AddTopic(), //not yet
     CreateEvent(),
     AddNote(), //not yet
-    AddMission()
+    CreateMission()
   ];
   @override
   Widget build(BuildContext context) {

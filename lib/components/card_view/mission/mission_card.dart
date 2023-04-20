@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/components/card_view/mission/mission_information_enlarge.dart';
+import 'package:grouping_project/components/card_view/mission/mission_information_shrink.dart';
 
 import 'package:grouping_project/components/card_view/mission_information.dart';
 import 'package:grouping_project/model/model_lib.dart';

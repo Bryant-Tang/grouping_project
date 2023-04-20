@@ -1,69 +1,69 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:grouping_project/VM/event_setting_view_model.dart';
-import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
+import 'package:grouping_project/VM/state.dart';
 import 'package:grouping_project/View/workspace_view.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:day_night_time_picker/day_night_time_picker.dart';
-// import 'package:grouping_project/components/card_view/event_information.dart';
-import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
-// import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/model/model_lib.dart';
+// import 'package:grouping_project/components/card_view/mission_information.dart';
 // import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
-// import 'package:grouping_project/VM/event_card_view_model.dart';
+// import 'package:grouping_project/VM/mission_card_view_model.dart';
+import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
+import 'package:provider/provider.dart';
+
+
 
 /*
-* this file is used to create event or edit existed event 
+* this file is used to create mission or edit existed mission 
 */
 
-class EventSettingPageView extends StatefulWidget {
-  const EventSettingPageView({super.key, required this.model});
-  final EventSettingViewModel model;
-  // pass view model instead of model
-  factory EventSettingPageView.create() =>
-      EventSettingPageView(model: EventSettingViewModel());
-  // factory EventSettingPageView.edit({required EventModel eventModel}) =>
-  //   EventSettingPageView(model: EventModel());
+class MissionSettingPageView extends StatefulWidget {
+  const MissionSettingPageView({super.key, required this.model});
+
+  final MissionSettingViewModel model;
+
+  factory MissionSettingPageView.create() =>
+      MissionSettingPageView(model: MissionSettingViewModel());
 
   @override
-  State<EventSettingPageView> createState() => _EventSettingPageViewState();
+  State<MissionSettingPageView> createState() => _MissionSettingPageViewState();
 }
 
-class _EventSettingPageViewState extends State<EventSettingPageView> {
+class _MissionSettingPageViewState extends State<MissionSettingPageView> {
   // late TextEditingController titleController;
   // late TextEditingController descriptController;
   // late String group;
-  // late DateTime startTime, endTime;
+  // late DateTime deadline;
   // late Color color;
   // late List<String> contributorIds;
-  // late EventCardViewModel eventCardViewModel;
+  // late MissionStage missionStage;
+  // late String stateName;
+
+  // late MissionCardViewModel missionCardViewModel;
 
   // @override
   // void initState() {
   //   super.initState();
-  //   if (widget.eventModel == null) {
+  //   if (widget.missionModel == null) {
   //     titleController = TextEditingController(text: '');
   //     descriptController = TextEditingController(text: '');
   //     // TODO: check is group or personal
   //     group = 'personal';
-  //     startTime = DateTime.now();
-  //     endTime = DateTime.now().add(const Duration(days: 1));
+  //     deadline = DateTime.now().add(const Duration(days: 1));
   //     color = const Color(0xFFFCBF49);
   //     contributorIds = [];
+  //     missionStage = MissionStage.progress;
+  //     stateName = 'progress';
   //   } else {
-  //     eventCardViewModel = EventCardViewModel(widget.eventModel!);
+  //     missionCardViewModel = MissionCardViewModel(widget.missionModel!);
 
-  //     titleController = TextEditingController(text: eventCardViewModel.title);
+  //     titleController = TextEditingController(text: missionCardViewModel.title);
   //     descriptController =
-  //         TextEditingController(text: eventCardViewModel.descript);
-  //     group = eventCardViewModel.group;
-  //     startTime = eventCardViewModel.startTime;
-  //     endTime = eventCardViewModel.endTime;
-  //     color = eventCardViewModel.color;
-  //     contributorIds = eventCardViewModel.contributorIds;
+  //         TextEditingController(text: missionCardViewModel.descript);
+  //     group = missionCardViewModel.group;
+  //     deadline = missionCardViewModel.deadline;
+  //     color = missionCardViewModel.color;
+  //     contributorIds = missionCardViewModel.contributorIds;
+  //     // missionStage = missionCardViewModel.missionStage;
+  //     // stateName = missionCardViewModel.stateName;
   //   }
   // }
 
@@ -74,18 +74,21 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
   //   descriptController.dispose();
   // }
 
-  // TODO: move to viewModel without creating redundent eventModel
-  void createEvent(EventSettingViewModel model) async {
-    // TODO: Implement model create event method
-    // model.creatEvent();
-    Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<EventSettingViewModel>.value(
+    // Future<void> createMission() async {
+    //   await DataController().upload(
+    //       uploadData: MissionModel(
+    //     title: titleController.text,
+    //     introduction: descriptController.text,
+    //     deadline: deadline,
+    //     contributorIds: contributorIds
+    //   ));
+    // }
+
+    return ChangeNotifierProvider<MissionSettingViewModel>.value(
       value: widget.model,
-      child: Consumer<EventSettingViewModel>(
+      child: Consumer<MissionSettingViewModel>(
         builder: (context, model, child) => Scaffold(
           body: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
@@ -101,24 +104,25 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                         },
                         icon: const Icon(Icons.cancel)),
                     Row(
-                      children:[
-                        model.settingMode == SettingMode.edit 
-                        ? IconButton(
-                            onPressed: () {
-                              // debugPrint('remove');
-                              // model.removeEvent();
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const BasePage()),
-                                  (route) => false);
-                            },
-                            icon: const Icon(Icons.delete))
-                        : const SizedBox(),
+                      children: [
+                        model.settingMode == SettingMode.edit
+                            ? IconButton(
+                                onPressed: () {
+                                  // debugPrint('remove');
+                                  // model.removeEvent();
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => const BasePage()),
+                                      (route) => false);
+                                },
+                                icon: const Icon(Icons.delete))
+                            : const SizedBox(),
                         IconButton(
                             onPressed: () {
                               // model.upload();
-                              Navigator.pushAndRemoveUntil(context,
+                              Navigator.pushAndRemoveUntil(
+                                  context,
                                   MaterialPageRoute(
                                       builder: (_) => const BasePage()),
                                   (route) => false);
@@ -128,23 +132,26 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                     )
                   ],
                 ),
-                Divider(
+                const Divider(
                   thickness: 1.5,
-                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  color: Color.fromARGB(255, 170, 170, 170),
                 ),
-                // TitleDateOfEvent(
-                //     titleController: titleController,
-                //     startTime: startTime,
-                //     endTime: endTime,
-                //     group: group,
-                //     color: color,
-                //     callback: (p0, p1) {
-                //       startTime = p0;
-                //       endTime = p1;
-                //     }),
-                CardViewTitle(
-                    title: '參與成員',
-                    child: ContributorList()),
+                // TitleDateOfMission(
+                //   titleController: titleController,
+                //   deadline: deadline,
+                //   group: group,
+                //   color: color,
+                //   stage: missionStage,
+                //   stateName: stateName,
+                //   callback: (p0) {
+                //     deadline = p0;
+                //   },
+                //   cbStage: (stage, stateName) {
+                //     missionStage = stage;
+                //     this.stateName = stateName;
+                //   },
+                // ),
+                CardViewTitle(title: '參與成員', child: Container()),
                 const SizedBox(
                   height: 1,
                 ),
@@ -155,24 +162,23 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                 const SizedBox(
                   height: 2,
                 ),
-                // TODO: connect event and mission
-                const CardViewTitle(
+                // TODO: connect mission and mission
+                CardViewTitle(
                   title: '相關任務',
-                  child: CollabMissons(),
+                  child: Container(),
                 ),
                 const SizedBox(
                   height: 2,
                 ),
-                // TODO: connect note and event
-                const CardViewTitle(
-                    title: '相關共筆', child: CollabNotes()),
+                // TODO: connect note and mission
+                CardViewTitle(title: '相關共筆', child: Container()),
                 const SizedBox(
                   height: 2,
                 ),
-                // TODO: connect event and meeting
-                const CardViewTitle(
+                // TODO: connect mission and meeting
+                CardViewTitle(
                   title: '相關會議',
-                  child: CollabMeetings(),
+                  child: Container(),
                 ),
               ],
             ),
@@ -180,162 +186,6 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
         ),
       ),
     );
-  }
-}
-
-class TitleDateOfEvent extends StatefulWidget {
-  const TitleDateOfEvent({super.key,});
-
-  @override
-  State<TitleDateOfEvent> createState() => TitleDateOfEventState();
-}
-
-class TitleDateOfEventState extends State<TitleDateOfEvent> {
-
-  @override
-  Widget build(BuildContext context) {
-    void timePickerDialog(DateTime show, int state) {
-      // Time tmp = Time(hour: 0, minute: 0);
-      // Navigator.of(context).push(
-      //   showPicker(
-      //     value: tmp,
-      //     onChange: (time) {
-      //       if (state == 0) {
-      //         start = vm.startTime = DateTime(
-      //             show.year, show.month, show.day, time.hour, time.minute);
-      //         // debugPrint(start.toString());
-      //       } else if (state == 1) {
-      //         end = vm.endTime = DateTime(
-      //             show.year, show.month, show.day, time.hour, time.minute);
-      //       }
-      //       widget.callback(start, end);
-      //       setState(() {});
-      //     },
-      //   ),
-      // );
-    }
-
-    void startConfirmChange(Object? value) {
-      DateTime tmp = DateTime(0);
-      if (value is DateTime) {
-        tmp = value;
-      }
-      Navigator.pop(context);
-      timePickerDialog(tmp, 0);
-    }
-
-    void endConfirmChange(Object? value) {
-      DateTime tmp = DateTime(0);
-      if (value is DateTime) {
-        tmp = value;
-      }
-      Navigator.pop(context);
-      timePickerDialog(tmp, 1);
-    }
-
-    void cancelChange() {
-      setState(() {
-        Navigator.pop(context);
-      });
-    }
-
-    void selectStartTime() {
-      showDialog(
-          context: context,
-          builder: ((BuildContext context) {
-            return AlertDialog(
-              title: const Text('選擇時間'),
-              content: SizedBox(
-                  width: 200,
-                  height: 400,
-                  child: SfDateRangePicker(
-                    // onSelectionChanged: _onSelected,
-                    onSubmit: startConfirmChange,
-                    onCancel: cancelChange,
-                    initialSelectedRange:
-                        PickerDateRange(DateTime.now(), DateTime.now()),
-                    showActionButtons: true,
-                  )),
-            );
-          }));
-    }
-
-    void selectEndTime() {
-      showDialog(
-          context: context,
-          builder: ((BuildContext context) {
-            return AlertDialog(
-              title: const Text('選擇時間'),
-              content: SizedBox(
-                  width: 200,
-                  height: 400,
-                  child: SfDateRangePicker(
-                    // onSelectionChanged: _onSelected,
-                    onSubmit: endConfirmChange,
-                    onCancel: cancelChange,
-                    initialSelectedRange:
-                        PickerDateRange(DateTime.now(), DateTime.now()),
-                    showActionButtons: true,
-                  )),
-            );
-          }));
-    }
-
-    DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
-
-    return Consumer<EventSettingViewModel>(builder:(context, model, child) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // AntiLabel(group: widget.group, color: widget.color),
-        // Text(
-        //   title,
-        //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        // ),
-        TextField(
-          onChanged: model.updateTitle,
-          decoration: InputDecoration(
-              hintText: '輸入標題',
-              errorText: model.titleValidator(),
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: 2),
-              border: const OutlineInputBorder()),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        Row(
-          children: [
-            TextButton(
-              onPressed: selectStartTime,
-              child: Text(
-                parseDate.format(model.startTime),
-                // "sss",
-                style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
-              ),
-            ),
-            Icon(
-              Icons.arrow_right_alt,
-              size: 20,
-              // color will be a variable
-              color: model.color,
-            ),
-            TextButton(
-              onPressed: selectEndTime,
-              child: Text(
-                parseDate.format(model.endTime),
-                // "sss",
-                style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    // TODO: text color
-                    color: Colors.black),
-              ),
-            )
-          ],
-        ),
-      ],
-    ));
   }
 }
 
@@ -369,7 +219,7 @@ class IntroductionBlock extends StatefulWidget {
 class _IntroductionBlockState extends State<IntroductionBlock> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<EventSettingViewModel>(
+    return Consumer<MissionSettingViewModel>(
       builder: (context, model, child) => TextField(
         keyboardType: TextInputType.multiline,
         maxLines: 10,
@@ -840,7 +690,7 @@ class _ContributorState extends State<ContributorList> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<EventSettingViewModel>(
+    return Consumer<MissionSettingViewModel>(
       builder: (context, model, child) => Row(
         children: model.contributors.map(
           (AccountModel profile) => RawChip(
@@ -848,7 +698,7 @@ class _ContributorState extends State<ContributorList> {
                   avatar: CircleAvatar(
                     child: profile.photo.isEmpty
                       ? Text(profile.name.substring(0, 1))
-                      : Image.file(File.fromRawPath(profile.photo))
+                      : Image.memory(profile.photo)
                   ),
                   selected: true,
                   onSelected: (value) {
