@@ -114,8 +114,8 @@ class _CreateMissionState extends State<CreateMission> {
   }
 }
 
-class AddTopic extends StatelessWidget {
-  const AddTopic({super.key});
+class CreateTopic extends StatelessWidget {
+  const CreateTopic({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -159,8 +159,8 @@ class AddTopic extends StatelessWidget {
   }
 }
 
-class AddNote extends StatelessWidget {
-  const AddNote({super.key});
+class CreateNote extends StatelessWidget {
+  const CreateNote({super.key});
 
   @override
   Widget build(BuildContext context) {
