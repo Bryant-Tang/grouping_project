@@ -8,19 +8,29 @@ import 'package:grouping_project/service/service_lib.dart';
 class CalendarViewModel extends ChangeNotifier {
   final DatabaseService databaseService =
       DatabaseService(ownerUid: AuthService().getUid());
+
   List<EventModel> events = [];
   List<MissionModel> missions = [];
-  List<EventModel> eventsByDate = [];
-  List<MissionModel> missionsByDate = [];
-  List<BaseDataModel> eventsAndMissionsByDate = [];
+
+  // List<BaseDataModel> eventsAndMissionsByDate = [];
+  Map<DateTime, List> eventsMap = {};
+
+  List<int> daysPerMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
   /// This is the function used for get the initial data
   Future<void> initData() async {
     events = await databaseService.getAllEvent();
     missions = await databaseService.getAllMission();
+  }
 
-    // debugPrint('${model.events} ${model.missions}');
-    await getEventsAndMissionsByDate(DateTime.now());
+  Future<void> toMapAMonth({required int year, required int month}) async {
+    eventsMap = {};
+    for (int i = 0; i < daysPerMonth[month - 1]; i++) {
+      DateTime date = DateTime(year, month, i + 1);
+      await getEventsAndMissionsByDate(date);
+    }
+    debugPrint('The map is: $eventsMap');
+    // debugPrint('The map is: $map');
   }
 
   /// make get by date easier
@@ -28,14 +38,16 @@ class CalendarViewModel extends ChangeNotifier {
   /// - [eventsAndMissionsByDate] is the list of events and missions that will be shown on the calendar but in list of **BaseDataModel** format
   /// - [eventAndMissionCards] is the list of events and missions that will be shown on the calendar but in list of **Widget** format
   Future<void> getEventsAndMissionsByDate(DateTime date) async {
+    List eventsAndMissionsByDate = [];
     notifyListeners();
-    getEventsByDate(date);
-    getMissinosByDate(date);
+    List<EventModel> eventsByDate = await getEventsByDate(date);
+    List<MissionModel> missionsByDate = await getMissinosByDate(date);
     // merge two list
-    eventsAndMissionsByDate = [];
     eventsAndMissionsByDate.addAll(missionsByDate);
     eventsAndMissionsByDate.addAll(eventsByDate);
-    debugPrint('Total thing at the date: $eventsAndMissionsByDate');
+    eventsMap[DateTime(date.year, date.month, date.day)] =
+        eventsAndMissionsByDate;
+    // debugPrint('Total thing at the date: $eventsAndMissionsByDate');
     // showCards();
     notifyListeners();
   }
@@ -44,8 +56,9 @@ class CalendarViewModel extends ChangeNotifier {
   ///
   /// - [eventsbyDate] is the list of events that will be shown on the calendar but in list of **EventModel** format
   /// - [eventCards] is the list of events that will be shown on the calendar but in list of **Widget** format
-  Future<void> getEventsByDate(DateTime date) async {
+  Future<List<EventModel>> getEventsByDate(DateTime date) async {
     // debugPrint('The date is: $date');
+    List<EventModel> eventsByDate = [];
     notifyListeners();
     eventsByDate = events.where((event) {
       return ((event.startTime.isBefore(
@@ -60,14 +73,15 @@ class CalendarViewModel extends ChangeNotifier {
     // debugPrint('The events are: $events');
     // debugPrint('The events by date are: $eventsByDate');
     // showCards();
-    notifyListeners();
+    return eventsByDate;
   }
 
   /// get mission by date
   /// - [missionsByDate] is the list of missions that will be shown on the calendar but in list of **MissionModel** format
   /// - [eventAndMissionCards] is the list of missions and events that will be shown on the calendar but in list of **Widget** format
-  Future<void> getMissinosByDate(DateTime date) async {
+  Future<List<MissionModel>> getMissinosByDate(DateTime date) async {
     // debugPrint('The date is: $date');
+    List<MissionModel> missionsByDate = [];
     notifyListeners();
     missionsByDate = missions.where((mission) {
       return (mission.deadline.isBefore(
@@ -78,6 +92,6 @@ class CalendarViewModel extends ChangeNotifier {
     // debugPrint('The missions are: $missions');
     // debugPrint('The missions by date are: $missionsByDate');
     // showCards();
-    notifyListeners();
+    return missionsByDate;
   }
 }
