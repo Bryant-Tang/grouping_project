@@ -1,5 +1,10 @@
 import 'package:grouping_project/VM/calendar_view_model.dart';
 import 'package:grouping_project/VM/workspace_dashboard_view_model.dart';
+import 'package:grouping_project/model/data_model.dart';
+import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/service/service_lib.dart';
+import 'package:intl/intl.dart';
+
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +20,7 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
+  late List<Widget> eventAndMissionCards = [];
   CalendarViewModel calendarViewModel = CalendarViewModel();
   WorkspaceDashboardViewModel model = WorkspaceDashboardViewModel();
   final Map<CalendarFormat, String> _calendarFormat = {
@@ -41,6 +47,42 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
+  /// This is the function used for showing the event and mission cards
+  Future<void> showCards({required List eventAndMission}) async {
+    eventAndMissionCards = [];
+    for (int index = 0; index < eventAndMission.length; index++) {
+      // debugPrint(index.toString());
+      eventAndMissionCards.add(Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Container(
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(10)),
+              child: Row(
+                children: [
+                  Text(eventAndMission[index].title),
+                  Text(eventAndMission[index].startTime != null
+                      ? DateFormat('yyyy-MM-dd hh:mm')
+                          .format(eventAndMission[index].startTime)
+                      : DateFormat('yyyy-MM-dd hh:mm')
+                          .format(eventAndMission[index].deadline)),
+                  Text(eventAndMission[index].endTime != null
+                      ? DateFormat('yyyy-MM-dd hh:mm')
+                          .format(eventAndMission[index].endTime)
+                      : eventAndMission[index].state),
+                ],
+              ))));
+    }
+    debugPrint(
+        'length of all the cards are: ${eventAndMissionCards.length.toString()}');
+  }
+
+  /// refresh the page
+  Future<void> onRefresh() async {
+    calendarViewModel.init(model);
+    showCards(eventAndMission: calendarViewModel.eventsAndMissionsByDate);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -56,8 +98,7 @@ class _CalendarPageState extends State<CalendarPage> {
           builder: (context, model, child) {
             return RefreshIndicator(
                 key: _refreshIndicatorKey,
-                onRefresh: () => calendarViewModel.getEventsAndMissionsByDate(
-                    DateTime.now(), model),
+                onRefresh: onRefresh,
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Column(
@@ -143,6 +184,9 @@ class _CalendarPageState extends State<CalendarPage> {
                               _focusedDay = focusedDay;
                               calendarViewModel.getEventsAndMissionsByDate(
                                   selectedDay, model);
+                              showCards(
+                                  eventAndMission: calendarViewModel
+                                      .eventsAndMissionsByDate);
                             });
                           },
                           onPageChanged: (focusedDay) {
@@ -155,8 +199,12 @@ class _CalendarPageState extends State<CalendarPage> {
                           itemCount:
                               calendarViewModel.eventAndMissionCards.length,
                           itemBuilder: (context, index) {
-                            return calendarViewModel
-                                .eventAndMissionCards[index];
+                            showCards(
+                                    eventAndMission:
+                                        calendarViewModel.eventAndMissionCards)
+                                .then((value) {
+                              return eventAndMissionCards[index];
+                            });
                             // Column(
                             //   children: [
                             //     ListTile(
@@ -183,6 +231,31 @@ class _CalendarPageState extends State<CalendarPage> {
                           },
                         ),
                       ),
+                      // ElevatedButton(
+                      //     onPressed: () async {
+                      //       // await DatabaseService(
+                      //       //         ownerUid: AuthService().getUid())
+                      //       //     .setEvent(
+                      //       //         event: EventModel(
+                      //       //   title: 'test event title',
+                      //       //   startTime: DateTime.now(),
+                      //       //   endTime:
+                      //       //       DateTime.now().add(const Duration(days: 7)),
+                      //       //   introduction: 'test event introduction',
+                      //       // ));
+                      //       await DatabaseService(
+                      //               ownerUid: AuthService().getUid())
+                      //           .setMission(
+                      //               mission: MissionModel(
+                      //                   title: 'test mission title',
+                      //                   deadline: DateTime.now()
+                      //                       .add(const Duration(days: 7)),
+                      //                   state: MissionStateModel
+                      //                       .defaultProgressState,
+                      //                   introduction:
+                      //                       'test mission introduction'));
+                      //     },
+                      //     child: const Text('Test add'))
                     ],
                   ),
                 ));

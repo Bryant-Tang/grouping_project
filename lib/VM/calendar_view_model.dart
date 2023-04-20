@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/workspace_dashboard_view_model.dart';
-import 'package:grouping_project/components/card_view/mission/mission_card_view.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
@@ -17,7 +15,7 @@ class CalendarViewModel extends ChangeNotifier {
 
   /// This is the function used for get the initial data
   void init(WorkspaceDashboardViewModel model) {
-    WidgetsBinding.instance.addPostFrameCallback((_) => model.getAllData());
+    model.getAllData();
     getEventsAndMissionsByDate(DateTime.now(), model);
   }
 
@@ -33,7 +31,7 @@ class CalendarViewModel extends ChangeNotifier {
     eventsAndMissionsByDate = [];
     eventsAndMissionsByDate.addAll(missionsByDate);
     eventsAndMissionsByDate.addAll(eventsByDate);
-    showCards();
+    // showCards();
     notifyListeners();
   }
 
@@ -73,29 +71,5 @@ class CalendarViewModel extends ChangeNotifier {
     debugPrint('The missions are: $missionsByDate');
     // showCards();
     notifyListeners();
-  }
-
-  /// This is the function used for showing the event and mission cards
-  Future<void> showCards() async {
-    eventAndMissionCards = [];
-    for (int index = 0; index < missionsByDate.length; index++) {
-      // debugPrint(index.toString());
-      eventAndMissionCards.add(const SizedBox(
-        height: 10,
-      ));
-      eventAndMissionCards.add(MissionCardViewTemplate(
-        missionModel: missionsByDate[index],
-      ));
-    }
-    for (int index = 0; index < eventsByDate.length; index++) {
-      // debugPrint(index.toString());
-      eventAndMissionCards.add(const SizedBox(
-        height: 10,
-      ));
-
-      eventAndMissionCards.add(EventCardViewTemplate(
-        eventModel: eventsByDate[index],
-      ));
-    }
   }
 }
