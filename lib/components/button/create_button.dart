@@ -12,7 +12,7 @@ class _CreateButtonState extends State<CreateButton> {
   // TODO: make every widget to stateful widget
   final List<Widget> createsPng = const [
     AddTopic(), //not yet
-    AddEvent(),
+    CreateEvent(),
     AddNote(), //not yet
     AddMission()
   ];

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/view_model_lib.dart';
 import 'dart:math';
+
+import 'package:provider/provider.dart';
 
 class CustomLabel extends StatelessWidget {
   const CustomLabel(
@@ -58,83 +61,85 @@ class HeadShot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        width: MediaQuery.of(context).size.width - 30,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    Text(
-                      name.isEmpty ? 'unknown' : name,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 1,
-                    ),
-                    Text(
-                      nickName.isEmpty ? '(No nickname)' : 'a.k.a $nickName',
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-                Stack(
-                  children: [
-                    ClipPath(
-                      clipper: Hexagon(),
-                      child: Container(
-                        width: 153,
-                        height: 76.5 * sqrt(3),
-                        // color: Colors.black,
+    return Consumer<WorkspaceDashboardViewModel>(
+      builder: (context, model, child) => SizedBox(
+          width: MediaQuery.of(context).size.width - 30,
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        name.isEmpty ? 'unknown' : name,
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(
+                        height: 1,
+                      ),
+                      Text(
+                        nickName.isEmpty ? '(No nickname)' : 'a.k.a $nickName',
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  Stack(
+                    children: [
+                      ClipPath(
+                        clipper: Hexagon(),
+                        child: Container(
+                          width: 153,
+                          height: 76.5 * sqrt(3),
+                          // color: Colors.black,
+                        ),
+                      ),
+                      Positioned(
+                          left: 1.5,
+                          top: 1.5,
+                          child: ClipPath(
+                            clipper: Hexagon(),
+                            child: Container(
+                              width: 150,
+                              height: 75 * sqrt(3),
+                              decoration: BoxDecoration(
+                                  // color: Colors.cyanAccent,
+                                  image: DecorationImage(
+                                      image: Image.memory(model.profileImage).image, fit: BoxFit.cover)),
+                            ),
+                          ))
+                    ],
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Transform.rotate(
+                    angle: pi,
+                    child: const Icon(
+                      Icons.format_quote,
+                      size: 15,
+                      color: Color(0xFFFCBF49),
                     ),
-                    Positioned(
-                        left: 1.5,
-                        top: 1.5,
-                        child: ClipPath(
-                          clipper: Hexagon(),
-                          child: Container(
-                            width: 150,
-                            height: 75 * sqrt(3),
-                            decoration: BoxDecoration(
-                                // color: Colors.cyanAccent,
-                                image: DecorationImage(
-                                    image: imageShot.image, fit: BoxFit.cover)),
-                          ),
-                        ))
-                  ],
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Transform.rotate(
-                  angle: pi,
-                  child: const Icon(
+                  ),
+                  Text(
+                    motto.isEmpty ? 'No gain no pain' : motto,
+                    style: const TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.bold),
+                  ),
+                  const Icon(
                     Icons.format_quote,
                     size: 15,
                     color: Color(0xFFFCBF49),
-                  ),
-                ),
-                Text(
-                  motto.isEmpty ? 'No gain no pain' : motto,
-                  style: const TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.bold),
-                ),
-                const Icon(
-                  Icons.format_quote,
-                  size: 15,
-                  color: Color(0xFFFCBF49),
-                )
-              ],
-            )
-          ],
-        ));
+                  )
+                ],
+              )
+            ],
+          )),
+    );
   }
 }
 

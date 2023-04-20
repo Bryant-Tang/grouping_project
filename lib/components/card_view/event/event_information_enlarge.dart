@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/card_edit_view_model.dart';
 import 'package:grouping_project/View/card_enlarge_view.dart';
+import 'package:grouping_project/View/event_setting_view.dart';
+import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/VM/event_card_view_model.dart';
@@ -13,24 +16,23 @@ class EventInformationEnlarge extends StatefulWidget {
 
   final EventModel eventModel;
 
-
   @override
   State<EventInformationEnlarge> createState() =>
       _EventInformationEnlargeState();
 }
 
 class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
-
   @override
   Widget build(BuildContext context) {
-    EventCardViewModel eventCardViewModel = EventCardViewModel(widget.eventModel);
+    EventCardViewModel eventCardViewModel =
+        EventCardViewModel(widget.eventModel);
 
     String group = eventCardViewModel.group;
-    String title =  eventCardViewModel.title;
-    String descript =  eventCardViewModel.descript;
-    DateTime startTime =  eventCardViewModel.startTime;
-    DateTime endTime =  eventCardViewModel.endTime;
-    List<String> contributorIds =  eventCardViewModel.contributorIds;
+    String title = eventCardViewModel.title;
+    String descript = eventCardViewModel.descript;
+    DateTime startTime = eventCardViewModel.startTime;
+    DateTime endTime = eventCardViewModel.endTime;
+    List<String> contributorIds = eventCardViewModel.contributorIds;
     Color color = eventCardViewModel.color;
 
     // TODO: use Padding
@@ -57,8 +59,8 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                         await Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EventEditPage(
-                                    eventModel: widget.eventModel)));
+                                builder: (context) => EventSettingPageView(
+                                    model: EventSettingViewModel())));
                         setState(() {});
                       },
                       icon: const Icon(
@@ -82,23 +84,23 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
             thickness: 1.5,
             color: Color(0xFFAAAAAA),
           ),
-          TitleDateOfEvent(
-              title: title,
-              startTime: startTime,
-              endTime: endTime,
-              group: group,
-              color: color),
-          EnlargeObjectTemplate(
+          // TitleDateOfEvent(
+          //     title: title,
+          //     startTime: startTime,
+          //     endTime: endTime,
+          //     group: group,
+          //     color: color),
+          CardViewTitle(
               title: '參與成員',
-              contextOfTitle: Contributors(
+              child: Contributors(
                 contributorIds: contributorIds,
               )),
           const SizedBox(
             height: 1,
           ),
-          EnlargeObjectTemplate(
+          CardViewTitle(
               title: '敘述',
-              contextOfTitle: Text(
+              child: Text(
                 descript,
                 style: const TextStyle(
                   fontSize: 15,
@@ -109,21 +111,20 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
           const SizedBox(
             height: 2,
           ),
-          const EnlargeObjectTemplate(
+          CardViewTitle(
             title: '相關任務',
-            contextOfTitle: CollabMissons(),
+            child: Container(),
           ),
           const SizedBox(
             height: 2,
           ),
-          const EnlargeObjectTemplate(
-              title: '相關共筆', contextOfTitle: CollabNotes()),
+          CardViewTitle(title: '相關共筆', child: Container()),
           const SizedBox(
             height: 2,
           ),
-          const EnlargeObjectTemplate(
+          CardViewTitle(
             title: '相關會議',
-            contextOfTitle: CollabMeetings(),
+            child: Container(),
           ),
         ],
       ),

@@ -15,7 +15,7 @@ class MissionCardViewModel extends ChangeNotifier {
   // MissionStage get missionStage => mission.stage;
   // String get stateName => mission.stateName ?? 'progress';
   DateTime get deadline => mission.deadline;
-  List<String> get contributorIds => mission.contributorIds ?? [];
+  List<String> get contributorIds => mission.contributorIds;
   Color get color => Color(mission.color);
 
   void updateMission(
@@ -25,18 +25,18 @@ class MissionCardViewModel extends ChangeNotifier {
       List<String> contributorIds,
       MissionStage stage,
       String stateName)async {
-    await DataController().upload(
-        uploadData: MissionModel(
-            id: id,
-            title: titleCrtl.text,
-            introduction: descriptCrtl.text,
-            deadline: deadline,
-            contributorIds: contributorIds,
-            stage: stage,
-            stateName: stateName));
+    // await DataController().upload(
+    //     uploadData: MissionModel(
+    //         id: id,
+    //         title: titleCrtl.text,
+    //         introduction: descriptCrtl.text,
+    //         deadline: deadline,
+    //         contributorIds: contributorIds,
+    //         stage: stage,
+    //         stateName: stateName));
   }
 
   void removeMission() async {
-    await DataController().remove(removeData: mission);
+    // await DataController().remove(removeData: mission);
   }
 }

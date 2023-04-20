@@ -347,8 +347,7 @@ class _WorkspaceImageRegisterPageState
                           radius: 120,
                           backgroundColor: Colors.grey[300],
                           backgroundImage: model.profileImage.isNotEmpty
-                              ? Image.file(File.fromRawPath(model.profileImage))
-                                  .image
+                              ? Image.memory(model.profileImage).image
                               : defaultImage.image,
                         )),
                     MaterialButton(
@@ -362,7 +361,7 @@ class _WorkspaceImageRegisterPageState
                           final selectedPhoto = await ImagePicker()
                               .pickImage(source: ImageSource.gallery);
                           if (selectedPhoto != null) {
-                            model.updateProfileImage(File(selectedPhoto.path).readAsBytesSync());
+                            model.updateProfileImage(await File(selectedPhoto.path).readAsBytes());
                           }
                         },
                         child: Row(

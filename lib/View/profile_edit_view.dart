@@ -64,8 +64,10 @@ class _ProfileEditPageViewState extends State<ProfileEditPageView>
                               goBackButtonText: "Cancel",
                               goToNextButtonText: "Save",
                               goToNextButtonHandler: () async {
-                                model.upload;
-                                Navigator.of(context).pop();
+                                await model.upload();
+                                if (mounted) {
+                                  Navigator.of(context).pop();
+                                }
                               },
                               goBackButtonHandler: () {
                                 Navigator.of(context).pop();
@@ -176,7 +178,7 @@ class _PersonProfileImageUploadgState extends State<ProfileImageUpload> {
                     backgroundColor:
                         Theme.of(context).colorScheme.surfaceVariant,
                     backgroundImage: model.profileImage.isNotEmpty
-                        ? Image.file(File.fromRawPath(model.profileImage)).image
+                        ? Image.memory(model.profileImage).image
                         : Image.asset('assets/images/profile_male.png').image),
               ),
               MaterialButton(
@@ -189,7 +191,8 @@ class _PersonProfileImageUploadgState extends State<ProfileImageUpload> {
                   final selectedPhoto = await ImagePicker()
                       .pickImage(source: ImageSource.gallery);
                   if (selectedPhoto != null) {
-                    model.updateProfileImage(File(selectedPhoto.path).readAsBytesSync());
+                    model.updateProfileImage(
+                        await File(selectedPhoto.path).readAsBytes());
                   }
                 },
                 child: Row(
@@ -243,14 +246,16 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
         color: addButtonColor,
         onPressed: () async {
           model.switchTagEditMode(TagEditMode.create);
-          model.tags.length == model.maximunTagNumber
-              ? ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("個人標籤數量已達上限"),
-                    duration: Duration(seconds: 1),
-                  ),
-                )
-              : showDialog(
+          if (model.tags.length == model.maximunTagNumber) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("個人標籤數量已達上限"),
+                duration: Duration(seconds: 1),
+              ),
+            );
+          } else {
+            try {
+              AccountTag newTag = await showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return SimpleDialog(
@@ -259,13 +264,13 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
                           horizontal: 15, vertical: 5),
                       children: [TagForm.create()],
                     );
-                  }).then((value) {
-                  if (value is AccountTag) {
-                    model.createNewTag(value);
-                  }
-                }).catchError((error) {
-                  debugPrint(error.toString());
-                });
+                  });
+              model.createNewTag(newTag);
+              debugPrint(newTag.toString());
+            } catch (error) {
+              debugPrint(error.toString());
+            }
+          }
         },
         child: Row(
           mainAxisSize: MainAxisSize.min,

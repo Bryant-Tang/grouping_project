@@ -26,7 +26,7 @@ class WorkspaceDashboardViewModel extends ChangeNotifier {
   List<EventModel> get event => eventList;
   
   bool isLoading = false;
-  List allGroupProfile = [
+  List<AccountModel> get allGroupProfile => profile.associateEntityAccount;
     // ProfileModel(
     //     name: "服務學習課程",
     //     color: 0xFF00417D,
@@ -48,8 +48,6 @@ class WorkspaceDashboardViewModel extends ChangeNotifier {
     //     tags: ["#Python", "#程式基礎教育", "#工作"]
     //         .map((t) => ProfileTag(tag: t, content: t))
     //         .toList()),
-  ];
-
   void switchGroup() {
     debugPrint("SWITCH");
   }
@@ -99,6 +97,7 @@ class WorkspaceDashboardViewModel extends ChangeNotifier {
     notifyListeners();
     try {
       profileData = await db.getAccount();
+      debugPrint(profile.associateEntityId.toString());
       eventList = await db.getAllEvent();
       missionList = await db.getAllMission();
     } catch (e) {

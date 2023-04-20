@@ -1,5 +1,7 @@
 // ignore_for_file: unnecessary_this
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
+
 import 'data_model.dart';
 
 /// ## the type for [AccountModel.tags]
@@ -76,13 +78,13 @@ class AccountModel extends BaseDataModel<AccountModel>
         this.nickname = nickname ?? defaultAccount.nickname,
         this.slogan = slogan ?? defaultAccount.slogan,
         this.introduction = introduction ?? defaultAccount.introduction,
-        this.tags = tags ?? defaultAccount.tags,
+        this.tags = tags ?? List.from(defaultAccount.tags),
         this.photoId = photoId ?? defaultAccount.photoId,
         this.photo = photo ?? defaultAccount.photo,
         this.associateEntityId =
-            associateEntityId ?? defaultAccount.associateEntityId,
+            associateEntityId ?? List.from(defaultAccount.associateEntityId),
         this.associateEntityAccount =
-            associateEntityAccount ?? defaultAccount.associateEntityAccount,
+            associateEntityAccount ?? List.from(defaultAccount.associateEntityAccount),
         super(
           id: accountId,
           databasePath: defaultAccount.databasePath,

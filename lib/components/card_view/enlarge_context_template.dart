@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class EnlargeObjectTemplate extends StatelessWidget {
-  const EnlargeObjectTemplate(
-      {super.key, required this.title, required this.contextOfTitle});
+class CardViewTitle extends StatelessWidget {
+  const CardViewTitle(
+      {super.key, required this.title, required this.child});
 
   final String title;
-  final Widget contextOfTitle;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -16,17 +16,16 @@ class EnlargeObjectTemplate extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
-                fontSize: 18, color: Color.fromARGB(255, 121, 121, 121)),
+            style: Theme.of(context).textTheme.titleLarge!,
           ),
-          const Divider(
+          Divider(
             thickness: 1.5,
-            color: Color.fromARGB(255, 209, 209, 209),
+            color: Theme.of(context).colorScheme.surfaceVariant,
             height: 1,
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: contextOfTitle,
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: child,
           )
         ],
       ),

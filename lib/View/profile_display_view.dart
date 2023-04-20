@@ -15,15 +15,6 @@ class ProfileDispalyPageView extends StatefulWidget {
 }
 
 class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
-  // late ProfileModel profile;
-  List<CustomLabel> allProfileTag(List<AccountTag>? tags) {
-    List<CustomLabel> datas = [];
-    int len = tags?.length ?? 0;
-    for (int i = 0; i < len; i++) {
-      datas.add(CustomLabel(title: tags![i].tag, information: tags[i].content));
-    }
-    return datas;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +62,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                                     name: model.realName,
                                     nickName: model.userName,
                                     imageShot: model.profile.photo.isNotEmpty
-                                        ? Image.file(
-                                            File.fromRawPath(model.profileImage))
+                                        ? Image.memory(model.profileImage)
                                         : Image.asset(
                                             'assets/images/profile_male.png'),
                                     motto: model.slogan),
@@ -80,7 +70,9 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                                     title: '自我介紹',
                                     information: model.introduction),
                               ] +
-                              allProfileTag(model.tags),
+                              model.tags.map((accountTag) => CustomLabel(
+                                  title: accountTag.tag,
+                                  information: accountTag.content)).toList(),
                         ),
                       ))
                 ],
@@ -101,7 +93,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                             builder: (BuildContext context) =>
                                 ProfileEditPageView(model: ProfileEditViewModel()..profile = model.profile),
                           ));
-                      model.getAllData();
+                      await model.getAllData();
                     },
                     style: ButtonStyle(
                         shape: MaterialStatePropertyAll(RoundedRectangleBorder(

@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
@@ -47,7 +49,7 @@ class _BasePageState extends State<BasePage> {
     super.dispose();
   }
 
-  AppBar getAppBar(model, themeManager, context) {
+  AppBar getAppBar(WorkspaceDashboardViewModel model, themeManager, context) {
     return AppBar(
       title: MaterialButton(
         child: Padding(
@@ -59,15 +61,15 @@ class _BasePageState extends State<BasePage> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage: model.profile.photo != null
-                    ? Image.file(model.profile.photo!).image
+                backgroundImage: model.profileImage.isNotEmpty
+                    ? Image.memory(model.profileImage).image
                     : Image.asset("assets/images/profile_male.png").image,
               ),
               const SizedBox(
                 width: 10,
               ),
               Text(
-                model.profile.nickname ?? "Unknown",
+                model.profile.nickname,
                 style: Theme.of(context)
                     .textTheme
                     .labelLarge!
@@ -77,8 +79,8 @@ class _BasePageState extends State<BasePage> {
             ],
           ),
         ),
-        onPressed: () {
-          showModalBottomSheet(
+        onPressed: () async {
+          await showModalBottomSheet(
               context: context,
               barrierColor: Colors.black.withOpacity(0.1),
               shape: const RoundedRectangleBorder(
@@ -91,6 +93,7 @@ class _BasePageState extends State<BasePage> {
                     value: model,
                     builder: (context, child) => const SwitchWorkSpaceSheet());
               });
+          await model.updateProfile();
         },
       ),
       automaticallyImplyLeading: false,
@@ -140,7 +143,13 @@ class _BasePageState extends State<BasePage> {
                       onWillPop: () async {
                         return false; // 禁用返回鍵
                       },
-                      child: Scaffold(
+                      child: model.isLoading ?
+                      const Scaffold(
+                        body: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                      : Scaffold(
                         appBar: getAppBar(model, themeManager, context),
                         body: PageView(
                           controller: _pageController,
@@ -152,7 +161,7 @@ class _BasePageState extends State<BasePage> {
                         // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
                         bottomNavigationBar:
                             getNavigationBar(model, themeManager, context),
-                      ),
+                      )
                     )),
       ),
     );
@@ -274,14 +283,13 @@ class GroupSwitcherView extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                   child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         CircleAvatar(
                           radius: 30,
-                          backgroundColor:
-                              Color(groupProfile.color),
+                          backgroundColor: Color(groupProfile.color),
                         ),
                         const SizedBox(width: 10),
                         Column(
@@ -316,8 +324,7 @@ class GroupSwitcherView extends StatelessWidget {
                               children: (groupProfile.tags)
                                   .map((tag) => ColorTagChip(
                                       tagString: tag.tag,
-                                      color: Color(
-                                          groupProfile.color)))
+                                      color: Color(groupProfile.color)))
                                   .toList(),
                             )
                           ],
