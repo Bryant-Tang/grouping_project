@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/workspace_dashboard_view_model.dart';
-import 'package:grouping_project/components/card_view/mission/mission_card_view.dart';
+import 'package:grouping_project/components/card_view/mission/mission_card.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
@@ -93,9 +93,10 @@ class CalendarViewModel extends ChangeNotifier {
         height: 10,
       ));
 
-      eventAndMissionCards.add(EventCardViewTemplate(
-        eventModel: eventsByDate[index],
-      ));
+      // TODO: fix error
+      // eventAndMissionCards.add(EventCardViewTemplate(
+      //   eventModel: eventsByDate[index],
+      // ));
     }
   }
 }

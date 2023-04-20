@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/View/card_enlarge_view.dart';
+import 'package:grouping_project/View/mission_setting_view.dart';
+import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/mission_information.dart';
 import 'package:grouping_project/VM/mission_card_view_model.dart';
+
 
 /*
 * this file is used to create mission enlarge view
@@ -57,8 +61,8 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
                         await Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => MissionEditPage(
-                                    missionModel: widget.missionModel)));
+                                builder: (context) => MissionSettingPageView(
+                                    model: MissionSettingViewModel(),)));
                         setState(() {});
                       },
                       icon: const Icon(
@@ -110,20 +114,25 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
           const SizedBox(
             height: 2,
           ),
-          const CardViewTitle(
+          CardViewTitle(
             title: '相關任務',
-            child: CollabMissons(),
+            child: Container(),
+            // child: CollabMissons(),
           ),
           const SizedBox(
             height: 2,
           ),
-          const CardViewTitle(title: '相關共筆', child: CollabNotes()),
+          CardViewTitle(title: '相關共筆',
+            child: Container(),
+          // child: CollabNotes(),
+          ),
           const SizedBox(
             height: 2,
           ),
-          const CardViewTitle(
+          CardViewTitle(
             title: '相關會議',
-            child: CollabMeetings(),
+            child: Container(),
+            // child: CollabMeetings(),
           ),
         ],
       ),

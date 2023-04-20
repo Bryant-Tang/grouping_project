@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/View/create_sheet_view.dart';
 import 'package:grouping_project/components/create/create_lib.dart';
 
 class CreateButton extends StatefulWidget {
@@ -11,10 +12,10 @@ class CreateButton extends StatefulWidget {
 class _CreateButtonState extends State<CreateButton> {
   // TODO: make every widget to stateful widget
   final List<Widget> createsPng = const [
-    AddTopic(), //not yet
+    CreateTopic(), //not yet
     CreateEvent(),
-    AddNote(), //not yet
-    AddMission()
+    CreateNote(), //not yet
+    CreateMission()
   ];
   @override
   Widget build(BuildContext context) {
