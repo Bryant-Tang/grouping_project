@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
@@ -19,6 +18,22 @@ class EventSettingViewModel extends ChangeNotifier {
   List<AccountModel> get contributors => contributorProfile;
   List<AccountModel> get groupMember => profile.associateEntityAccount;
   Color get color => Color(eventData.color);
+
+  EventSettingViewModel(this.eventData, this.settingMode);
+
+  factory EventSettingViewModel.display(EventModel eventData) =>
+      EventSettingViewModel(eventData, SettingMode.displpay);
+  factory EventSettingViewModel.create() {
+    EventSettingViewModel model = EventSettingViewModel(EventModel(), SettingMode.create);
+    model.updateStartTime(DateTime.now());
+    model.updateEndTime(DateTime.now().add(const Duration(days: 1)));
+    model.updateTitle('newTitle');
+    model.updateIntroduction('new Introduction');
+    // model.setProfile = profile;
+    return model;
+  }
+  factory EventSettingViewModel.edit(EventModel eventData) =>
+      EventSettingViewModel(eventData, SettingMode.edit);
 
   set setModel(EventModel newModel) {
     eventData = newModel;
@@ -65,10 +80,16 @@ class EventSettingViewModel extends ChangeNotifier {
 
   Future<void> onSave() async {
     if (settingMode == SettingMode.create) {
+      await DatabaseService(ownerUid: AuthService().getUid()).setEvent(event: eventData);
       // Create Event
     } else if (settingMode == SettingMode.edit) {
+      DatabaseService(ownerUid: profile.id!).setEvent(event: eventData);
       // Edit Event
     } else {}
+  }
+
+  void removeEvent() {
+    // DatabaseService(ownerUid: profile.id!).
   }
 
   set setSettingMode(SettingMode mode) {

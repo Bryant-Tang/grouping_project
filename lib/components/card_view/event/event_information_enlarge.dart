@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/View/card_enlarge_view.dart';
-import 'package:grouping_project/View/event_setting_view.dart';
+import 'package:grouping_project/View/event_setting_view.dart' show EventSettingPageView;
 import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
@@ -22,18 +22,29 @@ class EventInformationEnlarge extends StatefulWidget {
 }
 
 class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
+
+  late EventSettingViewModel model;
+
+  @override
+  void initState(){
+    super.initState();
+    model = EventSettingViewModel.display(widget.eventModel);
+  }
+
   @override
   Widget build(BuildContext context) {
-    EventCardViewModel eventCardViewModel =
-        EventCardViewModel(widget.eventModel);
 
-    String group = eventCardViewModel.group;
-    String title = eventCardViewModel.title;
-    String descript = eventCardViewModel.descript;
-    DateTime startTime = eventCardViewModel.startTime;
-    DateTime endTime = eventCardViewModel.endTime;
-    List<String> contributorIds = eventCardViewModel.contributorIds;
-    Color color = eventCardViewModel.color;
+
+    // EventCardViewModel eventCardViewModel =
+    //     EventCardViewModel(widget.eventModel);
+
+    // String group = eventCardViewModel.group;
+    // String title = eventCardViewModel.title;
+    // String descript = eventCardViewModel.descript;
+    // DateTime startTime = eventCardViewModel.startTime;
+    // DateTime endTime = eventCardViewModel.endTime;
+    // List<String> contributorIds = eventCardViewModel.contributorIds;
+    // Color color = eventCardViewModel.color;
 
     // TODO: use Padding
     return Container(
@@ -60,7 +71,7 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => EventSettingPageView(
-                                    model: EventSettingViewModel())));
+                                    model: EventSettingViewModel.edit(widget.eventModel))));
                         setState(() {});
                       },
                       icon: const Icon(
@@ -84,24 +95,26 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
             thickness: 1.5,
             color: Color(0xFFAAAAAA),
           ),
-          // TitleDateOfEvent(
-          //     title: title,
-          //     startTime: startTime,
-          //     endTime: endTime,
-          //     group: group,
-          //     color: color),
+          TitleDateOfEvent(
+              title: model.title,
+              startTime: model.startTime,
+              endTime: model.endTime,
+              group: model.profile.name,
+              color: model.color),
           CardViewTitle(
               title: '參與成員',
-              child: Contributors(
-                contributorIds: contributorIds,
-              )),
+              child: Container()
+              // child: Contributors(
+              //   contributorIds: model.contributors,
+              // ),
+              ),
           const SizedBox(
             height: 1,
           ),
           CardViewTitle(
               title: '敘述',
               child: Text(
-                descript,
+                model.introduction,
                 style: const TextStyle(
                   fontSize: 15,
                 ),
