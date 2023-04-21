@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/View/event_setting_view.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/View/mission_setting_view.dart';
+import 'package:grouping_project/model/account_model.dart';
+import 'package:grouping_project/service/auth_service.dart';
+import 'package:grouping_project/service/database_service.dart';
 
 class CreateEvent extends StatefulWidget {
   const CreateEvent({super.key});
@@ -17,10 +20,13 @@ class _CreateEventState extends State<CreateEvent> {
       borderRadius: BorderRadius.circular(5),
       onTap: () async {
         debugPrint('create event');
-        await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: ((context) => EventSettingPageView.create())));
+        
+          await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: ((context) =>
+                      EventSettingPageView.create())));
+        
         // Implement data refreash
         if (mounted) {
           Navigator.pop(context);
@@ -75,8 +81,10 @@ class _CreateMissionState extends State<CreateMission> {
       borderRadius: BorderRadius.circular(5),
       onTap: () async {
         debugPrint('create mission');
-        await Navigator.push(context,
-            MaterialPageRoute(builder: ((context) => MissionSettingPageView.create())));
+        await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: ((context) => MissionSettingPageView.create())));
         setState(() {});
       },
       splashFactory: InkRipple.splashFactory,
