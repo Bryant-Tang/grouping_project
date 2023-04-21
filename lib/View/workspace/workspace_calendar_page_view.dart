@@ -2,6 +2,7 @@ import 'package:grouping_project/VM/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/workspace/workspace_view.dart';
 
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -28,22 +29,49 @@ class _CalendarPageState extends State<CalendarPage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
-  Future<DateTime?> selectDay() async {
-    return await showDatePicker(
+  Future<DateTime?> popupDatePicker(BuildContext context) {
+    DateTime? selectedDate = DateTime.now();
+    return showDialog<DateTime>(
       context: context,
-      initialDate: _focusedDay,
-      firstDate: DateTime(2010),
-      lastDate: DateTime(2030),
-      // locale: const Locale('zh', 'TW'),
-      // TODO: Color of the calendar need to be changed
-      builder: (context, child) {
-        return Theme(
-            data: ThemeData(
-              primaryColor: Theme.of(context).colorScheme.primaryContainer,
+      builder: (context) {
+        return Dialog(
+          child: SizedBox(
+            height: 400,
+            // width: 200,
+            child: SfDateRangePicker(
+              initialSelectedDate: DateTime.now(),
+              selectionMode: DateRangePickerSelectionMode.single,
+              showActionButtons: true,
+              onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                selectedDate = args.value;
+              },
+              onCancel: () {
+                Navigator.pop(context);
+              },
+              onSubmit: (p0) {
+                Navigator.pop(context, selectedDate);
+              },
             ),
-            child: child!);
+          ),
+        );
       },
     );
+  }
+
+  Future<void> onDaySelected(
+      {required DateTime selectedDay, required DateTime focusedDay}) async {
+    if ((selectedDay.month != _focusedDay.month) ||
+        (selectedDay.year != _focusedDay.year)) {
+      await model.getEventsAndMissionsByDate(selectedDay);
+      await model.toMapAMonth(year: selectedDay.year, month: selectedDay.month);
+    }
+    _selectedDay = selectedDay;
+    _focusedDay = focusedDay;
+    await showCards(
+        eventAndMission: model.eventsMap[DateTime(
+                _focusedDay.year, _focusedDay.month, _focusedDay.day)] ??
+            []);
+    setState(() {});
   }
 
   /// This is the function used for showing the event and mission cards
@@ -175,7 +203,16 @@ class _CalendarPageState extends State<CalendarPage> {
                                   [];
                             },
                             onHeaderTapped: (focusedDay) async {
-                              focusedDay = await selectDay() ?? focusedDay;
+                              DateTime? tempDate =
+                                  await popupDatePicker(context);
+                              if (tempDate != null) {
+                                _focusedDay = tempDate;
+                                _selectedDay = tempDate;
+                                onDaySelected(
+                                    selectedDay: _selectedDay,
+                                    focusedDay: _focusedDay);
+                                setState(() {});
+                              }
                             },
                             calendarStyle: CalendarStyle(
                               // Decoration for today
@@ -232,25 +269,10 @@ class _CalendarPageState extends State<CalendarPage> {
                             selectedDayPredicate: (day) {
                               return isSameDay(_selectedDay, day);
                             },
-                            onDaySelected: (selectedDay, focusedDay) async {
-                              if ((selectedDay.month != _focusedDay.month) ||
-                                  (selectedDay.year != _focusedDay.year)) {
-                                await model
-                                    .getEventsAndMissionsByDate(selectedDay);
-                                await model.toMapAMonth(
-                                    year: selectedDay.year,
-                                    month: selectedDay.month);
-                              }
-                              _selectedDay = selectedDay;
-                              _focusedDay = focusedDay;
-                              await showCards(
-                                  eventAndMission: model.eventsMap[DateTime(
-                                          _focusedDay.year,
-                                          _focusedDay.month,
-                                          _focusedDay.day)] ??
-                                      []);
-                              setState(() {});
-                            },
+                            onDaySelected: (selectedDay, focusedDay) =>
+                                onDaySelected(
+                                    focusedDay: focusedDay,
+                                    selectedDay: selectedDay),
                             onPageChanged: (focusedDay) async {
                               _focusedDay = focusedDay;
                               await model.toMapAMonth(
