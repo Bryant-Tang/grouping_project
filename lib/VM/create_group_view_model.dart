@@ -103,7 +103,9 @@ class CreateGroupViewModel extends ChangeNotifier {
       // get new group id 
       final groupId = await accountDatabase.createGroupAccount(); 
       // set group profile to group account db
-      DatabaseService(ownerUid: groupId).setAccount(account: profile.copyWith(accountId: groupId));
+      await DatabaseService(
+        ownerUid: groupId, forUser: false
+      ).setAccount(account: profile.copyWith(accountId: groupId));
       // add group id to user account profile entity
       userAccountModel.addEntity(groupId);
       // upload user account profile to user account db

@@ -73,13 +73,13 @@ class LoginPage extends StatelessWidget {
                             name: name,
                             onPressed: () async {
                               await loginViewModel.onThirdPartyLogin(name);
-                              switch(loginViewModel.loginState){
+                              switch (loginViewModel.loginState) {
                                 case LoginState.loginSuccess:
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const BasePage()));
+                                              const WorksapceBasePage()));
                                   break;
                                 case LoginState.loginFaild:
                                   ScaffoldMessenger.of(context)
@@ -181,7 +181,8 @@ class _EmailFormState extends State<_EmailForm> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const BasePage()));
+                                  builder: (context) =>
+                                      const WorksapceBasePage()));
                           break;
                         case LoginState.loginFaild:
                           showBanner('登入失敗');

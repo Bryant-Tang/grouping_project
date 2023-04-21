@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/profile/profile_edit_view.dart';
@@ -16,11 +13,15 @@ class ProfileDispalyPageView extends StatefulWidget {
 class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<WorkspaceDashboardViewModel>(
+    return Consumer<WorkspaceDashBoardViewModel>(
         builder: (context, model, child) {
       List tags = List.from(model.tags);
-      tags.insert(0, AccountTag(tag: "自我介紹", content: model.introduction));
-      tags.insert(0, AccountTag(tag: "座右銘", content: model.slogan));
+      if (model.introduction != "unknown") {
+        tags.insert(0, AccountTag(tag: "自我介紹", content: model.introduction));
+      }
+      if (model.slogan != "unknown"){
+        tags.insert(0, AccountTag(tag: "座右銘", content: model.slogan));
+      }
       // TODO : 把他寫進 VM 裡面
       // debugPrint(tags.toString());
       return SafeArea(
@@ -47,9 +48,11 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                   ),
                   const HeadShot(),
                   Column(
-                    children: tags.map((accountTag) => CustomLabel(
-                          title: accountTag.tag,
-                          information: accountTag.content)).toList(),
+                    children: tags
+                        .map((accountTag) => CustomLabel(
+                            title: accountTag.tag,
+                            information: accountTag.content))
+                        .toList(),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -139,7 +142,7 @@ class HeadShot extends StatelessWidget {
   const HeadShot({super.key});
   @override
   Widget build(BuildContext context) {
-    return Consumer<WorkspaceDashboardViewModel>(
+    return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, model, child) => Center(
           child: Column(
         children: [
@@ -155,24 +158,16 @@ class HeadShot extends StatelessWidget {
                   const SizedBox(height: 1),
                   model.userName != "Unkonwn"
                       ? Text("a.k.a ${model.userName}",
-                          style:
-                              Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    // color: Theme.of(context).colorScheme.secondary
-                                  ))
+                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    fontWeight: FontWeight.bold))
                       : const SizedBox()
                 ],
               ),
-              ClipPath(
-                clipper: Hexagon(),
-                child: Container(
-                  width: 120,
-                  height: 60 * sqrt(3),
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: Image.memory(model.profileImage).image,
-                          fit: BoxFit.cover)),
-                ),
+              CircleAvatar(
+                radius: 60,
+                backgroundImage: model.profileImage.isNotEmpty
+                    ? Image.memory(model.profileImage).image
+                    : Image.asset("assets/images/profile_male.png").image,
               )
             ],
           ),
@@ -180,23 +175,4 @@ class HeadShot extends StatelessWidget {
       )),
     );
   }
-}
-
-// 將長方形裁剪出六角形
-// https://educity.app/flutter/custom-clipper-in-flutter
-class Hexagon extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.moveTo(size.width * 0.25, 0);
-    path.lineTo(size.width * 0.75, 0);
-    path.lineTo(size.width, size.height * 0.5);
-    path.lineTo(size.width * 0.75, size.height);
-    path.lineTo(size.width * 0.25, size.height);
-    path.lineTo(0, size.height * 0.5);
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
