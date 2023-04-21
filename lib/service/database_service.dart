@@ -403,7 +403,8 @@ class DatabaseService {
 //getAll
   Future<List<EventModel>> getAllEvent() async {
     List<EventModel> eventList = await _getSingleAccountAllEvent();
-    AccountModel ownerAccount = await getAccount();
+    AccountModel ownerAccount = await _getSingleAccount(
+        ownerUid: _ownerUid, accountId: await _getOwnerAccountId());
     if (_forUser) {
       for (var associateGroupId in ownerAccount.associateEntityId) {
         eventList.addAll(
@@ -416,7 +417,8 @@ class DatabaseService {
 
   Future<List<MissionModel>> getAllMission() async {
     List<MissionModel> missionList = await _getSingleAccountAllMission();
-    AccountModel ownerAccount = await getAccount();
+    AccountModel ownerAccount = await _getSingleAccount(
+        ownerUid: _ownerUid, accountId: await _getOwnerAccountId());
     if (_forUser) {
       for (var associateGroupId in ownerAccount.associateEntityId) {
         missionList.addAll(
