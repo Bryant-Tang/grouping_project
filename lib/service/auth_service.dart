@@ -27,7 +27,7 @@ class AuthService {
   /// return custom user model, only for backend
   UserModel? _userModelFromAuth(User? user) {
     if (user != null) {
-      debugPrint('Uid is ${user.uid}');
+      // debugPrint('Uid is ${user.uid}');
       return UserModel(uid: user.uid);
     } else {
       return null;
@@ -52,7 +52,7 @@ class AuthService {
     if (user.photoURL != null && !kIsWeb) {
       // debugPrint(user.photoURL);
       http.Response response = await http.get(Uri.parse(user.photoURL!));
-      debugPrint('response code: ${response.statusCode.toString()}');
+      // debugPrint('response code: ${response.statusCode.toString()}');
 
       photoFile = response.bodyBytes;
     }
@@ -262,7 +262,7 @@ class AuthService {
   ///
   /// return UserModel if succeed, return null if any error catched.
   Future<UserModel?> facebookLogin() async {
-    debugPrint('========> Entered Facebook Login');
+    // debugPrint('========> Entered Facebook Login');
     bool kisweb;
     try {
       if (Platform.isAndroid || Platform.isIOS) {
@@ -308,7 +308,7 @@ class AuthService {
           UserCredential result =
               await FirebaseAuth.instance.signInWithCredential(credential);
           if (result.additionalUserInfo?.isNewUser == true) {
-            String i =await DatabaseService(ownerUid: result.user!.uid)
+            String i = await DatabaseService(ownerUid: result.user!.uid)
                 .createUserAccount();
             await DatabaseService(ownerUid: result.user!.uid)
                 .setAccount(account: await getProfile(i) ?? AccountModel());
@@ -414,7 +414,8 @@ class AuthService {
         UserCredential result =
             await FirebaseAuth.instance.signInWithPopup(githubProvider);
         if (result.additionalUserInfo?.isNewUser == true) {
-          String i = await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          String i = await DatabaseService(ownerUid: result.user!.uid)
+              .createUserAccount();
           await DatabaseService(ownerUid: result.user!.uid)
               .setAccount(account: await getProfile(i) ?? AccountModel());
         }
@@ -424,7 +425,8 @@ class AuthService {
         UserCredential result =
             await FirebaseAuth.instance.signInWithProvider(githubProvider);
         if (result.additionalUserInfo?.isNewUser == true) {
-          String i = await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          String i = await DatabaseService(ownerUid: result.user!.uid)
+              .createUserAccount();
           await DatabaseService(ownerUid: result.user!.uid)
               .setAccount(account: await getProfile(i) ?? AccountModel());
         }
@@ -440,7 +442,7 @@ class AuthService {
   ///
   /// return UserModel if succeed, return null if any error catched.
   Future<UserModel?> googleLogin() async {
-    debugPrint('========> Entered Google Login');
+    // debugPrint('========> Entered Google Login');
     bool kisweb;
     try {
       if (Platform.isAndroid || Platform.isIOS) {
@@ -483,9 +485,11 @@ class AuthService {
 
         UserCredential result = await _auth.signInWithCredential(credential);
         if (result.additionalUserInfo?.isNewUser == true) {
-          String newAccountId = await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
-          await DatabaseService(ownerUid: result.user!.uid)
-              .setAccount(account: await getProfile(newAccountId) ?? AccountModel());
+          String newAccountId =
+              await DatabaseService(ownerUid: result.user!.uid)
+                  .createUserAccount();
+          await DatabaseService(ownerUid: result.user!.uid).setAccount(
+              account: await getProfile(newAccountId) ?? AccountModel());
         }
 
         return _userModelFromAuth(result.user);
@@ -520,7 +524,8 @@ class AuthService {
 
         UserCredential result = await _auth.signInWithCredential(credential);
         if (result.additionalUserInfo?.isNewUser == true) {
-          String i = await DatabaseService(ownerUid: result.user!.uid).createUserAccount();
+          String i = await DatabaseService(ownerUid: result.user!.uid)
+              .createUserAccount();
           await DatabaseService(ownerUid: result.user!.uid)
               .setAccount(account: await getProfile(i) ?? AccountModel());
         }

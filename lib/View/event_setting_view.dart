@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:grouping_project/VM/card_edit_view_model.dart';
+import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/View/workspace_view.dart';
@@ -11,9 +11,9 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 // import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
-import 'package:grouping_project/components/card_view/event_information.dart';
-import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
-import 'package:grouping_project/VM/event_card_view_model.dart';
+// import 'package:grouping_project/components/card_view/event_information.dart';
+// import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
+// import 'package:grouping_project/VM/event_card_view_model.dart';
 
 /*
 * this file is used to create event or edit existed event 
@@ -102,7 +102,7 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                         icon: const Icon(Icons.cancel)),
                     Row(
                       children:[
-                        model.settingMode == EventSettingMode.edit 
+                        model.settingMode == SettingMode.edit 
                         ? IconButton(
                             onPressed: () {
                               // debugPrint('remove');
@@ -184,38 +184,13 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
 }
 
 class TitleDateOfEvent extends StatefulWidget {
-  const TitleDateOfEvent(
-      {super.key,
-      required this.titleController,
-      required this.group,
-      required this.color,
-      required this.startTime,
-      required this.endTime,
-      required this.callback});
-
-  final TextEditingController titleController;
-  final String group;
-  final Color color;
-  final DateTime startTime;
-  final DateTime endTime;
-  final Function(DateTime, DateTime) callback;
+  const TitleDateOfEvent({super.key,});
 
   @override
   State<TitleDateOfEvent> createState() => TitleDateOfEventState();
 }
 
 class TitleDateOfEventState extends State<TitleDateOfEvent> {
-  // TitleDateOfEventVM vm = TitleDateOfEventVM();
-
-  // late DateTime start;
-  // late DateTime end;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   start = vm.startTime = widget.startTime;
-  //   end = vm.endTime = widget.endTime;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +283,7 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
 
     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
 
-    return Column(
+    return Consumer<EventSettingViewModel>(builder:(context, model, child) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // AntiLabel(group: widget.group, color: widget.color),
@@ -317,16 +292,10 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
         //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         // ),
         TextField(
-          controller: widget.titleController,
-          onChanged: (value) {
-            widget.titleController.text = value;
-            widget.titleController.selection =
-                TextSelection.fromPosition(TextPosition(offset: value.length));
-            setState(() {});
-          },
+          onChanged: model.updateTitle,
           decoration: InputDecoration(
               hintText: '輸入標題',
-              errorText: widget.titleController.text.isEmpty ? '不可為空' : null,
+              errorText: model.titleValidator(),
               isDense: true,
               contentPadding: const EdgeInsets.symmetric(vertical: 2),
               border: const OutlineInputBorder()),
@@ -337,8 +306,8 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
             TextButton(
               onPressed: selectStartTime,
               child: Text(
-                // parseDate.format(start),
-                "sss",
+                parseDate.format(model.startTime),
+                // "sss",
                 style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
@@ -349,23 +318,24 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
               Icons.arrow_right_alt,
               size: 20,
               // color will be a variable
-              color: widget.color,
+              color: model.color,
             ),
             TextButton(
               onPressed: selectEndTime,
               child: Text(
-                // parseDate.format(end),
-                "sss",
+                parseDate.format(model.endTime),
+                // "sss",
                 style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
+                    // TODO: text color
                     color: Colors.black),
               ),
             )
           ],
         ),
       ],
-    );
+    ));
   }
 }
 
@@ -413,408 +383,6 @@ class _IntroductionBlockState extends State<IntroductionBlock> {
         style: const TextStyle(fontSize: 15),
       ),
     );
-  }
-}
-
-class TitleDateOfMission extends StatefulWidget {
-  const TitleDateOfMission(
-      {super.key,
-      required this.titleController,
-      required this.group,
-      required this.color,
-      required this.deadline,
-      required this.stage,
-      required this.stateName,
-      required this.callback,
-      required this.cbStage});
-
-  final TextEditingController titleController;
-  final String group;
-  final Color color;
-  final DateTime deadline;
-  final MissionStage stage;
-  final String stateName;
-  final Function(DateTime) callback;
-  final Function(MissionStage stage, String stateName) cbStage;
-
-  @override
-  State<TitleDateOfMission> createState() => TitleDateOfMissionState();
-}
-
-class TitleDateOfMissionState extends State<TitleDateOfMission> {
-  late DateTime deadline;
-
-  @override
-  void initState() {
-    super.initState();
-    deadline = widget.deadline;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    void timePickerDialog(DateTime show) {
-      Time tmp = Time(hour: 0, minute: 0);
-      Navigator.of(context).push(
-        showPicker(
-          value: tmp,
-          onChange: (time) {
-            setState(() {
-              deadline = DateTime(
-                  show.year, show.month, show.day, time.hour, time.minute);
-              widget.callback(deadline);
-            });
-          },
-        ),
-      );
-    }
-
-    void confirmChange(Object? value) {
-      DateTime tmp = DateTime(0);
-      if (value is DateTime) {
-        tmp = value;
-      }
-      Navigator.pop(context);
-      timePickerDialog(tmp);
-    }
-
-    void cancelChange() {
-      setState(() {
-        Navigator.pop(context);
-      });
-    }
-
-    void selectTime() {
-      showDialog(
-          context: context,
-          builder: ((BuildContext context) {
-            return AlertDialog(
-              title: const Text('選擇時間'),
-              content: SizedBox(
-                  width: 200,
-                  height: 400,
-                  child: SfDateRangePicker(
-                    // onSelectionChanged: _onSelected,
-                    onSubmit: confirmChange,
-                    onCancel: cancelChange,
-                    initialSelectedRange:
-                        PickerDateRange(DateTime.now(), DateTime.now()),
-                    showActionButtons: true,
-                  )),
-            );
-          }));
-    }
-
-    DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AntiLabel(group: widget.group, color: widget.color),
-        // Text(
-        //   title,
-        //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        // ),
-        TextField(
-          controller: widget.titleController,
-          onChanged: (value) {
-            widget.titleController.text = value;
-            widget.titleController.selection =
-                TextSelection.fromPosition(TextPosition(offset: value.length));
-            setState(() {});
-          },
-          decoration: InputDecoration(
-              hintText: '輸入標題',
-              errorText: widget.titleController.text.isEmpty ? '不可為空' : null,
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: 2),
-              border: const OutlineInputBorder()),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        TextButton(
-            onPressed: selectTime,
-            child: Text(
-              parseDate.format(deadline),
-              style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF000000)),
-            )),
-        StateOfMission(
-          stage: widget.stage,
-          stateName: widget.stateName,
-          callback: (stage, stateName) {
-            widget.cbStage(stage, stateName);
-          },
-        )
-      ],
-    );
-  }
-}
-
-class StateOfMission extends StatefulWidget {
-  const StateOfMission(
-      {super.key,
-      required this.stage,
-      required this.stateName,
-      required this.callback});
-
-  final MissionStage stage;
-  final String stateName;
-  final Function(MissionStage stage, String stateName) callback;
-
-  @override
-  State<StateOfMission> createState() => _StateOfMissionState();
-}
-
-class _StateOfMissionState extends State<StateOfMission> {
-  late List<MissionStateModel> stageDatas = [];
-  late MissionStage stage;
-  late String stateName = 'Error';
-  late Color color = Colors.black38;
-  String selectedValue = '待討論 Pending';
-
-  TextEditingController stateNameCrtl = TextEditingController();
-// TODO: can't upload statename, seperate user and group
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   stage = widget.stage;
-  //   stateName = widget.stateName;
-  //   color = stageToColor(widget.stage);
-  // }
-
-  @override
-  void dispose() {
-    super.dispose();
-    stateNameCrtl.dispose();
-  }
-
-  Color stageToColor(MissionStage stage) {
-    // TODO: color discussion
-    if (stage == MissionStage.progress) {
-      return Colors.blue.withOpacity(0.2);
-    } else if (stage == MissionStage.pending) {
-      return Colors.purple.withOpacity(0.2);
-    } else if (stage == MissionStage.close) {
-      return Colors.red.withOpacity(0.2);
-    } else {
-      return Colors.black38;
-    }
-  }
-
-  Column contextTemple(
-      String title, List<MissionStateModel> datas, MissionStage stage) {
-    List<Widget> chips = [];
-
-    for (int i = 0; i < datas.length; i++) {
-      chips.add(chip(stageToColor(stage), datas[i].stateName, stage));
-      chips.add(const SizedBox(
-        height: 4,
-      ));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-            const Divider(
-              height: 7,
-              thickness: 3,
-            )
-          ] +
-          chips,
-    );
-  }
-
-  ListView chooseState() {
-    List<MissionStateModel> inProgress = [];
-    List<MissionStateModel> pending = [];
-    List<MissionStateModel> close = [];
-
-    for (int i = 0; i < stageDatas.length; i++) {
-      if (stageDatas[i].stage == MissionStage.progress) {
-        inProgress.add(stageDatas[i]);
-      } else if (stageDatas[i].stage == MissionStage.pending) {
-        pending.add(stageDatas[i]);
-      } else if (stageDatas[i].stage == MissionStage.close) {
-        close.add(stageDatas[i]);
-      }
-    }
-
-    return ListView(
-      children: [
-        contextTemple('進行中 In Progress', inProgress, MissionStage.progress),
-        contextTemple('待討論 Pending', pending, MissionStage.pending),
-        contextTemple('已結束 Close', close, MissionStage.close),
-        const Divider(
-          height: 7,
-          thickness: 2,
-        ),
-        TextButton(
-          key: ValueKey(selectedValue),
-          onPressed: () {
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return Dialog(
-                    child: StatefulBuilder(
-                      builder: ((context, setNewState) {
-                        return Container(
-                            padding: const EdgeInsets.all(2),
-                            height: 180,
-                            width: 300,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Text('創建狀態 Create State',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20)),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      '階段 Stage',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15),
-                                    ),
-                                    selectStage(setNewState)
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      '名字 State Name',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15),
-                                    ),
-                                    Container(
-                                      width: 130,
-                                      padding: const EdgeInsets.only(right: 30),
-                                      child: TextField(
-                                        controller: stateNameCrtl,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                                TextButton(
-                                    onPressed: () {
-                                      // TODO: call back new stage and new stateName
-                                      // widget.callback();
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('Ok'))
-                              ],
-                            ));
-                      }),
-                    ),
-                  );
-                });
-            setState(() {});
-          },
-          child: const Text(
-            '創建狀態 Create State',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-        )
-      ],
-    );
-  }
-
-  DropdownButton selectStage(void Function(void Function()) setNewState) {
-    return DropdownButton(
-        value: selectedValue,
-        items: const [
-          DropdownMenuItem(
-            value: '進行中 In Progress',
-            child: Text(
-              '進行中 In Progress',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-          ),
-          DropdownMenuItem(
-            value: '待討論 Pending',
-            child: Text(
-              '待討論 Pending',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-          ),
-          DropdownMenuItem(
-            value: '已結束 Close',
-            child: Text(
-              '已結束 Close',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-          )
-        ],
-        onChanged: (value) {
-          // debugPrint('before: $selectedValue');
-          setNewState(() {
-            selectedValue = value;
-          });
-          // debugPrint('after: $selectedValue');
-        });
-  }
-
-  InkWell chip(Color color, String stateName, MissionStage stage) {
-    return InkWell(
-        onTap: () {
-          this.stage = stage;
-          this.stateName = stateName;
-          this.color = stageToColor(stage);
-          widget.callback(stage, stateName);
-          // debugPrint(color.toString());
-          setState(() {
-            Navigator.pop(context);
-          });
-        },
-        child: Container(
-            decoration: BoxDecoration(
-                color: color, borderRadius: BorderRadius.circular(10)),
-            child: Text(
-              ' •$stateName ',
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold),
-            )));
-  }
-
-  Container chipView(Color color, String stateName) {
-    return Container(
-        decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(10)),
-        child: Text(
-          ' •$stateName ',
-          style: const TextStyle(
-              color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
-        ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-        onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return Dialog(
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: chooseState(),
-                  ),
-                );
-              });
-        },
-        child: chipView(color, stateName));
   }
 }
 

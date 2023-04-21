@@ -17,6 +17,6 @@ enum WorkspaceMode{
   personal,
   group,
 }
-enum EventSettingMode { 
+enum SettingMode { 
   create, edit, displpay 
 }

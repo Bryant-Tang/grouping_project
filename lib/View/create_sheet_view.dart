@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/View/event_setting_view.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
-import 'package:grouping_project/components/card_view/mission/mission_edit_view.dart';
+import 'package:grouping_project/View/mission_setting_view.dart';
 
-class AddEvent extends StatefulWidget {
-  const AddEvent({super.key});
+class CreateEvent extends StatefulWidget {
+  const CreateEvent({super.key});
 
   @override
-  State<AddEvent> createState() => _AddEventState();
+  State<CreateEvent> createState() => _CreateEventState();
 }
 
-class _AddEventState extends State<AddEvent> {
+class _CreateEventState extends State<CreateEvent> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -61,14 +61,14 @@ class _AddEventState extends State<AddEvent> {
   }
 }
 
-class AddMission extends StatefulWidget {
-  const AddMission({super.key});
+class CreateMission extends StatefulWidget {
+  const CreateMission({super.key});
 
   @override
-  State<AddMission> createState() => _AddMissionState();
+  State<CreateMission> createState() => _CreateMissionState();
 }
 
-class _AddMissionState extends State<AddMission> {
+class _CreateMissionState extends State<CreateMission> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -76,7 +76,7 @@ class _AddMissionState extends State<AddMission> {
       onTap: () async {
         debugPrint('create mission');
         await Navigator.push(context,
-            MaterialPageRoute(builder: ((context) => const MissionEditPage())));
+            MaterialPageRoute(builder: ((context) => MissionSettingPageView.create())));
         setState(() {});
       },
       splashFactory: InkRipple.splashFactory,
@@ -114,8 +114,8 @@ class _AddMissionState extends State<AddMission> {
   }
 }
 
-class AddTopic extends StatelessWidget {
-  const AddTopic({super.key});
+class CreateTopic extends StatelessWidget {
+  const CreateTopic({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -159,8 +159,8 @@ class AddTopic extends StatelessWidget {
   }
 }
 
-class AddNote extends StatelessWidget {
-  const AddNote({super.key});
+class CreateNote extends StatelessWidget {
+  const CreateNote({super.key});
 
   @override
   Widget build(BuildContext context) {
