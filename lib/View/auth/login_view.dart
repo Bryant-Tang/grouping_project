@@ -1,10 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/View/sign_up_view.dart';
+import 'package:grouping_project/View/auth/sign_up_view.dart';
 import 'package:grouping_project/components/button/auth_button.dart';
 
-import 'package:grouping_project/View/workspace_view.dart';
+import 'package:grouping_project/View/workspace/workspace_view.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
