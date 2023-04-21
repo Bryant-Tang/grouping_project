@@ -41,7 +41,8 @@ import 'package:provider/provider.dart';
 class WorkspaceDashboardPageView extends StatefulWidget {
   const WorkspaceDashboardPageView({super.key});
   @override
-  State<WorkspaceDashboardPageView> createState() => _PeosonalDashboardPageState();
+  State<WorkspaceDashboardPageView> createState() =>
+      _PeosonalDashboardPageState();
 }
 
 class _PeosonalDashboardPageState extends State<WorkspaceDashboardPageView> {
@@ -57,6 +58,7 @@ class _PeosonalDashboardPageState extends State<WorkspaceDashboardPageView> {
         ]);
   }
 }
+
 class Progress extends StatefulWidget {
   const Progress({super.key});
 
@@ -404,7 +406,7 @@ class _OverViewState extends State<OverView> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-      child: Consumer<WorkspaceDashboardViewModel>(
+      child: Consumer<WorkspaceDashBoardViewModel>(
         builder: (context, model, child) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -427,7 +429,7 @@ class _OverViewState extends State<OverView> {
                               },
                               labelText: entry.value['label']!,
                               iconPath: entry.value['icon']!,
-                              numberText: model.eventList.length,
+                              numberText: model.dashboardEventList.length,
                               isSelected: int.parse(entry.value['number']!) ==
                                   model.overView,
                             ),
