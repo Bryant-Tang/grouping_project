@@ -54,9 +54,9 @@ class DatabaseService {
     return await _firestore.collection(collectionPath).doc(dataId).get();
   }
 
-  Future<int> _getCountFirestore({required String collectionPath}) async {
-    return (await _firestore.collection(collectionPath).count().get()).count;
-  }
+  // Future<int> _getCountFirestore({required String collectionPath}) async {
+  //   return (await _firestore.collection(collectionPath).count().get()).count;
+  // }
 
   Future<List<QueryDocumentSnapshot<Map<String, dynamic>>>>
       _getDataFitMapFirestore(
@@ -110,28 +110,19 @@ class DatabaseService {
     return data;
   }
 
-  Future<int> _getAccountAmount() async {
-    return _getCountFirestore(
-        collectionPath: AccountModel.defaultAccount.databasePath);
-  }
-
   Future<String> _createAccount() async {
-    int accountAmount = (await _getAccountAmount());
-    String newAccountId = (accountAmount + 1).toString();
-    _setMapDataFirestore(
-        data: {},
-        collectionPath: AccountModel.defaultAccount.databasePath,
-        dataId: newAccountId);
-    _addDataModelRelationWithAccount(
+    String newAccountId = await _setMapDataFirestore(
+        data: {}, collectionPath: AccountModel.defaultAccount.databasePath);
+    await _addDataModelRelationWithAccount(
         dataId: MissionStateModel.defaultFinishState.id!,
         dataType: MissionStateModel.defaultFinishState.databasePath);
-    _addDataModelRelationWithAccount(
+    await _addDataModelRelationWithAccount(
         dataId: MissionStateModel.defaultPendingState.id!,
         dataType: MissionStateModel.defaultPendingState.databasePath);
-    _addDataModelRelationWithAccount(
+    await _addDataModelRelationWithAccount(
         dataId: MissionStateModel.defaultProgressState.id!,
         dataType: MissionStateModel.defaultProgressState.databasePath);
-    _addDataModelRelationWithAccount(
+    await _addDataModelRelationWithAccount(
         dataId: MissionStateModel.defaultTimeOutState.id!,
         dataType: MissionStateModel.defaultTimeOutState.databasePath);
     return newAccountId;
