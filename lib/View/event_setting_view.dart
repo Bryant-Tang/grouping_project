@@ -24,9 +24,9 @@ class EventSettingPageView extends StatefulWidget {
   final EventSettingViewModel model;
   // pass view model instead of model
   factory EventSettingPageView.create() =>
-      EventSettingPageView(model: EventSettingViewModel());
-  // factory EventSettingPageView.edit({required EventModel eventModel}) =>
-  //   EventSettingPageView(model: EventModel());
+      EventSettingPageView(model: EventSettingViewModel.create());
+  factory EventSettingPageView.edit({required EventModel eventModel}) =>
+      EventSettingPageView(model: EventSettingViewModel.edit(eventModel));
 
   @override
   State<EventSettingPageView> createState() => _EventSettingPageViewState();
@@ -74,13 +74,6 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
   //   descriptController.dispose();
   // }
 
-  // TODO: move to viewModel without creating redundent eventModel
-  void createEvent(EventSettingViewModel model) async {
-    // TODO: Implement model create event method
-    // model.creatEvent();
-    Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<EventSettingViewModel>.value(
@@ -101,27 +94,30 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                         },
                         icon: const Icon(Icons.cancel)),
                     Row(
-                      children:[
-                        model.settingMode == SettingMode.edit 
-                        ? IconButton(
-                            onPressed: () {
-                              // debugPrint('remove');
-                              // model.removeEvent();
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const BasePage()),
-                                  (route) => false);
-                            },
-                            icon: const Icon(Icons.delete))
-                        : const SizedBox(),
+                      children: [
+                        model.settingMode == SettingMode.edit
+                            ? IconButton(
+                                onPressed: () {
+                                  // debugPrint('remove');
+                                  model.removeEvent();
+                                  Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => const BasePage()),
+                                      (route) => false);
+                                },
+                                icon: const Icon(Icons.delete))
+                            : const SizedBox(),
                         IconButton(
-                            onPressed: () {
-                              // model.upload();
-                              Navigator.pushAndRemoveUntil(context,
-                                  MaterialPageRoute(
-                                      builder: (_) => const BasePage()),
-                                  (route) => false);
+                            onPressed: () async {
+                              await model.onSave();
+                              if (mounted) {
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const BasePage()),
+                                    (route) => false);
+                              }
                             },
                             icon: const Icon(Icons.done)),
                       ],
@@ -132,26 +128,12 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                   thickness: 1.5,
                   color: Theme.of(context).colorScheme.surfaceVariant,
                 ),
-                // TitleDateOfEvent(
-                //     titleController: titleController,
-                //     startTime: startTime,
-                //     endTime: endTime,
-                //     group: group,
-                //     color: color,
-                //     callback: (p0, p1) {
-                //       startTime = p0;
-                //       endTime = p1;
-                //     }),
-                CardViewTitle(
-                    title: '參與成員',
-                    child: ContributorList()),
+                const TitleDateOfEvent(),
+                CardViewTitle(title: '參與成員', child: ContributorList()),
                 const SizedBox(
                   height: 1,
                 ),
-                const CardViewTitle(
-                    title: '敘述',
-                    child: IntroductionBlock()
-                ),
+                const CardViewTitle(title: '敘述', child: IntroductionBlock()),
                 const SizedBox(
                   height: 2,
                 ),
@@ -164,8 +146,7 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                   height: 2,
                 ),
                 // TODO: connect note and event
-                const CardViewTitle(
-                    title: '相關共筆', child: CollabNotes()),
+                const CardViewTitle(title: '相關共筆', child: CollabNotes()),
                 const SizedBox(
                   height: 2,
                 ),
@@ -184,54 +165,53 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
 }
 
 class TitleDateOfEvent extends StatefulWidget {
-  const TitleDateOfEvent({super.key,});
+  const TitleDateOfEvent({
+    super.key,
+  });
 
   @override
   State<TitleDateOfEvent> createState() => TitleDateOfEventState();
 }
 
 class TitleDateOfEventState extends State<TitleDateOfEvent> {
-
   @override
   Widget build(BuildContext context) {
-    void timePickerDialog(DateTime show, int state) {
-      // Time tmp = Time(hour: 0, minute: 0);
-      // Navigator.of(context).push(
-      //   showPicker(
-      //     value: tmp,
-      //     onChange: (time) {
-      //       if (state == 0) {
-      //         start = vm.startTime = DateTime(
-      //             show.year, show.month, show.day, time.hour, time.minute);
-      //         // debugPrint(start.toString());
-      //       } else if (state == 1) {
-      //         end = vm.endTime = DateTime(
-      //             show.year, show.month, show.day, time.hour, time.minute);
-      //       }
-      //       widget.callback(start, end);
-      //       setState(() {});
-      //     },
-      //   ),
-      // );
+    void timePickerDialog(DateTime show, int state, EventSettingViewModel model) {
+      Time tmp = Time(hour: 0, minute: 0);
+      Navigator.of(context).push(
+        showPicker(
+          value: tmp,
+          onChange: (time) {
+            if (state == 0) {
+              model.updateStartTime(DateTime(
+                  show.year, show.month, show.day, time.hour, time.minute));
+              // debugPrint(start.toString());
+            } else if (state == 1) {
+              model.updateEndTime(DateTime(
+                  show.year, show.month, show.day, time.hour, time.minute));
+            }
+          },
+        ),
+      );
     }
 
-    void startConfirmChange(Object? value) {
-      DateTime tmp = DateTime(0);
-      if (value is DateTime) {
-        tmp = value;
-      }
-      Navigator.pop(context);
-      timePickerDialog(tmp, 0);
-    }
+    // void startConfirmChange(Object? value) {
+    //   DateTime tmp = DateTime(0);
+    //   if (value is DateTime) {
+    //     tmp = value;
+    //   }
+    //   Navigator.pop(context);
+    //   timePickerDialog(tmp, 0);
+    // }
 
-    void endConfirmChange(Object? value) {
-      DateTime tmp = DateTime(0);
-      if (value is DateTime) {
-        tmp = value;
-      }
-      Navigator.pop(context);
-      timePickerDialog(tmp, 1);
-    }
+    // void endConfirmChange(Object? value) {
+    //   DateTime tmp = DateTime(0);
+    //   if (value is DateTime) {
+    //     tmp = value;
+    //   }
+    //   Navigator.pop(context);
+    //   timePickerDialog(tmp, 1);
+    // }
 
     void cancelChange() {
       setState(() {
@@ -239,103 +219,153 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
       });
     }
 
-    void selectStartTime() {
-      showDialog(
-          context: context,
-          builder: ((BuildContext context) {
-            return AlertDialog(
-              title: const Text('選擇時間'),
-              content: SizedBox(
-                  width: 200,
-                  height: 400,
-                  child: SfDateRangePicker(
-                    // onSelectionChanged: _onSelected,
-                    onSubmit: startConfirmChange,
-                    onCancel: cancelChange,
-                    initialSelectedRange:
-                        PickerDateRange(DateTime.now(), DateTime.now()),
-                    showActionButtons: true,
-                  )),
-            );
-          }));
-    }
+    // void selectStartTime() {
+    //   showDialog(
+    //                       context: context,
+    //                       builder: ((BuildContext context) {
+    //                         return AlertDialog(
+    //                           title: const Text('選擇時間'),
+    //                           content: SizedBox(
+    //                               width: 200,
+    //                               height: 400,
+    //                               child: SfDateRangePicker(
+    //                                 // onSelectionChanged: _onSelected,
+    //                                 onSubmit: startConfirmChange,
+    //                                 onCancel: cancelChange,
+    //                                 initialSelectedRange: PickerDateRange(
+    //                                     DateTime.now(), DateTime.now()),
+    //                                 showActionButtons: true,
+    //                               )),
+    //                         );
+    //                       }));
+    // }
 
-    void selectEndTime() {
-      showDialog(
-          context: context,
-          builder: ((BuildContext context) {
-            return AlertDialog(
-              title: const Text('選擇時間'),
-              content: SizedBox(
-                  width: 200,
-                  height: 400,
-                  child: SfDateRangePicker(
-                    // onSelectionChanged: _onSelected,
-                    onSubmit: endConfirmChange,
-                    onCancel: cancelChange,
-                    initialSelectedRange:
-                        PickerDateRange(DateTime.now(), DateTime.now()),
-                    showActionButtons: true,
-                  )),
-            );
-          }));
-    }
+    // void selectEndTime() {
+    //   showDialog(
+    //                       context: context,
+    //                       builder: ((BuildContext context) {
+    //                         return AlertDialog(
+    //                           title: const Text('選擇時間'),
+    //                           content: SizedBox(
+    //                               width: 200,
+    //                               height: 400,
+    //                               child: SfDateRangePicker(
+    //                                 // onSelectionChanged: _onSelected,
+    //                                 onSubmit: endConfirmChange,
+    //                                 onCancel: cancelChange,
+    //                                 initialSelectedRange: PickerDateRange(
+    //                                     DateTime.now(), DateTime.now()),
+    //                                 showActionButtons: true,
+    //                               )),
+    //                         );
+    //                       }));
+    // }
 
     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
 
-    return Consumer<EventSettingViewModel>(builder:(context, model, child) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // AntiLabel(group: widget.group, color: widget.color),
-        // Text(
-        //   title,
-        //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        // ),
-        TextField(
-          onChanged: model.updateTitle,
-          decoration: InputDecoration(
-              hintText: '輸入標題',
-              errorText: model.titleValidator(),
-              isDense: true,
-              contentPadding: const EdgeInsets.symmetric(vertical: 2),
-              border: const OutlineInputBorder()),
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        Row(
-          children: [
-            TextButton(
-              onPressed: selectStartTime,
-              child: Text(
-                parseDate.format(model.startTime),
-                // "sss",
-                style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
-              ),
-            ),
-            Icon(
-              Icons.arrow_right_alt,
-              size: 20,
-              // color will be a variable
-              color: model.color,
-            ),
-            TextButton(
-              onPressed: selectEndTime,
-              child: Text(
-                parseDate.format(model.endTime),
-                // "sss",
-                style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    // TODO: text color
-                    color: Colors.black),
-              ),
-            )
-          ],
-        ),
-      ],
-    ));
+    return Consumer<EventSettingViewModel>(
+        builder: (context, model, child) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // AntiLabel(group: widget.group, color: widget.color),
+                // Text(
+                //   title,
+                //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                // ),
+                TextField(
+                  onChanged: model.updateTitle,
+                  decoration: InputDecoration(
+                      hintText: '輸入標題',
+                      errorText: model.titleValidator(),
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                      border: const OutlineInputBorder()),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () => showDialog(
+                          context: context,
+                          builder: ((BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('選擇時間'),
+                              content: SizedBox(
+                                  width: 200,
+                                  height: 400,
+                                  child: SfDateRangePicker(
+                                    // onSelectionChanged: _onSelected,
+                                    onSubmit: (value) {
+                                      DateTime tmp = DateTime(0);
+                                      if (value is DateTime) {
+                                        tmp = value;
+                                      }
+                                      Navigator.pop(context);
+                                      timePickerDialog(tmp, 0, model);
+                                    },
+                                    onCancel: cancelChange,
+                                    initialSelectedRange: PickerDateRange(
+                                        DateTime.now(), DateTime.now()),
+                                    showActionButtons: true,
+                                  )),
+                            );
+                          })),
+                      child: Text(
+                        parseDate.format(model.startTime),
+                        // "sss",
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_right_alt,
+                      size: 20,
+                      // color will be a variable
+                      color: model.color,
+                    ),
+                    TextButton(
+                      onPressed: () => showDialog(
+                          context: context,
+                          builder: ((BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('選擇時間'),
+                              content: SizedBox(
+                                  width: 200,
+                                  height: 400,
+                                  child: SfDateRangePicker(
+                                    // onSelectionChanged: _onSelected,
+                                    onSubmit: (value) {
+                                      DateTime tmp = DateTime(0);
+                                      if (value is DateTime) {
+                                        tmp = value;
+                                      }
+                                      Navigator.pop(context);
+                                      timePickerDialog(tmp, 1, model);
+                                    },
+                                    onCancel: cancelChange,
+                                    initialSelectedRange: PickerDateRange(
+                                        DateTime.now(), DateTime.now()),
+                                    showActionButtons: true,
+                                  )),
+                            );
+                          })),
+                      child: Text(
+                        parseDate.format(model.endTime),
+                        // "sss",
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            // TODO: text color
+                            color: Colors.black),
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ));
   }
 }
 
@@ -358,7 +388,6 @@ class AntiLabel extends StatelessWidget {
   }
 }
 
-
 class IntroductionBlock extends StatefulWidget {
   const IntroductionBlock({super.key});
 
@@ -373,7 +402,7 @@ class _IntroductionBlockState extends State<IntroductionBlock> {
       builder: (context, model, child) => TextField(
         keyboardType: TextInputType.multiline,
         maxLines: 10,
-        onChanged:model.updateIntroduction,
+        onChanged: model.updateIntroduction,
         decoration: InputDecoration(
             hintText: '輸入標題',
             errorText: model.introductionValidator(),
@@ -399,15 +428,15 @@ class _ContributorState extends State<ContributorList> {
   // List<String> peopleIds = [];
 
   // Future<RawChip> createHeadShot(String person) async {
-    /// 回傳 contributor 的頭貼
-    // var userData = await DataController()
-    //     .download(dataTypeToGet: ProfileModel(), dataId: person);
-    // io.File photo = userData.photo ?? io.File('assets/images/cover.png');
-    // bool selected = false;
-    // if (widget.eventModel != null) {
-    //   selected = widget.eventModel!.contributorIds!.contains(person);
-    //   if (selected) peopleIds.add(person);
-    // }
+  /// 回傳 contributor 的頭貼
+  // var userData = await DataController()
+  //     .download(dataTypeToGet: ProfileModel(), dataId: person);
+  // io.File photo = userData.photo ?? io.File('assets/images/cover.png');
+  // bool selected = false;
+  // if (widget.eventModel != null) {
+  //   selected = widget.eventModel!.contributorIds!.contains(person);
+  //   if (selected) peopleIds.add(person);
+  // }
   //   return RawChip(
   //     label: Text(userData.name ?? 'unknown'),
   //     avatar: CircleAvatar(child: Image.file(photo)),
@@ -440,22 +469,19 @@ class _ContributorState extends State<ContributorList> {
   Widget build(BuildContext context) {
     return Consumer<EventSettingViewModel>(
       builder: (context, model, child) => Row(
-        children: model.contributors.map(
-          (AccountModel profile) => RawChip(
-            label: Text(profile.name),
+        children: model.contributors
+            .map((AccountModel profile) => RawChip(
+                  label: Text(profile.name),
                   avatar: CircleAvatar(
-                    child: profile.photo.isEmpty
-                      ? Text(profile.name.substring(0, 1))
-                      : Image.file(File.fromRawPath(profile.photo))
-                  ),
+                      child: profile.photo.isEmpty
+                          ? Text(profile.name.substring(0, 1))
+                          : Image.file(File.fromRawPath(profile.photo))),
                   selected: true,
-                  onSelected: (value) {
-
-                  },
+                  onSelected: (value) {},
                   elevation: 4,
                   selectedColor: const Color(0xFF2196F3),
-          )
-        ).toList(),
+                ))
+            .toList(),
       ),
     );
   }
@@ -528,7 +554,7 @@ class _collabNotesState extends State<CollabNotes> {
             Positioned(
               left: 5,
               top: 8,
-              child: Row(children: const[
+              child: Row(children: const [
                 Icon(Icons.menu_book_rounded),
                 SizedBox(
                   width: 1,

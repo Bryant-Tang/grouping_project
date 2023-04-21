@@ -1,9 +1,12 @@
 //import 'package:grouping_project/components/card_view.dart';
+import 'package:grouping_project/components/card_view/event/event_card.dart';
 import 'package:grouping_project/model/model_lib.dart';
 
 import 'package:grouping_project/components/card_view/event_information.dart';
 
 import 'package:flutter/material.dart';
+import 'package:grouping_project/service/database_service.dart';
+import 'package:grouping_project/service/service_lib.dart';
 
 class EventPage extends StatefulWidget {
   const EventPage({super.key});
@@ -39,15 +42,15 @@ class EventPageState extends State<EventPage> {
 }
 
 Future<void> showEvents() async {
-  // var allDatas =
-  //     await DataController().downloadAll(dataTypeToGet: EventModel());
+  var allDatas =
+      await DatabaseService(ownerUid: AuthService().getUid()).getAllEvent();
 
-  // eventCards = [];
-  // for (int index = 0; index < allDatas.length; index++) {
-  //   var event = allDatas[index];
-  //   eventCards.add(const SizedBox(
-  //     height: 10,
-  //   ));
-  //   eventCards.add(EventCardViewTemplate(eventModel: event));
-  // }
+  eventCards = [];
+  for (int index = 0; index < allDatas.length; index++) {
+    var event = allDatas[index];
+    eventCards.add(const SizedBox(
+      height: 10,
+    ));
+    eventCards.add(EventCardViewTemplate(eventModel: event));
+  }
 }
