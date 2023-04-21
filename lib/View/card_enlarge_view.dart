@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/service/database_service.dart';
@@ -35,71 +36,7 @@ class AntiLabel extends StatelessWidget {
   }
 }
 
-class TitleDateOfEvent extends StatelessWidget {
-  const TitleDateOfEvent(
-      {super.key,
-      required this.title,
-      required this.startTime,
-      required this.endTime,
-      required this.group,
-      required this.color});
 
-  final String title;
-  final DateTime startTime;
-  final DateTime endTime;
-  final String group;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AntiLabel(group: group, color: color),
-        Text(
-          title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        Row(
-          children: [
-            Text(
-              parseDate.format(startTime),
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-            Icon(
-              Icons.arrow_right_alt,
-              size: 20,
-              // color will be a variable
-              color: color,
-            ),
-            Text(
-              parseDate.format(endTime),
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            )
-          ],
-        ),
-        Row(
-          children: [
-            Icon(
-              Icons.access_time,
-              size: 20,
-              color: color,
-            ),
-            Text(
-              diff(endTime),
-              style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: color),
-            )
-          ],
-        )
-      ],
-    );
-  }
-}
 
 class TitleDateOfMission extends StatelessWidget {
   const TitleDateOfMission(
