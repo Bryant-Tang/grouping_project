@@ -55,8 +55,7 @@ class SignUpViewModel extends ChangeNotifier {
   Future<void> register() async {
     isLoading = true;
     notifyListeners();
-    registerState = await passwordRegisterModel.register(
-        email, password, userName);
+    registerState = await passwordRegisterModel.register( email, password, userName);
     isLoading = false;
     notifyListeners();
   }

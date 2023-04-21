@@ -45,8 +45,8 @@ class RegisterModel {
       // final ProfileModel user = ProfileModel(nickname: userName, email: email);
       final uid = authService.getUid(); 
       DatabaseService db = DatabaseService(ownerUid: uid);
-
       await db.createUserAccount();
+      await db.setAccount(account: tempProfile);
       debugPrint('upload successfully');
       return RegisterState.success;
     } catch (error) {
