@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/create_group_view_model.dart';
 import 'package:grouping_project/components/auth_view/headline_with_content.dart';
 import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart';
-import 'package:grouping_project/pages/view_template/sing_up_page_template.dart';
+import 'package:grouping_project/components/sing_up_page_template.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -34,11 +34,6 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
@@ -64,11 +59,15 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
     }
   }
 
-  void register(CreateGroupViewModel model) {
-    model.createGroup();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text("小組建立成功")));
-    Navigator.of(context).pop(true);
+  void register(CreateGroupViewModel model){
+    model.createGroup().then((value) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("小組建立成功")));
+      Navigator.of(context).pop(true);
+    }).catchError((error){
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("小組建立失敗")));
+    });
   }
 
   @override
@@ -361,7 +360,8 @@ class _WorkspaceImageRegisterPageState
                           final selectedPhoto = await ImagePicker()
                               .pickImage(source: ImageSource.gallery);
                           if (selectedPhoto != null) {
-                            model.updateProfileImage(await File(selectedPhoto.path).readAsBytes());
+                            model.updateProfileImage(
+                                await File(selectedPhoto.path).readAsBytes());
                           }
                         },
                         child: Row(

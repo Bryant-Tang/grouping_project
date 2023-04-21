@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/View/workspace_view.dart';
+import 'package:grouping_project/View/workspace/workspace_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';

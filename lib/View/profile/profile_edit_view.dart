@@ -266,9 +266,9 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
                     );
                   });
               model.createNewTag(newTag);
-              debugPrint(newTag.toString());
+              // debugPrint(newTag.toString());
             } catch (error) {
-              debugPrint(error.toString());
+              // debugPrint(error.toString());
             }
           }
         },
@@ -390,7 +390,7 @@ class _TagFormState extends State<TagForm> {
     keyText = widget.tag.tag;
     valueText = widget.tag.content;
     keyEditForm = TextFormField(
-      maxLength: 10,
+      maxLength: 20,
       controller: keyTextController
         ..text = keyText
         ..addListener(() {
@@ -411,7 +411,7 @@ class _TagFormState extends State<TagForm> {
       },
     );
     valueEditForm = TextFormField(
-      maxLength: 15,
+      maxLength: 20,
       controller: valueTextController
         ..text = valueText
         ..addListener(() {
@@ -534,6 +534,7 @@ class _PersonalProileTagTextEditViewState
                 children: [
                   Text(widget.tag.tag, style: keyTextStyle),
                   Text(widget.tag.content, style: valueTextStyle),
+                  const Divider(height: 2, thickness: 1.5),
                 ],
               ),
               model.tagEditMode == TagEditMode.edit ? editTool : Container()

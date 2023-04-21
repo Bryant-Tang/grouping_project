@@ -1,6 +1,6 @@
 import 'package:grouping_project/VM/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/View/workspace_view.dart';
+import 'package:grouping_project/View/workspace/workspace_view.dart';
 
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
