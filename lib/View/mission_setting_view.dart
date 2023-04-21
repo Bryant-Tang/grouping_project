@@ -9,8 +9,6 @@ import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:provider/provider.dart';
 
-
-
 /*
 * this file is used to create mission or edit existed mission 
 */
@@ -113,7 +111,8 @@ class _MissionSettingPageViewState extends State<MissionSettingPageView> {
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) => const BasePage()),
+                                          builder: (_) =>
+                                              const WorksapceBasePage()),
                                       (route) => false);
                                 },
                                 icon: const Icon(Icons.delete))
@@ -124,7 +123,8 @@ class _MissionSettingPageViewState extends State<MissionSettingPageView> {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => const BasePage()),
+                                      builder: (_) =>
+                                          const WorksapceBasePage()),
                                   (route) => false);
                             },
                             icon: const Icon(Icons.done)),
@@ -155,10 +155,7 @@ class _MissionSettingPageViewState extends State<MissionSettingPageView> {
                 const SizedBox(
                   height: 1,
                 ),
-                const CardViewTitle(
-                    title: '敘述',
-                    child: IntroductionBlock()
-                ),
+                const CardViewTitle(title: '敘述', child: IntroductionBlock()),
                 const SizedBox(
                   height: 2,
                 ),
@@ -208,7 +205,6 @@ class AntiLabel extends StatelessWidget {
   }
 }
 
-
 class IntroductionBlock extends StatefulWidget {
   const IntroductionBlock({super.key});
 
@@ -223,7 +219,7 @@ class _IntroductionBlockState extends State<IntroductionBlock> {
       builder: (context, model, child) => TextField(
         keyboardType: TextInputType.multiline,
         maxLines: 10,
-        onChanged:model.updateIntroduction,
+        onChanged: model.updateIntroduction,
         decoration: InputDecoration(
             hintText: '輸入標題',
             errorText: model.introductionValidator(),
@@ -651,15 +647,15 @@ class _ContributorState extends State<ContributorList> {
   // List<String> peopleIds = [];
 
   // Future<RawChip> createHeadShot(String person) async {
-    /// 回傳 contributor 的頭貼
-    // var userData = await DataController()
-    //     .download(dataTypeToGet: ProfileModel(), dataId: person);
-    // io.File photo = userData.photo ?? io.File('assets/images/cover.png');
-    // bool selected = false;
-    // if (widget.eventModel != null) {
-    //   selected = widget.eventModel!.contributorIds!.contains(person);
-    //   if (selected) peopleIds.add(person);
-    // }
+  /// 回傳 contributor 的頭貼
+  // var userData = await DataController()
+  //     .download(dataTypeToGet: ProfileModel(), dataId: person);
+  // io.File photo = userData.photo ?? io.File('assets/images/cover.png');
+  // bool selected = false;
+  // if (widget.eventModel != null) {
+  //   selected = widget.eventModel!.contributorIds!.contains(person);
+  //   if (selected) peopleIds.add(person);
+  // }
   //   return RawChip(
   //     label: Text(userData.name ?? 'unknown'),
   //     avatar: CircleAvatar(child: Image.file(photo)),
@@ -692,22 +688,19 @@ class _ContributorState extends State<ContributorList> {
   Widget build(BuildContext context) {
     return Consumer<MissionSettingViewModel>(
       builder: (context, model, child) => Row(
-        children: model.contributors.map(
-          (AccountModel profile) => RawChip(
-            label: Text(profile.name),
+        children: model.contributors
+            .map((AccountModel profile) => RawChip(
+                  label: Text(profile.name),
                   avatar: CircleAvatar(
-                    child: profile.photo.isEmpty
-                      ? Text(profile.name.substring(0, 1))
-                      : Image.memory(profile.photo)
-                  ),
+                      child: profile.photo.isEmpty
+                          ? Text(profile.name.substring(0, 1))
+                          : Image.memory(profile.photo)),
                   selected: true,
-                  onSelected: (value) {
-
-                  },
+                  onSelected: (value) {},
                   elevation: 4,
                   selectedColor: const Color(0xFF2196F3),
-          )
-        ).toList(),
+                ))
+            .toList(),
       ),
     );
   }
@@ -780,7 +773,7 @@ class _collabNotesState extends State<CollabNotes> {
             Positioned(
               left: 5,
               top: 8,
-              child: Row(children: const[
+              child: Row(children: const [
                 Icon(Icons.menu_book_rounded),
                 SizedBox(
                   width: 1,

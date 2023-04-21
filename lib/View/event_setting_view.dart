@@ -103,7 +103,7 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) => const BasePage()),
+                                          builder: (_) => const WorksapceBasePage()),
                                       (route) => false);
                                 },
                                 icon: const Icon(Icons.delete))
@@ -115,7 +115,7 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (_) => const BasePage()),
+                                        builder: (_) => const WorksapceBasePage()),
                                     (route) => false);
                               }
                             },

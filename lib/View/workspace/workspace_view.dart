@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:grouping_project/VM/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/helper_page/building.dart';
 import 'package:grouping_project/View/profile/profile_display_view.dart';
@@ -7,17 +8,16 @@ import 'package:grouping_project/components/button/create_button.dart';
 import 'package:grouping_project/View/workspace/workspace_dashboard_page_view.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/View/workspace/workspace_calendar_page_view.dart';
-
 import 'worksapce_switching_sheet_view.dart';
 
-class BasePage extends StatefulWidget {
-  const BasePage({Key? key}) : super(key: key);
+class WorksapceBasePage extends StatefulWidget {
+  const WorksapceBasePage({Key? key}) : super(key: key);
 
   @override
-  State<BasePage> createState() => _BasePageState();
+  State<WorksapceBasePage> createState() => _WorksapceBasePageState();
 }
 
-class _BasePageState extends State<BasePage> {
+class _WorksapceBasePageState extends State<WorksapceBasePage> {
   // late Future<void> _dataFuture;
   final _pageController = PageController();
   // final model = WorkspaceDashboardViewModel();
@@ -44,7 +44,7 @@ class _BasePageState extends State<BasePage> {
     super.dispose();
   }
 
-  AppBar getAppBar(WorkspaceDashboardViewModel model, themeManager, context) {
+  AppBar getAppBar(WorkspaceDashBoardViewModel model, themeManager, context) {
     return AppBar(
       title: MaterialButton(
         child: Padding(
@@ -81,7 +81,8 @@ class _BasePageState extends State<BasePage> {
                       topLeft: Radius.circular(20),
                       topRight: Radius.circular(20))),
               builder: (BuildContext context) {
-                return ChangeNotifierProvider<WorkspaceDashboardViewModel>.value(
+                return ChangeNotifierProvider<
+                        WorkspaceDashBoardViewModel>.value(
                     value: model,
                     builder: (context, child) => const SwitchWorkSpaceSheet());
               });
@@ -100,14 +101,13 @@ class _BasePageState extends State<BasePage> {
               showModalBottomSheet(
                   context: context,
                   shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20))),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20))),
                   builder: (context) => ChangeNotifierProvider.value(
-                    value: model,
-                    child: const ProfileDispalyPageView(),
-                  )
-              );
+                        value: model,
+                        child: const ProfileDispalyPageView(),
+                      ));
             },
             icon: const Icon(Icons.settings_accessibility_rounded)),
       ],
@@ -134,35 +134,42 @@ class _BasePageState extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<WorkspaceDashboardViewModel>(
-      create: (context) => WorkspaceDashboardViewModel()..getAllData(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<WorkspaceDashBoardViewModel>(
+          create: (context) => WorkspaceDashBoardViewModel()..getAllData(),
+        ),
+        ChangeNotifierProvider<CalendarViewModel>(
+          create: (context) => CalendarViewModel(),
+        )
+      ],
       child: Consumer<ThemeManager>(
-        builder: (context, themeManager, child) =>
-            Consumer<WorkspaceDashboardViewModel>(
-                builder: (context, model, child) => 
-                  WillPopScope(
-                    onWillPop: () async {
-                      return false; // 禁用返回鍵
-                    }, child: model.isLoading
-                        ? const Scaffold(
-                            body: Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                        : Scaffold(
-                            appBar: getAppBar(model, themeManager, context),
-                            body: PageView(
-                              controller: _pageController,
-                              onPageChanged: model.updateSelectedIndex,
-                              children: _pages,
-                            ),
-                            extendBody: true,
-                            floatingActionButton: const CreateButton(),
-                            // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-                            bottomNavigationBar:
-                                getNavigationBar(model, themeManager, context),
-                          ))),
-      ),
+          builder: (context, themeManager, child) =>
+              Consumer<WorkspaceDashBoardViewModel>(
+                  builder: (context, model, child) => WillPopScope(
+                      onWillPop: () async {
+                        return false; // 禁用返回鍵
+                      },
+                      child: model.isLoading
+                          ? const Scaffold(
+                              body: Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            )
+                          : Scaffold(
+                              appBar: getAppBar(model, themeManager, context),
+                              body: PageView(
+                                controller: _pageController,
+                                onPageChanged: model.updateSelectedIndex,
+                                children: _pages,
+                              ),
+                              extendBody: true,
+                              floatingActionButton: const CreateButton(),
+                              // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                              bottomNavigationBar:
+                                  getNavigationBar(model, themeManager, context),
+                            ))),
+        )
     );
   }
 }

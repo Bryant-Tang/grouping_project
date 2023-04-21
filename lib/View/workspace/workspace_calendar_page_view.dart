@@ -1,7 +1,5 @@
 import 'package:grouping_project/VM/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/View/workspace/workspace_view.dart';
-
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -21,7 +19,7 @@ class _CalendarPageState extends State<CalendarPage> {
   late DateTime _focusedDay = DateTime.now();
   late List<Widget> eventAndMissionCards = [];
 
-  CalendarViewModel model = CalendarViewModel();
+  // CalendarViewModel model = CalendarViewModel();
 
   final Map<CalendarFormat, String> _calendarFormat = {
     CalendarFormat.month: 'month'
@@ -59,7 +57,7 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Future<void> onDaySelected(
-      {required DateTime selectedDay, required DateTime focusedDay}) async {
+      {required DateTime selectedDay, required DateTime focusedDay, required CalendarViewModel model}) async {
     if ((selectedDay.month != _focusedDay.month) ||
         (selectedDay.year != _focusedDay.year)) {
       await model.getEventsAndMissionsByDate(selectedDay);
@@ -139,7 +137,7 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   /// refresh the page
-  Future<void> onRefresh() async {
+  Future<void> onRefresh(CalendarViewModel model) async {
     await model.getEventsAndMissionsByDate(_focusedDay);
     await showCards(
         eventAndMission: model.eventsMap[DateTime(
@@ -163,14 +161,13 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => model,
-        child: Consumer<WorkspaceDashboardViewModel>(
-          builder: (context, value, child) => Consumer<CalendarViewModel>(
-            builder: (context, model, child) {
+    return Consumer<WorkspaceDashBoardViewModel>(
+          builder: (context, workspaceVM, child) => 
+          Consumer<CalendarViewModel>(
+            builder: (context, calenderVM, child) {
               return RefreshIndicator(
                   key: _refreshIndicatorKey,
-                  onRefresh: onRefresh,
+                  onRefresh: () => onRefresh(calenderVM),
                   child: Padding(
                     padding: const EdgeInsets.all(10),
                     child: Column(
@@ -179,11 +176,11 @@ class _CalendarPageState extends State<CalendarPage> {
                           padding: const EdgeInsets.only(left: 10, right: 10),
                           child: TableCalendar(
                             onCalendarCreated: (pageController) {
-                              model
+                              calenderVM
                                   .initData(
-                                      eventsList: value.event,
-                                      missionsList: value.mission)
-                                  .whenComplete(() => onRefresh());
+                                      eventsList: workspaceVM.events,
+                                      missionsList: workspaceVM.missions)
+                                  .whenComplete(() => onRefresh(calenderVM));
                             },
                             // center Header Title,
                             headerStyle: const HeaderStyle(
@@ -198,7 +195,7 @@ class _CalendarPageState extends State<CalendarPage> {
                             daysOfWeekHeight: 20,
                             eventLoader: (day) {
                               // model.getEventsAndMissionsByDate(day);
-                              return model.eventsMap[
+                              return calenderVM.eventsMap[
                                       DateTime(day.year, day.month, day.day)] ??
                                   [];
                             },
@@ -210,7 +207,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                 _selectedDay = tempDate;
                                 onDaySelected(
                                     selectedDay: _selectedDay,
-                                    focusedDay: _focusedDay);
+                                    focusedDay: _focusedDay,
+                                    model: calenderVM
+                                );
                                 setState(() {});
                               }
                             },
@@ -271,18 +270,19 @@ class _CalendarPageState extends State<CalendarPage> {
                             },
                             onDaySelected: (selectedDay, focusedDay) =>
                                 onDaySelected(
+                                    model: calenderVM,
                                     focusedDay: focusedDay,
                                     selectedDay: selectedDay),
                             onPageChanged: (focusedDay) async {
                               _focusedDay = focusedDay;
-                              await model.toMapAMonth(
+                              await calenderVM.toMapAMonth(
                                   year: _focusedDay.year,
                                   month: _focusedDay.month);
                             },
                           ),
                         ),
                         Expanded(
-                          child: model.isMapping
+                          child: calenderVM.isMapping
                               ? Center(
                                   child: Column(
                                     children: [
@@ -341,6 +341,6 @@ class _CalendarPageState extends State<CalendarPage> {
                   ));
             },
           ),
-        ));
+        );
   }
 }

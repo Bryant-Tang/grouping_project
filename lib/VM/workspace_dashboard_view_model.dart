@@ -4,17 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
-class WorkspaceDashboardViewModel extends ChangeNotifier {
+class WorkspaceDashBoardViewModel extends ChangeNotifier {
+
   int _selectedPageIndex = 0;
-  int get selectedIndex => _selectedPageIndex;
   int overViewIndex = 0;
+  int get selectedIndex => _selectedPageIndex;
   int get overView => overViewIndex;
+
   AccountModel profileData = AccountModel();
-  List<MissionModel> missionList = [];
-  List<EventModel> eventList = [];
+  List<MissionModel> dashboardMissionList = [];
+  List<EventModel> dashboardEventList = [];
   AccountModel get profile => profileData;
-  List<MissionModel> get missions => missionList;
-  List<EventModel> get events => eventList;
+  List<MissionModel> get missions => dashboardMissionList;
+  List<EventModel> get events => dashboardEventList;
 
   String get userName => profile.nickname;
   String get realName => profile.name;
@@ -22,32 +24,9 @@ class WorkspaceDashboardViewModel extends ChangeNotifier {
   String get introduction => profile.introduction;
   Uint8List get profileImage => profile.photo;
   List<AccountTag> get tags => profile.tags;
-  List<MissionModel> get mission => missionList;
-  List<EventModel> get event => eventList;
-  
+
   bool isLoading = false;
   List<AccountModel> get allGroupProfile => profile.associateEntityAccount;
-    // ProfileModel(
-    //     name: "服務學習課程",
-    //     color: 0xFF00417D,
-    //     introduction: "python 程式教育課程小組",
-    //     tags: ["#Python", "#程式基礎教育", "#工作"]
-    //         .map((t) => ProfileTag(tag: t, content: t))
-    //         .toList()),
-    // ProfileModel(
-    //     name: "服務學習課程",
-    //     color: 0xFF993300,
-    //     introduction: "python 程式教育課程小組",
-    //     tags: ["#Python", "#程式基礎教育", "#工作"]
-    //         .map((t) => ProfileTag(tag: t, content: t))
-    //         .toList()),
-    // ProfileModel(
-    //     name: "服務學習課程",
-    //     color: 0xFFFFB782,
-    //     introduction: "python 程式教育課程小組",
-    //     tags: ["#Python", "#程式基礎教育", "#工作"]
-    //         .map((t) => ProfileTag(tag: t, content: t))
-    //         .toList()),
   void switchGroup() {
     debugPrint("SWITCH");
   }
@@ -97,13 +76,12 @@ class WorkspaceDashboardViewModel extends ChangeNotifier {
     notifyListeners();
     try {
       profileData = await db.getAccount();
-      debugPrint(profile.associateEntityId.toString());
-      eventList = await db.getAllEvent();
-      missionList = await db.getAllMission();
+      debugPrint(profile.associateEntityAccount.toString());
+      dashboardEventList = await db.getAllEvent();
+      dashboardMissionList = await db.getAllMission();
     } catch (e) {
       debugPrint(e.toString());
-    }
-    // 傳送資料
+    } // 傳送資料
     isLoading = false;
     notifyListeners();
   }

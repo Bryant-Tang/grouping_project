@@ -16,7 +16,7 @@ class SwitchWorkSpaceSheet extends StatefulWidget {
 class _SwitchWorkSpaceSheetState extends State<SwitchWorkSpaceSheet> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<WorkspaceDashboardViewModel>(
+    return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, model, child) => SafeArea(
         child: Container(
           clipBehavior: Clip.hardEdge,
@@ -58,15 +58,15 @@ class _SwitchWorkSpaceSheetState extends State<SwitchWorkSpaceSheet> {
                 ),
                 MaterialButton(
                     onPressed: () async {
-                      debugPrint("create group");
-                      Navigator.push(
+                      // debugPrint("create group");
+                      await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
                                   const CreateWorkspacePage()));
-                      //if (context.mounted) {
-                      //  Navigator.pop(context);
-                      // }
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
@@ -129,7 +129,7 @@ class GroupSwitcherView extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Consumer<WorkspaceDashboardViewModel>(
+    return Consumer<WorkspaceDashBoardViewModel>(
         builder: (context, model, child) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
               child: MaterialButton(

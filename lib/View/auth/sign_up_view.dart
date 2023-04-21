@@ -44,8 +44,8 @@ class _SignUpPageState extends State<SignUpPage> {
         backward: backward,
       ),
       RecommendPage(forward: () {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const BasePage()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const WorksapceBasePage()));
       })
     ];
   }
@@ -360,8 +360,12 @@ class _RecommendPageState extends State<RecommendPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ProfileEditPageView( model: ProfileEditViewModel()..profile = AccountModel(name: model.userName, email: model.email),
-                            )));
+                            builder: (context) => ProfileEditPageView(
+                                  model: ProfileEditViewModel()
+                                    ..profile = AccountModel(
+                                        name: model.userName,
+                                        email: model.email),
+                                )));
                     // DataController()
                     //     .download(
                     //         dataTypeToGet: ProfileModel(),
