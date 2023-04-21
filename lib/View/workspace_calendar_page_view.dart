@@ -38,9 +38,8 @@ class _CalendarPageState extends State<CalendarPage> {
       // TODO: Color of the calendar need to be changed
       builder: (context, child) {
         return Theme(
-            data: ThemeData(
-              primaryColor: Theme.of(context).colorScheme.primaryContainer,
-            ),
+            data: Theme.of(context)
+                .copyWith(colorScheme: Theme.of(context).colorScheme),
             child: child!);
       },
     );
