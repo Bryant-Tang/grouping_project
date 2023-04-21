@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/card_view/event/event_information_enlarge.dart';
 import 'package:grouping_project/components/card_view/event/event_information_shrink.dart';
 
-import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:provider/provider.dart';
 
 class EventCardViewTemplate extends StatelessWidget {
   const EventCardViewTemplate({super.key, required this.eventModel});
@@ -17,40 +18,42 @@ class EventCardViewTemplate extends StatelessWidget {
         EventInformationShrink(eventModel: eventModel);
     final EventInformationEnlarge detailEnlarge =
         EventInformationEnlarge(eventModel: eventModel);
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: InkWell(
-          onTap: () {
-            Navigator.push(
-                context,
-                PageRouteBuilder(
-                    transitionDuration: const Duration(milliseconds: 700),
-                    reverseTransitionDuration:
-                        const Duration(milliseconds: 700),
-                    pageBuilder: (_, __, ___) =>
-                        _Enlarge(detail: detailEnlarge, usingColor: color)));
-          },
-          child: Hero(
-            tag: 'change${detailShrink.eventModel.id}',
-            child: Material(
-              type: MaterialType.transparency,
-              child: _Shrink(
-                detail: detailShrink,
-                usingColor: color,
-                height: 84,
-              ),
-            ),
-          )),
+    return Consumer<ThemeManager>(
+      builder: (context, themeManager, child) {
+        ThemeData themeData = ThemeData(
+            colorSchemeSeed: Color(eventModel.color),
+            brightness: themeManager.brightness
+        );
+        return Card(
+          color: themeData.colorScheme.surface,
+          elevation: 2,
+          child: InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                        transitionDuration: const Duration(milliseconds: 400),
+                        reverseTransitionDuration:
+                            const Duration(milliseconds: 400),
+                        pageBuilder: (_, __, ___) => _Enlarge(
+                            detail: detailEnlarge, usingColor: color)));
+              },
+              child: Hero(
+                tag: 'change${detailShrink.eventModel.id}',
+                child: _Shrink(
+                  detail: detailShrink,
+                  usingColor: color,
+                  height: 84,
+                ),
+              )),
+        );
+      },
     );
   }
 }
 
 class _Shrink extends StatelessWidget {
-  const _Shrink(
-      {required this.detail, required this.usingColor, required this.height});
+  const _Shrink({required this.detail, required this.usingColor, required this.height});
 
   final EventInformationShrink detail;
   final Color usingColor;
@@ -62,7 +65,7 @@ class _Shrink extends StatelessWidget {
   Widget build(BuildContext context) {
     //debugPrint('it is shrink');
     return Container(
-      // TODO: use padding
+        // TODO: use padding
         width: MediaQuery.of(context).size.width - 20,
         height: height,
         decoration: BoxDecoration(

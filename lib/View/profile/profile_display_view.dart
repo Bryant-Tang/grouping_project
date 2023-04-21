@@ -65,7 +65,8 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                                 builder: (BuildContext context) =>
                                     ProfileEditPageView(
                                         model: ProfileEditViewModel()
-                                          ..profile = model.profile),
+                                          ..profile = model.accountProfile
+                                        ),
                               ));
                           await model.getAllData();
                         },
@@ -151,13 +152,13 @@ class HeadShot extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  Text(model.realName,
+                  Text(model.workspaceName,
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(
                             fontWeight: FontWeight.bold,
                           )),
                   const SizedBox(height: 1),
-                  model.userName != "Unkonwn"
-                      ? Text("a.k.a ${model.userName}",
+                  model.realName != "unkonwn"
+                      ? Text(model.realName,
                           style: Theme.of(context).textTheme.titleMedium!.copyWith(
                                     fontWeight: FontWeight.bold))
                       : const SizedBox()

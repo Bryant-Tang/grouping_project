@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 // import 'package:grouping_project/VM/state.dart';
@@ -26,6 +27,12 @@ class CreateGroupViewModel extends ChangeNotifier {
     "#其他",
     "#臨時小組"
   ];
+  Color randomColor() {
+    final random = Random();
+    return Color.fromARGB(
+        255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+  }
+
   List<bool> isSelected = [];
   List<AccountTag> selectTag = [];
   int maximunTagNumber = 4;
@@ -36,6 +43,7 @@ class CreateGroupViewModel extends ChangeNotifier {
 
   void updateUserName(String userName) {
     profile.name = userName;
+    profile.nickname = userName;
     notifyListeners();
   }
 
@@ -96,16 +104,19 @@ class CreateGroupViewModel extends ChangeNotifier {
     final accountDatabase = DatabaseService(ownerUid: uid); // account db
     notifyListeners();
     try {
-       // get user account profile
+      // get user account profile
       final userAccountModel = await accountDatabase.getAccount();
+      debugPrint(userAccountModel.associateEntityAccount.length.toString());
       // add user id to group profile entity
-      profile.addEntity(userAccountModel.id!); 
-      // get new group id 
-      final groupId = await accountDatabase.createGroupAccount(); 
+      profile.addEntity(userAccountModel.id!);
+      debugPrint(profile.associateEntityAccount.length.toString());
+      // get new group id
+      final groupId = await accountDatabase.createGroupAccount();
+      // debugPrint("group Id $groupId");
       // set group profile to group account db
-      await DatabaseService(
-        ownerUid: groupId, forUser: false
-      ).setAccount(account: profile.copyWith(accountId: groupId));
+      await DatabaseService(ownerUid: groupId, forUser: false).setAccount(
+          account:
+              profile.copyWith(accountId: groupId, color: randomColor().value));
       // add group id to user account profile entity
       userAccountModel.addEntity(groupId);
       // upload user account profile to user account db

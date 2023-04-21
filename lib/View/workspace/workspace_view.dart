@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grouping_project/VM/calendar_view_model.dart';
+import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/helper_page/building.dart';
 import 'package:grouping_project/View/profile/profile_display_view.dart';
@@ -62,7 +62,7 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
               ),
               const SizedBox(width: 10),
               Text(
-                model.profile.nickname,
+                model.workspaceName,
                 style: Theme.of(context)
                     .textTheme
                     .labelLarge!
@@ -73,7 +73,7 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
           ),
         ),
         onPressed: () async {
-          await showModalBottomSheet(
+          final res = await showModalBottomSheet(
               context: context,
               barrierColor: Colors.black.withOpacity(0.2),
               shape: const RoundedRectangleBorder(
@@ -86,7 +86,9 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
                     value: model,
                     builder: (context, child) => const SwitchWorkSpaceSheet());
               });
-          // await model.updateProfile();
+          if(res!=null && res){
+            await model.getAllData();
+          }
         },
       ),
       automaticallyImplyLeading: false,

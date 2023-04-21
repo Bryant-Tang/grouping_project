@@ -18,6 +18,10 @@ class ProfileEditViewModel extends ChangeNotifier {
   TagEditMode tagEditMode = TagEditMode.create;
   int maximunTagNumber = 4;
 
+  set accountModel(AccountModel profile){
+    profile = AccountModel();
+  }
+
   void onPageChange(int index) {
     currentPageIndex = index;
     notifyListeners();
@@ -29,7 +33,7 @@ class ProfileEditViewModel extends ChangeNotifier {
   }
 
   void updateUserName(String userName) {
-    profile.name = userName;
+    profile.nickname = userName;
     notifyListeners();
   }
 
@@ -42,12 +46,6 @@ class ProfileEditViewModel extends ChangeNotifier {
     profile.introduction = introduction;
     notifyListeners();
   }
-
-  // void updateTags(List<AccountTag> tags) {
-
-  //   profile.tags = tags;
-  //   notifyListeners();
-  // }
 
   void createNewTag(AccountTag tag) {
     profile.tags.add(tag);
@@ -84,29 +82,20 @@ class ProfileEditViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> init() async {
-    isLoading = true;
-    final uid = AuthService().getUid();
-    final db = DatabaseService(ownerUid: uid);
-    notifyListeners();
-    profile = await db.getAccount();
-    isLoading = false;
-    notifyListeners();
-  }
+  // Future<void> init() async {
+  //   isLoading = true;
+  //   final uid = AuthService().getUid();
+  //   final db = DatabaseService(ownerUid: uid);
+  //   notifyListeners();
+  //   profile = await db.getAccount();
+  //   isLoading = false;
+  //   notifyListeners();
+  // }
 
   Future<void> upload() async {
     isLoading = true;
-    final uid = AuthService().getUid();
-    final db = DatabaseService(ownerUid: uid);
-    // print all profile data
-    // debugPrint(profile.name.toString());
-    // debugPrint(profile.nickname.toString());
-    // debugPrint(profile.slogan.toString());
-    // debugPrint(profile.introduction.toString());
-    debugPrint("test: ${AccountModel.defaultAccount.tags.toString()}");
-    // debugPrint(profile.id.toString());
-    // debugPrint(profile.photo.toString());
-
+    // final uid = AuthService().getUid();
+    final db = DatabaseService(ownerUid: profile.id as String);
     notifyListeners();
     try {
       await db.setAccount(account: profile);
