@@ -65,9 +65,9 @@ class DatabaseService {
     var firstKey = condition.keys.first;
     var query = _firestore
         .collection(collectionPath)
-        .where(firstKey, isEqualTo: condition[firstKey]);
+        .where(firstKey, arrayContains: condition[firstKey]);
     for (var key in condition.keys.skip(1)) {
-      query = query.where(key, isEqualTo: condition[key]);
+      query = query.where(key, arrayContains: condition[key]);
     }
     return (await query.get()).docs;
   }
@@ -113,18 +113,6 @@ class DatabaseService {
   Future<String> _createAccount() async {
     String newAccountId = await _setMapDataFirestore(
         data: {}, collectionPath: AccountModel.defaultAccount.databasePath);
-    await _addDataModelRelationWithAccount(
-        dataId: MissionStateModel.defaultFinishState.id!,
-        dataType: MissionStateModel.defaultFinishState.databasePath);
-    await _addDataModelRelationWithAccount(
-        dataId: MissionStateModel.defaultPendingState.id!,
-        dataType: MissionStateModel.defaultPendingState.databasePath);
-    await _addDataModelRelationWithAccount(
-        dataId: MissionStateModel.defaultProgressState.id!,
-        dataType: MissionStateModel.defaultProgressState.databasePath);
-    await _addDataModelRelationWithAccount(
-        dataId: MissionStateModel.defaultTimeOutState.id!,
-        dataType: MissionStateModel.defaultTimeOutState.databasePath);
     return newAccountId;
   }
 
@@ -177,13 +165,29 @@ class DatabaseService {
     return account;
   }
 
+  Future<void> _bindDefaultMissionStateWithAccount() async {
+    await _addDataModelRelationWithAccount(
+        dataId: MissionStateModel.defaultFinishState.id!,
+        dataType: MissionStateModel.defaultFinishState.databasePath);
+    await _addDataModelRelationWithAccount(
+        dataId: MissionStateModel.defaultPendingState.id!,
+        dataType: MissionStateModel.defaultPendingState.databasePath);
+    await _addDataModelRelationWithAccount(
+        dataId: MissionStateModel.defaultProgressState.id!,
+        dataType: MissionStateModel.defaultProgressState.databasePath);
+    await _addDataModelRelationWithAccount(
+        dataId: MissionStateModel.defaultTimeOutState.id!,
+        dataType: MissionStateModel.defaultTimeOutState.databasePath);
+  }
+
   Future<String> createUserAccount() async {
     String newAccountId = await _createAccount();
     if (_forUser) {
-      _setMapDataFirestore(
+      await _setMapDataFirestore(
           data: {'account_id': newAccountId},
           collectionPath: 'user_account_relation',
           dataId: _ownerUid);
+      await _bindDefaultMissionStateWithAccount();
       return newAccountId;
     } else {
       throw GroupingProjectException(
@@ -195,7 +199,9 @@ class DatabaseService {
   }
 
   Future<String> createGroupAccount() async {
-    return await _createAccount();
+    String newAccountId = await _createAccount();
+    await _bindDefaultMissionStateWithAccount();
+    return newAccountId;
   }
 
   Future<void> _checkDataModelRelationWithAccount(
@@ -222,10 +228,15 @@ class DatabaseService {
 //single set
   Future<void> _addDataModelRelationWithAccount(
       {required String dataId, required String dataType}) async {
-    await _setMapDataFirestore(
-        data: {'account_id': await _getOwnerAccountId()},
-        collectionPath: '${dataType}_account_relation',
-        dataId: dataId);
+    var relation = await _getDocSnapFirestore(
+        collectionPath: '${dataType}_account_relation', dataId: dataId);
+    List<String> originalAccountList =
+        relation.data()?['account_id'] is Iterable
+            ? List.from(relation.data()?['account_id'])
+            : [];
+    await _setMapDataFirestore(data: {
+      'account_id': [...originalAccountList, await _getOwnerAccountId()]
+    }, collectionPath: '${dataType}_account_relation', dataId: dataId);
   }
 
   Future<void> _setDataModelToFire<T extends BaseDataModel<T>>(
