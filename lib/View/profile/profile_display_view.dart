@@ -21,7 +21,8 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
       List tags = List.from(model.tags);
       tags.insert(0, AccountTag(tag: "自我介紹", content: model.introduction));
       tags.insert(0, AccountTag(tag: "座右銘", content: model.slogan));
-      debugPrint(tags.toString());
+      // TODO : 把他寫進 VM 裡面
+      // debugPrint(tags.toString());
       return SafeArea(
         child: Container(
           clipBehavior: Clip.hardEdge,

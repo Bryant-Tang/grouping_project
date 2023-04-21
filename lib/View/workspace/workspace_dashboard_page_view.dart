@@ -49,14 +49,12 @@ class _PeosonalDashboardPageState extends State<WorkspaceDashboardPageView> {
   Widget build(BuildContext context) {
     // show the from of widget
     // debugPaintSizeEnabled = true;
-    return Expanded(
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
-            Expanded(flex: 1, child: Progress()),
-            Expanded(flex: 3, child: OverView()),
-          ]),
-    );
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: const [
+          Expanded(flex: 1, child: Progress()),
+          Expanded(flex: 3, child: OverView()),
+        ]);
   }
 }
 class Progress extends StatefulWidget {

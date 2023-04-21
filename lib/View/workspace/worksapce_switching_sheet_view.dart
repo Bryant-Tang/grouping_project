@@ -58,14 +58,15 @@ class _SwitchWorkSpaceSheetState extends State<SwitchWorkSpaceSheet> {
                 ),
                 MaterialButton(
                     onPressed: () async {
+                      debugPrint("create group");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
                                   const CreateWorkspacePage()));
-                      if (context.mounted) {
-                        Navigator.pop(context);
-                      }
+                      //if (context.mounted) {
+                      //  Navigator.pop(context);
+                      // }
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
