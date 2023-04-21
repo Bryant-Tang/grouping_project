@@ -1,6 +1,6 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/View/profile_display_view.dart';
+import 'package:grouping_project/View/profile/profile_display_view.dart';
 import 'package:grouping_project/components/button/overview_choice_button.dart';
 
 // progress card
@@ -9,7 +9,7 @@ import 'package:grouping_project/components/button/overview_choice_button.dart';
 // import 'package:flutter/rendering.dart';
 
 // 測試新功能用，尚未完工，請勿使用或刪除
-import 'package:grouping_project/pages/home/home_page/empty.dart';
+import 'package:grouping_project/View/testing/empty.dart';
 
 import 'package:flutter/material.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
@@ -17,34 +17,34 @@ import 'package:grouping_project/pages/home/personal_dashboard/personal_mission_
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class DashboardPage extends StatefulWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+// class DashboardPage extends StatefulWidget {
+//   const DashboardPage({Key? key}) : super(key: key);
 
+//   @override
+//   State<DashboardPage> createState() => _DashboardPageState();
+// }
+
+// class _DashboardPageState extends State<DashboardPage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return PageView(
+//       scrollDirection: Axis.vertical,
+//       controller: PageController(initialPage: 1),
+//       children: const [
+//         ProfileDispalyPageView(),
+//         PeronalDashboardPage(),
+//       ],
+//     );
+//   }
+// }
+
+class WorkspaceDashboardPageView extends StatefulWidget {
+  const WorkspaceDashboardPageView({super.key});
   @override
-  State<DashboardPage> createState() => _DashboardPageState();
+  State<WorkspaceDashboardPageView> createState() => _PeosonalDashboardPageState();
 }
 
-class _DashboardPageState extends State<DashboardPage> {
-  @override
-  Widget build(BuildContext context) {
-    return PageView(
-      scrollDirection: Axis.vertical,
-      controller: PageController(initialPage: 1),
-      children: const [
-        ProfileDispalyPageView(),
-        PeronalDashboardPage(),
-      ],
-    );
-  }
-}
-
-class PeronalDashboardPage extends StatefulWidget {
-  const PeronalDashboardPage({super.key});
-  @override
-  State<PeronalDashboardPage> createState() => _PeosonalDashboardPageState();
-}
-
-class _PeosonalDashboardPageState extends State<PeronalDashboardPage> {
+class _PeosonalDashboardPageState extends State<WorkspaceDashboardPageView> {
   @override
   Widget build(BuildContext context) {
     // show the from of widget
