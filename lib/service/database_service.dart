@@ -122,6 +122,18 @@ class DatabaseService {
         data: {},
         collectionPath: AccountModel.defaultAccount.databasePath,
         dataId: newAccountId);
+    _addDataModelRelationWithAccount(
+        dataId: MissionStateModel.defaultFinishState.id!,
+        dataType: MissionStateModel.defaultFinishState.databasePath);
+    _addDataModelRelationWithAccount(
+        dataId: MissionStateModel.defaultPendingState.id!,
+        dataType: MissionStateModel.defaultPendingState.databasePath);
+    _addDataModelRelationWithAccount(
+        dataId: MissionStateModel.defaultProgressState.id!,
+        dataType: MissionStateModel.defaultProgressState.databasePath);
+    _addDataModelRelationWithAccount(
+        dataId: MissionStateModel.defaultTimeOutState.id!,
+        dataType: MissionStateModel.defaultTimeOutState.databasePath);
     return newAccountId;
   }
 
@@ -195,6 +207,26 @@ class DatabaseService {
     return await _createAccount();
   }
 
+  Future<void> _checkDataModelRelationWithAccount(
+      {required String accountId,
+      required String dataId,
+      required String dataType}) async {
+    String? eventBelongAccountId = (await _getDocSnapFirestore(
+            collectionPath: '${dataType}_account_relation', dataId: dataId))
+        .data()?['account_id'];
+    if (eventBelongAccountId == null) {
+      throw GroupingProjectException(
+          message: 'The $dataType is not exist in any account.',
+          code: GroupingProjectExceptionCode.notExistInDatabase,
+          stackTrace: StackTrace.current);
+    } else if (eventBelongAccountId != accountId) {
+      throw GroupingProjectException(
+          message: 'The $dataType is not belong to this account.',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
+    }
+  }
+
 //
 //single set
   Future<void> _addDataModelRelationWithAccount(
@@ -207,6 +239,12 @@ class DatabaseService {
 
   Future<void> _setDataModelToFire<T extends BaseDataModel<T>>(
       {required T data}) async {
+    if (data.id != null) {
+      await _checkDataModelRelationWithAccount(
+          accountId: await _getOwnerAccountId(),
+          dataId: data.id!,
+          dataType: data.databasePath);
+    }
     String dataId = await _setDataModelFirestore(data);
     await _addDataModelRelationWithAccount(
         dataId: dataId, dataType: data.databasePath);
@@ -226,25 +264,6 @@ class DatabaseService {
 
 //
 //single get
-  Future<void> _checkDataModelRelationWithAccount(
-      {required String accountId,
-      required String dataId,
-      required String dataType}) async {
-    String? eventBelongAccountId = (await _getDocSnapFirestore(
-            collectionPath: '${dataType}_account_relation', dataId: dataId))
-        .data()?['account_id'];
-    if (eventBelongAccountId == null) {
-      throw GroupingProjectException(
-          message: 'The $dataType is not exist.',
-          code: GroupingProjectExceptionCode.notExistInDatabase,
-          stackTrace: StackTrace.current);
-    } else if (eventBelongAccountId != accountId) {
-      throw GroupingProjectException(
-          message: 'The $dataType is not belong to this account.',
-          code: GroupingProjectExceptionCode.wrongParameter,
-          stackTrace: StackTrace.current);
-    }
-  }
 
   Future<T> _getSingleDataModelFromFire<T extends BaseDataModel<T>>(
       {String? ownerAccountId,
