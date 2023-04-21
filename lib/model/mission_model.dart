@@ -38,7 +38,7 @@ class MissionModel extends BaseDataModel<MissionModel> {
         this.childMissionIds = [],
         this.color = AccountModel.defaultAccount.color,
         this.ownerName = AccountModel.defaultAccount.name,
-        super(id: 'default_mission', databasePath: 'missions', storageRequired: false);
+        super(id: 'default_mission', databasePath: 'mission', storageRequired: false);
 
   /// ## a data model for mission
   /// * to upload/download, use `DataController`

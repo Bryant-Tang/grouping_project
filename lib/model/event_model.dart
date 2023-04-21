@@ -48,12 +48,12 @@ class EventModel extends BaseDataModel<EventModel> {
       : this.title = title ?? defaultEvent.title,
         this.startTime = startTime ?? defaultEvent.startTime,
         this.endTime = endTime ?? defaultEvent.endTime,
-        this.contributorIds = contributorIds ?? defaultEvent.contributorIds,
+        this.contributorIds = contributorIds ?? List.from(defaultEvent.contributorIds),
         this.introduction = introduction ?? defaultEvent.introduction,
-        this.tags = tags ?? defaultEvent.tags,
+        this.tags = tags ?? List.from(defaultEvent.tags),
         this.relatedMissionIds =
-            relatedMissionIds ?? defaultEvent.relatedMissionIds,
-        this.notifications = notifications ?? defaultEvent.notifications,
+            relatedMissionIds ?? List.from(defaultEvent.relatedMissionIds),
+        this.notifications = notifications ?? List.from(defaultEvent.notifications),
         this.color = defaultEvent.color,
         this.ownerName = defaultEvent.ownerName,
         super(
