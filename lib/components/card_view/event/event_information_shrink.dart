@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/VM/event_card_view_model.dart';
+import 'package:grouping_project/model/model_lib.dart';
 
 import 'package:intl/intl.dart';
 

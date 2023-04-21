@@ -45,6 +45,8 @@ Future<void> showEvents() async {
   var allDatas =
       await DatabaseService(ownerUid: AuthService().getUid()).getAllEvent();
 
+  debugPrint('\n\n\nshow event get\n\n\n');
+
   eventCards = [];
   for (int index = 0; index < allDatas.length; index++) {
     var event = allDatas[index];

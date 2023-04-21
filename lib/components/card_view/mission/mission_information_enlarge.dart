@@ -62,8 +62,9 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => MissionSettingPageView(
-                                    model: MissionSettingViewModel(),)));
-                        setState(() {});
+                                  // TODO: do not use widget.missionModel instead use VM.display
+                                    model: MissionSettingViewModel.edit(widget.missionModel),)));
+                        // setState(() {});
                       },
                       icon: const Icon(
                         Icons.edit,

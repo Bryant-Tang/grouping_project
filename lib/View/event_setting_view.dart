@@ -33,47 +33,6 @@ class EventSettingPageView extends StatefulWidget {
 }
 
 class _EventSettingPageViewState extends State<EventSettingPageView> {
-  // late TextEditingController titleController;
-  // late TextEditingController descriptController;
-  // late String group;
-  // late DateTime startTime, endTime;
-  // late Color color;
-  // late List<String> contributorIds;
-  // late EventCardViewModel eventCardViewModel;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   if (widget.eventModel == null) {
-  //     titleController = TextEditingController(text: '');
-  //     descriptController = TextEditingController(text: '');
-  //     // TODO: check is group or personal
-  //     group = 'personal';
-  //     startTime = DateTime.now();
-  //     endTime = DateTime.now().add(const Duration(days: 1));
-  //     color = const Color(0xFFFCBF49);
-  //     contributorIds = [];
-  //   } else {
-  //     eventCardViewModel = EventCardViewModel(widget.eventModel!);
-
-  //     titleController = TextEditingController(text: eventCardViewModel.title);
-  //     descriptController =
-  //         TextEditingController(text: eventCardViewModel.descript);
-  //     group = eventCardViewModel.group;
-  //     startTime = eventCardViewModel.startTime;
-  //     endTime = eventCardViewModel.endTime;
-  //     color = eventCardViewModel.color;
-  //     contributorIds = eventCardViewModel.contributorIds;
-  //   }
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   titleController.dispose();
-  //   descriptController.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<EventSettingViewModel>.value(
@@ -103,19 +62,29 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (_) => const WorksapceBasePage()),
+                                          builder: (_) =>
+                                              const WorksapceBasePage()),
                                       (route) => false);
                                 },
                                 icon: const Icon(Icons.delete))
                             : const SizedBox(),
                         IconButton(
                             onPressed: () async {
-                              await model.onSave();
-                              if (mounted) {
+                              bool valid = await model.onSave();
+                              if (!valid && mounted) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('非法輸入'),
+                                    content: Text(model.errorMessage()),
+                                  ),
+                                );
+                              } else if (mounted) {
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (_) => const WorksapceBasePage()),
+                                        builder: (_) =>
+                                            const WorksapceBasePage()),
                                     (route) => false);
                               }
                             },
@@ -165,9 +134,7 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
 }
 
 class TitleDateOfEvent extends StatefulWidget {
-  const TitleDateOfEvent({
-    super.key,
-  });
+  const TitleDateOfEvent({super.key});
 
   @override
   State<TitleDateOfEvent> createState() => TitleDateOfEventState();
@@ -176,7 +143,8 @@ class TitleDateOfEvent extends StatefulWidget {
 class TitleDateOfEventState extends State<TitleDateOfEvent> {
   @override
   Widget build(BuildContext context) {
-    void timePickerDialog(DateTime show, int state, EventSettingViewModel model) {
+    void timePickerDialog(
+        DateTime show, int state, EventSettingViewModel model) {
       Time tmp = Time(hour: 0, minute: 0);
       Navigator.of(context).push(
         showPicker(
@@ -272,7 +240,8 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
                 //   title,
                 //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 // ),
-                TextField(
+                TextFormField(
+                  initialValue: model.title,
                   onChanged: model.updateTitle,
                   decoration: InputDecoration(
                       hintText: '輸入標題',
@@ -314,10 +283,11 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
                       child: Text(
                         parseDate.format(model.startTime),
                         // "sss",
-                        style: const TextStyle(
-                            fontSize: 15,
+                        style: TextStyle(
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black),
+                            color: Colors.black,
+                            backgroundColor: model.color.withOpacity(0.2)),
                       ),
                     ),
                     Icon(
@@ -355,11 +325,12 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
                       child: Text(
                         parseDate.format(model.endTime),
                         // "sss",
-                        style: const TextStyle(
-                            fontSize: 15,
+                        style: TextStyle(
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                             // TODO: text color
-                            color: Colors.black),
+                            color: Colors.black,
+                            backgroundColor: model.color.withOpacity(0.2)),
                       ),
                     )
                   ],
@@ -399,7 +370,8 @@ class _IntroductionBlockState extends State<IntroductionBlock> {
   @override
   Widget build(BuildContext context) {
     return Consumer<EventSettingViewModel>(
-      builder: (context, model, child) => TextField(
+      builder: (context, model, child) => TextFormField(
+        initialValue: model.introduction,
         keyboardType: TextInputType.multiline,
         maxLines: 10,
         onChanged: model.updateIntroduction,

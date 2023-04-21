@@ -1,3 +1,4 @@
+import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/state.dart';
@@ -7,7 +8,9 @@ import 'package:grouping_project/model/model_lib.dart';
 // import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
 // import 'package:grouping_project/VM/mission_card_view_model.dart';
 import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 /*
 * this file is used to create mission or edit existed mission 
@@ -19,71 +22,17 @@ class MissionSettingPageView extends StatefulWidget {
   final MissionSettingViewModel model;
 
   factory MissionSettingPageView.create() =>
-      MissionSettingPageView(model: MissionSettingViewModel());
+      MissionSettingPageView(model: MissionSettingViewModel.create());
+  factory MissionSettingPageView.edit({required MissionModel missionModel}) =>
+      MissionSettingPageView(model: MissionSettingViewModel.edit(missionModel));
 
   @override
   State<MissionSettingPageView> createState() => _MissionSettingPageViewState();
 }
 
 class _MissionSettingPageViewState extends State<MissionSettingPageView> {
-  // late TextEditingController titleController;
-  // late TextEditingController descriptController;
-  // late String group;
-  // late DateTime deadline;
-  // late Color color;
-  // late List<String> contributorIds;
-  // late MissionStage missionStage;
-  // late String stateName;
-
-  // late MissionCardViewModel missionCardViewModel;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   if (widget.missionModel == null) {
-  //     titleController = TextEditingController(text: '');
-  //     descriptController = TextEditingController(text: '');
-  //     // TODO: check is group or personal
-  //     group = 'personal';
-  //     deadline = DateTime.now().add(const Duration(days: 1));
-  //     color = const Color(0xFFFCBF49);
-  //     contributorIds = [];
-  //     missionStage = MissionStage.progress;
-  //     stateName = 'progress';
-  //   } else {
-  //     missionCardViewModel = MissionCardViewModel(widget.missionModel!);
-
-  //     titleController = TextEditingController(text: missionCardViewModel.title);
-  //     descriptController =
-  //         TextEditingController(text: missionCardViewModel.descript);
-  //     group = missionCardViewModel.group;
-  //     deadline = missionCardViewModel.deadline;
-  //     color = missionCardViewModel.color;
-  //     contributorIds = missionCardViewModel.contributorIds;
-  //     // missionStage = missionCardViewModel.missionStage;
-  //     // stateName = missionCardViewModel.stateName;
-  //   }
-  // }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   titleController.dispose();
-  //   descriptController.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // Future<void> createMission() async {
-    //   await DataController().upload(
-    //       uploadData: MissionModel(
-    //     title: titleController.text,
-    //     introduction: descriptController.text,
-    //     deadline: deadline,
-    //     contributorIds: contributorIds
-    //   ));
-    // }
-
     return ChangeNotifierProvider<MissionSettingViewModel>.value(
       value: widget.model,
       child: Consumer<MissionSettingViewModel>(
@@ -118,14 +67,24 @@ class _MissionSettingPageViewState extends State<MissionSettingPageView> {
                                 icon: const Icon(Icons.delete))
                             : const SizedBox(),
                         IconButton(
-                            onPressed: () {
-                              // model.upload();
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (_) =>
-                                          const WorksapceBasePage()),
-                                  (route) => false);
+                            onPressed: () async {
+                              bool valid = await model.onSave();
+                              if (!valid && mounted) {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('非法輸入'),
+                                    content: Text(model.errorMessage()),
+                                  ),
+                                );
+                              } else if (mounted) {
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            const WorksapceBasePage()),
+                                    (route) => false);
+                              }
                             },
                             icon: const Icon(Icons.done)),
                       ],
@@ -232,140 +191,134 @@ class _IntroductionBlockState extends State<IntroductionBlock> {
   }
 }
 
-// class TitleDateOfMission extends StatefulWidget {
-//   const TitleDateOfMission(
-//       {super.key,
-//       required this.titleController,
-//       required this.group,
-//       required this.color,
-//       required this.deadline,
-//       required this.stage,
-//       required this.stateName,
-//       required this.callback,
-//       required this.cbStage});
+class TitleDateOfMission extends StatefulWidget {
+  const TitleDateOfMission({super.key});
 
-//   final TextEditingController titleController;
-//   final String group;
-//   final Color color;
-//   final DateTime deadline;
-//   final MissionStage stage;
-//   final String stateName;
-//   final Function(DateTime) callback;
-//   final Function(MissionStage stage, String stateName) cbStage;
+  @override
+  State<TitleDateOfMission> createState() => TitleDateOfMissionState();
+}
 
-//   @override
-//   State<TitleDateOfMission> createState() => TitleDateOfMissionState();
-// }
+class TitleDateOfMissionState extends State<TitleDateOfMission> {
+  @override
+  Widget build(BuildContext context) {
+    void timePickerDialog(DateTime show, MissionSettingViewModel model) {
+      Time tmp = Time(hour: 0, minute: 0);
+      Navigator.of(context).push(
+        showPicker(
+          value: tmp,
+          onChange: (time) {
+            setState(() {
+              model.updateDeadline(DateTime(
+                  show.year, show.month, show.day, time.hour, time.minute));
+            });
+          },
+        ),
+      );
+    }
 
-// class TitleDateOfMissionState extends State<TitleDateOfMission> {
-//   late DateTime deadline;
+    // void confirmChange(Object? value) {
+    //   DateTime tmp = DateTime(0);
+    //   if (value is DateTime) {
+    //     tmp = value;
+    //   }
+    //   Navigator.pop(context);
+    //   timePickerDialog(tmp);
+    // }
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     deadline = widget.deadline;
-//   }
+    void cancelChange() {
+      setState(() {
+        Navigator.pop(context);
+      });
+    }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     void timePickerDialog(DateTime show) {
-//       Time tmp = Time(hour: 0, minute: 0);
-//       Navigator.of(context).push(
-//         showPicker(
-//           value: tmp,
-//           onChange: (time) {
-//             setState(() {
-//               deadline = DateTime(
-//                   show.year, show.month, show.day, time.hour, time.minute);
-//               widget.callback(deadline);
-//             });
-//           },
-//         ),
-//       );
-//     }
+    // void selectTime() {
+    //   showDialog(
+    //       context: context,
+    //       builder: ((BuildContext context) {
+    //         return AlertDialog(
+    //           title: const Text('選擇時間'),
+    //           content: SizedBox(
+    //               width: 200,
+    //               height: 400,
+    //               child: SfDateRangePicker(
+    //                 // onSelectionChanged: _onSelected,
+    //                 onSubmit: confirmChange,
+    //                 onCancel: cancelChange,
+    //                 initialSelectedRange:
+    //                     PickerDateRange(DateTime.now(), DateTime.now()),
+    //                 showActionButtons: true,
+    //               )),
+    //         );
+    //       }));
+    // }
 
-//     void confirmChange(Object? value) {
-//       DateTime tmp = DateTime(0);
-//       if (value is DateTime) {
-//         tmp = value;
-//       }
-//       Navigator.pop(context);
-//       timePickerDialog(tmp);
-//     }
+    DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
 
-//     void cancelChange() {
-//       setState(() {
-//         Navigator.pop(context);
-//       });
-//     }
-
-//     void selectTime() {
-//       showDialog(
-//           context: context,
-//           builder: ((BuildContext context) {
-//             return AlertDialog(
-//               title: const Text('選擇時間'),
-//               content: SizedBox(
-//                   width: 200,
-//                   height: 400,
-//                   child: SfDateRangePicker(
-//                     // onSelectionChanged: _onSelected,
-//                     onSubmit: confirmChange,
-//                     onCancel: cancelChange,
-//                     initialSelectedRange:
-//                         PickerDateRange(DateTime.now(), DateTime.now()),
-//                     showActionButtons: true,
-//                   )),
-//             );
-//           }));
-//     }
-
-//     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
-
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         AntiLabel(group: widget.group, color: widget.color),
-//         // Text(
-//         //   title,
-//         //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//         // ),
-//         TextField(
-//           controller: widget.titleController,
-//           onChanged: (value) {
-//             widget.titleController.text = value;
-//             widget.titleController.selection =
-//                 TextSelection.fromPosition(TextPosition(offset: value.length));
-//             setState(() {});
-//           },
-//           decoration: InputDecoration(
-//               hintText: '輸入標題',
-//               errorText: widget.titleController.text.isEmpty ? '不可為空' : null,
-//               isDense: true,
-//               contentPadding: const EdgeInsets.symmetric(vertical: 2),
-//               border: const OutlineInputBorder()),
-//           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//         ),
-//         TextButton(
-//             onPressed: selectTime,
-//             child: Text(
-//               parseDate.format(deadline),
-//               style: const TextStyle(
-//                   fontSize: 15,
-//                   fontWeight: FontWeight.bold,
-//                   color: Color(0xFF000000)),
-//             )),
-//         StateOfMission(
-//           stage: widget.stage,
-//           stateName: widget.stateName,
-//           callback: (stage, stateName) {
-//             widget.cbStage(stage, stateName);
-//           },
-//         )
-//       ],
-//     );
-//   }
-// }
+    return Consumer<MissionSettingViewModel>(
+      builder: (context, model, child) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // AntiLabel(group: widget.group, color: widget.color),
+          // Text(
+          //   title,
+          //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          // ),
+          TextFormField(
+            initialValue: model.title,
+            onChanged: model.updateTitle,
+            decoration: InputDecoration(
+                hintText: '輸入標題',
+                errorText: model.titleValidator(),
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                border: const OutlineInputBorder()),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          TextButton(
+              onPressed: () => showDialog(
+                  context: context,
+                  builder: ((BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('選擇時間'),
+                      content: SizedBox(
+                          width: 200,
+                          height: 400,
+                          child: SfDateRangePicker(
+                            // onSelectionChanged: _onSelected,
+                            onSubmit: (value) {
+                              DateTime tmp = DateTime(0);
+                              if (value is DateTime) {
+                                tmp = value;
+                              }
+                              Navigator.pop(context);
+                              timePickerDialog(tmp, model);
+                            },
+                            onCancel: cancelChange,
+                            initialSelectedRange:
+                                PickerDateRange(DateTime.now(), DateTime.now()),
+                            showActionButtons: true,
+                          )),
+                    );
+                  })),
+              child: Text(
+                parseDate.format(model.deadline),
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF000000)),
+              )),
+          // StateOfMission(
+          //   stage: widget.stage,
+          //   stateName: widget.stateName,
+          //   callback: (stage, stateName) {
+          //     widget.cbStage(stage, stateName);
+          //   },
+          // )
+        ],
+      ),
+    );
+  }
+}
 
 // class StateOfMission extends StatefulWidget {
 //   const StateOfMission(

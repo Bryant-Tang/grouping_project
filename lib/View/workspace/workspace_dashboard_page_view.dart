@@ -74,7 +74,7 @@ class _ProgressState extends State<Progress> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('PRGRESSING',
+          Text('PROGRESSING',
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.bold,
                   )),
