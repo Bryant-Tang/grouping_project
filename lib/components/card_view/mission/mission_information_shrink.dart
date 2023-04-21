@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/VM/enlarge_viewmodel.dart';
+import 'package:grouping_project/View/card_enlarge_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/VM/mission_card_view_model.dart';
 
@@ -22,8 +22,8 @@ class MissionInformationShrink extends StatelessWidget {
     String group = missionCardViewModel.group;
     String title = missionCardViewModel.title;
     String descript = missionCardViewModel.descript;
-    MissionStage missionStage = missionCardViewModel.missionStage;
-    String stateName = missionCardViewModel.stateName;
+    // MissionStage missionStage = missionCardViewModel.missionStage;
+    // String stateName = missionCardViewModel.stateName;
     DateTime deadline = missionCardViewModel.deadline;
     Color color = missionCardViewModel.color;
 
@@ -60,10 +60,10 @@ class MissionInformationShrink extends StatelessWidget {
           ),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text('deadline: ${parseDate.format(deadline)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),),
-            StateOfMission(
-              stage: missionStage,
-              stateName: stateName,
-            )
+            // StateOfMission(
+            //   stage: missionStage,
+            //   stateName: stateName,
+            // )
           ])
         ],
       ),

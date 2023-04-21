@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/component_lib.dart';
-import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/model/account_model.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -64,8 +64,10 @@ class _ProfileEditPageViewState extends State<ProfileEditPageView>
                               goBackButtonText: "Cancel",
                               goToNextButtonText: "Save",
                               goToNextButtonHandler: () async {
-                                model.upload;
-                                Navigator.of(context).pop();
+                                await model.upload();
+                                if (mounted) {
+                                  Navigator.of(context).pop();
+                                }
                               },
                               goBackButtonHandler: () {
                                 Navigator.of(context).pop();
@@ -175,8 +177,8 @@ class _PersonProfileImageUploadgState extends State<ProfileImageUpload> {
                     radius: 120,
                     backgroundColor:
                         Theme.of(context).colorScheme.surfaceVariant,
-                    backgroundImage: model.profileImage != null
-                        ? Image.file(model.profileImage!).image
+                    backgroundImage: model.profileImage.isNotEmpty
+                        ? Image.memory(model.profileImage).image
                         : Image.asset('assets/images/profile_male.png').image),
               ),
               MaterialButton(
@@ -189,7 +191,8 @@ class _PersonProfileImageUploadgState extends State<ProfileImageUpload> {
                   final selectedPhoto = await ImagePicker()
                       .pickImage(source: ImageSource.gallery);
                   if (selectedPhoto != null) {
-                    model.updateProfileImage(File(selectedPhoto.path));
+                    model.updateProfileImage(
+                        await File(selectedPhoto.path).readAsBytes());
                   }
                 },
                 child: Row(
@@ -243,14 +246,16 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
         color: addButtonColor,
         onPressed: () async {
           model.switchTagEditMode(TagEditMode.create);
-          model.tags.length == model.maximunTagNumber
-              ? ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("個人標籤數量已達上限"),
-                    duration: Duration(seconds: 1),
-                  ),
-                )
-              : showDialog(
+          if (model.tags.length == model.maximunTagNumber) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("個人標籤數量已達上限"),
+                duration: Duration(seconds: 1),
+              ),
+            );
+          } else {
+            try {
+              AccountTag newTag = await showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return SimpleDialog(
@@ -259,13 +264,13 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
                           horizontal: 15, vertical: 5),
                       children: [TagForm.create()],
                     );
-                  }).then((value) {
-                  if (value is ProfileTag) {
-                    model.createNewTag(value);
-                  }
-                }).catchError((error) {
-                  debugPrint(error.toString());
-                });
+                  });
+              model.createNewTag(newTag);
+              // debugPrint(newTag.toString());
+            } catch (error) {
+              // debugPrint(error.toString());
+            }
+          }
         },
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -360,12 +365,12 @@ class _PersonalProfileTagSettingState extends State<PersonalProfileTagSetting> {
 class TagForm extends StatefulWidget {
   const TagForm({super.key, required this.mode, required this.tag});
   final String mode;
-  final ProfileTag tag;
+  final AccountTag tag;
   // final ProfileEditViewModel model;
-  factory TagForm.edit({required ProfileTag tag}) =>
+  factory TagForm.edit({required AccountTag tag}) =>
       TagForm(mode: "edit", tag: tag);
   factory TagForm.create() =>
-      TagForm(mode: "create", tag: ProfileTag(tag: "", content: ""));
+      TagForm(mode: "create", tag: AccountTag(tag: "", content: ""));
   @override
   State<TagForm> createState() => _TagFormState();
 }
@@ -385,7 +390,7 @@ class _TagFormState extends State<TagForm> {
     keyText = widget.tag.tag;
     valueText = widget.tag.content;
     keyEditForm = TextFormField(
-      maxLength: 10,
+      maxLength: 20,
       controller: keyTextController
         ..text = keyText
         ..addListener(() {
@@ -406,7 +411,7 @@ class _TagFormState extends State<TagForm> {
       },
     );
     valueEditForm = TextFormField(
-      maxLength: 15,
+      maxLength: 20,
       controller: valueTextController
         ..text = valueText
         ..addListener(() {
@@ -457,7 +462,7 @@ class _TagFormState extends State<TagForm> {
                   debugPrint("key: $keyText, value: $valueText");
                   // final newTag = ProfileTag(tag: keyText, content: valueText);
                   Navigator.of(context)
-                      .pop(ProfileTag(tag: keyText, content: valueText));
+                      .pop(AccountTag(tag: keyText, content: valueText));
                 }
               },
               child: Text(widget.mode == "create" ? '新增' : '修改'),
@@ -470,7 +475,7 @@ class _TagFormState extends State<TagForm> {
 }
 
 class PersonalProileTagTextEditView extends StatefulWidget {
-  final ProfileTag tag;
+  final AccountTag tag;
   final void Function() deleteTag;
   final void Function() editTag;
   const PersonalProileTagTextEditView({
@@ -529,6 +534,7 @@ class _PersonalProileTagTextEditViewState
                 children: [
                   Text(widget.tag.tag, style: keyTextStyle),
                   Text(widget.tag.content, style: valueTextStyle),
+                  const Divider(height: 2, thickness: 1.5),
                 ],
               ),
               model.tagEditMode == TagEditMode.edit ? editTool : Container()

@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/create_group_view_model.dart';
 import 'package:grouping_project/components/auth_view/headline_with_content.dart';
 import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart';
-import 'package:grouping_project/pages/view_template/sing_up_page_template.dart';
+import 'package:grouping_project/components/sing_up_page_template.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-// This View is Create Group Form Page View 
+// This View is Create Group Form Page View
 // View Model is CreateGroupViewModel
 // Model is ProfileModel
 // Create Group
@@ -19,7 +19,6 @@ import 'package:provider/provider.dart';
 // The Third Page is to ask user input group description, it construct by WorkspaceDescriptionRegisterPage Widget
 // The Fourth Page is to ask user input group tag, it construct by WorkspaceTagRegisterPage Widget
 // The Fifth Page is to ask user input group image, it construct by WorkspaceImageRegisterPage Widget
-
 
 class CreateWorkspacePage extends StatefulWidget {
   const CreateWorkspacePage({Key? key}) : super(key: key);
@@ -32,11 +31,6 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
   final PageController _pageController = PageController();
   void popBack() {
     Navigator.pop(context);
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
@@ -65,11 +59,15 @@ class _CreateWorkspacePageState extends State<CreateWorkspacePage> {
     }
   }
 
-  void register(CreateGroupViewModel model) {
-    model.createGroup();
-    ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text("小組建立成功")));
-    Navigator.of(context).pop(true);
+  void register(CreateGroupViewModel model){
+    model.createGroup().then((value) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("小組建立成功")));
+      Navigator.of(context).pop(true);
+    }).catchError((error){
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("小組建立失敗")));
+    });
   }
 
   @override
@@ -163,13 +161,13 @@ class _WorkspaceNameRegisterPageState extends State<WorkspaceNameRegisterPage> {
         body: Form(
           key: _formKey,
           child: TextFormField(
-              initialValue: model.userName,
-              decoration: const InputDecoration(
-                label: Text("小組名稱 / User Name"),
-                icon: Icon(Icons.person_pin_outlined),
-              ),
-              onChanged: model.updateUserName,
-              validator: model.groupIntroductionValidator,
+            initialValue: model.userName,
+            decoration: const InputDecoration(
+              label: Text("小組名稱 / User Name"),
+              icon: Icon(Icons.person_pin_outlined),
+            ),
+            onChanged: model.updateUserName,
+            validator: model.groupIntroductionValidator,
           ),
         ),
         toggleBar: NavigationToggleBar(
@@ -347,8 +345,8 @@ class _WorkspaceImageRegisterPageState
                         child: CircleAvatar(
                           radius: 120,
                           backgroundColor: Colors.grey[300],
-                          backgroundImage: model.profileImage != null
-                              ? Image.file(model.profileImage!).image
+                          backgroundImage: model.profileImage.isNotEmpty
+                              ? Image.memory(model.profileImage).image
                               : defaultImage.image,
                         )),
                     MaterialButton(
@@ -362,7 +360,8 @@ class _WorkspaceImageRegisterPageState
                           final selectedPhoto = await ImagePicker()
                               .pickImage(source: ImageSource.gallery);
                           if (selectedPhoto != null) {
-                            model.updateProfileImage(File(selectedPhoto.path));
+                            model.updateProfileImage(
+                                await File(selectedPhoto.path).readAsBytes());
                           }
                         },
                         child: Row(
@@ -384,11 +383,10 @@ class _WorkspaceImageRegisterPageState
                   ])))
         ]),
         toggleBar: NavigationToggleBar(
-          goBackButtonText: "上一步",
-          goToNextButtonText: "完成",
-          goBackButtonHandler: widget.backward,
-          goToNextButtonHandler: widget.forward
-        ),
+            goBackButtonText: "上一步",
+            goToNextButtonText: "完成",
+            goBackButtonHandler: widget.backward,
+            goToNextButtonHandler: widget.forward),
       ),
     );
   }

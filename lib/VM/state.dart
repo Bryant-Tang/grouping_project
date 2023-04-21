@@ -13,3 +13,10 @@ enum TagEditMode{
   edit,
   delete,
 }
+enum WorkspaceMode{
+  personal,
+  group,
+}
+enum SettingMode { 
+  create, edit, displpay 
+}

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/service/auth_service.dart';
+import 'package:grouping_project/service/database_service.dart';
 
 import 'package:intl/intl.dart';
 import 'dart:io' as io show File;
@@ -201,17 +203,19 @@ class _ContributorState extends State<Contributors> {
   Future<Container> createHeadShot(String person) async {
     /// 回傳 contributor 的頭貼
 
-    var userData = await DataController()
-        .download(dataTypeToGet: ProfileModel(), dataId: person);
-    io.File photo = userData.photo ?? io.File('assets/images/cover.png');
+    // TODO: get all user about this event/mission
+    var userData = await DatabaseService(ownerUid: AuthService().getUid()).getAccount();
+    // var userData = await DataController()
+    //     .download(dataTypeToGet: ProfileModel(), dataId: person);
+    // io.File photo = userData.photo ?? io.File('assets/images/cover.png');
 
     return Container(
         height: 30,
         width: 30,
-        decoration: ShapeDecoration(
-          shape: const CircleBorder(side: BorderSide(color: Colors.black)),
+        decoration: const ShapeDecoration(
+          shape: CircleBorder(side: BorderSide(color: Colors.black)),
           color: Colors.blueAccent,
-          image: DecorationImage(image: FileImage(photo)),
+          // image: DecorationImage(image: FileImage(photo)),
         ));
   }
 

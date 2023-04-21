@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/components/card_view/mission/mission_information_enlarge.dart';
+import 'package:grouping_project/components/card_view/mission/mission_information_shrink.dart';
 
-import 'package:grouping_project/components/card_view/event_information.dart';
+import 'package:grouping_project/components/card_view/mission_information.dart';
 import 'package:grouping_project/model/model_lib.dart';
 
-class EventCardViewTemplate extends StatelessWidget {
-  const EventCardViewTemplate({super.key, required this.eventModel});
+class MissionCardViewTemplate extends StatelessWidget {
+  const MissionCardViewTemplate(
+      {super.key, required this.missionModel});
 
-  final EventModel eventModel;
+  final MissionModel missionModel;
 
   @override
   Widget build(BuildContext context) {
-    final Color color = Color(eventModel.color);
-    final EventInformationShrink detailShrink =
-        EventInformationShrink(eventModel: eventModel);
-    final EventInformationEnlarge detailEnlarge =
-        EventInformationEnlarge(eventModel: eventModel);
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 5),
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
+    final Color color = Color(missionModel.color);
+    final MissionInformationShrink detailShrink = MissionInformationShrink(missionModel: missionModel);
+    final MissionInformationEnlarge detailEnlarge = MissionInformationEnlarge(missionModel: missionModel);
+    return Padding(
+      // margin: const EdgeInsets.symmetric(horizontal: 5),
+      // decoration: const BoxDecoration(
+      //   borderRadius: BorderRadius.all(Radius.circular(10)),
+      // ),
+      padding: const EdgeInsets.all(2),
       child: InkWell(
           onTap: () {
             Navigator.push(
@@ -28,17 +30,17 @@ class EventCardViewTemplate extends StatelessWidget {
                     transitionDuration: const Duration(milliseconds: 700),
                     reverseTransitionDuration:
                         const Duration(milliseconds: 700),
-                    pageBuilder: (_, __, ___) =>
-                        _Enlarge(detail: detailEnlarge, usingColor: color)));
+                    pageBuilder: (_, __, ___) => _Enlarge(
+                        detail: detailEnlarge, usingColor: color)));
           },
           child: Hero(
-            tag: 'change${detailShrink.eventModel.id}',
+            tag: 'change${detailShrink.missionModel.id}',
             child: Material(
               type: MaterialType.transparency,
               child: _Shrink(
                 detail: detailShrink,
                 usingColor: color,
-                height: 84,
+                height: 93,
               ),
             ),
           )),
@@ -48,9 +50,11 @@ class EventCardViewTemplate extends StatelessWidget {
 
 class _Shrink extends StatelessWidget {
   const _Shrink(
-      {required this.detail, required this.usingColor, required this.height});
+      {required this.detail,
+      required this.usingColor,
+      required this.height});
 
-  final EventInformationShrink detail;
+  final MissionInformationShrink detail;
   final Color usingColor;
 
   // height should vary according to detailed of differet card(Upcoming, mission, message)
@@ -59,8 +63,8 @@ class _Shrink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //debugPrint('it is shrink');
+    // TODO: use padding will cause width destory
     return Container(
-      // TODO: use padding
         width: MediaQuery.of(context).size.width - 20,
         height: height,
         decoration: BoxDecoration(
@@ -101,7 +105,7 @@ class _Shrink extends StatelessWidget {
 class _Enlarge extends StatelessWidget {
   const _Enlarge({required this.detail, required this.usingColor});
 
-  final EventInformationEnlarge detail;
+  final MissionInformationEnlarge detail;
   final Color usingColor;
 
   @override
@@ -109,7 +113,7 @@ class _Enlarge extends StatelessWidget {
     //debugPrint('it is enlarge');
     return Scaffold(
       body: Hero(
-        tag: 'change${detail.eventModel.id}',
+        tag: 'change${detail.missionModel.id}',
         child: Material(
           type: MaterialType.transparency,
           child: Container(

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/VM/enlarge_viewmodel.dart';
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
+import 'package:grouping_project/View/card_enlarge_view.dart';
+import 'package:grouping_project/View/mission_setting_view.dart';
+import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/components/card_view/mission_information.dart';
 import 'package:grouping_project/VM/mission_card_view_model.dart';
+
 
 /*
 * this file is used to create mission enlarge view
@@ -13,7 +17,6 @@ class MissionInformationEnlarge extends StatefulWidget {
 
   final MissionModel missionModel;
 
-
   @override
   State<MissionInformationEnlarge> createState() =>
       _MissionInformationEnlargeState();
@@ -22,15 +25,16 @@ class MissionInformationEnlarge extends StatefulWidget {
 class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
   @override
   Widget build(BuildContext context) {
-    MissionCardViewModel missionCardViewModel = MissionCardViewModel(widget.missionModel);
+    MissionCardViewModel missionCardViewModel =
+        MissionCardViewModel(widget.missionModel);
 
     String group = missionCardViewModel.group;
-    String title =  missionCardViewModel.title;
+    String title = missionCardViewModel.title;
     String descript = missionCardViewModel.descript;
-    DateTime deadline =  missionCardViewModel.deadline;
+    DateTime deadline = missionCardViewModel.deadline;
     List<String> contributorIds = missionCardViewModel.contributorIds;
-    MissionStage missionStage = missionCardViewModel.missionStage;
-    String stateName = missionCardViewModel.stateName;
+    // MissionStage missionStage = missionCardViewModel.missionStage;
+    // String stateName = missionCardViewModel.stateName;
     Color color = missionCardViewModel.color;
 
     // TODO: use Padding
@@ -57,8 +61,8 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
                         await Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => MissionEditPage(
-                                    missionModel: widget.missionModel)));
+                                builder: (context) => MissionSettingPageView(
+                                    model: MissionSettingViewModel(),)));
                         setState(() {});
                       },
                       icon: const Icon(
@@ -82,24 +86,24 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
             thickness: 1.5,
             color: Color.fromARGB(255, 170, 170, 170),
           ),
-          TitleDateOfMission(
-              title: title,
-              deadline: deadline,
-              group: group,
-              color: color,
-              stage: missionStage,
-              stateName: stateName,),
-          EnlargeObjectTemplate(
+          // TitleDateOfMission(
+          //     title: title,
+          //     deadline: deadline,
+          //     group: group,
+          //     color: color,
+          //     stage: missionStage,
+          //     stateName: stateName,),
+          CardViewTitle(
               title: '參與成員',
-              contextOfTitle: Contributors(
+              child: Contributors(
                 contributorIds: contributorIds,
               )),
           const SizedBox(
             height: 1,
           ),
-          EnlargeObjectTemplate(
+          CardViewTitle(
               title: '敘述',
-              contextOfTitle: Text(
+              child: Text(
                 descript,
                 style: const TextStyle(
                   fontSize: 15,
@@ -110,21 +114,25 @@ class _MissionInformationEnlargeState extends State<MissionInformationEnlarge> {
           const SizedBox(
             height: 2,
           ),
-          const EnlargeObjectTemplate(
+          CardViewTitle(
             title: '相關任務',
-            contextOfTitle: CollabMissons(),
+            child: Container(),
+            // child: CollabMissons(),
           ),
           const SizedBox(
             height: 2,
           ),
-          const EnlargeObjectTemplate(
-              title: '相關共筆', contextOfTitle: CollabNotes()),
+          CardViewTitle(title: '相關共筆',
+            child: Container(),
+          // child: CollabNotes(),
+          ),
           const SizedBox(
             height: 2,
           ),
-          const EnlargeObjectTemplate(
+          CardViewTitle(
             title: '相關會議',
-            contextOfTitle: CollabMeetings(),
+            child: Container(),
+            // child: CollabMeetings(),
           ),
         ],
       ),

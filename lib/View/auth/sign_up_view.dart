@@ -1,31 +1,13 @@
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/component_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/view_template/sing_up_page_template.dart';
-import 'package:grouping_project/pages/view_template/building.dart';
-import 'package:grouping_project/View/workspace_view.dart';
-import 'package:grouping_project/View/profile_edit_view.dart';
+import 'package:grouping_project/components/sing_up_page_template.dart';
+import 'package:grouping_project/View/helper_page/building.dart';
+import 'package:grouping_project/View/workspace/workspace_view.dart';
+import 'package:grouping_project/View/profile/profile_edit_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-// class InhertedSignUpData extends InheritedWidget {
-//   final SignUpDataModel data;
-//   const InhertedSignUpData({
-//     Key? key,
-//     required Widget child,
-//     required this.data,
-//   }) : super(key: key, child: child);
-
-//   static InhertedSignUpData? of(BuildContext context) {
-//     return context.dependOnInheritedWidgetOfExactType<InhertedSignUpData>();
-//   }
-
-//   @override
-//   bool updateShouldNotify(InhertedSignUpData oldWidget) {
-//     return data != oldWidget.data;
-//   }
-// }
 
 class SignUpPage extends StatefulWidget {
   // final SignUpDataModel data;
@@ -378,7 +360,7 @@ class _RecommendPageState extends State<RecommendPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ProfileEditPageView( model: ProfileEditViewModel()..profile = ProfileModel(name: model.userName, email: model.email),
+                            builder: (context) => ProfileEditPageView( model: ProfileEditViewModel()..profile = AccountModel(name: model.userName, email: model.email),
                             )));
                     // DataController()
                     //     .download(
