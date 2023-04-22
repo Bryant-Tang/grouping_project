@@ -114,9 +114,10 @@ class EventSettingViewModel extends ChangeNotifier {
       return false;
     }
     if (settingMode == SettingMode.create) {
+      await createEvent();
       // debugPrint('profile id ${profile.id}');
-      await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
-          .setEvent(event: eventData);
+      // await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
+      //     .setEvent(event: eventData);
       // debugPrint("Create 成功");
       // Create Event
     } else if (settingMode == SettingMode.edit) {
@@ -141,6 +142,20 @@ class EventSettingViewModel extends ChangeNotifier {
     } else {
       return 'unknown error';
     }
+  }
+  Future<void> createEvent() async{
+    if(isPersonal){
+      eventData.contributorIds.add(profile.id!);
+    }else{
+     final personalID = (await DatabaseService(ownerUid: AuthService().getUid(), forUser: true).getAccount()).id!;
+      eventData.contributorIds.add(personalID);
+    }
+    await DatabaseService(
+            ownerUid: forUser ? AuthService().getUid() : profile.id!,
+            forUser: forUser)
+        .setEvent(event: eventData);
+    // I can't get the id of the event
+    // I need to edit myself to contributor list
   }
 
   Future<void> deleteEvent() async {

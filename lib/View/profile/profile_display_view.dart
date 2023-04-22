@@ -15,6 +15,7 @@ class ProfileDispalyPageView extends StatefulWidget {
 
 class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
   bool isProfile = true;
+  bool isScanner = false; 
 
   Widget getContent(
       {required bool isProfile, required WorkspaceDashBoardViewModel model}) {
@@ -37,7 +38,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
         tags.insert(0, AccountTag(tag: "小組口號", content: model.slogan));
       }
     }
-    if (isProfile) {
+    if (isProfile & !isScanner) {
       if (model.isPersonalAccount) {
         return Column(children: [
           const HeadShot(),
@@ -74,11 +75,12 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
               }).toList()),
         ]);
       }
-    } else {
-      return ChangeNotifierProvider.value(
-        value: model,
-        child: ShowQRCodeView(),
-      );
+    }
+    else if(isScanner){
+      return const QrCodeScannerTesting();
+    } 
+    else {
+      return ShowQRCodeView();
     }
   }
 
@@ -161,15 +163,19 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      ChangeNotifierProvider.value(
-                                        value: model,
-                                        child: QrCodeScanner(),
-                                      )));
-                          debugPrint("Scan QR code");
+                          isScanner = !isScanner;
+                          setState(() {
+                            
+                          });
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (BuildContext context) =>
+                          //             ChangeNotifierProvider.value(
+                          //               value: model,
+                          //               child: QrCodeScanner(),
+                          //             )));
+                          // debugPrint("Scan QR code");
                         },
                         child: Icon(
                           Icons.qr_code_scanner,
