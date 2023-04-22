@@ -1,54 +1,27 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/View/profile/profile_display_view.dart';
 import 'package:grouping_project/components/button/overview_choice_button.dart';
-
-// progress card
-
-// show frame of widget
-// import 'package:flutter/rendering.dart';
-
-// 測試新功能用，尚未完工，請勿使用或刪除
-import 'package:grouping_project/View/testing/empty.dart';
-
 import 'package:flutter/material.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
+import 'package:grouping_project/components/card_view/event/event_card.dart';
 import 'package:grouping_project/pages/home/personal_dashboard/personal_mission_page.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-// class DashboardPage extends StatefulWidget {
-//   const DashboardPage({Key? key}) : super(key: key);
+// progress card
 
-//   @override
-//   State<DashboardPage> createState() => _DashboardPageState();
-// }
-
-// class _DashboardPageState extends State<DashboardPage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return PageView(
-//       scrollDirection: Axis.vertical,
-//       controller: PageController(initialPage: 1),
-//       children: const [
-//         ProfileDispalyPageView(),
-//         PeronalDashboardPage(),
-//       ],
-//     );
-//   }
-// }
+// show frame of widget
 
 class WorkspaceDashboardPageView extends StatefulWidget {
   const WorkspaceDashboardPageView({super.key});
+
   @override
-  State<WorkspaceDashboardPageView> createState() =>
-      _PeosonalDashboardPageState();
+  State<WorkspaceDashboardPageView> createState() => _WorkspaceDashboardPageViewState();
 }
 
-class _PeosonalDashboardPageState extends State<WorkspaceDashboardPageView> {
+class _WorkspaceDashboardPageViewState extends State<WorkspaceDashboardPageView> {
   @override
   Widget build(BuildContext context) {
-    // show the from of widget
+    // show the form of widget
     // debugPaintSizeEnabled = true;
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,10 +43,8 @@ class _ProgressState extends State<Progress> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('PROGRESSING',
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
                     fontWeight: FontWeight.bold,
@@ -81,42 +52,26 @@ class _ProgressState extends State<Progress> {
           const Divider(
             thickness: 2,
           ),
-          const Expanded(
-            child: ProgressingPageView(),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class ProgressingPageView extends StatefulWidget {
-  const ProgressingPageView({super.key});
-
-  @override
-  State<ProgressingPageView> createState() => _ProgressingPageViewState();
-}
-
-class _ProgressingPageViewState extends State<ProgressingPageView> {
-  @override
-  Widget build(BuildContext context) {
-    return PageView(children: const [
-      ProgressingCard(
-        colorSeed: Color(0xFF38A0FF),
-      ),
-      ProgressingCard(
-        colorSeed: Colors.red,
-      ),
-      ProgressingCard(
-        colorSeed: Colors.green,
-      ),
-      ProgressingCard(
-        colorSeed: Colors.amber,
-      ),
-      ProgressingCard(
-        colorSeed: Colors.black,
-      ),
-    ]);
+          Expanded(
+            child: PageView(children: const [
+              ProgressingCard(
+                colorSeed: Color(0xFF38A0FF),
+              ),
+              ProgressingCard(
+                colorSeed: Colors.red,
+              ),
+              ProgressingCard(
+                colorSeed: Colors.green,
+              ),
+              ProgressingCard(
+                colorSeed: Colors.amber,
+              ),
+              ProgressingCard(
+                colorSeed: Colors.black,
+              ),
+            ]),
+          ),
+        ]));
   }
 }
 
@@ -362,10 +317,12 @@ class OverView extends StatefulWidget {
 
 class _OverViewState extends State<OverView> {
   List<Widget> pages = const [
-    EventPage(),
+    EventListView(),
     MissionPage(),
     // Image.asset('assets/images/technical_support.png'),
-    Center(child: Text("TO BE CONTINUE"),)
+    Center(
+      child: Text("TO BE CONTINUE"),
+    )
   ];
   @override
   Widget build(BuildContext context) {
@@ -378,7 +335,7 @@ class _OverViewState extends State<OverView> {
               'label': '事件 - 即將到來',
               'icon': 'assets/icons/calendartick.svg',
               'number': model.dashboardEventList.length,
-              'index' : 0,
+              'index': 0,
             },
             'mission': {
               'label': '任務 - 即將到來',
@@ -410,8 +367,8 @@ class _OverViewState extends State<OverView> {
                               padding: const EdgeInsets.all(4.0),
                               child: OverViewChoiceButton(
                                 onTap: () {
-                                  model.updateOverViewIndex(
-                                      entry.value['index']! as int); // setEnable(0);
+                                  model.updateOverViewIndex(entry
+                                      .value['index']! as int); // setEnable(0);
                                 },
                                 labelText: entry.value['label']! as String,
                                 iconPath: entry.value['icon']! as String,
@@ -430,6 +387,27 @@ class _OverViewState extends State<OverView> {
           );
         },
       ),
+    );
+  }
+}
+
+class EventListView extends StatefulWidget {
+  const EventListView({super.key});
+  @override
+  State<EventListView> createState() => EventListViewState();
+}
+
+class EventListViewState extends State<EventListView> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<WorkspaceDashBoardViewModel>(
+      builder: (context, model, child) => ListView(
+          children: model.dashboardEventList
+              .map((eventModel) => 
+                  ChangeNotifierProvider<EventSettingViewModel>(
+                    create: (context) => EventSettingViewModel.display(eventModel),
+                  child: const EventCardViewTemplate()
+                )).toList()),
     );
   }
 }

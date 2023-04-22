@@ -20,13 +20,13 @@ import 'package:grouping_project/components/card_view/enlarge_context_template.d
 */
 
 class EventSettingPageView extends StatefulWidget {
-  const EventSettingPageView({super.key, required this.model});
-  final EventSettingViewModel model;
+  EventSettingPageView({super.key});
+  // \final? EventModel model;
   // pass view model instead of model
-  factory EventSettingPageView.create() =>
-      EventSettingPageView(model: EventSettingViewModel.create());
-  factory EventSettingPageView.edit({required EventModel eventModel}) =>
-      EventSettingPageView(model: EventSettingViewModel.edit(eventModel));
+  // factory EventSettingPageView.create({required AccountModel accountProfile}) =>
+  //     EventSettingPageView(model: EventSettingViewModel.create(accountProfile));
+  // factory EventSettingPageView.edit({required EventModel eventModel}) =>
+  //     EventSettingPageView(model: EventSettingViewModel.edit(eventModel));
 
   @override
   State<EventSettingPageView> createState() => _EventSettingPageViewState();
@@ -35,97 +35,89 @@ class EventSettingPageView extends StatefulWidget {
 class _EventSettingPageViewState extends State<EventSettingPageView> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<EventSettingViewModel>.value(
-      value: widget.model,
-      child: Consumer<EventSettingViewModel>(
-        builder: (context, model, child) => Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-            child: ListView(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          debugPrint('back');
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.cancel)),
-                    Row(
-                      children: [
-                        model.settingMode == SettingMode.edit
-                            ? IconButton(
-                                onPressed: () {
-                                  // debugPrint('remove');
-                                  model.removeEvent();
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              const WorksapceBasePage()),
-                                      (route) => false);
-                                },
-                                icon: const Icon(Icons.delete))
-                            : const SizedBox(),
-                        IconButton(
-                            onPressed: () async {
-                              bool valid = await model.onSave();
-                              if (!valid && mounted) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('非法輸入'),
-                                    content: Text(model.errorMessage()),
-                                  ),
-                                );
-                              } else if (mounted) {
+    return Consumer<EventSettingViewModel>(
+      builder: (context, model, child) => Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
+          child: ListView(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        debugPrint('back');
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.cancel)),
+                  Row(
+                    children: [
+                      model.settingMode == SettingMode.edit
+                          ? IconButton(
+                              onPressed: () {
+                                // debugPrint('remove');
+                                model.deleteEvent();
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
                                         builder: (_) =>
                                             const WorksapceBasePage()),
                                     (route) => false);
-                              }
-                            },
-                            icon: const Icon(Icons.done)),
-                      ],
-                    )
-                  ],
-                ),
-                Divider(
-                  thickness: 1.5,
-                  color: Theme.of(context).colorScheme.surfaceVariant,
-                ),
-                const TitleDateOfEvent(),
-                CardViewTitle(title: '參與成員', child: ContributorList()),
-                const SizedBox(
-                  height: 1,
-                ),
-                const CardViewTitle(title: '敘述', child: IntroductionBlock()),
-                const SizedBox(
-                  height: 2,
-                ),
-                // TODO: connect event and mission
-                const CardViewTitle(
-                  title: '相關任務',
-                  child: CollabMissons(),
-                ),
-                const SizedBox(
-                  height: 2,
-                ),
-                // TODO: connect note and event
-                const CardViewTitle(title: '相關共筆', child: CollabNotes()),
-                const SizedBox(
-                  height: 2,
-                ),
-                // TODO: connect event and meeting
-                const CardViewTitle(
-                  title: '相關會議',
-                  child: CollabMeetings(),
-                ),
-              ],
-            ),
+                              },
+                              icon: const Icon(Icons.delete))
+                          : const SizedBox(),
+                      IconButton(
+                          onPressed: () async {
+                            bool valid = await model.onSave();
+                            if (!valid && mounted) {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('非法輸入'),
+                                  content: Text(model.errorMessage()),
+                                ),
+                              );
+                            } else if (mounted) {
+                              Navigator.pop(context);
+                            }
+                          },
+                          icon: const Icon(Icons.done)),
+                    ],
+                  )
+                ],
+              ),
+              Divider(
+                thickness: 1.5,
+                color: Theme.of(context).colorScheme.surfaceVariant,
+              ),
+              const TitleDateOfEvent(),
+              CardViewTitle(title: '參與成員', child: ContributorList()),
+              const SizedBox(
+                height: 1,
+              ),
+              const CardViewTitle(title: '敘述', child: IntroductionBlock()),
+              const SizedBox(
+                height: 2,
+              ),
+              // TODO: connect event and mission
+              const CardViewTitle(
+                title: '相關任務',
+                child: CollabMissons(),
+              ),
+              const SizedBox(
+                height: 2,
+              ),
+              // TODO: connect note and event
+              const CardViewTitle(title: '相關共筆', child: CollabNotes()),
+              const SizedBox(
+                height: 2,
+              ),
+              // TODO: connect event and meeting
+              const CardViewTitle(
+                title: '相關會議',
+                child: CollabMeetings(),
+              ),
+            ],
           ),
         ),
       ),

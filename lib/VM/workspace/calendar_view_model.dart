@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/VM/workspace/workspace_dashboard_view_model.dart';
-import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/personal_event_page.dart';
 import 'package:grouping_project/service/service_lib.dart';
 
 class CalendarViewModel extends ChangeNotifier {

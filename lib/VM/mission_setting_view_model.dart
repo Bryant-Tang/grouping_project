@@ -9,6 +9,9 @@ class MissionSettingViewModel extends ChangeNotifier {
   AccountModel profile = AccountModel();
   SettingMode settingMode = SettingMode.create;
   WorkspaceMode workspaceMode = WorkspaceMode.personal;
+  List<MissionStateModel> inProgress = [];
+  List<MissionStateModel> pending = [];
+  List<MissionStateModel> close = [];
 
   String get introduction => missionData.introduction;
   String get title => missionData.title;
@@ -16,19 +19,21 @@ class MissionSettingViewModel extends ChangeNotifier {
   List<AccountModel> contributorProfile = [];
   List<AccountModel> get contributors => contributorProfile;
   List<AccountModel> get groupMember => profile.associateEntityAccount;
+  MissionStateModel get stateModel => missionData.state;
   Color get color => Color(missionData.color);
 
   MissionSettingViewModel(this.missionData, this.settingMode);
 
   factory MissionSettingViewModel.display(MissionModel missionData) =>
       MissionSettingViewModel(missionData, SettingMode.displpay);
-  factory MissionSettingViewModel.create() {
+  factory MissionSettingViewModel.create(AccountModel profile) {
     MissionSettingViewModel model =
         MissionSettingViewModel(MissionModel(), SettingMode.create);
+    model.setProfile = profile;
     model.updateDeadline(DateTime.now().add(const Duration(days: 1)));
     model.updateTitle('New Title');
     model.updateIntroduction('');
-    // model.setProfile = profile;
+    model.getAllState();
     return model;
   }
   factory MissionSettingViewModel.edit(MissionModel missionData) =>
@@ -73,6 +78,19 @@ class MissionSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void getAllState() async {
+    var allState = await DatabaseService(ownerUid: profile.id!).getAllMissionState();
+    for (int i = 0; i < allState.length; i++) {
+      if (allState[i].stage == MissionStage.progress) {
+        inProgress.add(allState[i]);
+      } else if (allState[i].stage == MissionStage.pending) {
+        pending.add(allState[i]);
+      } else if (allState[i].stage == MissionStage.close) {
+        close.add(allState[i]);
+      }
+    }
+  }
+
   Future<bool> onSave() async {
     if (title.isEmpty ||
         introduction.isEmpty ||
@@ -80,11 +98,11 @@ class MissionSettingViewModel extends ChangeNotifier {
       return false;
     } else if (settingMode == SettingMode.create) {
       // TODO: allow group 
-      await DatabaseService(ownerUid: AuthService().getUid())
+      await DatabaseService(ownerUid: profile.id!)
           .setMission(mission: missionData);
       // Create Event
     } else if (settingMode == SettingMode.edit) {
-      DatabaseService(ownerUid: AuthService().getUid()).setMission(mission: missionData);
+      DatabaseService(ownerUid: profile.id!).setMission(mission: missionData);
       // Edit Event
     } else {}
     return true;
