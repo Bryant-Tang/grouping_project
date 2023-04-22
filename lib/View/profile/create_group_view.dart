@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:grouping_project/VM/create_group_view_model.dart';
+import 'package:grouping_project/VM/profile/create_group_view_model.dart';
 import 'package:grouping_project/components/auth_view/headline_with_content.dart';
 import 'package:grouping_project/components/auth_view/navigation_toggle_bar.dart';
 import 'package:grouping_project/components/sing_up_page_template.dart';
