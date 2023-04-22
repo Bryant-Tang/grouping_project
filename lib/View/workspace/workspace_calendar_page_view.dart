@@ -57,7 +57,9 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Future<void> onDaySelected(
-      {required DateTime selectedDay, required DateTime focusedDay, required CalendarViewModel model}) async {
+      {required DateTime selectedDay,
+      required DateTime focusedDay,
+      required CalendarViewModel model}) async {
     if ((selectedDay.month != _focusedDay.month) ||
         (selectedDay.year != _focusedDay.year)) {
       await model.getEventsAndMissionsByDate(selectedDay);
@@ -78,8 +80,8 @@ class _CalendarPageState extends State<CalendarPage> {
     // debugPrint(eventAndMission.toString());
     for (int index = 0; index < eventAndMission.length; index++) {
       // debugPrint(index.toString());
-      eventAndMissionCards.add(Padding(
-        padding: const EdgeInsets.only(top: 10),
+      eventAndMissionCards.add(Container(
+        // padding: const EdgeInsets.only(),
         child: Card(
             child: Padding(
           padding: const EdgeInsets.only(left: 10),
@@ -162,185 +164,175 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
-          builder: (context, workspaceVM, child) => 
-          Consumer<CalendarViewModel>(
-            builder: (context, calenderVM, child) {
-              return RefreshIndicator(
-                  key: _refreshIndicatorKey,
-                  onRefresh: () => onRefresh(calenderVM),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 10, right: 10),
-                          child: TableCalendar(
-                            onCalendarCreated: (pageController) {
-                              calenderVM
-                                  .initData(
-                                      eventsList: workspaceVM.events,
-                                      missionsList: workspaceVM.missions)
-                                  .whenComplete(() => onRefresh(calenderVM));
-                            },
-                            // center Header Title,
-                            headerStyle: const HeaderStyle(
-                              formatButtonVisible: false,
-                              titleCentered: true,
+      builder: (context, workspaceVM, child) => Consumer<CalendarViewModel>(
+        builder: (context, calenderVM, child) {
+          return RefreshIndicator(
+              key: _refreshIndicatorKey,
+              onRefresh: () => onRefresh(calenderVM),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: TableCalendar(
+                        onCalendarCreated: (pageController) {
+                          calenderVM
+                              .initData(
+                                  eventsList: workspaceVM.events,
+                                  missionsList: workspaceVM.missions)
+                              .whenComplete(() => onRefresh(calenderVM));
+                        },
+                        // center Header Title,
+                        headerStyle: const HeaderStyle(
+                          formatButtonVisible: false,
+                          titleCentered: true,
+                        ),
+                        locale: 'zh_TW',
+                        firstDay: DateTime.utc(2010, 10, 16),
+                        lastDay: DateTime.utc(2030, 3, 14),
+                        focusedDay: _focusedDay,
+                        availableCalendarFormats: _calendarFormat,
+                        daysOfWeekHeight: 20,
+                        eventLoader: (day) {
+                          // model.getEventsAndMissionsByDate(day);
+                          return calenderVM.eventsMap[
+                                  DateTime(day.year, day.month, day.day)] ??
+                              [];
+                        },
+                        onHeaderTapped: (focusedDay) async {
+                          DateTime? tempDate = await popupDatePicker(context);
+                          if (tempDate != null) {
+                            _focusedDay = tempDate;
+                            _selectedDay = tempDate;
+                            onDaySelected(
+                                selectedDay: _selectedDay,
+                                focusedDay: _focusedDay,
+                                model: calenderVM);
+                            setState(() {});
+                          }
+                        },
+                        calendarStyle: CalendarStyle(
+                          // Decoration for today
+                          todayDecoration: BoxDecoration(
+                            border: Border.all(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              width: 2,
                             ),
-                            locale: 'zh_TW',
-                            firstDay: DateTime.utc(2010, 10, 16),
-                            lastDay: DateTime.utc(2030, 3, 14),
-                            focusedDay: _focusedDay,
-                            availableCalendarFormats: _calendarFormat,
-                            daysOfWeekHeight: 20,
-                            eventLoader: (day) {
-                              // model.getEventsAndMissionsByDate(day);
-                              return calenderVM.eventsMap[
-                                      DateTime(day.year, day.month, day.day)] ??
-                                  [];
-                            },
-                            onHeaderTapped: (focusedDay) async {
-                              DateTime? tempDate =
-                                  await popupDatePicker(context);
-                              if (tempDate != null) {
-                                _focusedDay = tempDate;
-                                _selectedDay = tempDate;
-                                onDaySelected(
-                                    selectedDay: _selectedDay,
-                                    focusedDay: _focusedDay,
-                                    model: calenderVM
-                                );
-                                setState(() {});
-                              }
-                            },
-                            calendarStyle: CalendarStyle(
-                              // Decoration for today
-                              todayDecoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer,
-                                  width: 2,
-                                ),
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              // Decoration for weekend
-                              weekendDecoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              // Decoration for outside days
-                              outsideDecoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              // Decoration for default day
-                              defaultDecoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              // Decoration for selected day
-                              selectedDecoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              selectedTextStyle: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          // Decoration for weekend
+                          weekendDecoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          // Decoration for outside days
+                          outsideDecoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          // Decoration for default day
+                          defaultDecoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          // Decoration for selected day
+                          selectedDecoration: BoxDecoration(
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          selectedTextStyle:
+                              Theme.of(context).textTheme.labelLarge!.copyWith(
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onPrimaryContainer,
                                     fontWeight: FontWeight.w500,
                                   ),
-                              todayTextStyle: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge!
-                                  .copyWith(
+                          todayTextStyle:
+                              Theme.of(context).textTheme.labelLarge!.copyWith(
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onPrimaryContainer,
                                     fontWeight: FontWeight.bold,
                                   ),
-                            ),
-                            selectedDayPredicate: (day) {
-                              return isSameDay(_selectedDay, day);
-                            },
-                            onDaySelected: (selectedDay, focusedDay) =>
-                                onDaySelected(
-                                    model: calenderVM,
-                                    focusedDay: focusedDay,
-                                    selectedDay: selectedDay),
-                            onPageChanged: (focusedDay) async {
-                              _focusedDay = focusedDay;
-                              await calenderVM.toMapAMonth(
-                                  year: _focusedDay.year,
-                                  month: _focusedDay.month);
-                            },
-                          ),
                         ),
-                        Expanded(
-                          child: calenderVM.isMapping
-                              ? Center(
-                                  child: Column(
-                                    children: [
-                                      Padding(
-                                          padding:
-                                              const EdgeInsets.only(top: 10),
-                                          child: Text(
-                                            'Event and Mission Lists are still loading',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelLarge!
-                                                .copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16),
-                                          )),
-                                      const Padding(
-                                          padding: EdgeInsets.only(top: 30),
-                                          child: CircularProgressIndicator())
-                                    ],
-                                  ),
-                                )
-                              : ListView.builder(
-                                  itemCount: eventAndMissionCards.length,
-                                  itemBuilder: (context, index) {
-                                    return eventAndMissionCards[index];
-                                  },
-                                ),
-                        ),
-                        // ElevatedButton(
-                        //     onPressed: () async {
-                        //       // await DatabaseService(
-                        //       //         ownerUid: AuthService().getUid())
-                        //       //     .setEvent(
-                        //       //         event: EventModel(
-                        //       //   title: 'test event title',
-                        //       //   startTime: DateTime.now(),
-                        //       //   endTime:
-                        //       //       DateTime.now().add(const Duration(days: 7)),
-                        //       //   introduction: 'test event introduction',
-                        //       // ));
-                        //       await DatabaseService(
-                        //               ownerUid: AuthService().getUid())
-                        //           .setMission(
-                        //               mission: MissionModel(
-                        //                   title: 'test mission title',
-                        //                   deadline: DateTime.now()
-                        //                       .add(const Duration(days: 7)),
-                        //                   state: MissionStateModel
-                        //                       .defaultProgressState,
-                        //                   introduction:
-                        //                       'test mission introduction'));
-                        //     },
-                        //     child: const Text('Test add'))
-                      ],
+                        selectedDayPredicate: (day) {
+                          return isSameDay(_selectedDay, day);
+                        },
+                        onDaySelected: (selectedDay, focusedDay) =>
+                            onDaySelected(
+                                model: calenderVM,
+                                focusedDay: focusedDay,
+                                selectedDay: selectedDay),
+                        onPageChanged: (focusedDay) async {
+                          _focusedDay = focusedDay;
+                          await calenderVM.toMapAMonth(
+                              year: _focusedDay.year, month: _focusedDay.month);
+                        },
+                      ),
                     ),
-                  ));
-            },
-          ),
-        );
+                    Expanded(
+                      child: calenderVM.isMapping
+                          ? Center(
+                              child: Column(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 10),
+                                      child: Text(
+                                        'Event and Mission Lists are still loading',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelLarge!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                      )),
+                                  const Padding(
+                                      padding: EdgeInsets.only(top: 30),
+                                      child: CircularProgressIndicator())
+                                ],
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: eventAndMissionCards.length,
+                              itemBuilder: (context, index) {
+                                return eventAndMissionCards[index];
+                              },
+                            ),
+                    ),
+                    // ElevatedButton(
+                    //     onPressed: () async {
+                    //       // await DatabaseService(
+                    //       //         ownerUid: AuthService().getUid())
+                    //       //     .setEvent(
+                    //       //         event: EventModel(
+                    //       //   title: 'test event title',
+                    //       //   startTime: DateTime.now(),
+                    //       //   endTime:
+                    //       //       DateTime.now().add(const Duration(days: 7)),
+                    //       //   introduction: 'test event introduction',
+                    //       // ));
+                    //       await DatabaseService(
+                    //               ownerUid: AuthService().getUid())
+                    //           .setMission(
+                    //               mission: MissionModel(
+                    //                   title: 'test mission title',
+                    //                   deadline: DateTime.now()
+                    //                       .add(const Duration(days: 7)),
+                    //                   state: MissionStateModel
+                    //                       .defaultProgressState,
+                    //                   introduction:
+                    //                       'test mission introduction'));
+                    //     },
+                    //     child: const Text('Test add'))
+                  ],
+                ),
+              ));
+        },
+      ),
+    );
   }
 }
