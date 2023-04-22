@@ -50,7 +50,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                                 value: workspaceVM)
                           ], child: const ExpandedCardView()),
                         ));
-                    if (isNeedRefresh) {
+                    if (isNeedRefresh!=null && isNeedRefresh) {
                       await workspaceVM.getAllData();
                     }
                   },

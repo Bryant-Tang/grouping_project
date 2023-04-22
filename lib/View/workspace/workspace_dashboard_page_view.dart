@@ -1,9 +1,9 @@
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/button/overview_choice_button.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/components/card_view/event/event_card.dart';
-import 'package:grouping_project/pages/home/personal_dashboard/personal_mission_page.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -316,9 +316,12 @@ class OverView extends StatefulWidget {
 }
 
 class _OverViewState extends State<OverView> {
-  List<Widget> pages = const [
+  List<Widget> pages = [
     EventListView(),
-    MissionPage(),
+    Center(
+      child: Text("TO BE CONTINUE"),
+    ),
+    // MissionListView(),
     // Image.asset('assets/images/technical_support.png'),
     Center(
       child: Text("TO BE CONTINUE"),
@@ -411,3 +414,24 @@ class EventListViewState extends State<EventListView> {
     );
   }
 }
+
+// class MissionListView extends StatefulWidget {
+//   const MissionListView({super.key});
+//   @override
+//   State<MissionListView> createState() => MissionListViewState();
+// }
+
+// class MissionListViewState extends State<MissionListView> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Consumer<WorkspaceDashBoardViewModel>(
+//       builder: (context, model, child) => ListView(
+//           children: model.dashboardMissionList
+//               .map((missionModel) => 
+//                   ChangeNotifierProvider<MissionSettingViewModel>(
+//                     create: (context) => MissionSettingViewModel.display(missionModel),
+//                   child: const EventCardViewTemplate()
+//                 )).toList()),
+//     );
+//   }
+// }

@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/service_lib.dart';
@@ -17,6 +16,7 @@ class MissionSettingViewModel extends ChangeNotifier {
 
   // String newStateModel
 
+  String get owner => missionData.ownerName;
   String get introduction => missionData.introduction;
   String get title => missionData.title;
   String get ownerAccountName => missionData.ownerName;
@@ -41,9 +41,11 @@ class MissionSettingViewModel extends ChangeNotifier {
         MissionSettingViewModel(MissionModel(), SettingMode.create);
     model.setProfile = accountProfile;
     model.updateDeadline(DateTime.now().add(const Duration(days: 1)));
+    model.updateOwner(accountProfile.name);
     model.updateTitle('New Title');
     model.updateIntroduction('');
     model.getAllState();
+    model.updateState(MissionStage.progress, 'in progress');
     return model;
   }
   factory MissionSettingViewModel.edit(MissionModel missionData) =>
@@ -51,6 +53,11 @@ class MissionSettingViewModel extends ChangeNotifier {
 
   set setModel(MissionModel newModel) {
     missionData = newModel;
+    notifyListeners();
+  }
+
+  void updateOwner(String newOwner) {
+    missionData.ownerName = newOwner;
     notifyListeners();
   }
 
@@ -95,12 +102,47 @@ class MissionSettingViewModel extends ChangeNotifier {
   }
 
   void createState(MissionStage newStage, String newStateName) async {
-    await DatabaseService(ownerUid: profile.id!).setMissionState(state: MissionStateModel(stage: newStage, stateName: newStateName));
+    // TODO: 沒有及時刷新
+    await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser).setMissionState(state: MissionStateModel(stage: newStage, stateName: newStateName));
+    getAllState();
     updateState(newStage, newStateName);
+    notifyListeners();
+  }
+
+  void deleteStateName(MissionStage selectedStage, String selectedStateName) async {
+    MissionStateModel beDeleted;
+      if (selectedStage == MissionStage.progress) {
+        beDeleted = inProgress.firstWhere((element) => element.stateName == selectedStateName);
+      } else if (selectedStage == MissionStage.pending) {
+        beDeleted = pending.firstWhere((element) => element.stateName == selectedStateName);
+      } else if (selectedStage == MissionStage.close) {
+        beDeleted = close.firstWhere((element) => element.stateName == selectedStateName);
+      } else {
+        beDeleted = MissionStateModel();
+      }
+    if(stateModel.stateName == selectedStateName){
+      String name = '';
+      if (selectedStage == MissionStage.progress) {
+        name = 'in progress';
+      } else if (selectedStage == MissionStage.pending) {
+        name = 'pending';
+      } else if (selectedStage == MissionStage.close) {
+        name = 'finish';
+      } else {
+        
+      }
+      updateState(selectedStage, name);
+    }
+    await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser).deleteMissionState(beDeleted);
+    getAllState();
+    notifyListeners();
   }
 
   void getAllState() async {
-    var allState = await DatabaseService(ownerUid: profile.id!).getAllMissionState();
+    inProgress = [];
+    pending = [];
+    close = [];
+    var allState = await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser).getAllMissionState();
     for (int i = 0; i < allState.length; i++) {
       if (allState[i].stage == MissionStage.progress) {
         inProgress.add(allState[i]);
@@ -110,6 +152,7 @@ class MissionSettingViewModel extends ChangeNotifier {
         close.add(allState[i]);
       }
     }
+    notifyListeners();
   }
 
   Future<bool> onSave() async {
@@ -118,7 +161,6 @@ class MissionSettingViewModel extends ChangeNotifier {
         deadline.isBefore(DateTime.now())) {
       return false;
     } else if (settingMode == SettingMode.create) {
-      // TODO: allow group 
       await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
           .setMission(mission: missionData);
       // Create Event

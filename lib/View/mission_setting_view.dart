@@ -76,21 +76,7 @@ class _MissionSettingPageViewState extends State<MissionSettingPageView> {
                 thickness: 1.5,
                 color: Color.fromARGB(255, 170, 170, 170),
               ),
-              // TitleDateOfMission(
-              //   titleController: titleController,
-              //   deadline: deadline,
-              //   group: group,
-              //   color: color,
-              //   stage: missionStage,
-              //   stateName: stateName,
-              //   callback: (p0) {
-              //     deadline = p0;
-              //   },
-              //   cbStage: (stage, stateName) {
-              //     missionStage = stage;
-              //     this.stateName = stateName;
-              //   },
-              // ),
+              const TitleDateOfMission(),
               CardViewTitle(title: '參與成員', child: Container()),
               const SizedBox(
                 height: 1,
@@ -128,19 +114,17 @@ class _MissionSettingPageViewState extends State<MissionSettingPageView> {
 class AntiLabel extends StatelessWidget {
   /// 標籤反白的 group
 
-  const AntiLabel({super.key, required this.group, required this.color});
-  final String group;
-  final Color color;
-
+  const AntiLabel({super.key});
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Consumer<MissionSettingViewModel>(builder:(context, model, child) => Container(
         decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(10)),
+            color: model.color, borderRadius: BorderRadius.circular(10)),
         child: Text(
-          ' •$group ',
-          style: const TextStyle(color: Colors.white, fontSize: 10),
-        ));
+          ' •${model.owner} ',
+          style: const TextStyle(color: Colors.white, fontSize: 15),
+        )),);
+    
   }
 }
 
@@ -238,7 +222,8 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
       builder: (context, model, child) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // AntiLabel(group: widget.group, color: widget.color),
+          const AntiLabel(),
+          const SizedBox(height: 5,),
           // Text(
           //   title,
           //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -441,14 +426,18 @@ class _StateOfMissionState extends State<StateOfMission> {
                             height: 7,
                             thickness: 2,
                           ),
-                          const CreateStage()
+                          ChangeNotifierProvider<MissionSettingViewModel>.value(
+                              value: model, child: const CreateStage()),
+                          ChangeNotifierProvider<MissionSettingViewModel>.value(
+                              value: model, child: const DeleteStateName()),
                         ],
                       ),
                     ),
                   );
                 });
           },
-          child: chipView(model.color, model.stateModel.stateName)),
+          child: chipView(stageToColor(model.stateModel.stage),
+              model.stateModel.stateName)),
     );
   }
 }
@@ -521,8 +510,8 @@ class _CreateStageState extends State<CreateStage> {
           showDialog(
               context: context,
               builder: (context) {
-                return Dialog(
-                  child: StatefulBuilder(
+                return AlertDialog(
+                  content: StatefulBuilder(
                     builder: ((context, setNewState) {
                       return Container(
                           padding: const EdgeInsets.all(2),
@@ -570,10 +559,10 @@ class _CreateStageState extends State<CreateStage> {
                               ),
                               TextButton(
                                   onPressed: () {
-                                    // TODO: call back new stage and new stateName
                                     model.createState(
                                         stringToStage(selectedStage),
                                         newStateName);
+                                    Navigator.pop(context);
                                     Navigator.pop(context);
                                   },
                                   child: const Text('Ok'))
@@ -589,6 +578,118 @@ class _CreateStageState extends State<CreateStage> {
           '創建狀態 Create State',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
+      ),
+    );
+  }
+}
+
+class DeleteStateName extends StatefulWidget {
+  const DeleteStateName({super.key});
+  @override
+  State<DeleteStateName> createState() => _DeleteStateNameState();
+}
+
+class _DeleteStateNameState extends State<DeleteStateName> {
+  @override
+  Widget build(BuildContext context) {
+    Color stageToColor(MissionStage stage) {
+      // TODO: color discussion
+      if (stage == MissionStage.progress) {
+        return Colors.blue.withOpacity(0.2);
+      } else if (stage == MissionStage.pending) {
+        return Colors.purple.withOpacity(0.2);
+      } else if (stage == MissionStage.close) {
+        return Colors.red.withOpacity(0.2);
+      } else {
+        return Colors.black38;
+      }
+    }
+
+    InkWell chipSelected(Color color, String stateName, MissionStage stage,
+        MissionSettingViewModel model) {
+      return InkWell(
+          onTap: () {
+            if (stateName == 'in progress' ||
+                stateName == 'pending' ||
+                stateName == 'close') {
+              showDialog(
+                  context: context,
+                  builder: (context) => const AlertDialog(
+                        title: Text('不可刪除預設狀態'),
+                      ));
+            } else {
+              model.deleteStateName(stage, stateName);
+              Navigator.pop(context);
+              Navigator.pop(context);
+            }
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                  color: color, borderRadius: BorderRadius.circular(10)),
+              child: Text(
+                ' •$stateName ',
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              )));
+    }
+
+    Column contextTemple(String title, List<MissionStateModel> datas,
+        MissionStage stage, MissionSettingViewModel model) {
+      List<Widget> chips = [];
+
+      for (int i = 0; i < datas.length; i++) {
+        chips.add(chipSelected(
+            stageToColor(stage), datas[i].stateName, stage, model));
+        chips.add(const SizedBox(
+          height: 4,
+        ));
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+              Text(
+                title,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              ),
+              const Divider(
+                height: 7,
+                thickness: 3,
+              )
+            ] +
+            chips,
+      );
+    }
+
+    return Consumer<MissionSettingViewModel>(
+      builder: (context, model, child) => TextButton(
+        onPressed: () => showDialog(
+            context: context,
+            builder: (context) {
+              return Dialog(
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: ListView(
+                    children: [
+                      contextTemple('進行中 In Progress', model.inProgress,
+                          MissionStage.progress, model),
+                      contextTemple('待討論 Pending', model.pending,
+                          MissionStage.pending, model),
+                      contextTemple(
+                          '已結束 Close', model.close, MissionStage.close, model),
+                      const Divider(
+                        height: 7,
+                        thickness: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+        child: const Text('刪除狀態 Delete State'),
       ),
     );
   }
