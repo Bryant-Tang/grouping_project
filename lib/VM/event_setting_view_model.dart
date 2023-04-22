@@ -29,7 +29,7 @@ class EventSettingViewModel extends ChangeNotifier {
   Color get color => Color(eventData.color);
   bool get forUser => isPersonal;
   set isForUser(bool forUser) {
-    isPeosonal = forUser;
+    isPersonal = forUser;
     notifyListeners();
   }
 
