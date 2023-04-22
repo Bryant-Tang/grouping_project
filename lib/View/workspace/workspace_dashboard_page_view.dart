@@ -1,5 +1,4 @@
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/button/overview_choice_button.dart';
 import 'package:flutter/material.dart';
@@ -316,7 +315,7 @@ class OverView extends StatefulWidget {
 }
 
 class _OverViewState extends State<OverView> {
-  List<Widget> pages = [
+  List<Widget> pages = const [
     EventListView(),
     Center(
       child: Text("TO BE CONTINUE"),
