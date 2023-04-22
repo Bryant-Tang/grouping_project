@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/profile/profile_edit_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/View/testing/empty.dart';
+
 import 'package:provider/provider.dart';
 
 class ProfileDispalyPageView extends StatefulWidget {
@@ -19,7 +22,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
       if (model.introduction != "unknown") {
         tags.insert(0, AccountTag(tag: "自我介紹", content: model.introduction));
       }
-      if (model.slogan != "unknown"){
+      if (model.slogan != "unknown") {
         tags.insert(0, AccountTag(tag: "座右銘", content: model.slogan));
       }
       // TODO : 把他寫進 VM 裡面
@@ -65,8 +68,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                                 builder: (BuildContext context) =>
                                     ProfileEditPageView(
                                         model: ProfileEditViewModel()
-                                          ..profile = model.accountProfile
-                                        ),
+                                          ..profile = model.accountProfile),
                               ));
                           await model.getAllData();
                         },
@@ -81,10 +83,35 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          debugPrint("Share");
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => QRView(
+                                        workspaceDashBoardViewModel: model,
+                                      )));
+                          debugPrint("QR code share");
                         },
                         child: Icon(
                           Icons.share,
+                          size: 15,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => QrCodeScanner(
+                                        workspaceDashBoardViewModel: model,
+                                      )));
+                          debugPrint("Scan QR code");
+                        },
+                        child: Icon(
+                          Icons.qr_code_scanner,
                           size: 15,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -159,8 +186,10 @@ class HeadShot extends StatelessWidget {
                   const SizedBox(height: 1),
                   model.realName != "unkonwn"
                       ? Text(model.realName,
-                          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontWeight: FontWeight.bold))
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontWeight: FontWeight.bold))
                       : const SizedBox()
                 ],
               ),

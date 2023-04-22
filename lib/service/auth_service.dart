@@ -17,6 +17,18 @@ import 'package:http/http.dart' as http;
 /// flutter run --web-hostname localhost --web-port 5000
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  // bool isLogged = false;
+  // AuthService() {
+  //   // debugPrint('AuthService init');
+  //   // TODO: check if user is logged in
+  //   onAuthStateChanged.listen((UserModel? user) {
+  //     if (user == null) {
+  //       isLogged = false;
+  //     } else {
+  //       isLogged = true;
+  //     }
+  //   });
+  // }
 
   Stream<UserModel?> get onAuthStateChanged {
     return _auth
