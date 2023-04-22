@@ -329,10 +329,8 @@ class DatabaseService {
         collectionPath: '${defaultData.databasePath}_account_relation',
         condition: {'account_id': ownerAccountId});
 
-    List<String> dataIdList = [];
-    for (var idSnap in idSnapList) {
-      dataIdList.add(idSnap.id);
-    }
+    List<String> dataIdList =
+        List.from(idSnapList.map((docSnap) => docSnap.id));
 
     List<T> eventList = [];
 
@@ -378,25 +376,10 @@ class DatabaseService {
 
   Future<List<MissionStateModel>> _getSingleAccountAllMissionState() async {
     String ownerAccountId = await _getOwnerAccountId();
-    var missionStateSnapList = await _getDataFitMapFirestore(
-        collectionPath: 'missionState_account_relation',
-        condition: {'account_id': ownerAccountId});
-
-    List<String> missionStateIdList = [];
-    for (var docSnap in missionStateSnapList) {
-      missionStateIdList.add(docSnap.id);
-    }
-
-    List<MissionStateModel> missionStateList = [];
-
-    for (var missionStateId in missionStateIdList) {
-      var docSnap = await _getDocSnapFirestore(
-          collectionPath: MissionStateModel.defaultUnknownState.databasePath,
-          dataId: missionStateId);
-      MissionStateModel missionState = MissionStateModel.defaultUnknownState
-          .fromFirestore(id: docSnap.id, data: docSnap.data() ?? {});
-      missionStateList.add(missionState);
-    }
+    List<MissionStateModel> missionStateList =
+        await _getSingleAccountAllDataModelFromFire(
+            ownerAccountId: ownerAccountId,
+            defaultData: MissionStateModel.defaultUnknownState);
 
     return missionStateList;
   }
