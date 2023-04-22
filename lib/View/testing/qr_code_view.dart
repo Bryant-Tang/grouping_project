@@ -8,11 +8,8 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// Generate QR code of a group
 class ShowQRCodeView extends StatefulWidget {
-  WorkspaceDashBoardViewModel workspaceDashBoardViewModel =
-      WorkspaceDashBoardViewModel();
   ShowQRCodeView({
     super.key,
-    required this.workspaceDashBoardViewModel,
   });
 
   @override
@@ -22,63 +19,55 @@ class ShowQRCodeView extends StatefulWidget {
 class _ShowQRCodeViewState extends State<ShowQRCodeView> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
-      value: widget.workspaceDashBoardViewModel,
-      builder: (context, child) => ChangeNotifierProvider<QRViewModel>(
-          create: (_) => QRViewModel(),
-          builder: (context, child) => Consumer<QRViewModel>(
-                builder: (context, model, child) {
-                  debugPrint('Trying to show QR code');
-                  if (widget.workspaceDashBoardViewModel.isPersonalAccount ==
-                      false) {
-                    debugPrint(
-                        'Printing group id, ${widget.workspaceDashBoardViewModel.accountProfile.id}');
-                    model.showGroupId(
-                        widget.workspaceDashBoardViewModel.accountProfile.id);
-                    model.updateWelcomeMessage(
-                        'Welcome to ${widget.workspaceDashBoardViewModel.accountProfile.name}!');
-                  } else {
-                    debugPrint('It\'s personal account');
-                    model.showGroupId(
-                        'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-                    model.updateWelcomeMessage('Never gonna give you up~');
-                  }
-                  return Material(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        QrImage(
-                          data: model.stringToShow,
-                          version: QrVersions.auto,
-                          size: 300,
-                          gapless: false,
-                        ),
-                        Text(model.welcomeMessage,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(
-                                    fontWeight: FontWeight.bold, fontSize: 18)),
-                        Padding(
-                            padding: const EdgeInsets.only(top: 20),
-                            child: ElevatedButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Go Back'),
-                            )),
-                      ],
-                    ),
-                  );
-                },
-              )),
+    return Consumer<WorkspaceDashBoardViewModel>(
+      builder: (context, value, child) => ChangeNotifierProvider<QRViewModel>(
+        create: (_) => QRViewModel(),
+        builder: (context, child) => Consumer<QRViewModel>(
+          builder: (context, model, child) {
+            debugPrint('Trying to show QR code');
+            if (value.isPersonalAccount == false) {
+              debugPrint('Printing group id, ${value.accountProfile.id}');
+              model.showGroupId(value.accountProfile.id);
+              model.updateWelcomeMessage(
+                  'Welcome to ${value.accountProfile.name}!');
+            } else {
+              debugPrint('It\'s personal account');
+              model.showGroupId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+              model.updateWelcomeMessage('Never gonna give you up~');
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                QrImage(
+                  data: model.stringToShow,
+                  version: QrVersions.auto,
+                  size: 200,
+                  gapless: false,
+                ),
+                Text(model.welcomeMessage,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelLarge!
+                        .copyWith(fontWeight: FontWeight.bold, fontSize: 18)),
+                // Padding(
+                //     padding: const EdgeInsets.only(top: 20),
+                //     child: ElevatedButton(
+                //       onPressed: () => Navigator.pop(context),
+                //       child: const Text('Go Back'),
+                //     )),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }
 
 /// To scan QR code
 class QrCodeScanner extends StatefulWidget {
-  WorkspaceDashBoardViewModel workspaceDashBoardViewModel;
-  QrCodeScanner({super.key, required this.workspaceDashBoardViewModel});
+  QrCodeScanner({super.key});
 
   @override
   State<QrCodeScanner> createState() => _QrCodeScannerState();
@@ -95,14 +84,12 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-        value: widget.workspaceDashBoardViewModel,
-        builder: (context, child) => ChangeNotifierProvider(
+    return Consumer<WorkspaceDashBoardViewModel>(
+        builder: (context, value, child) => ChangeNotifierProvider(
               create: (context) => QRViewModel(),
               builder: (context, child) => Consumer<QRViewModel>(
                 builder: (context, model, child) {
-                  model.setPersonalModel(
-                      widget.workspaceDashBoardViewModel.personalprofileData);
+                  model.setPersonalModel(value.personalprofileData);
                   return Scaffold(
                       body: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -132,14 +119,12 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
                                           TextButton(
                                               onPressed: () async {
                                                 model.addAssociation();
-                                                await widget
-                                                    .workspaceDashBoardViewModel
-                                                    .addGroupViaQR(
-                                                        model.code,
-                                                        model
-                                                            .groupAccountModel);
+                                                await value.addGroupViaQR(
+                                                    model.code,
+                                                    model.groupAccountModel);
                                                 Navigator.pop(context);
                                                 Navigator.pop(context);
+                                                setState(() {});
                                               },
                                               child: const Text('確認'))
                                         ],

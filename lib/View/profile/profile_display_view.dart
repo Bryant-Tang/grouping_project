@@ -14,17 +14,78 @@ class ProfileDispalyPageView extends StatefulWidget {
 }
 
 class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
+  bool isProfile = true;
+
+  Widget getContent(
+      {required bool isProfile, required WorkspaceDashBoardViewModel model}) {
+    List tags = List.from(model.tags);
+    List tagWithoutTitles = tags;
+
+    if (model.introduction != "unknown") {
+      if (model.isPersonalAccount) {
+        tags.insert(0, AccountTag(tag: "自我介紹", content: model.introduction));
+      } else {
+        debugPrint('It\'s a group account');
+        tags.insert(0, AccountTag(tag: "小組簡介", content: model.introduction));
+      }
+    }
+    if (model.slogan != "unknown") {
+      if (model.isPersonalAccount) {
+        tags.insert(0, AccountTag(tag: "座右銘", content: model.slogan));
+      } else {
+        debugPrint('It\'s a group account');
+        tags.insert(0, AccountTag(tag: "小組口號", content: model.slogan));
+      }
+    }
+    if (isProfile) {
+      if (model.isPersonalAccount) {
+        return Column(children: [
+          const HeadShot(),
+          Column(
+              children: tags
+                  .map((accountTag) => CustomLabel(
+                      title: accountTag.tag, information: accountTag.content))
+                  .toList())
+        ]);
+      } else {
+        return Column(children: [
+          const HeadShot(),
+          Column(
+              children: tags.map((accountTag) {
+            if ((accountTag.tag == "小組簡介") || (accountTag.tag == "小組口號")) {
+              return CustomLabel(
+                  title: accountTag.tag, information: accountTag.content);
+            } else {
+              return Container();
+            }
+          }).toList()),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: tagWithoutTitles.map((accountTag) {
+                if ((accountTag.tag == "小組簡介") || (accountTag.tag == "小組口號")) {
+                  return Container();
+                } else {
+                  return CustomLabel(
+                    title: accountTag.tag,
+                    information: '',
+                    forGroupTags: true,
+                  );
+                }
+              }).toList()),
+        ]);
+      }
+    } else {
+      return ChangeNotifierProvider.value(
+        value: model,
+        child: ShowQRCodeView(),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
         builder: (context, model, child) {
-      List tags = List.from(model.tags);
-      if (model.introduction != "unknown") {
-        tags.insert(0, AccountTag(tag: "自我介紹", content: model.introduction));
-      }
-      if (model.slogan != "unknown") {
-        tags.insert(0, AccountTag(tag: "座右銘", content: model.slogan));
-      }
       // TODO : 把他寫進 VM 裡面
       // debugPrint(tags.toString());
       return SafeArea(
@@ -49,14 +110,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                   const SizedBox(
                     height: 10,
                   ),
-                  const HeadShot(),
-                  Column(
-                    children: tags
-                        .map((accountTag) => CustomLabel(
-                            title: accountTag.tag,
-                            information: accountTag.content))
-                        .toList(),
-                  ),
+                  getContent(isProfile: isProfile, model: model),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -83,16 +137,23 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ShowQRCodeView(
-                                        workspaceDashBoardViewModel: model,
-                                      )));
+                          isProfile = !isProfile;
+                          setState(() {});
+                          // showModalBottomSheet(
+                          //     context: context,
+                          //     shape: const RoundedRectangleBorder(
+                          //         borderRadius: BorderRadius.only(
+                          //             topLeft: Radius.circular(20),
+                          //             topRight: Radius.circular(20))),
+                          //     builder: (context) =>
+                          //         ChangeNotifierProvider.value(
+                          //           value: model,
+                          //           child: ShowQRCodeView(),
+                          //         ));
                           debugPrint("QR code share");
                         },
                         child: Icon(
-                          Icons.share,
+                          isProfile ? Icons.share : Icons.group,
                           size: 15,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -105,8 +166,10 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => QrCodeScanner(
-                                        workspaceDashBoardViewModel: model,
+                                  builder: (BuildContext context) =>
+                                      ChangeNotifierProvider.value(
+                                        value: model,
+                                        child: QrCodeScanner(),
                                       )));
                           debugPrint("Scan QR code");
                         },
@@ -127,42 +190,63 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
 }
 
 class CustomLabel extends StatelessWidget {
-  const CustomLabel(
-      {super.key, required this.title, required this.information});
+  CustomLabel(
+      {super.key,
+      required this.title,
+      required this.information,
+      this.forGroupTags = false});
 
   final String title;
   final String information;
+  bool forGroupTags;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          const SizedBox(
-            height: 2,
-          ),
-          Text(
-            information,
-            style: Theme.of(context).textTheme.labelMedium,
-            softWrap: true,
-            maxLines: 5,
-          ),
-          Divider(
-            thickness: 1.5,
-            color: Theme.of(context).colorScheme.secondary,
-            height: 20,
-          ),
-        ],
-      ),
-    );
+    if (!forGroupTags) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(
+              height: 2,
+            ),
+            Text(
+              information,
+              style: Theme.of(context).textTheme.labelMedium,
+              softWrap: true,
+              maxLines: 5,
+            ),
+            Divider(
+              thickness: 1.5,
+              color: Theme.of(context).colorScheme.secondary,
+              height: 20,
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(left: 18, bottom: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
 
