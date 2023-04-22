@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/service_lib.dart';
@@ -12,6 +13,8 @@ class MissionSettingViewModel extends ChangeNotifier {
   List<MissionStateModel> inProgress = [];
   List<MissionStateModel> pending = [];
   List<MissionStateModel> close = [];
+
+  // String newStateModel
 
   String get introduction => missionData.introduction;
   String get title => missionData.title;
@@ -76,6 +79,17 @@ class MissionSettingViewModel extends ChangeNotifier {
   void removeContributors(String removedContributorId) {
     missionData.contributorIds.remove(removedContributorId);
     notifyListeners();
+  }
+
+  void updateState(MissionStage newStage, String newStateName) {
+    missionData.state.stage = newStage;
+    missionData.state.stateName = newStateName;
+    notifyListeners();
+  }
+
+  void createState(MissionStage newStage, String newStateName) async {
+    await DatabaseService(ownerUid: profile.id!).setMissionState(state: MissionStateModel(stage: newStage, stateName: newStateName));
+    updateState(newStage, newStateName);
   }
 
   void getAllState() async {
