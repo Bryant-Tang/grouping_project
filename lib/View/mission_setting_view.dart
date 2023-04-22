@@ -17,16 +17,16 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 */
 
 class MissionSettingPageView extends StatefulWidget {
-  const MissionSettingPageView({super.key, required this.model});
+  const MissionSettingPageView({super.key});
 
-  final MissionSettingViewModel model;
+  // final MissionSettingViewModel model;
 
-  factory MissionSettingPageView.create(
-          {required AccountModel accountProfile}) =>
-      MissionSettingPageView(
-          model: MissionSettingViewModel.create(profile: accountProfile));
-  factory MissionSettingPageView.edit({required MissionModel missionModel}) =>
-      MissionSettingPageView(model: MissionSettingViewModel.edit(missionModel));
+  // factory MissionSettingPageView.create(
+  //         {required AccountModel accountProfile}) =>
+  //     MissionSettingPageView(
+  //         model: MissionSettingViewModel.create(accountProfile: accountProfile));
+  // factory MissionSettingPageView.edit({required MissionModel missionModel}) =>
+  //     MissionSettingPageView(model: MissionSettingViewModel.edit(missionModel));
 
   @override
   State<MissionSettingPageView> createState() => _MissionSettingPageViewState();
@@ -35,9 +35,7 @@ class MissionSettingPageView extends StatefulWidget {
 class _MissionSettingPageViewState extends State<MissionSettingPageView> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<MissionSettingViewModel>.value(
-      value: widget.model,
-      child: Consumer<MissionSettingViewModel>(
+    return Consumer<MissionSettingViewModel>(
         builder: (context, model, child) => Scaffold(
           body: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
@@ -142,8 +140,7 @@ class _MissionSettingPageViewState extends State<MissionSettingPageView> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
 

@@ -36,10 +36,10 @@ class MissionSettingViewModel extends ChangeNotifier {
 
   factory MissionSettingViewModel.display(MissionModel missionData) =>
       MissionSettingViewModel(missionData, SettingMode.displpay);
-  factory MissionSettingViewModel.create({required AccountModel profile}) {
+  factory MissionSettingViewModel.create({required AccountModel accountProfile}) {
     MissionSettingViewModel model =
         MissionSettingViewModel(MissionModel(), SettingMode.create);
-    model.setProfile = profile;
+    model.setProfile = accountProfile;
     model.updateDeadline(DateTime.now().add(const Duration(days: 1)));
     model.updateTitle('New Title');
     model.updateIntroduction('');
