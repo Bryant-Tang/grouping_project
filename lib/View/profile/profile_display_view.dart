@@ -86,8 +86,6 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
         builder: (context, model, child) {
-      // TODO : 把他寫進 VM 裡面
-      // debugPrint(tags.toString());
       return SafeArea(
         child: Container(
           clipBehavior: Clip.hardEdge,
