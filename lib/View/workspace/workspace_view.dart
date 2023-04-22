@@ -46,6 +46,7 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
 
   AppBar getAppBar(WorkspaceDashBoardViewModel model, themeManager, context) {
     return AppBar(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       title: MaterialButton(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -148,7 +149,8 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
       child: Consumer<ThemeManager>(
           builder: (context, themeManager, child) =>
               Consumer<WorkspaceDashBoardViewModel>(
-                  builder: (context, model, child) => WillPopScope(
+                  builder: (context, model, child){
+                    return WillPopScope(
                       onWillPop: () async {
                         return false; // 禁用返回鍵
                       },
@@ -160,18 +162,24 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
                             )
                           : Scaffold(
                               appBar: getAppBar(model, themeManager, context),
-                              body: PageView(
-                                controller: _pageController,
-                                onPageChanged: model.updateSelectedIndex,
-                                children: _pages,
+                              body: RefreshIndicator(
+                                onRefresh: model.getAllData,
+                                child: PageView(
+                                  scrollDirection: Axis.vertical,
+                                  controller: _pageController,
+                                  onPageChanged: model.updateSelectedIndex,
+                                  children: _pages,
+                                ),
                               ),
                               extendBody: true,
                               floatingActionButton: const CreateButton(),
                               // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
                               bottomNavigationBar:
                                   getNavigationBar(model, themeManager, context),
-                            ))),
+                            ),
+                          );},
+          
         )
-    );
+    ));
   }
 }
