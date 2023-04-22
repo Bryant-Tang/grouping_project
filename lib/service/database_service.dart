@@ -208,20 +208,35 @@ class DatabaseService {
       {required String accountId,
       required String dataId,
       required String dataType}) async {
-    String? eventBelongAccountId = (await _getDocSnapFirestore(
-            collectionPath: '${dataType}_account_relation', dataId: dataId))
-        .data()?['account_id'];
-    if (eventBelongAccountId == null) {
+    List<String> ownerdataIdList = List.from((await _getDataFitMapFirestore(
+            collectionPath: '${dataType}_account_relation',
+            condition: {'account_id': accountId}))
+        .map((eventIdSnap) => eventIdSnap.id));
+    if (ownerdataIdList.isEmpty) {
       throw GroupingProjectException(
           message: 'The $dataType is not exist in any account.',
           code: GroupingProjectExceptionCode.notExistInDatabase,
           stackTrace: StackTrace.current);
-    } else if (eventBelongAccountId != accountId) {
+    } else if (!ownerdataIdList.contains(dataId)) {
       throw GroupingProjectException(
           message: 'The $dataType is not belong to this account.',
           code: GroupingProjectExceptionCode.wrongParameter,
           stackTrace: StackTrace.current);
     }
+    // String? eventBelongAccountId = (await _getDocSnapFirestore(
+    //         collectionPath: '${dataType}_account_relation', dataId: dataId))
+    //     .data()?['account_id'];
+    // if (eventBelongAccountId == null) {
+    //   throw GroupingProjectException(
+    //       message: 'The $dataType is not exist in any account.',
+    //       code: GroupingProjectExceptionCode.notExistInDatabase,
+    //       stackTrace: StackTrace.current);
+    // } else if (eventBelongAccountId != accountId) {
+    //   throw GroupingProjectException(
+    //       message: 'The $dataType is not belong to this account.',
+    //       code: GroupingProjectExceptionCode.wrongParameter,
+    //       stackTrace: StackTrace.current);
+    // }
   }
 
 //
