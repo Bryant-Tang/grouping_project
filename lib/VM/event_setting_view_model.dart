@@ -12,7 +12,7 @@ class EventSettingViewModel extends ChangeNotifier {
 
   SettingMode settingMode = SettingMode.create;
   WorkspaceMode workspaceMode = WorkspaceMode.personal;
-  bool isPeosonal = true;
+  bool isPersonal = true;
 
   String get introduction => eventData.introduction;
   String get title => eventData.title;
@@ -27,7 +27,7 @@ class EventSettingViewModel extends ChangeNotifier {
   List<AccountModel> get contributors => contributorProfile;
   List<AccountModel> get groupMember => profile.associateEntityAccount;
   Color get color => Color(eventData.color);
-  bool get forUser => isPeosonal;
+  bool get forUser => isPersonal;
   set isForUser(bool forUser) {
     isPeosonal = forUser;
     notifyListeners();
