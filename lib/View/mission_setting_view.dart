@@ -21,8 +21,10 @@ class MissionSettingPageView extends StatefulWidget {
 
   final MissionSettingViewModel model;
 
-  factory MissionSettingPageView.create() =>
-      MissionSettingPageView(model: MissionSettingViewModel.create());
+  factory MissionSettingPageView.create(
+          {required AccountModel accountProfile}) =>
+      MissionSettingPageView(
+          model: MissionSettingViewModel.create(accountProfile));
   factory MissionSettingPageView.edit({required MissionModel missionModel}) =>
       MissionSettingPageView(model: MissionSettingViewModel.edit(missionModel));
 
@@ -336,13 +338,12 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
 // }
 
 // class _StateOfMissionState extends State<StateOfMission> {
-//   late List<MissionStateModel> stageDatas = [];
-//   late MissionStage stage;
-//   late String stateName = 'Error';
-//   late Color color = Colors.black38;
-//   String selectedValue = '待討論 Pending';
-
-//   TextEditingController stateNameCrtl = TextEditingController();
+//   // late List<MissionStateModel> stageDatas = [];
+//   // late MissionStage stage;
+//   // late String stateName = 'Error';
+//   // late Color color = Colors.black38;
+//   // String selectedValue = '待討論 Pending';
+//   // TextEditingController stateNameCrtl = TextEditingController();
 // // TODO: can't upload statename, seperate user and group
 //   // @override
 //   // void initState() {
@@ -352,11 +353,11 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
 //   //   color = stageToColor(widget.stage);
 //   // }
 
-//   @override
-//   void dispose() {
-//     super.dispose();
-//     stateNameCrtl.dispose();
-//   }
+//   // @override
+//   // void dispose() {
+//   //   super.dispose();
+//   //   stateNameCrtl.dispose();
+//   // }
 
 //   Color stageToColor(MissionStage stage) {
 //     // TODO: color discussion
@@ -399,20 +400,6 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
 //   }
 
 //   ListView chooseState() {
-//     List<MissionStateModel> inProgress = [];
-//     List<MissionStateModel> pending = [];
-//     List<MissionStateModel> close = [];
-
-//     for (int i = 0; i < stageDatas.length; i++) {
-//       if (stageDatas[i].stage == MissionStage.progress) {
-//         inProgress.add(stageDatas[i]);
-//       } else if (stageDatas[i].stage == MissionStage.pending) {
-//         pending.add(stageDatas[i]);
-//       } else if (stageDatas[i].stage == MissionStage.close) {
-//         close.add(stageDatas[i]);
-//       }
-//     }
-
 //     return ListView(
 //       children: [
 //         contextTemple('進行中 In Progress', inProgress, MissionStage.progress),
@@ -422,78 +409,6 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
 //           height: 7,
 //           thickness: 2,
 //         ),
-//         TextButton(
-//           key: ValueKey(selectedValue),
-//           onPressed: () {
-//             showDialog(
-//                 context: context,
-//                 builder: (context) {
-//                   return Dialog(
-//                     child: StatefulBuilder(
-//                       builder: ((context, setNewState) {
-//                         return Container(
-//                             padding: const EdgeInsets.all(2),
-//                             height: 180,
-//                             width: 300,
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.center,
-//                               children: [
-//                                 const Text('創建狀態 Create State',
-//                                     style: TextStyle(
-//                                         fontWeight: FontWeight.bold,
-//                                         fontSize: 20)),
-//                                 Row(
-//                                   mainAxisAlignment:
-//                                       MainAxisAlignment.spaceBetween,
-//                                   children: [
-//                                     const Text(
-//                                       '階段 Stage',
-//                                       style: TextStyle(
-//                                           fontWeight: FontWeight.bold,
-//                                           fontSize: 15),
-//                                     ),
-//                                     selectStage(setNewState)
-//                                   ],
-//                                 ),
-//                                 Row(
-//                                   mainAxisAlignment:
-//                                       MainAxisAlignment.spaceBetween,
-//                                   children: [
-//                                     const Text(
-//                                       '名字 State Name',
-//                                       style: TextStyle(
-//                                           fontWeight: FontWeight.bold,
-//                                           fontSize: 15),
-//                                     ),
-//                                     Container(
-//                                       width: 130,
-//                                       padding: const EdgeInsets.only(right: 30),
-//                                       child: TextField(
-//                                         controller: stateNameCrtl,
-//                                       ),
-//                                     )
-//                                   ],
-//                                 ),
-//                                 TextButton(
-//                                     onPressed: () {
-//                                       // TODO: call back new stage and new stateName
-//                                       // widget.callback();
-//                                       Navigator.pop(context);
-//                                     },
-//                                     child: const Text('Ok'))
-//                               ],
-//                             ));
-//                       }),
-//                     ),
-//                   );
-//                 });
-//             setState(() {});
-//           },
-//           child: const Text(
-//             '創建狀態 Create State',
-//             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-//           ),
-//         )
 //       ],
 //     );
 //   }
@@ -570,20 +485,109 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
 
 //   @override
 //   Widget build(BuildContext context) {
-//     return InkWell(
-//         onTap: () {
+//     return Consumer<MissionSettingViewModel>(
+//       builder: (context, model, child) => InkWell(
+//           onTap: () {
+//             showDialog(
+//                 context: context,
+//                 builder: (context) {
+//                   return Dialog(
+//                     child: Padding(
+//                       padding: const EdgeInsets.all(5),
+//                       child: chooseState(),
+//                     ),
+//                   );
+//                 });
+//           },
+//           child: chipView(color, stateName)),
+//     );
+//   }
+// }
+
+// class CreateStage extends StatefulWidget {
+//   const CreateStage({super.key});
+
+//   @override
+//   State<CreateStage> createState() => _CreateStageState();
+// }
+
+// class _CreateStageState extends State<CreateStage> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Consumer<MissionSettingViewModel>(
+//       builder: (context, value, child) => TextButton(
+//         // key: ValueKey(selectedValue),
+//         onPressed: () {
 //           showDialog(
 //               context: context,
 //               builder: (context) {
 //                 return Dialog(
-//                   child: Padding(
-//                     padding: const EdgeInsets.all(5),
-//                     child: chooseState(),
+//                   child: StatefulBuilder(
+//                     builder: ((context, setNewState) {
+//                       return Container(
+//                           padding: const EdgeInsets.all(2),
+//                           height: 180,
+//                           width: 300,
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.center,
+//                             children: [
+//                               const Text('創建狀態 Create State',
+//                                   style: TextStyle(
+//                                       fontWeight: FontWeight.bold,
+//                                       fontSize: 20)),
+//                               Row(
+//                                 mainAxisAlignment:
+//                                     MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   const Text(
+//                                     '階段 Stage',
+//                                     style: TextStyle(
+//                                         fontWeight: FontWeight.bold,
+//                                         fontSize: 15),
+//                                   ),
+//                                   selectStage(setNewState)
+//                                 ],
+//                               ),
+//                               Row(
+//                                 mainAxisAlignment:
+//                                     MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   const Text(
+//                                     '名字 State Name',
+//                                     style: TextStyle(
+//                                         fontWeight: FontWeight.bold,
+//                                         fontSize: 15),
+//                                   ),
+//                                   Container(
+//                                     width: 130,
+//                                     padding: const EdgeInsets.only(right: 30),
+//                                     child: TextField(
+//                                       controller: stateNameCrtl,
+//                                     ),
+//                                   )
+//                                 ],
+//                               ),
+//                               TextButton(
+//                                   onPressed: () {
+//                                     // TODO: call back new stage and new stateName
+//                                     // widget.callback();
+//                                     Navigator.pop(context);
+//                                   },
+//                                   child: const Text('Ok'))
+//                             ],
+//                           ));
+//                     }),
 //                   ),
 //                 );
 //               });
+//           setState(() {});
 //         },
-//         child: chipView(color, stateName));
+//         child: const Text(
+//           '創建狀態 Create State',
+//           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+//         ),
+//       ),
+//     );
 //   }
 // }
 

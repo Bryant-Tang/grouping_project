@@ -23,8 +23,8 @@ class EventSettingPageView extends StatefulWidget {
   const EventSettingPageView({super.key, required this.model});
   final EventSettingViewModel model;
   // pass view model instead of model
-  factory EventSettingPageView.create() =>
-      EventSettingPageView(model: EventSettingViewModel.create());
+  factory EventSettingPageView.create({required AccountModel accountProfile}) =>
+      EventSettingPageView(model: EventSettingViewModel.create(accountProfile));
   factory EventSettingPageView.edit({required EventModel eventModel}) =>
       EventSettingPageView(model: EventSettingViewModel.edit(eventModel));
 
