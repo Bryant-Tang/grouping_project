@@ -399,7 +399,7 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
 //     );
 //   }
 
-//   ListView chooseState() {
+//   ListView chooseState(MissionSettingViewModel model) {
 //     return ListView(
 //       children: [
 //         contextTemple('進行中 In Progress', inProgress, MissionStage.progress),
@@ -494,12 +494,12 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
 //                   return Dialog(
 //                     child: Padding(
 //                       padding: const EdgeInsets.all(5),
-//                       child: chooseState(),
+//                       child: chooseState(model),
 //                     ),
 //                   );
 //                 });
 //           },
-//           child: chipView(color, stateName)),
+//           child: chipView(model.color, model.stateModel.stateName)),
 //     );
 //   }
 // }
