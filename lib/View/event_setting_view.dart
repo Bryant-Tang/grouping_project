@@ -56,7 +56,7 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                           ? IconButton(
                               onPressed: () {
                                 // debugPrint('remove');
-                                model.removeEvent();
+                                model.deleteEvent();
                                 Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(

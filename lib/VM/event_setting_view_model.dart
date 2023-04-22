@@ -146,8 +146,10 @@ class EventSettingViewModel extends ChangeNotifier {
     }
   }
 
-  void removeEvent() {
-    // DatabaseService(ownerUid: profile.id!).
+  Future<void> deleteEvent() async {
+     await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
+          .deleteEvent(eventData);
+    notifyListeners();
   }
 
   set setSettingMode(SettingMode mode) {
