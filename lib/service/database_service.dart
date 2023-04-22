@@ -474,4 +474,68 @@ class DatabaseService {
   Future<List<MissionStateModel>> getAllMissionState() async {
     return await _getSingleAccountAllMissionState();
   }
+
+  //
+  //delete data
+  Future<void> deleteEvent(EventModel event) async {
+    await _firestore.collection(event.databasePath).doc(event.id).delete();
+    await _firestore
+        .collection('${event.databasePath}_account_relation')
+        .doc(event.id)
+        .delete();
+  }
+
+  Future<void> deleteMission(MissionModel mission) async {
+    await _firestore.collection(mission.databasePath).doc(mission.id).delete();
+    await _firestore
+        .collection('${mission.databasePath}_account_relation')
+        .doc(mission.id)
+        .delete();
+    for (var eventSnap in (await (_firestore
+                .collection('event')
+                .where('related_mission_ids', arrayContains: mission.id))
+            .get())
+        .docs) {
+      EventModel event = await getEvent(eventId: eventSnap.id);
+      event.relatedMissionIds.remove(mission.id);
+      await setEvent(event: event);
+    }
+    for (var parentMissionSnap in (await (_firestore
+                .collection('mission')
+                .where('child_mission_ids', arrayContains: mission.id))
+            .get())
+        .docs) {
+      MissionModel parentMission =
+          await getMission(missionId: parentMissionSnap.id);
+      parentMission.childMissionIds.remove(mission.id);
+      await setMission(mission: parentMission);
+    }
+    for (var childMissionSnap in (await (_firestore
+                .collection('mission')
+                .where('parent_mission_ids', arrayContains: mission.id))
+            .get())
+        .docs) {
+      MissionModel childMission =
+          await getMission(missionId: childMissionSnap.id);
+      childMission.parentMissionIds.remove(mission.id);
+      await setMission(mission: childMission);
+    }
+  }
+
+  Future<void> deleteMissionState(MissionStateModel state) async {
+    await _firestore.collection(state.databasePath).doc(state.id).delete();
+    await _firestore
+        .collection('${state.databasePath}_account_relation')
+        .doc(state.id)
+        .delete();
+    for (var missionSnap in (await (_firestore
+                .collection('mission')
+                .where('state_model_id', isEqualTo: state.id))
+            .get())
+        .docs) {
+      MissionModel mission = await getMission(missionId: missionSnap.id);
+      mission.state = MissionStateModel.defaultProgressState;
+      await setMission(mission: mission);
+    }
+  }
 }
