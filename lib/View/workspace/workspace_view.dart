@@ -4,7 +4,7 @@ import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/helper_page/building.dart';
 import 'package:grouping_project/View/profile/profile_display_view.dart';
-import 'package:grouping_project/components/button/create_button.dart';
+import 'package:grouping_project/View/workspace/worksapce_create_sheet_view.dart';
 import 'package:grouping_project/View/workspace/workspace_dashboard_page_view.dart';
 import 'package:provider/provider.dart';
 import 'package:grouping_project/View/workspace/workspace_calendar_page_view.dart';
@@ -88,7 +88,7 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
                     builder: (context, child) => const SwitchWorkSpaceSheet());
               });
           if(res!=null && res){
-            await model.getAllData();
+            await model.updateUserAccount();
           }
         },
       ),
