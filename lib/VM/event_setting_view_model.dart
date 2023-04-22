@@ -23,13 +23,14 @@ class EventSettingViewModel extends ChangeNotifier {
 
   factory EventSettingViewModel.display(EventModel eventData) =>
       EventSettingViewModel(eventData, SettingMode.displpay);
-  factory EventSettingViewModel.create() {
+  factory EventSettingViewModel.create(AccountModel accountProfile) {
     EventSettingViewModel model =
         EventSettingViewModel(EventModel(), SettingMode.create);
     model.updateStartTime(DateTime.now());
     model.updateEndTime(DateTime.now().add(const Duration(days: 1)));
     model.updateTitle('New Title');
     model.updateIntroduction('');
+    model.setProfile = accountProfile;
     // model.setProfile = profile;
     return model;
   }
@@ -97,11 +98,11 @@ class EventSettingViewModel extends ChangeNotifier {
       return false;
     } else if (settingMode == SettingMode.create) {
       // TODO: allow group
-      await DatabaseService(ownerUid: AuthService().getUid())
+      await DatabaseService(ownerUid: profile.id!)
           .setEvent(event: eventData);
       // Create Event
     } else if (settingMode == SettingMode.edit) {
-      DatabaseService(ownerUid: AuthService().getUid()).setEvent(event: eventData);
+      DatabaseService(ownerUid: profile.id!).setEvent(event: eventData);
       // Edit Event
     } else {}
     return true;

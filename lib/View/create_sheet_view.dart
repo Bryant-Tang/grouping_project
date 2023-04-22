@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/event_setting_view.dart';
 import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/View/mission_setting_view.dart';
 import 'package:grouping_project/model/account_model.dart';
 import 'package:grouping_project/service/auth_service.dart';
 import 'package:grouping_project/service/database_service.dart';
+import 'package:provider/provider.dart';
 
 class CreateEvent extends StatefulWidget {
   const CreateEvent({super.key});
@@ -16,7 +18,7 @@ class CreateEvent extends StatefulWidget {
 class _CreateEventState extends State<CreateEvent> {
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return Consumer<WorkspaceDashBoardViewModel>(builder: (context, model, child) => InkWell(
       borderRadius: BorderRadius.circular(5),
       onTap: () async {
         debugPrint('create event');
@@ -25,7 +27,7 @@ class _CreateEventState extends State<CreateEvent> {
               context,
               MaterialPageRoute(
                   builder: ((context) =>
-                      EventSettingPageView.create())));
+                      EventSettingPageView.create(accountProfile: model.accountProfileData,))));
         
         // Implement data refreash
         if (mounted) {
@@ -63,7 +65,7 @@ class _CreateEventState extends State<CreateEvent> {
           ),
         ),
       ),
-    );
+    ) ,);
   }
 }
 
@@ -77,14 +79,14 @@ class CreateMission extends StatefulWidget {
 class _CreateMissionState extends State<CreateMission> {
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return Consumer<WorkspaceDashBoardViewModel>(builder:(context, model, child) => InkWell(
       borderRadius: BorderRadius.circular(5),
       onTap: () async {
         debugPrint('create mission');
         await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: ((context) => MissionSettingPageView.create())));
+                builder: ((context) => MissionSettingPageView.create(accountProfile: model.accountProfileData,))));
         setState(() {});
       },
       splashFactory: InkRipple.splashFactory,
@@ -118,7 +120,7 @@ class _CreateMissionState extends State<CreateMission> {
           ),
         ),
       ),
-    );
+    ),);
   }
 }
 
