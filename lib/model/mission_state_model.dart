@@ -38,7 +38,7 @@ class MissionStateModel extends BaseDataModel<MissionStateModel> {
   static final MissionStateModel defaultTimeOutState =
       MissionStateModel._default(
           id: 'time_out',
-          stage: MissionStage.progress,
+          stage: MissionStage.pending,
           stateName: 'time out');
 
   MissionStateModel._default(
