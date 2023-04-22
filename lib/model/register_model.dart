@@ -43,10 +43,12 @@ class RegisterModel {
       await authService.emailSignUp(email, password);
       // debugPrint('註冊信箱: $email\n使用者密碼: $password 註冊成功');
       // final ProfileModel user = ProfileModel(nickname: userName, email: email);
-      final uid = authService.getUid(); 
+      final uid = authService.getUid();
+      debugPrint(uid);
       DatabaseService db = DatabaseService(ownerUid: uid);
-      await db.createUserAccount();
-      await db.setAccount(account: tempProfile);
+      final userId = await db.createUserAccount();
+      debugPrint(userId);
+      await db.setAccount(account: tempProfile.copyWith(accountId: userId));
       debugPrint('upload successfully');
       return RegisterState.success;
     } catch (error) {

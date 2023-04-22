@@ -24,11 +24,12 @@ class EventSettingViewModel extends ChangeNotifier {
   factory EventSettingViewModel.display(EventModel eventData) =>
       EventSettingViewModel(eventData, SettingMode.displpay);
   factory EventSettingViewModel.create() {
-    EventSettingViewModel model = EventSettingViewModel(EventModel(), SettingMode.create);
+    EventSettingViewModel model =
+        EventSettingViewModel(EventModel(), SettingMode.create);
     model.updateStartTime(DateTime.now());
     model.updateEndTime(DateTime.now().add(const Duration(days: 1)));
-    model.updateTitle('newTitle');
-    model.updateIntroduction('new Introduction');
+    model.updateTitle('New Title');
+    model.updateIntroduction('');
     // model.setProfile = profile;
     return model;
   }
@@ -68,6 +69,16 @@ class EventSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // String diffTimeFromNow() {
+  //   Duration difference = endTime.difference(DateTime.now());
+
+  //   int days = difference.inDays;
+  //   int hours = difference.inHours % 24;
+  //   int minutes = difference.inMinutes % 60;
+
+  //   return '剩餘 $days D $hours H $minutes M';
+  // }
+
   void addContributors(String newContributorId) {
     eventData.contributorIds.add(newContributorId);
     notifyListeners();
@@ -78,14 +89,36 @@ class EventSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> onSave() async {
-    if (settingMode == SettingMode.create) {
-      await DatabaseService(ownerUid: AuthService().getUid()).setEvent(event: eventData);
+  Future<bool> onSave() async {
+    if (title.isEmpty ||
+        introduction.isEmpty ||
+        startTime.isAfter(endTime) ||
+        endTime.isBefore(DateTime.now())) {
+      return false;
+    } else if (settingMode == SettingMode.create) {
+      // TODO: allow group
+      await DatabaseService(ownerUid: AuthService().getUid())
+          .setEvent(event: eventData);
       // Create Event
     } else if (settingMode == SettingMode.edit) {
-      DatabaseService(ownerUid: profile.id!).setEvent(event: eventData);
+      DatabaseService(ownerUid: AuthService().getUid()).setEvent(event: eventData);
       // Edit Event
     } else {}
+    return true;
+  }
+
+  String errorMessage() {
+    if (title.isEmpty) {
+      return 'Title 不能為空';
+    } else if (introduction.isEmpty) {
+      return 'Introduction 不能為空';
+    } else if (startTime.isAfter(endTime)) {
+      return '開始時間在結束時間之後';
+    } else if (endTime.isBefore(DateTime.now())) {
+      return '結束時間不可在現在時間之前';
+    } else {
+      return 'unknown error';
+    }
   }
 
   void removeEvent() {
