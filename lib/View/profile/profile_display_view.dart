@@ -83,13 +83,15 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => QRView(
-                                        workspaceDashBoardViewModel: model,
-                                      )));
-                          debugPrint("QR code share");
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context) =>
+                                  ChangeNotifierProvider.value(
+                                    value: model,
+                                    child: QRView(
+                                      workspaceDashBoardViewModel: model,
+                                    ),
+                                  ));
                         },
                         child: Icon(
                           Icons.share,
