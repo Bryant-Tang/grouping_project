@@ -251,6 +251,7 @@ class CustomLabel extends StatelessWidget {
 }
 
 class HeadShot extends StatelessWidget {
+  // bool forGroupProfile;
   const HeadShot({super.key});
   @override
   Widget build(BuildContext context) {
@@ -269,11 +270,13 @@ class HeadShot extends StatelessWidget {
                           )),
                   const SizedBox(height: 1),
                   model.realName != "unkonwn"
-                      ? Text(model.realName,
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium!
-                              .copyWith(fontWeight: FontWeight.bold))
+                      ? model.isPersonalAccount
+                          ? Text(model.realName,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium!
+                                  .copyWith(fontWeight: FontWeight.bold))
+                          : const SizedBox()
                       : const SizedBox()
                 ],
               ),
