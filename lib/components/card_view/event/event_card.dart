@@ -28,85 +28,126 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
         ThemeData themeData = ThemeData(
             colorSchemeSeed: model.color,
             brightness: context.watch<ThemeManager>().brightness);
-        return Card(
-            color: themeData.colorScheme.surface,
-            elevation: 2,
-            clipBehavior: Clip.hardEdge,
-            margin: const EdgeInsets.all(5),
-            child: InkWell(
-              onTap: () {
-                debugPrint('open event page');
-                // Navigator.push(
-                //     context,
-                //     PageRouteBuilder(
-                //         transitionDuration: const Duration(milliseconds: 400),
-                //         reverseTransitionDuration:
-                //             const Duration(milliseconds: 400),
-                //         pageBuilder: (_, __, ___) => _Enlarge(
-                //             detail: detailEnlarge, usingColor: color)));
-              },
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(3, 3, 0, 3),
-                child: Row(
-                  children:[
-                   Container(
-                    clipBehavior: Clip.hardEdge,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
-                      color: themeData.colorScheme.primary),
-                     height: 100,
-                     width: 12,
-                     // color: Theme.of(context).colorScheme.primary
-                   ),
-                   const SizedBox(width: 10,),
-                   Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        // Text(model.)
-                        ColorTagChip(tagString: "臨時tag", color: themeData.colorScheme.primary),
-                        Text(
-                          model.title,
-                           overflow: TextOverflow.ellipsis,
+        return Hero(
+          tag: "${model.eventData.id}",
+          child: Card(
+              color: themeData.colorScheme.surface,
+              elevation: 2,
+              clipBehavior: Clip.hardEdge,
+              margin: const EdgeInsets.all(5),
+              child: InkWell(
+                onTap: () {
+                  debugPrint('open event page');
+                  Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                          transitionDuration: const Duration(milliseconds: 400),
+                          reverseTransitionDuration:
+                              const Duration(milliseconds: 400),
+                          pageBuilder: (BuildContext context, __, ___) =>
+                              ChangeNotifierProvider<
+                                      EventSettingViewModel>.value(
+                                  value: model,
+                                  child: const ExpandedCardView())));
+                },
+                child: Container(
+                  height: 100,
+                  margin: const EdgeInsets.fromLTRB(3, 3, 0, 3),
+                  child: Row(
+                    children: [
+                      Container(
+                        clipBehavior: Clip.hardEdge,
+                        decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                bottomLeft: Radius.circular(10)),
+                            color: themeData.colorScheme.primary),
+                        width: 12,
+                        // color: Theme.of(context).colorScheme.primary
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          // Text(model.)
+                          ColorTagChip(
+                              tagString: model.ownerAccountName,
+                              color: themeData.colorScheme.primary),
+                          Text(model.title,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: themeData.textTheme.titleMedium!.copyWith(
+                                  fontWeight: FontWeight.bold, fontSize: 16)),
+                          Text(
+                            model.introduction,
+                            overflow: TextOverflow.ellipsis,
                             maxLines: 1,
-                          style: themeData.textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold, fontSize: 16)
-                        ),
-                        Text(
-                          model.introduction,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: themeData.textTheme.titleSmall!.copyWith(
-                            color: themeData.colorScheme.secondary,
-                            fontSize: 14
+                            style: themeData.textTheme.titleSmall!.copyWith(
+                                color: themeData.colorScheme.secondary,
+                                fontSize: 14),
                           ),
-                        ),
-                        Row(
-                          children: [
-                            Text(model.formattedStartTime),
-                            const Icon(Icons.arrow_right_rounded),
-                            Text(model.formattedEndTime),
-                          ],
-                        )
-                        
-                      ],
-                   )
-                  ],
+                          Row(
+                            children: [
+                              Text(model.formattedStartTime),
+                              const Icon(Icons.arrow_right_rounded),
+                              Text(model.formattedEndTime),
+                            ],
+                          )
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              // child: Hero(
-              //   tag: 'change${detailShrink.eventModel.id}',
-              //   child: _Shrink(
-              //     detail: detailShrink,
-              //     usingColor: color,
-              //     height: 84,
-              //   ),
-              // )),
-            ));
+                // child: Hero(
+                //   tag: 'change${detailShrink.eventModel.id}',
+                //   child: _Shrink(
+                //     detail: detailShrink,
+                //     usingColor: color,
+                //     height: 84,
+                //   ),
+                // )),
+              )),
+        );
       },
     );
   }
 }
+
+class ExpandedCardView extends StatefulWidget {
+  const ExpandedCardView({Key? key}) : super(key: key);
+  // const ExpandedCardView({super.key});
+
+  @override
+  State<ExpandedCardView> createState() => _ExpandedCardViewState();
+}
+
+class _ExpandedCardViewState extends State<ExpandedCardView> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeManager>(builder: (context, model, child) {
+      
+      return Consumer<EventSettingViewModel>(
+          builder: (context, model, child) => Hero(
+                tag: '${model.eventData.id}',
+                child: Scaffold(
+                    body: Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('pop'),
+                  ),
+                )),
+              )
+          // ),
+          );
+    });
+  }
+}
+
 
 // class _Shrink extends StatelessWidget {
 //   const _Shrink();
@@ -173,3 +214,4 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
 //     );
 //   }
 // }
+

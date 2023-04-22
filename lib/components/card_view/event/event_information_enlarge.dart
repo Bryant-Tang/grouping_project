@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/View/card_enlarge_view.dart';
-import 'package:grouping_project/View/event_setting_view.dart'
-    show EventSettingPageView;
+import 'package:grouping_project/View/event_setting_view.dart' show EventSettingPageView;
 import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -143,7 +141,6 @@ class TitleDateOfEvent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
-
     return Consumer<EventSettingViewModel>(
       builder: (context, model, child) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,

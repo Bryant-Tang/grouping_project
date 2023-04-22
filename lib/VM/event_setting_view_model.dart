@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'view_model_lib.dart';
 
 class EventSettingViewModel extends ChangeNotifier {
-  
   EventModel eventData = EventModel();
   AccountModel profile = AccountModel();
 
@@ -16,6 +15,11 @@ class EventSettingViewModel extends ChangeNotifier {
 
   String get introduction => eventData.introduction;
   String get title => eventData.title;
+  String get ownerAccountName {
+    // debugPrint(eventData.ownerName);
+    return eventData.ownerName;
+  }
+
   DateTime get startTime => eventData.startTime;
   DateTime get endTime => eventData.endTime;
   List<AccountModel> contributorProfile = [];
@@ -27,6 +31,7 @@ class EventSettingViewModel extends ChangeNotifier {
 
   factory EventSettingViewModel.display(EventModel eventData) =>
       EventSettingViewModel(eventData, SettingMode.displpay);
+
   factory EventSettingViewModel.create() {
     EventSettingViewModel model =
         EventSettingViewModel(EventModel(), SettingMode.create);
@@ -73,7 +78,8 @@ class EventSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get formattedStartTime => DateFormat('h:mm a, MMM d, y').format(startTime);
+  String get formattedStartTime =>
+      DateFormat('h:mm a, MMM d, y').format(startTime);
   String get formattedEndTime => DateFormat('h:mm a, MMM d, y').format(endTime);
   // String diffTimeFromNow() {
   //   Duration difference = endTime.difference(DateTime.now());
@@ -107,7 +113,8 @@ class EventSettingViewModel extends ChangeNotifier {
           .setEvent(event: eventData);
       // Create Event
     } else if (settingMode == SettingMode.edit) {
-      DatabaseService(ownerUid: AuthService().getUid()).setEvent(event: eventData);
+      DatabaseService(ownerUid: AuthService().getUid())
+          .setEvent(event: eventData);
       // Edit Event
     } else {}
     return true;
