@@ -10,6 +10,7 @@ class MissionSettingViewModel extends ChangeNotifier {
   AccountModel profile = AccountModel();
   SettingMode settingMode = SettingMode.create;
   WorkspaceMode workspaceMode = WorkspaceMode.personal;
+  bool isPersonal = true;
   List<MissionStateModel> inProgress = [];
   List<MissionStateModel> pending = [];
   List<MissionStateModel> close = [];
@@ -18,18 +19,24 @@ class MissionSettingViewModel extends ChangeNotifier {
 
   String get introduction => missionData.introduction;
   String get title => missionData.title;
+  String get ownerAccountName => missionData.ownerName;
   DateTime get deadline => missionData.deadline;
   List<AccountModel> contributorProfile = [];
   List<AccountModel> get contributors => contributorProfile;
   List<AccountModel> get groupMember => profile.associateEntityAccount;
   MissionStateModel get stateModel => missionData.state;
   Color get color => Color(missionData.color);
+  bool get forUser => isPersonal;
+  set isForUser(bool forUser){
+    isPersonal = forUser;
+    notifyListeners();
+  }
 
   MissionSettingViewModel(this.missionData, this.settingMode);
 
   factory MissionSettingViewModel.display(MissionModel missionData) =>
       MissionSettingViewModel(missionData, SettingMode.displpay);
-  factory MissionSettingViewModel.create(AccountModel profile) {
+  factory MissionSettingViewModel.create({required AccountModel profile}) {
     MissionSettingViewModel model =
         MissionSettingViewModel(MissionModel(), SettingMode.create);
     model.setProfile = profile;
@@ -112,11 +119,12 @@ class MissionSettingViewModel extends ChangeNotifier {
       return false;
     } else if (settingMode == SettingMode.create) {
       // TODO: allow group 
-      await DatabaseService(ownerUid: profile.id!)
+      await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
           .setMission(mission: missionData);
       // Create Event
     } else if (settingMode == SettingMode.edit) {
-      DatabaseService(ownerUid: profile.id!).setMission(mission: missionData);
+      await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
+          .setMission(mission: missionData);
       // Edit Event
     } else {}
     return true;
@@ -132,6 +140,12 @@ class MissionSettingViewModel extends ChangeNotifier {
     } else {
       return 'unknown error';
     }
+  }
+
+  Future<void> deleteEvent() async {
+     await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
+          .deleteMission(missionData);
+    notifyListeners();
   }
 
   set setSettingMode(SettingMode mode) {

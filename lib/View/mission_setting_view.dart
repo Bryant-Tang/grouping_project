@@ -24,7 +24,7 @@ class MissionSettingPageView extends StatefulWidget {
   factory MissionSettingPageView.create(
           {required AccountModel accountProfile}) =>
       MissionSettingPageView(
-          model: MissionSettingViewModel.create(accountProfile));
+          model: MissionSettingViewModel.create(profile: accountProfile));
   factory MissionSettingPageView.edit({required MissionModel missionModel}) =>
       MissionSettingPageView(model: MissionSettingViewModel.edit(missionModel));
 
