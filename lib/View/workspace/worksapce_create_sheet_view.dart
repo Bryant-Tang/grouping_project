@@ -58,7 +58,6 @@ class _CreateButtonState extends State<CreateButton> {
         },
         child: const Icon(
           Icons.add,
-          // color: Color(0xFFFFFFFF),
           size: 30,
         ),
       ),
@@ -68,12 +67,6 @@ class _CreateButtonState extends State<CreateButton> {
 
 class CreateButtonSheetView extends StatelessWidget {
   const CreateButtonSheetView({Key? key}) : super(key: key);
-  final List<Widget> createsPng = const [
-    CreateTopic(), //not yet
-    CreateEvent(),
-    CreateNote(), //not yet
-    CreateMission()
-  ];
   @override
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
@@ -82,7 +75,6 @@ class CreateButtonSheetView extends StatelessWidget {
           margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
           child: Column(children: [
             Container(
-              // width: MediaQuery.of(context).size.width,
               height: 12,
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
