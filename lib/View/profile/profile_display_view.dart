@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/profile/profile_edit_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/View/testing/empty.dart';
+import 'package:grouping_project/View/testing/qr_code_view.dart';
 
 import 'package:provider/provider.dart';
 
@@ -83,15 +83,13 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                       ),
                       ElevatedButton(
                         onPressed: () {
-                          showModalBottomSheet(
-                              context: context,
-                              builder: (context) =>
-                                  ChangeNotifierProvider.value(
-                                    value: model,
-                                    child: QRView(
-                                      workspaceDashBoardViewModel: model,
-                                    ),
-                                  ));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ShowQRCodeView(
+                                        workspaceDashBoardViewModel: model,
+                                      )));
+                          debugPrint("QR code share");
                         },
                         child: Icon(
                           Icons.share,

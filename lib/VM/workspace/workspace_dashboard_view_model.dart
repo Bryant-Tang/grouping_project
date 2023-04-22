@@ -81,6 +81,17 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+  Future<void> updateUserAccount() async{
+    isLoading = true;
+    notifyListeners();
+    personalprofileData = await DatabaseService(ownerUid: AuthService().getUid(), forUser: true)
+          .getAccount();
+    if (isPersonalAccount) {
+        accountProfileData = personalprofileData;
+      }
+    isLoading = false;
+    notifyListeners();
+  }
 
   Future<void> getAllData() async {
     isLoading = true;

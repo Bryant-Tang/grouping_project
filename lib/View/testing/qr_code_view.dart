@@ -1,34 +1,25 @@
-/*
-
-**  ATTENTION  **
-This is a empty test Widget, it's only used as test. Therefore, please don't delete it.
-
-*/
 import 'package:flutter/material.dart';
 
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/testing/qr_view_model.dart';
-import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/service/database_service.dart';
-
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// Generate QR code of a group
-class QRView extends StatefulWidget {
+class ShowQRCodeView extends StatefulWidget {
   WorkspaceDashBoardViewModel workspaceDashBoardViewModel =
       WorkspaceDashBoardViewModel();
-  QRView({
+  ShowQRCodeView({
     super.key,
     required this.workspaceDashBoardViewModel,
   });
 
   @override
-  State<QRView> createState() => _QRViewState();
+  State<ShowQRCodeView> createState() => _ShowQRCodeViewState();
 }
 
-class _QRViewState extends State<QRView> {
+class _ShowQRCodeViewState extends State<ShowQRCodeView> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
