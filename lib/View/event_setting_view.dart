@@ -1,33 +1,19 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/View/workspace/workspace_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
-// import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
-// import 'package:grouping_project/components/card_view/event_information.dart';
-// import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
-// import 'package:grouping_project/VM/event_card_view_model.dart';
-
 /*
 * this file is used to create event or edit existed event 
 */
 
 class EventSettingPageView extends StatefulWidget {
   const EventSettingPageView({super.key});
-  // \final? EventModel model;
-  // pass view model instead of model
-  // factory EventSettingPageView.create({required AccountModel accountProfile}) =>
-  //     EventSettingPageView(model: EventSettingViewModel.create(accountProfile));
-  // factory EventSettingPageView.edit({required EventModel eventModel}) =>
-  //     EventSettingPageView(model: EventSettingViewModel.edit(eventModel));
-
   @override
   State<EventSettingPageView> createState() => _EventSettingPageViewState();
 }

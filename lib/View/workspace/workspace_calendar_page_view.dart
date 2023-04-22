@@ -80,58 +80,55 @@ class _CalendarPageState extends State<CalendarPage> {
     // debugPrint(eventAndMission.toString());
     for (int index = 0; index < eventAndMission.length; index++) {
       // debugPrint(index.toString());
-      eventAndMissionCards.add(Container(
-        // padding: const EdgeInsets.only(),
-        child: Card(
-            child: Padding(
-          padding: const EdgeInsets.only(left: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                eventAndMission[index].title,
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge!
-                    .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              Text(
-                eventAndMission[index].introduction,
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge!
-                    .copyWith(fontWeight: FontWeight.w400),
-              ),
-              Row(
-                children: [
-                  Text(
-                    eventAndMission[index].startTime != null
-                        ? DateFormat('yyyy-MM-dd hh:mm')
-                            .format(eventAndMission[index].startTime)
-                        : DateFormat('yyyy-MM-dd hh:mm')
-                            .format(eventAndMission[index].deadline),
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const Icon(Icons.arrow_right_alt_rounded),
-                  Text(
-                    eventAndMission[index].endTime != null
-                        ? DateFormat('yyyy-MM-dd hh:mm')
-                            .format(eventAndMission[index].endTime)
-                        : eventAndMission[index].state,
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelMedium!
-                        .copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ],
-              )
-            ],
-          ),
-        )),
-      ));
+      eventAndMissionCards.add(Card(
+          child: Padding(
+        padding: const EdgeInsets.only(left: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              eventAndMission[index].title,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            Text(
+              eventAndMission[index].introduction,
+              style: Theme.of(context)
+                  .textTheme
+                  .labelLarge!
+                  .copyWith(fontWeight: FontWeight.w400),
+            ),
+            Row(
+              children: [
+                Text(
+                  eventAndMission[index].startTime != null
+                      ? DateFormat('yyyy-MM-dd hh:mm')
+                          .format(eventAndMission[index].startTime)
+                      : DateFormat('yyyy-MM-dd hh:mm')
+                          .format(eventAndMission[index].deadline),
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+                const Icon(Icons.arrow_right_alt_rounded),
+                Text(
+                  eventAndMission[index].endTime != null
+                      ? DateFormat('yyyy-MM-dd hh:mm')
+                          .format(eventAndMission[index].endTime)
+                      : eventAndMission[index].state,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelMedium!
+                      .copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
+            )
+          ],
+        ),
+      )));
     }
     // debugPrint(
     //     'length of all the cards are: ${eventAndMissionCards.length.toString()}');

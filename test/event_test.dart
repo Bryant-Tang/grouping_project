@@ -20,16 +20,16 @@ void main() async {
 
   var databaseService = DatabaseService(ownerUid: AuthService().getUid());
 
-  print('test data uploading...\n');
+  debugPrint('test data uploading...\n');
   await databaseService
       .setEvent(event: testUploadData);
-  print('test data finish upload\n');
-  print('test data downloading...\n');
+  debugPrint('test data finish upload\n');
+  debugPrint('test data downloading...\n');
   var testDownloadData =
       await databaseService.getAllEvent();
-  print('${testDownloadData[0].title}\n'
+  debugPrint('${testDownloadData[0].title}\n'
       '${testDownloadData[0].startTime}\n'
       '${(testDownloadData[0].contributorIds)[1]}\n'
       '${(testDownloadData[0].notifications)[1]}\n');
-  print('test over');
+  debugPrint('test over');
 }

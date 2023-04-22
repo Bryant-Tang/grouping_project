@@ -22,9 +22,9 @@ void main() async {
       email: 'test@mail.com',
       associateEntityId: ['1']);
   databaseService.setAccount(account: testAccount);
-  print('123');
+  debugPrint('123');
   var testData = await databaseService.getAccount();
-  print(testData.associateEntityAccount is Iterable
+  debugPrint(testData.associateEntityAccount is Iterable
       ? testData.associateEntityAccount[0].name
       : null);
 }
