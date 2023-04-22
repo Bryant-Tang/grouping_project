@@ -36,111 +36,92 @@ class _MissionSettingPageViewState extends State<MissionSettingPageView> {
   @override
   Widget build(BuildContext context) {
     return Consumer<MissionSettingViewModel>(
-        builder: (context, model, child) => Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-            child: ListView(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          debugPrint('back');
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.cancel)),
-                    Row(
-                      children: [
-                        model.settingMode == SettingMode.edit
-                            ? IconButton(
-                                onPressed: () {
-                                  // debugPrint('remove');
-                                  // model.removeEvent();
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              const WorksapceBasePage()),
-                                      (route) => false);
-                                },
-                                icon: const Icon(Icons.delete))
-                            : const SizedBox(),
-                        IconButton(
-                            onPressed: () async {
-                              bool valid = await model.onSave();
-                              if (!valid && mounted) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('非法輸入'),
-                                    content: Text(model.errorMessage()),
-                                  ),
-                                );
-                              } else if (mounted) {
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            const WorksapceBasePage()),
-                                    (route) => false);
-                              }
-                            },
-                            icon: const Icon(Icons.done)),
-                      ],
-                    )
-                  ],
-                ),
-                const Divider(
-                  thickness: 1.5,
-                  color: Color.fromARGB(255, 170, 170, 170),
-                ),
-                // TitleDateOfMission(
-                //   titleController: titleController,
-                //   deadline: deadline,
-                //   group: group,
-                //   color: color,
-                //   stage: missionStage,
-                //   stateName: stateName,
-                //   callback: (p0) {
-                //     deadline = p0;
-                //   },
-                //   cbStage: (stage, stateName) {
-                //     missionStage = stage;
-                //     this.stateName = stateName;
-                //   },
-                // ),
-                CardViewTitle(title: '參與成員', child: Container()),
-                const SizedBox(
-                  height: 1,
-                ),
-                const CardViewTitle(title: '敘述', child: IntroductionBlock()),
-                const SizedBox(
-                  height: 2,
-                ),
-                // TODO: connect mission and mission
-                CardViewTitle(
-                  title: '相關任務',
-                  child: Container(),
-                ),
-                const SizedBox(
-                  height: 2,
-                ),
-                // TODO: connect note and mission
-                CardViewTitle(title: '相關共筆', child: Container()),
-                const SizedBox(
-                  height: 2,
-                ),
-                // TODO: connect mission and meeting
-                CardViewTitle(
-                  title: '相關會議',
-                  child: Container(),
-                ),
-              ],
-            ),
+      builder: (context, model, child) => Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
+          child: ListView(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        debugPrint('back');
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.cancel)),
+                  IconButton(
+                      onPressed: () async {
+                        bool valid = await model.onSave();
+                        if (!valid && mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('非法輸入'),
+                              content: Text(model.errorMessage()),
+                            ),
+                          );
+                        } else if (mounted) {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const WorksapceBasePage()),
+                              (route) => false);
+                        }
+                      },
+                      icon: const Icon(Icons.done)),
+                ],
+              ),
+              const Divider(
+                thickness: 1.5,
+                color: Color.fromARGB(255, 170, 170, 170),
+              ),
+              // TitleDateOfMission(
+              //   titleController: titleController,
+              //   deadline: deadline,
+              //   group: group,
+              //   color: color,
+              //   stage: missionStage,
+              //   stateName: stateName,
+              //   callback: (p0) {
+              //     deadline = p0;
+              //   },
+              //   cbStage: (stage, stateName) {
+              //     missionStage = stage;
+              //     this.stateName = stateName;
+              //   },
+              // ),
+              CardViewTitle(title: '參與成員', child: Container()),
+              const SizedBox(
+                height: 1,
+              ),
+              const CardViewTitle(title: '敘述', child: IntroductionBlock()),
+              const SizedBox(
+                height: 2,
+              ),
+              // TODO: connect mission and mission
+              CardViewTitle(
+                title: '相關任務',
+                child: Container(),
+              ),
+              const SizedBox(
+                height: 2,
+              ),
+              // TODO: connect note and mission
+              CardViewTitle(title: '相關共筆', child: Container()),
+              const SizedBox(
+                height: 2,
+              ),
+              // TODO: connect mission and meeting
+              CardViewTitle(
+                title: '相關會議',
+                child: Container(),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }
 

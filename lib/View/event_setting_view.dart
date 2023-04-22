@@ -50,40 +50,22 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.cancel)),
-                  Row(
-                    children: [
-                      model.settingMode == SettingMode.edit
-                          ? IconButton(
-                              onPressed: () {
-                                // debugPrint('remove');
-                                model.deleteEvent();
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            const WorksapceBasePage()),
-                                    (route) => false);
-                              },
-                              icon: const Icon(Icons.delete))
-                          : const SizedBox(),
-                      IconButton(
-                          onPressed: () async {
-                            bool valid = await model.onSave();
-                            if (!valid && mounted) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('非法輸入'),
-                                  content: Text(model.errorMessage()),
-                                ),
-                              );
-                            } else if (mounted) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          icon: const Icon(Icons.done)),
-                    ],
-                  )
+                  IconButton(
+                      onPressed: () async {
+                        bool valid = await model.onSave();
+                        if (!valid && mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('非法輸入'),
+                              content: Text(model.errorMessage()),
+                            ),
+                          );
+                        } else if (mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      icon: const Icon(Icons.done)),
                 ],
               ),
               Divider(
