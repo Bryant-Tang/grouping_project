@@ -1,13 +1,118 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/VM/mission_setting_view_model.dart';
-import 'package:grouping_project/VM/view_model_lib.dart';
+import 'package:grouping_project/VM/workspace/workspace_dashboard_view_model.dart';
 import 'package:grouping_project/View/event_setting_view.dart';
-import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/View/mission_setting_view.dart';
-import 'package:grouping_project/model/account_model.dart';
-import 'package:grouping_project/service/auth_service.dart';
-import 'package:grouping_project/service/database_service.dart';
 import 'package:provider/provider.dart';
+
+class CreateButtonTemplate extends StatelessWidget {
+  final Color color;
+  final String title;
+  final String assestPath;
+  final Widget child;
+  const CreateButtonTemplate(
+      {Key? key,
+      required this.color,
+      required this.title,
+      required this.assestPath,
+      required this.child})
+      : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+  
+}
+
+class CreateButton extends StatefulWidget {
+  const CreateButton({super.key});
+
+  @override
+  State<CreateButton> createState() => _CreateButtonState();
+}
+
+class _CreateButtonState extends State<CreateButton> {
+  // TODO: make every widget to stateful widget
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<WorkspaceDashBoardViewModel>(
+      builder: (context, model, child) => FloatingActionButton(
+        onPressed: () {
+          showModalBottomSheet(
+              // isScrollControlled: true,
+              context: context,
+              barrierColor: Colors.black.withOpacity(0.2),
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20))),
+              builder: (BuildContext context) {
+                return ChangeNotifierProvider<
+                    WorkspaceDashBoardViewModel>.value(
+                  value: model,
+                  child: const CreateButtonSheetView(),
+                );
+              });
+        },
+        child: const Icon(
+          Icons.add,
+          size: 30,
+        ),
+      ),
+    );
+  }
+}
+
+class CreateButtonSheetView extends StatelessWidget {
+  const CreateButtonSheetView({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<WorkspaceDashBoardViewModel>(
+      builder: (context, model, child) => SafeArea(
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+          child: Column(children: [
+            Container(
+              height: 12,
+              clipBehavior: Clip.hardEdge,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20))),
+            ),
+            Center(
+                child: Text(
+              'CREATE 創建',
+              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            )),
+            Row(
+              children: const [CreateMission(), CreateEvent()],
+            ),
+            Row(
+              children: const [CreateNote(), CreateTopic()],
+            )
+            // GridView.count(
+            //     crossAxisCount: 2, // 設置每行顯示的元素個數
+            //     childAspectRatio: 1.0, // 設置元素的寬高比例為1:1
+            //     children: List.generate(6, (index) =>
+            //       Container(
+            //         color: Colors.blue,
+            //         margin: EdgeInsets.all(8.0),
+            //       )
+            //     )
+            // ),
+          ]),
+        ),
+      ),
+    );
+  }
+}
 
 class CreateEvent extends StatefulWidget {
   const CreateEvent({super.key});
@@ -23,8 +128,8 @@ class _CreateEventState extends State<CreateEvent> {
       builder: (context, model, child) => InkWell(
         borderRadius: BorderRadius.circular(5),
         onTap: () async {
-          debugPrint('create event');
-          debugPrint(model.accountProfileData.id);
+          // debugPrint('create event');
+          // debugPrint(model.accountProfileData.id);
           await Navigator.push(
               context,
               MaterialPageRoute(
@@ -122,7 +227,12 @@ class _CreateMissionState extends State<CreateMission> {
           if (mounted) {
             Navigator.pop(context);
           }
-          //         builder: ((context) => MissionSettingPageView.create(accountProfile: model.accountProfileData,))));
+          // await Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: ((context) => MissionSettingViewModel.create(
+          //               accountProfile: model.accountProfileData,
+          //             ))));
           // setState(() {});
         },
         splashFactory: InkRipple.splashFactory,
