@@ -61,28 +61,51 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addGroupViaQR(
+      String qrCode, AccountModel groupAccountModel) async {
+    if (qrCode != "") {
+      // accountProfileData.addEntity(qrCode);
+      personalprofileData.addEntity(qrCode);
+      isLoading = true;
+      notifyListeners();
+      debugPrint(groupAccountModel.id);
+      groupAccountModel.addEntity(personalprofileData.id!);
+      await DatabaseService(ownerUid: qrCode, forUser: false)
+          .setAccount(account: groupAccountModel);
+      await DatabaseService(ownerUid: AuthService().getUid(), forUser: true)
+          .setAccount(account: personalprofileData);
+      if (isPersonalAccount) {
+        accountProfileData = personalprofileData;
+      }
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> getAllData() async {
     isLoading = true;
     notifyListeners();
     debugPrint("is Persoanl worksapce $isPersonalAccount");
     try {
       if (accountProfileData.id == "-1") {
-        final personalDatabase = DatabaseService(ownerUid: AuthService().getUid());
+        final personalDatabase =
+            DatabaseService(ownerUid: AuthService().getUid());
         personalprofileData = await personalDatabase.getAccount();
         accountProfileData = personalprofileData;
         debugPrint(
             personalprofileData.associateEntityAccount.length.toString());
       }
       final accountDatabase = DatabaseService(
-        ownerUid: isPersonalAccount 
-        ? AuthService().getUid() : accountProfileData.id as String,
-        forUser: isPersonalAccount);
+          ownerUid: isPersonalAccount
+              ? AuthService().getUid()
+              : accountProfileData.id as String,
+          forUser: isPersonalAccount);
       accountProfileData = await accountDatabase.getAccount();
       debugPrint(accountProfileData.associateEntityAccount.length.toString());
       // personalprofileData = await personalDatabase.getAccount()
       dashboardEventList = await accountDatabase.getAllEvent();
       dashboardMissionList = await accountDatabase.getAllMission();
-      if(isPersonalAccount){
+      if (isPersonalAccount) {
         personalprofileData = accountProfileData;
       }
     } catch (e) {

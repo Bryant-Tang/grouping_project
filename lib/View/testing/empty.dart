@@ -5,79 +5,89 @@ This is a empty test Widget, it's only used as test. Therefore, please don't del
 
 */
 import 'package:flutter/material.dart';
+
+import 'package:grouping_project/VM/view_model_lib.dart';
+import 'package:grouping_project/View/testing/qr_view_model.dart';
+import 'package:grouping_project/model/model_lib.dart';
+import 'package:grouping_project/service/database_service.dart';
+
+import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'dart:math';
 
-class EmptyWidget extends StatefulWidget {
-  const EmptyWidget({super.key});
+/// Generate QR code of a group
+class QRView extends StatefulWidget {
+  WorkspaceDashBoardViewModel workspaceDashBoardViewModel =
+      WorkspaceDashBoardViewModel();
+  QRView({
+    super.key,
+    required this.workspaceDashBoardViewModel,
+  });
 
   @override
-  State<EmptyWidget> createState() => _QrCodeState();
+  State<QRView> createState() => _QRViewState();
 }
 
-class _QrCodeState extends State<EmptyWidget> {
-  List<Text> items = [];
-  int data = Random().nextInt(100000);
-
-  void getQrcodeData() async {
-    final result = await Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const QrCodeScanner()));
-    setState(() {
-      items.add(Text('$result'));
-    });
-  }
-
+class _QRViewState extends State<QRView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-                flex: 1,
-                child: ListView(
-                  key: ValueKey(items.length),
-                  children: items,
-                )),
-            Expanded(
-                flex: 1,
-                child: QrImage(
-                  data: 'data $data',
-                  version: QrVersions.auto,
-                  size: 300,
-                  gapless: false,
-                )),
-            Expanded(
-                child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                TextButton(
-                    onPressed: () => setState(() {
-                          data = Random().nextInt(100000);
-                          debugPrint(data.toString());
-                        }),
-                    child: const Text('New QrCode')),
-                TextButton(
-                    onPressed: getQrcodeData, child: const Text('Scan QrCode')),
-                TextButton(
-                    onPressed: () => setState(() {
-                          items = [];
-                        }),
-                    child: const Text('Reset Items'))
-              ],
-            ))
-          ],
-        ),
-      ),
+    return ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
+      value: widget.workspaceDashBoardViewModel,
+      builder: (context, child) => ChangeNotifierProvider<QRViewModel>(
+          create: (_) => QRViewModel(),
+          builder: (context, child) => Consumer<QRViewModel>(
+                builder: (context, model, child) {
+                  debugPrint('Trying to show QR code');
+                  if (widget.workspaceDashBoardViewModel.isPersonalAccount ==
+                      false) {
+                    debugPrint(
+                        'Printing group id, ${widget.workspaceDashBoardViewModel.accountProfile.id}');
+                    model.showGroupId(
+                        widget.workspaceDashBoardViewModel.accountProfile.id);
+                    model.updateWelcomeMessage(
+                        'Welcome to ${widget.workspaceDashBoardViewModel.accountProfile.name}!');
+                  } else {
+                    debugPrint('It\'s personal account');
+                    model.showGroupId(
+                        'https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+                    model.updateWelcomeMessage('Never gonna give you up~');
+                  }
+                  return Material(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        QrImage(
+                          data: model.stringToShow,
+                          version: QrVersions.auto,
+                          size: 300,
+                          gapless: false,
+                        ),
+                        Text(model.welcomeMessage,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(
+                                    fontWeight: FontWeight.bold, fontSize: 18)),
+                        Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: ElevatedButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Go Back'),
+                            )),
+                      ],
+                    ),
+                  );
+                },
+              )),
     );
   }
 }
 
+/// To scan QR code
 class QrCodeScanner extends StatefulWidget {
-  const QrCodeScanner({super.key});
+  WorkspaceDashBoardViewModel workspaceDashBoardViewModel;
+  QrCodeScanner({super.key, required this.workspaceDashBoardViewModel});
 
   @override
   State<QrCodeScanner> createState() => _QrCodeScannerState();
@@ -94,31 +104,69 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(5),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 8,
-              child: MobileScanner(
-                  controller: controller,
-                  onDetect: (capture) {
-                    Navigator.of(context).pop(capture.barcodes[0].rawValue);
-                    controller.stop();
-                    // Navigator.pop(context, capture.barcodes[0].rawValue);
-                    // debugPrint(capture.barcodes[0].rawValue);
-                  }),
-            ),
-            Expanded(
-                child: TextButton(
-              onPressed: () => Navigator.pop(context, null),
-              child: const Text('Cancel'),
-            ))
-          ],
-        ),
-      ),
-    );
+    return ChangeNotifierProvider.value(
+        value: widget.workspaceDashBoardViewModel,
+        builder: (context, child) => ChangeNotifierProvider(
+              create: (context) => QRViewModel(),
+              builder: (context, child) => Consumer<QRViewModel>(
+                builder: (context, model, child) {
+                  model.setPersonalModel(
+                      widget.workspaceDashBoardViewModel.personalprofileData);
+                  return Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Column(children: [
+                      Expanded(
+                          flex: 8,
+                          child: MobileScanner(
+                            controller: controller,
+                            onDetect: (capture) async {
+                              model.updateBarcode(
+                                  capture.barcodes[0].rawValue ?? '');
+                              await model.setGroupModel();
+                              debugPrint('=> Barcode detected: ${model.code}');
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        title: Text(
+                                            '您已被邀請加入${model.groupAccountModel.nickname}'),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('取消')),
+                                          TextButton(
+                                              onPressed: () async {
+                                                model.addAssociation();
+                                                await widget
+                                                    .workspaceDashBoardViewModel
+                                                    .addGroupViaQR(
+                                                        model.code,
+                                                        model
+                                                            .groupAccountModel);
+                                                Navigator.pop(context);
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('確認'))
+                                        ],
+                                      ));
+                              controller.stop();
+                            },
+                          )
+
+                          // Navigator.pop(context, capture.barcodes[0].rawValue);
+                          // debugPrint(capture.barcodes[0].rawValue);
+                          ),
+                    ]),
+                    // Expanded(
+                    //     child: TextButton(
+                    //   onPressed: () => Navigator.pop(context, null),
+                    //   child: const Text('Cancel'),
+                    // ))
+                  );
+                },
+              ),
+            ));
   }
 }
