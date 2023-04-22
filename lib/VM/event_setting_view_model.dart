@@ -1,29 +1,43 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/service_lib.dart';
-
+import 'package:intl/intl.dart';
 import 'view_model_lib.dart';
 
 class EventSettingViewModel extends ChangeNotifier {
   EventModel eventData = EventModel();
   AccountModel profile = AccountModel();
+
   SettingMode settingMode = SettingMode.create;
   WorkspaceMode workspaceMode = WorkspaceMode.personal;
+  bool isPersonal = true;
 
   String get introduction => eventData.introduction;
   String get title => eventData.title;
+  String get ownerAccountName {
+    // debugPrint(eventData.ownerName);
+    return eventData.ownerName;
+  }
+
   DateTime get startTime => eventData.startTime;
   DateTime get endTime => eventData.endTime;
   List<AccountModel> contributorProfile = [];
   List<AccountModel> get contributors => contributorProfile;
   List<AccountModel> get groupMember => profile.associateEntityAccount;
   Color get color => Color(eventData.color);
+  bool get forUser => isPersonal;
+  set isForUser(bool forUser) {
+    isPersonal = forUser;
+    notifyListeners();
+  }
 
   EventSettingViewModel(this.eventData, this.settingMode);
 
   factory EventSettingViewModel.display(EventModel eventData) =>
       EventSettingViewModel(eventData, SettingMode.displpay);
-  factory EventSettingViewModel.create(AccountModel accountProfile) {
+  factory EventSettingViewModel.create({required AccountModel accountProfile}) {
     EventSettingViewModel model =
         EventSettingViewModel(EventModel(), SettingMode.create);
     model.updateStartTime(DateTime.now());
@@ -70,6 +84,9 @@ class EventSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  String get formattedStartTime =>
+      DateFormat('h:mm a, MMM d, y').format(startTime);
+  String get formattedEndTime => DateFormat('h:mm a, MMM d, y').format(endTime);
   // String diffTimeFromNow() {
   //   Duration difference = endTime.difference(DateTime.now());
 
@@ -91,18 +108,25 @@ class EventSettingViewModel extends ChangeNotifier {
   }
 
   Future<bool> onSave() async {
+    debugPrint("setting mode $settingMode");
     if (title.isEmpty ||
         introduction.isEmpty ||
         startTime.isAfter(endTime) ||
         endTime.isBefore(DateTime.now())) {
       return false;
-    } else if (settingMode == SettingMode.create) {
+    }
+    if (settingMode == SettingMode.create) {
       // TODO: allow group
-      await DatabaseService(ownerUid: profile.id!)
+      debugPrint('profile id ${profile.id}');
+      await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
           .setEvent(event: eventData);
+      debugPrint("Create 成功");
       // Create Event
     } else if (settingMode == SettingMode.edit) {
-      DatabaseService(ownerUid: profile.id!).setEvent(event: eventData);
+      await DatabaseService(
+              ownerUid: forUser ? AuthService().getUid() : profile.id!,
+              forUser: forUser)
+          .setEvent(event: eventData);
       // Edit Event
     } else {}
     return true;
@@ -122,8 +146,10 @@ class EventSettingViewModel extends ChangeNotifier {
     }
   }
 
-  void removeEvent() {
-    // DatabaseService(ownerUid: profile.id!).
+  Future<void> deleteEvent() async {
+     await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
+          .deleteEvent(eventData);
+    notifyListeners();
   }
 
   set setSettingMode(SettingMode mode) {
