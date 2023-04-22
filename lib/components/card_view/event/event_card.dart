@@ -22,88 +22,91 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
               brightness: context.watch<ThemeManager>().brightness);
           return Hero(
             tag: "${model.eventData.id}",
-            child: Card(
-                color: themeData.colorScheme.surface,
-                elevation: 2,
-                clipBehavior: Clip.hardEdge,
-                margin: const EdgeInsets.all(5),
-                child: InkWell(
-                  onTap: () async {
-                    debugPrint('open event page');
-                    final isNeedRefresh = await Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: const Duration(milliseconds: 400),
-                          reverseTransitionDuration:
-                              const Duration(milliseconds: 400),
-                          pageBuilder: (BuildContext context, __, ___) =>
-                              MultiProvider(providers: [
-                            ChangeNotifierProvider<EventSettingViewModel>.value(
-                              value: model,
-                            ),
-                            ChangeNotifierProvider<
-                                    WorkspaceDashBoardViewModel>.value(
-                                value: workspaceVM)
-                          ], child: const ExpandedCardView()),
-                        ));
-                    if (isNeedRefresh!=null && isNeedRefresh) {
-                      await workspaceVM.getAllData();
-                    }
-                  },
-                  child: Container(
-                    height: 100,
-                    margin: const EdgeInsets.fromLTRB(3, 3, 0, 3),
-                    child: Row(
-                      children: [
-                        Container(
-                          clipBehavior: Clip.hardEdge,
-                          decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(10),
-                                  bottomLeft: Radius.circular(10)),
-                              color: themeData.colorScheme.surfaceVariant),
-                          width: 12,
-                          // color: Theme.of(context).colorScheme.primary
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            // Text(model.)
-                            ColorTagChip(
-                                tagString: model.ownerAccountName,
-                                color: themeData.colorScheme.primary),
-                            Text(model.title,
+            child: AspectRatio(
+              aspectRatio: 3.3,
+              child: Card(
+                  color: themeData.colorScheme.surface,
+                  elevation: 2,
+                  clipBehavior: Clip.hardEdge,
+                  margin: const EdgeInsets.all(5),
+                  child: InkWell(
+                    onTap: () async {
+                      debugPrint('open event page');
+                      final isNeedRefresh = await Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            transitionDuration: const Duration(milliseconds: 400),
+                            reverseTransitionDuration:
+                                const Duration(milliseconds: 400),
+                            pageBuilder: (BuildContext context, __, ___) =>
+                                MultiProvider(providers: [
+                              ChangeNotifierProvider<EventSettingViewModel>.value(
+                                value: model,
+                              ),
+                              ChangeNotifierProvider<
+                                      WorkspaceDashBoardViewModel>.value(
+                                  value: workspaceVM)
+                            ], child: const ExpandedCardView()),
+                          ));
+                      if (isNeedRefresh!=null && isNeedRefresh) {
+                        await workspaceVM.getAllData();
+                      }
+                    },
+                    child: Container(
+                      height: 100,
+                      margin: const EdgeInsets.fromLTRB(3, 3, 0, 3),
+                      child: Row(
+                        children: [
+                          Container(
+                            clipBehavior: Clip.hardEdge,
+                            decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10)),
+                                color: themeData.colorScheme.surfaceVariant),
+                            width: 12,
+                            // color: Theme.of(context).colorScheme.primary
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              // Text(model.)
+                              ColorTagChip(
+                                  tagString: model.ownerAccountName,
+                                  color: themeData.colorScheme.primary),
+                              Text(model.title,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: themeData.textTheme.titleMedium!
+                                      .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16)),
+                              Text(
+                                model.introduction,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
-                                style: themeData.textTheme.titleMedium!
-                                    .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16)),
-                            Text(
-                              model.introduction,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: themeData.textTheme.titleSmall!.copyWith(
-                                  color: themeData.colorScheme.secondary,
-                                  fontSize: 14),
-                            ),
-                            Row(
-                              children: [
-                                Text(model.formattedStartTime),
-                                const Icon(Icons.arrow_right_rounded),
-                                Text(model.formattedEndTime),
-                              ],
-                            )
-                          ],
-                        )
-                      ],
+                                style: themeData.textTheme.titleSmall!.copyWith(
+                                    color: themeData.colorScheme.secondary,
+                                    fontSize: 14),
+                              ),
+                              Row(
+                                children: [
+                                  Text(model.formattedStartTime),
+                                  const Icon(Icons.arrow_right_rounded),
+                                  Text(model.formattedEndTime),
+                                ],
+                              )
+                            ],
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                )),
+                  )),
+            ),
           );
         },
       ),

@@ -47,7 +47,6 @@ class _CreateButtonState extends State<CreateButton> {
 }
 
 class CreateButtonTemplate extends StatelessWidget {
-  final Color color;
   final String title;
   final String descroption;
   final String assestPath;
@@ -55,7 +54,6 @@ class CreateButtonTemplate extends StatelessWidget {
   // final Widget child;
   const CreateButtonTemplate({
     super.key,
-    required this.color,
     required this.title,
     required this.descroption,
     required this.assestPath,
@@ -210,14 +208,12 @@ class CreateButtonSheetView extends StatelessWidget {
             Row(
               children: [
                 CreateButtonTemplate(
-                  color: Colors.blue,
                   title: '事件 EVENT',
                   descroption: '開啟一個meeting或設立某些重大事件，確保組員們都空出時間。',
                   assestPath: 'assets/images/Event.png',
                   onTap: () => createEvent(model, context),
                 ),
-                CreateButtonTemplate(
-                  color: Colors.blue,
+                CreateButtonTemplate(    
                   title: '任務 MISSION',
                   descroption: '建立一個新的任務、作業、里程碑，利用狀態來去做追蹤。',
                   assestPath: 'assets/images/Mission.png',
@@ -228,14 +224,12 @@ class CreateButtonSheetView extends StatelessWidget {
             Row(
               children: [
                 CreateButtonTemplate(
-                  color: Colors.blue,
                   title: '話題 TOPIC',
                   descroption: '與夥伴們任意開啟一個話題、指定任務、事件，或聊聊新的idea吧。',
                   assestPath: 'assets/images/topic.png',
                   onTap: () => createTopic(model, context),
                 ),
                 CreateButtonTemplate(
-                  color: Colors.blue,
                   title: '筆記 NOTE',
                   descroption: '與夥伴們建立共同筆記，共享知識庫，合作編輯會議記錄。',
                   assestPath: 'assets/images/Note.png',
