@@ -12,6 +12,7 @@ class EventSettingViewModel extends ChangeNotifier {
 
   SettingMode settingMode = SettingMode.create;
   WorkspaceMode workspaceMode = WorkspaceMode.personal;
+  bool isPeosonal = true;
 
   String get introduction => eventData.introduction;
   String get title => eventData.title;
@@ -26,19 +27,24 @@ class EventSettingViewModel extends ChangeNotifier {
   List<AccountModel> get contributors => contributorProfile;
   List<AccountModel> get groupMember => profile.associateEntityAccount;
   Color get color => Color(eventData.color);
+  bool get forUser => isPeosonal;
+  set isForUser(bool forUser) {
+    isPeosonal = forUser;
+    notifyListeners();
+  }
 
   EventSettingViewModel(this.eventData, this.settingMode);
 
   factory EventSettingViewModel.display(EventModel eventData) =>
       EventSettingViewModel(eventData, SettingMode.displpay);
-
-  factory EventSettingViewModel.create() {
+  factory EventSettingViewModel.create({required AccountModel accountProfile}) {
     EventSettingViewModel model =
         EventSettingViewModel(EventModel(), SettingMode.create);
     model.updateStartTime(DateTime.now());
     model.updateEndTime(DateTime.now().add(const Duration(days: 1)));
     model.updateTitle('New Title');
     model.updateIntroduction('');
+    model.setProfile = accountProfile;
     // model.setProfile = profile;
     return model;
   }
@@ -102,18 +108,24 @@ class EventSettingViewModel extends ChangeNotifier {
   }
 
   Future<bool> onSave() async {
+    debugPrint("setting mode $settingMode");
     if (title.isEmpty ||
         introduction.isEmpty ||
         startTime.isAfter(endTime) ||
         endTime.isBefore(DateTime.now())) {
       return false;
-    } else if (settingMode == SettingMode.create) {
+    }
+    if (settingMode == SettingMode.create) {
       // TODO: allow group
-      await DatabaseService(ownerUid: AuthService().getUid())
+      debugPrint('profile id ${profile.id}');
+      await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
           .setEvent(event: eventData);
+      debugPrint("Create 成功");
       // Create Event
     } else if (settingMode == SettingMode.edit) {
-      DatabaseService(ownerUid: AuthService().getUid())
+      await DatabaseService(
+              ownerUid: forUser ? AuthService().getUid() : profile.id!,
+              forUser: forUser)
           .setEvent(event: eventData);
       // Edit Event
     } else {}

@@ -73,9 +73,13 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          EventSettingPageView(
-                                              model: EventSettingViewModel.edit(
-                                                  widget.eventModel))));
+                                          ChangeNotifierProvider<EventSettingViewModel>(
+                                            create: (context) => 
+                                              EventSettingViewModel.edit(
+                                                    widget.eventModel
+                                              )..isForUser = model.isPeosonal,
+                                            child: EventSettingPageView(),
+                                          )));
                             },
                             icon: const Icon(
                               Icons.edit,

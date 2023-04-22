@@ -61,7 +61,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                             borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(10),
                                 bottomLeft: Radius.circular(10)),
-                            color: themeData.colorScheme.primary),
+                            color: themeData.colorScheme.surfaceVariant),
                         width: 12,
                         // color: Theme.of(context).colorScheme.primary
                       ),
@@ -101,14 +101,6 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                     ],
                   ),
                 ),
-                // child: Hero(
-                //   tag: 'change${detailShrink.eventModel.id}',
-                //   child: _Shrink(
-                //     detail: detailShrink,
-                //     usingColor: color,
-                //     height: 84,
-                //   ),
-                // )),
               )),
         );
       },
@@ -125,25 +117,102 @@ class ExpandedCardView extends StatefulWidget {
 }
 
 class _ExpandedCardViewState extends State<ExpandedCardView> {
+  Widget getInformationDisplay(EventSettingViewModel model, ThemeData themeData) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text(model.title,
+            style: themeData.textTheme.bodyLarge!
+                .copyWith(fontWeight: FontWeight.bold, fontSize: 32)),
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+          children: [
+            Text(model.formattedStartTime),
+            const Icon(Icons.arrow_right_rounded),
+            Text(model.formattedEndTime),
+          ],
+        ),
+        const SizedBox(
+          height: 10,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeManager>(builder: (context, model, child) {
-      
-      return Consumer<EventSettingViewModel>(
-          builder: (context, model, child) => Hero(
-                tag: '${model.eventData.id}',
-                child: Scaffold(
-                    body: Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('pop'),
-                  ),
-                )),
-              )
-          // ),
-          );
+    return Consumer<EventSettingViewModel>(builder: (context, model, child) {
+      ThemeData themeData = ThemeData(
+          // textTheme: Theme.of(context).textTheme,
+          colorSchemeSeed: model.color,
+          brightness: context.watch<ThemeManager>().brightness);
+      return Hero(
+          tag: '${model.eventData.id}',
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: themeData.colorScheme.surfaceVariant,
+              elevation: 0,
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.arrow_back_ios_rounded,
+                    color: themeData.colorScheme.onSurfaceVariant),
+              ),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    debugPrint('edit event');
+                  },
+                  icon: Icon(Icons.edit,
+                      color: themeData.colorScheme.onSurfaceVariant),
+                ),
+                IconButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('確認'),
+                            content: const Text('本当に削除しますか？'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('いいえ')),
+                              TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('はい')),
+                            ],
+                          );
+                        });
+                  },
+                  icon: Icon(Icons.delete_rounded,
+                      color: themeData.colorScheme.onSurfaceVariant),
+                )
+              ],
+            ),
+            // display all event data
+            body: SingleChildScrollView(
+              child: Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric( horizontal: 20, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        getInformationDisplay(model, themeData),
+                        Text(model.introduction,
+                            style: themeData.textTheme.bodyMedium!
+                                .copyWith(fontSize: 20)),
+                    ]),
+                  )),
+            ),
+          ));
     });
   }
 }
