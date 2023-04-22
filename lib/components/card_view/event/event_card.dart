@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/components/card_view/event/event_information_enlarge.dart';
-import 'package:grouping_project/components/card_view/event/event_information_shrink.dart';
 import 'package:grouping_project/components/color_tag_chip.dart';
 
-import 'package:grouping_project/model/model_lib.dart';
 import 'package:provider/provider.dart';
 
 class EventCardViewTemplate extends StatefulWidget {

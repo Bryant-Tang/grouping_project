@@ -1,7 +1,6 @@
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/mission_setting_view_model.dart';
-import 'package:grouping_project/VM/state.dart';
 import 'package:grouping_project/View/workspace/workspace_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 // import 'package:grouping_project/components/card_view/mission_information.dart';
@@ -787,7 +786,7 @@ class CollabMissons extends StatelessWidget {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: const [
                 Text(
                   '寒假規劃表進度',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
@@ -803,7 +802,7 @@ class CollabMissons extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.black26),
-              child: Text(
+              child: const Text(
                 'Not Start 未開始',
                 style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
               ),
@@ -817,10 +816,10 @@ class CollabNotes extends StatefulWidget {
   const CollabNotes({super.key});
 
   @override
-  State<CollabNotes> createState() => _collabNotesState();
+  State<CollabNotes> createState() => _CollabNotesState();
 }
 
-class _collabNotesState extends State<CollabNotes> {
+class _CollabNotesState extends State<CollabNotes> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -845,7 +844,7 @@ class _collabNotesState extends State<CollabNotes> {
                 )
               ]),
             ),
-            Positioned(
+            const Positioned(
               left: 5,
               bottom: 8,
               child: Text(
@@ -864,10 +863,10 @@ class CollabMeetings extends StatefulWidget {
   const CollabMeetings({super.key});
 
   @override
-  State<CollabMeetings> createState() => _collabMeetingsState();
+  State<CollabMeetings> createState() => _CollabMeetingsState();
 }
 
-class _collabMeetingsState extends State<CollabMeetings> {
+class _CollabMeetingsState extends State<CollabMeetings> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -881,7 +880,7 @@ class _collabMeetingsState extends State<CollabMeetings> {
             Positioned(
               left: 5,
               top: 8,
-              child: Row(children: [
+              child: Row(children: const [
                 Icon(Icons.menu_book_rounded),
                 SizedBox(
                   width: 1,
@@ -892,7 +891,7 @@ class _collabMeetingsState extends State<CollabMeetings> {
                 )
               ]),
             ),
-            Positioned(
+            const Positioned(
               left: 5,
               bottom: 8,
               child: Text(
