@@ -112,18 +112,20 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
                 builder: (context, model, child) {
                   model.setPersonalModel(
                       widget.workspaceDashBoardViewModel.personalprofileData);
-                  return Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Column(children: [
-                      Expanded(
-                          flex: 8,
+                  return Scaffold(
+                      body: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                        Expanded(
                           child: MobileScanner(
                             controller: controller,
                             onDetect: (capture) async {
                               model.updateBarcode(
                                   capture.barcodes[0].rawValue ?? '');
+                              controller.stop();
                               await model.setGroupModel();
-                              debugPrint('=> Barcode detected: ${model.code}');
+                              // debugPrint(
+                              //     '=> Barcode detected: ${model.code}');
                               showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
@@ -151,20 +153,23 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
                                               child: const Text('確認'))
                                         ],
                                       ));
-                              controller.stop();
                             },
-                          )
-
-                          // Navigator.pop(context, capture.barcodes[0].rawValue);
-                          // debugPrint(capture.barcodes[0].rawValue);
                           ),
-                    ]),
-                    // Expanded(
-                    //     child: TextButton(
-                    //   onPressed: () => Navigator.pop(context, null),
-                    //   child: const Text('Cancel'),
-                    // ))
-                  );
+                        ),
+                        Text(
+                          '掃描完成後，請稍等片刻',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge!
+                              .copyWith(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                        ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Go back')),
+                      ]));
                 },
               ),
             ));
