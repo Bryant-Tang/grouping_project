@@ -77,7 +77,7 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                                             create: (context) => 
                                               EventSettingViewModel.edit(
                                                     widget.eventModel
-                                              )..isForUser = model.isPeosonal,
+                                              )..isForUser = model.isPersonal,
                                             child: EventSettingPageView(),
                                           )));
                             },
