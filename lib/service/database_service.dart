@@ -256,8 +256,31 @@ class DatabaseService {
     _setDataModelToFire(data: event);
   }
 
+  Future<bool> _checkMissionStateTree(
+      MissionModel mission, MissionStateModel state) async {
+    if (mission.state.stage != state.stage ||
+        mission.state.stateName != state.stateName) {
+      return false;
+    }
+    for (var childId in mission.childMissionIds) {
+      MissionModel childMission = await getMission(missionId: childId);
+      if (await _checkMissionStateTree(childMission, state) == false) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> setMission({required MissionModel mission}) async {
     _setDataModelToFire(data: mission);
+    if (mission.state.stage == MissionStage.pending ||
+        mission.state.stage == MissionStage.close) {
+      for (var childId in mission.childMissionIds) {
+        MissionModel childMission = await getMission(missionId: childId);
+        childMission.state = mission.state;
+        await setMission(mission: childMission);
+      }
+    }
   }
 
   Future<void> setMissionState({required MissionStateModel state}) async {
@@ -297,6 +320,36 @@ class DatabaseService {
     return event;
   }
 
+  Future<MissionModel> _checkChildMissionStateSame(MissionModel mission) async {
+    bool allChildStateSame = true;
+    MissionStateModel childState = mission.state;
+    if (mission.childMissionIds.isNotEmpty) {
+      childState =
+          (await getMission(missionId: mission.childMissionIds.first)).state;
+      for (var childMissionId in mission.childMissionIds) {
+        MissionModel childMission = await getMission(missionId: childMissionId);
+        if (await _checkMissionStateTree(childMission, childState) == false) {
+          allChildStateSame = false;
+          break;
+        }
+      }
+    }
+    if (allChildStateSame) {
+      mission.state = childState;
+      await setMission(mission: mission);
+    }
+    return mission;
+  }
+
+  Future<MissionModel> _checkMissionTimeOut(MissionModel mission) async {
+    if (mission.state != MissionStateModel.defaultTimeOutState &&
+        mission.deadline.isAfter(DateTime.now())) {
+      mission.setStateByStateModel(MissionStateModel.defaultTimeOutState);
+      setMission(mission: mission);
+    }
+    return mission;
+  }
+
   Future<MissionModel> getMission({required String missionId}) async {
     String ownerAccountId = await _getOwnerAccountId();
 
@@ -305,6 +358,8 @@ class DatabaseService {
         dataId: missionId,
         defaultData: MissionModel.defaultMission);
 
+    mission = await _checkChildMissionStateSame(mission);
+    mission = await _checkMissionTimeOut(mission);
     mission.setOwner(
         ownerAccount: await _getSingleAccount(accountId: ownerAccountId));
     mission
@@ -366,6 +421,8 @@ class DatabaseService {
 
     var ownerAccount = await _getSingleAccount(accountId: ownerAccountId);
     for (var mission in missionList) {
+      mission = await _checkChildMissionStateSame(mission);
+      mission = await _checkMissionTimeOut(mission);
       mission.setOwner(ownerAccount: ownerAccount);
       mission.setStateByStateModel(
           await getMissionState(stateId: mission.stateId));
@@ -416,5 +473,69 @@ class DatabaseService {
 
   Future<List<MissionStateModel>> getAllMissionState() async {
     return await _getSingleAccountAllMissionState();
+  }
+
+  //
+  //delete data
+  Future<void> deleteEvent(EventModel event) async {
+    await _firestore.collection(event.databasePath).doc(event.id).delete();
+    await _firestore
+        .collection('${event.databasePath}_account_relation')
+        .doc(event.id)
+        .delete();
+  }
+
+  Future<void> deleteMission(MissionModel mission) async {
+    await _firestore.collection(mission.databasePath).doc(mission.id).delete();
+    await _firestore
+        .collection('${mission.databasePath}_account_relation')
+        .doc(mission.id)
+        .delete();
+    for (var eventSnap in (await (_firestore
+                .collection('event')
+                .where('related_mission_ids', arrayContains: mission.id))
+            .get())
+        .docs) {
+      EventModel event = await getEvent(eventId: eventSnap.id);
+      event.relatedMissionIds.remove(mission.id);
+      await setEvent(event: event);
+    }
+    for (var parentMissionSnap in (await (_firestore
+                .collection('mission')
+                .where('child_mission_ids', arrayContains: mission.id))
+            .get())
+        .docs) {
+      MissionModel parentMission =
+          await getMission(missionId: parentMissionSnap.id);
+      parentMission.childMissionIds.remove(mission.id);
+      await setMission(mission: parentMission);
+    }
+    for (var childMissionSnap in (await (_firestore
+                .collection('mission')
+                .where('parent_mission_ids', arrayContains: mission.id))
+            .get())
+        .docs) {
+      MissionModel childMission =
+          await getMission(missionId: childMissionSnap.id);
+      childMission.parentMissionIds.remove(mission.id);
+      await setMission(mission: childMission);
+    }
+  }
+
+  Future<void> deleteMissionState(MissionStateModel state) async {
+    await _firestore.collection(state.databasePath).doc(state.id).delete();
+    await _firestore
+        .collection('${state.databasePath}_account_relation')
+        .doc(state.id)
+        .delete();
+    for (var missionSnap in (await (_firestore
+                .collection('mission')
+                .where('state_model_id', isEqualTo: state.id))
+            .get())
+        .docs) {
+      MissionModel mission = await getMission(missionId: missionSnap.id);
+      mission.state = MissionStateModel.defaultProgressState;
+      await setMission(mission: mission);
+    }
   }
 }
