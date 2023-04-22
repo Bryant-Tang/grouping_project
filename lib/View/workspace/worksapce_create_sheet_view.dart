@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/event_setting_view_model.dart';
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/workspace/workspace_dashboard_view_model.dart';
 import 'package:grouping_project/View/event_setting_view.dart';
 import 'package:grouping_project/View/mission_setting_view.dart';
@@ -207,10 +208,32 @@ class _CreateMissionState extends State<CreateMission> {
           await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: ((context) => MissionSettingPageView.create(
-                        accountProfile: model.accountProfileData,
+                  builder: ((context) => MultiProvider(
+                        providers: [
+                          ChangeNotifierProvider<
+                              WorkspaceDashBoardViewModel>.value(
+                            value: model,
+                          ),
+                          ChangeNotifierProvider<MissionSettingViewModel>(
+                            create: (context) => MissionSettingViewModel.create(
+                                accountProfile: model.accountProfileData)
+                              ..isForUser = model.isPersonalAccount,
+                          ),
+                        ],
+                        child: MissionSettingPageView(),
                       ))));
-          setState(() {});
+          // Implement data refreash
+          await model.getAllData();
+          if (mounted) {
+            Navigator.pop(context);
+          }
+          // await Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: ((context) => MissionSettingViewModel.create(
+          //               accountProfile: model.accountProfileData,
+          //             ))));
+          // setState(() {});
         },
         splashFactory: InkRipple.splashFactory,
         child: Card(

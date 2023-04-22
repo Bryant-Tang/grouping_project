@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/service_lib.dart';
@@ -116,11 +114,10 @@ class EventSettingViewModel extends ChangeNotifier {
       return false;
     }
     if (settingMode == SettingMode.create) {
-      // TODO: allow group
-      debugPrint('profile id ${profile.id}');
+      // debugPrint('profile id ${profile.id}');
       await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
           .setEvent(event: eventData);
-      debugPrint("Create 成功");
+      // debugPrint("Create 成功");
       // Create Event
     } else if (settingMode == SettingMode.edit) {
       await DatabaseService(

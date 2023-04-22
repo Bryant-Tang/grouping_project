@@ -17,16 +17,16 @@ import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 */
 
 class MissionSettingPageView extends StatefulWidget {
-  const MissionSettingPageView({super.key, required this.model});
+  const MissionSettingPageView({super.key});
 
-  final MissionSettingViewModel model;
+  // final MissionSettingViewModel model;
 
-  factory MissionSettingPageView.create(
-          {required AccountModel accountProfile}) =>
-      MissionSettingPageView(
-          model: MissionSettingViewModel.create(accountProfile));
-  factory MissionSettingPageView.edit({required MissionModel missionModel}) =>
-      MissionSettingPageView(model: MissionSettingViewModel.edit(missionModel));
+  // factory MissionSettingPageView.create(
+  //         {required AccountModel accountProfile}) =>
+  //     MissionSettingPageView(
+  //         model: MissionSettingViewModel.create(accountProfile: accountProfile));
+  // factory MissionSettingPageView.edit({required MissionModel missionModel}) =>
+  //     MissionSettingPageView(model: MissionSettingViewModel.edit(missionModel));
 
   @override
   State<MissionSettingPageView> createState() => _MissionSettingPageViewState();
@@ -35,111 +35,75 @@ class MissionSettingPageView extends StatefulWidget {
 class _MissionSettingPageViewState extends State<MissionSettingPageView> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<MissionSettingViewModel>.value(
-      value: widget.model,
-      child: Consumer<MissionSettingViewModel>(
-        builder: (context, model, child) => Scaffold(
-          body: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-            child: ListView(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          debugPrint('back');
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.cancel)),
-                    Row(
-                      children: [
-                        model.settingMode == SettingMode.edit
-                            ? IconButton(
-                                onPressed: () {
-                                  // debugPrint('remove');
-                                  // model.removeEvent();
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) =>
-                                              const WorksapceBasePage()),
-                                      (route) => false);
-                                },
-                                icon: const Icon(Icons.delete))
-                            : const SizedBox(),
-                        IconButton(
-                            onPressed: () async {
-                              bool valid = await model.onSave();
-                              if (!valid && mounted) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    title: const Text('非法輸入'),
-                                    content: Text(model.errorMessage()),
-                                  ),
-                                );
-                              } else if (mounted) {
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            const WorksapceBasePage()),
-                                    (route) => false);
-                              }
-                            },
-                            icon: const Icon(Icons.done)),
-                      ],
-                    )
-                  ],
-                ),
-                const Divider(
-                  thickness: 1.5,
-                  color: Color.fromARGB(255, 170, 170, 170),
-                ),
-                // TitleDateOfMission(
-                //   titleController: titleController,
-                //   deadline: deadline,
-                //   group: group,
-                //   color: color,
-                //   stage: missionStage,
-                //   stateName: stateName,
-                //   callback: (p0) {
-                //     deadline = p0;
-                //   },
-                //   cbStage: (stage, stateName) {
-                //     missionStage = stage;
-                //     this.stateName = stateName;
-                //   },
-                // ),
-                CardViewTitle(title: '參與成員', child: Container()),
-                const SizedBox(
-                  height: 1,
-                ),
-                const CardViewTitle(title: '敘述', child: IntroductionBlock()),
-                const SizedBox(
-                  height: 2,
-                ),
-                // TODO: connect mission and mission
-                CardViewTitle(
-                  title: '相關任務',
-                  child: Container(),
-                ),
-                const SizedBox(
-                  height: 2,
-                ),
-                // TODO: connect note and mission
-                CardViewTitle(title: '相關共筆', child: Container()),
-                const SizedBox(
-                  height: 2,
-                ),
-                // TODO: connect mission and meeting
-                CardViewTitle(
-                  title: '相關會議',
-                  child: Container(),
-                ),
-              ],
-            ),
+    return Consumer<MissionSettingViewModel>(
+      builder: (context, model, child) => Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
+          child: ListView(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        debugPrint('back');
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.cancel)),
+                  IconButton(
+                      onPressed: () async {
+                        bool valid = await model.onSave();
+                        if (!valid && mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('非法輸入'),
+                              content: Text(model.errorMessage()),
+                            ),
+                          );
+                        } else if (mounted) {
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const WorksapceBasePage()),
+                              (route) => false);
+                        }
+                      },
+                      icon: const Icon(Icons.done)),
+                ],
+              ),
+              const Divider(
+                thickness: 1.5,
+                color: Color.fromARGB(255, 170, 170, 170),
+              ),
+              const TitleDateOfMission(),
+              CardViewTitle(title: '參與成員', child: Container()),
+              const SizedBox(
+                height: 1,
+              ),
+              const CardViewTitle(title: '敘述', child: IntroductionBlock()),
+              const SizedBox(
+                height: 2,
+              ),
+              // TODO: connect mission and mission
+              CardViewTitle(
+                title: '相關任務',
+                child: Container(),
+              ),
+              const SizedBox(
+                height: 2,
+              ),
+              // TODO: connect note and mission
+              CardViewTitle(title: '相關共筆', child: Container()),
+              const SizedBox(
+                height: 2,
+              ),
+              // TODO: connect mission and meeting
+              CardViewTitle(
+                title: '相關會議',
+                child: Container(),
+              ),
+            ],
           ),
         ),
       ),
@@ -150,19 +114,17 @@ class _MissionSettingPageViewState extends State<MissionSettingPageView> {
 class AntiLabel extends StatelessWidget {
   /// 標籤反白的 group
 
-  const AntiLabel({super.key, required this.group, required this.color});
-  final String group;
-  final Color color;
-
+  const AntiLabel({super.key});
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Consumer<MissionSettingViewModel>(builder:(context, model, child) => Container(
         decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(10)),
+            color: model.color, borderRadius: BorderRadius.circular(10)),
         child: Text(
-          ' •$group ',
-          style: const TextStyle(color: Colors.white, fontSize: 10),
-        ));
+          ' •${model.owner} ',
+          style: const TextStyle(color: Colors.white, fontSize: 15),
+        )),);
+    
   }
 }
 
@@ -260,7 +222,8 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
       builder: (context, model, child) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // AntiLabel(group: widget.group, color: widget.color),
+          const AntiLabel(),
+          const SizedBox(height: 5,),
           // Text(
           //   title,
           //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -309,287 +272,428 @@ class TitleDateOfMissionState extends State<TitleDateOfMission> {
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF000000)),
               )),
-          // StateOfMission(
-          //   stage: widget.stage,
-          //   stateName: widget.stateName,
-          //   callback: (stage, stateName) {
-          //     widget.cbStage(stage, stateName);
-          //   },
-          // )
+          const StateOfMission()
         ],
       ),
     );
   }
 }
 
-// class StateOfMission extends StatefulWidget {
-//   const StateOfMission(
-//       {super.key,
-//       required this.stage,
-//       required this.stateName,
-//       required this.callback});
+class StateOfMission extends StatefulWidget {
+  const StateOfMission({super.key});
 
-//   final MissionStage stage;
-//   final String stateName;
-//   final Function(MissionStage stage, String stateName) callback;
+  @override
+  State<StateOfMission> createState() => _StateOfMissionState();
+}
 
-//   @override
-//   State<StateOfMission> createState() => _StateOfMissionState();
-// }
+class _StateOfMissionState extends State<StateOfMission> {
+  // late List<MissionStateModel> stageDatas = [];
+  // late MissionStage stage;
+  // late String stateName = 'Error';
+  // late Color color = Colors.black38;
+  // String selectedValue = '待討論 Pending';
+  // TextEditingController stateNameCrtl = TextEditingController();
+// TODO: can't upload statename, seperate user and group
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   stage = widget.stage;
+  //   stateName = widget.stateName;
+  //   color = stageToColor(widget.stage);
+  // }
 
-// class _StateOfMissionState extends State<StateOfMission> {
-//   // late List<MissionStateModel> stageDatas = [];
-//   // late MissionStage stage;
-//   // late String stateName = 'Error';
-//   // late Color color = Colors.black38;
-//   // String selectedValue = '待討論 Pending';
-//   // TextEditingController stateNameCrtl = TextEditingController();
-// // TODO: can't upload statename, seperate user and group
-//   // @override
-//   // void initState() {
-//   //   super.initState();
-//   //   stage = widget.stage;
-//   //   stateName = widget.stateName;
-//   //   color = stageToColor(widget.stage);
-//   // }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   stateNameCrtl.dispose();
+  // }
 
-//   // @override
-//   // void dispose() {
-//   //   super.dispose();
-//   //   stateNameCrtl.dispose();
-//   // }
+  Color stageToColor(MissionStage stage) {
+    // TODO: color discussion
+    if (stage == MissionStage.progress) {
+      return Colors.blue.withOpacity(0.2);
+    } else if (stage == MissionStage.pending) {
+      return Colors.purple.withOpacity(0.2);
+    } else if (stage == MissionStage.close) {
+      return Colors.red.withOpacity(0.2);
+    } else {
+      return Colors.black38;
+    }
+  }
 
-//   Color stageToColor(MissionStage stage) {
-//     // TODO: color discussion
-//     if (stage == MissionStage.progress) {
-//       return Colors.blue.withOpacity(0.2);
-//     } else if (stage == MissionStage.pending) {
-//       return Colors.purple.withOpacity(0.2);
-//     } else if (stage == MissionStage.close) {
-//       return Colors.red.withOpacity(0.2);
-//     } else {
-//       return Colors.black38;
-//     }
-//   }
+  Column contextTemple(String title, List<MissionStateModel> datas,
+      MissionStage stage, MissionSettingViewModel model) {
+    List<Widget> chips = [];
 
-//   Column contextTemple(
-//       String title, List<MissionStateModel> datas, MissionStage stage) {
-//     List<Widget> chips = [];
+    for (int i = 0; i < datas.length; i++) {
+      chips.add(
+          chipSelected(stageToColor(stage), datas[i].stateName, stage, model));
+      chips.add(const SizedBox(
+        height: 4,
+      ));
+    }
 
-//     for (int i = 0; i < datas.length; i++) {
-//       chips.add(chip(stageToColor(stage), datas[i].stateName, stage));
-//       chips.add(const SizedBox(
-//         height: 4,
-//       ));
-//     }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+            const Divider(
+              height: 7,
+              thickness: 3,
+            )
+          ] +
+          chips,
+    );
+  }
 
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: <Widget>[
-//             Text(
-//               title,
-//               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-//             ),
-//             const Divider(
-//               height: 7,
-//               thickness: 3,
-//             )
-//           ] +
-//           chips,
-//     );
-//   }
+  // ListView chooseState(MissionSettingViewModel model) {
+  //   return ListView(
+  //     children: [
+  //       contextTemple(
+  //           '進行中 In Progress', model.inProgress, MissionStage.progress),
+  //       contextTemple('待討論 Pending', model.pending, MissionStage.pending),
+  //       contextTemple('已結束 Close', model.close, MissionStage.close),
+  //       const Divider(
+  //         height: 7,
+  //         thickness: 2,
+  //       ),
+  //       const CreateStage()
+  //     ],
+  //   );
+  // }
 
-//   ListView chooseState(MissionSettingViewModel model) {
-//     return ListView(
-//       children: [
-//         contextTemple('進行中 In Progress', inProgress, MissionStage.progress),
-//         contextTemple('待討論 Pending', pending, MissionStage.pending),
-//         contextTemple('已結束 Close', close, MissionStage.close),
-//         const Divider(
-//           height: 7,
-//           thickness: 2,
-//         ),
-//       ],
-//     );
-//   }
+  InkWell chipSelected(Color color, String stateName, MissionStage stage,
+      MissionSettingViewModel model) {
+    return InkWell(
+        onTap: () {
+          model.updateState(stage, stateName);
+          Navigator.pop(context);
+          // this.stage = stage;
+          // this.stateName = stateName;
+          // this.color = stageToColor(stage);
+          // widget.callback(stage, stateName);
+          // // debugPrint(color.toString());
+          // setState(() {
+          //   Navigator.pop(context);
+          // });
+        },
+        child: Container(
+            decoration: BoxDecoration(
+                color: color, borderRadius: BorderRadius.circular(10)),
+            child: Text(
+              ' •$stateName ',
+              style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold),
+            )));
+  }
 
-//   DropdownButton selectStage(void Function(void Function()) setNewState) {
-//     return DropdownButton(
-//         value: selectedValue,
-//         items: const [
-//           DropdownMenuItem(
-//             value: '進行中 In Progress',
-//             child: Text(
-//               '進行中 In Progress',
-//               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-//             ),
-//           ),
-//           DropdownMenuItem(
-//             value: '待討論 Pending',
-//             child: Text(
-//               '待討論 Pending',
-//               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-//             ),
-//           ),
-//           DropdownMenuItem(
-//             value: '已結束 Close',
-//             child: Text(
-//               '已結束 Close',
-//               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-//             ),
-//           )
-//         ],
-//         onChanged: (value) {
-//           // debugPrint('before: $selectedValue');
-//           setNewState(() {
-//             selectedValue = value;
-//           });
-//           // debugPrint('after: $selectedValue');
-//         });
-//   }
+  Container chipView(Color color, String stateName) {
+    return Container(
+        decoration: BoxDecoration(
+            color: color, borderRadius: BorderRadius.circular(10)),
+        child: Text(
+          ' •$stateName ',
+          style: const TextStyle(
+              color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+        ));
+  }
 
-//   InkWell chip(Color color, String stateName, MissionStage stage) {
-//     return InkWell(
-//         onTap: () {
-//           this.stage = stage;
-//           this.stateName = stateName;
-//           this.color = stageToColor(stage);
-//           widget.callback(stage, stateName);
-//           // debugPrint(color.toString());
-//           setState(() {
-//             Navigator.pop(context);
-//           });
-//         },
-//         child: Container(
-//             decoration: BoxDecoration(
-//                 color: color, borderRadius: BorderRadius.circular(10)),
-//             child: Text(
-//               ' •$stateName ',
-//               style: const TextStyle(
-//                   color: Colors.black,
-//                   fontSize: 15,
-//                   fontWeight: FontWeight.bold),
-//             )));
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<MissionSettingViewModel>(
+      builder: (context, model, child) => InkWell(
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: ListView(
+                        children: [
+                          contextTemple('進行中 In Progress', model.inProgress,
+                              MissionStage.progress, model),
+                          contextTemple('待討論 Pending', model.pending,
+                              MissionStage.pending, model),
+                          contextTemple('已結束 Close', model.close,
+                              MissionStage.close, model),
+                          const Divider(
+                            height: 7,
+                            thickness: 2,
+                          ),
+                          ChangeNotifierProvider<MissionSettingViewModel>.value(
+                              value: model, child: const CreateStage()),
+                          ChangeNotifierProvider<MissionSettingViewModel>.value(
+                              value: model, child: const DeleteStateName()),
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          },
+          child: chipView(stageToColor(model.stateModel.stage),
+              model.stateModel.stateName)),
+    );
+  }
+}
 
-//   Container chipView(Color color, String stateName) {
-//     return Container(
-//         decoration: BoxDecoration(
-//             color: color, borderRadius: BorderRadius.circular(10)),
-//         child: Text(
-//           ' •$stateName ',
-//           style: const TextStyle(
-//               color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
-//         ));
-//   }
+class CreateStage extends StatefulWidget {
+  const CreateStage({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer<MissionSettingViewModel>(
-//       builder: (context, model, child) => InkWell(
-//           onTap: () {
-//             showDialog(
-//                 context: context,
-//                 builder: (context) {
-//                   return Dialog(
-//                     child: Padding(
-//                       padding: const EdgeInsets.all(5),
-//                       child: chooseState(model),
-//                     ),
-//                   );
-//                 });
-//           },
-//           child: chipView(model.color, model.stateModel.stateName)),
-//     );
-//   }
-// }
+  @override
+  State<CreateStage> createState() => _CreateStageState();
+}
 
-// class CreateStage extends StatefulWidget {
-//   const CreateStage({super.key});
+class _CreateStageState extends State<CreateStage> {
+  String selectedStage = '進行中 In Progress';
+  String newStateName = '';
 
-//   @override
-//   State<CreateStage> createState() => _CreateStageState();
-// }
+  MissionStage stringToStage(String stage) {
+    if (stage == '進行中 In Progress') {
+      return MissionStage.progress;
+    } else if (stage == '待討論 Pending') {
+      return MissionStage.pending;
+    } else if (stage == '已結束 Close') {
+      return MissionStage.close;
+    } else {
+      return MissionStage.progress;
+    }
+  }
 
-// class _CreateStageState extends State<CreateStage> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer<MissionSettingViewModel>(
-//       builder: (context, value, child) => TextButton(
-//         // key: ValueKey(selectedValue),
-//         onPressed: () {
-//           showDialog(
-//               context: context,
-//               builder: (context) {
-//                 return Dialog(
-//                   child: StatefulBuilder(
-//                     builder: ((context, setNewState) {
-//                       return Container(
-//                           padding: const EdgeInsets.all(2),
-//                           height: 180,
-//                           width: 300,
-//                           child: Column(
-//                             crossAxisAlignment: CrossAxisAlignment.center,
-//                             children: [
-//                               const Text('創建狀態 Create State',
-//                                   style: TextStyle(
-//                                       fontWeight: FontWeight.bold,
-//                                       fontSize: 20)),
-//                               Row(
-//                                 mainAxisAlignment:
-//                                     MainAxisAlignment.spaceBetween,
-//                                 children: [
-//                                   const Text(
-//                                     '階段 Stage',
-//                                     style: TextStyle(
-//                                         fontWeight: FontWeight.bold,
-//                                         fontSize: 15),
-//                                   ),
-//                                   selectStage(setNewState)
-//                                 ],
-//                               ),
-//                               Row(
-//                                 mainAxisAlignment:
-//                                     MainAxisAlignment.spaceBetween,
-//                                 children: [
-//                                   const Text(
-//                                     '名字 State Name',
-//                                     style: TextStyle(
-//                                         fontWeight: FontWeight.bold,
-//                                         fontSize: 15),
-//                                   ),
-//                                   Container(
-//                                     width: 130,
-//                                     padding: const EdgeInsets.only(right: 30),
-//                                     child: TextField(
-//                                       controller: stateNameCrtl,
-//                                     ),
-//                                   )
-//                                 ],
-//                               ),
-//                               TextButton(
-//                                   onPressed: () {
-//                                     // TODO: call back new stage and new stateName
-//                                     // widget.callback();
-//                                     Navigator.pop(context);
-//                                   },
-//                                   child: const Text('Ok'))
-//                             ],
-//                           ));
-//                     }),
-//                   ),
-//                 );
-//               });
-//           setState(() {});
-//         },
-//         child: const Text(
-//           '創建狀態 Create State',
-//           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-//         ),
-//       ),
-//     );
-//   }
-// }
+  DropdownButton selectStage(void Function(void Function()) setNewState) {
+    return DropdownButton(
+        value: selectedStage,
+        items: const [
+          DropdownMenuItem(
+            value: '進行中 In Progress',
+            child: Text(
+              '進行中 In Progress',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+          ),
+          DropdownMenuItem(
+            value: '待討論 Pending',
+            child: Text(
+              '待討論 Pending',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+          ),
+          DropdownMenuItem(
+            value: '已結束 Close',
+            child: Text(
+              '已結束 Close',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+          )
+        ],
+        onChanged: (value) {
+          // debugPrint('before: $selectedValue');
+          // TODO: don't use setState method
+          setNewState(() {
+            selectedStage = value;
+          });
+          // debugPrint('after: $selectedValue');
+        });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<MissionSettingViewModel>(
+      builder: (context, model, child) => TextButton(
+        // key: ValueKey(selectedValue),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: StatefulBuilder(
+                    builder: ((context, setNewState) {
+                      return Container(
+                          padding: const EdgeInsets.all(2),
+                          height: 180,
+                          width: 300,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text('創建狀態 Create State',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20)),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    '階段 Stage',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
+                                  ),
+                                  selectStage(setNewState)
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    '名字 State Name',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
+                                  ),
+                                  Container(
+                                    width: 130,
+                                    padding: const EdgeInsets.only(right: 30),
+                                    child: TextField(
+                                      onChanged: (value) =>
+                                          newStateName = value,
+                                    ),
+                                  )
+                                ],
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    model.createState(
+                                        stringToStage(selectedStage),
+                                        newStateName);
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Ok'))
+                            ],
+                          ));
+                    }),
+                  ),
+                );
+              });
+          // setState(() {});
+        },
+        child: const Text(
+          '創建狀態 Create State',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        ),
+      ),
+    );
+  }
+}
+
+class DeleteStateName extends StatefulWidget {
+  const DeleteStateName({super.key});
+  @override
+  State<DeleteStateName> createState() => _DeleteStateNameState();
+}
+
+class _DeleteStateNameState extends State<DeleteStateName> {
+  @override
+  Widget build(BuildContext context) {
+    Color stageToColor(MissionStage stage) {
+      // TODO: color discussion
+      if (stage == MissionStage.progress) {
+        return Colors.blue.withOpacity(0.2);
+      } else if (stage == MissionStage.pending) {
+        return Colors.purple.withOpacity(0.2);
+      } else if (stage == MissionStage.close) {
+        return Colors.red.withOpacity(0.2);
+      } else {
+        return Colors.black38;
+      }
+    }
+
+    InkWell chipSelected(Color color, String stateName, MissionStage stage,
+        MissionSettingViewModel model) {
+      return InkWell(
+          onTap: () {
+            if (stateName == 'in progress' ||
+                stateName == 'pending' ||
+                stateName == 'close') {
+              showDialog(
+                  context: context,
+                  builder: (context) => const AlertDialog(
+                        title: Text('不可刪除預設狀態'),
+                      ));
+            } else {
+              model.deleteStateName(stage, stateName);
+              Navigator.pop(context);
+              Navigator.pop(context);
+            }
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                  color: color, borderRadius: BorderRadius.circular(10)),
+              child: Text(
+                ' •$stateName ',
+                style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+              )));
+    }
+
+    Column contextTemple(String title, List<MissionStateModel> datas,
+        MissionStage stage, MissionSettingViewModel model) {
+      List<Widget> chips = [];
+
+      for (int i = 0; i < datas.length; i++) {
+        chips.add(chipSelected(
+            stageToColor(stage), datas[i].stateName, stage, model));
+        chips.add(const SizedBox(
+          height: 4,
+        ));
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+              Text(
+                title,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              ),
+              const Divider(
+                height: 7,
+                thickness: 3,
+              )
+            ] +
+            chips,
+      );
+    }
+
+    return Consumer<MissionSettingViewModel>(
+      builder: (context, model, child) => TextButton(
+        onPressed: () => showDialog(
+            context: context,
+            builder: (context) {
+              return Dialog(
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: ListView(
+                    children: [
+                      contextTemple('進行中 In Progress', model.inProgress,
+                          MissionStage.progress, model),
+                      contextTemple('待討論 Pending', model.pending,
+                          MissionStage.pending, model),
+                      contextTemple(
+                          '已結束 Close', model.close, MissionStage.close, model),
+                      const Divider(
+                        height: 7,
+                        thickness: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+        child: const Text('刪除狀態 Delete State'),
+      ),
+    );
+  }
+}
 
 class ContributorList extends StatefulWidget {
   //參與的所有使用者

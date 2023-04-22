@@ -20,7 +20,7 @@ import 'package:grouping_project/components/card_view/enlarge_context_template.d
 */
 
 class EventSettingPageView extends StatefulWidget {
-  EventSettingPageView({super.key});
+  const EventSettingPageView({super.key});
   // \final? EventModel model;
   // pass view model instead of model
   // factory EventSettingPageView.create({required AccountModel accountProfile}) =>
@@ -50,40 +50,22 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.cancel)),
-                  Row(
-                    children: [
-                      model.settingMode == SettingMode.edit
-                          ? IconButton(
-                              onPressed: () {
-                                // debugPrint('remove');
-                                model.deleteEvent();
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            const WorksapceBasePage()),
-                                    (route) => false);
-                              },
-                              icon: const Icon(Icons.delete))
-                          : const SizedBox(),
-                      IconButton(
-                          onPressed: () async {
-                            bool valid = await model.onSave();
-                            if (!valid && mounted) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('非法輸入'),
-                                  content: Text(model.errorMessage()),
-                                ),
-                              );
-                            } else if (mounted) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          icon: const Icon(Icons.done)),
-                    ],
-                  )
+                  IconButton(
+                      onPressed: () async {
+                        bool valid = await model.onSave();
+                        if (!valid && mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('非法輸入'),
+                              content: Text(model.errorMessage()),
+                            ),
+                          );
+                        } else if (mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      icon: const Icon(Icons.done)),
                 ],
               ),
               Divider(
