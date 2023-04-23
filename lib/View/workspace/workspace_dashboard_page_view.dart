@@ -1,5 +1,4 @@
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/button/overview_choice_button.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +14,12 @@ class WorkspaceDashboardPageView extends StatefulWidget {
   const WorkspaceDashboardPageView({super.key});
 
   @override
-  State<WorkspaceDashboardPageView> createState() => _WorkspaceDashboardPageViewState();
+  State<WorkspaceDashboardPageView> createState() =>
+      _WorkspaceDashboardPageViewState();
 }
 
-class _WorkspaceDashboardPageViewState extends State<WorkspaceDashboardPageView> {
+class _WorkspaceDashboardPageViewState
+    extends State<WorkspaceDashboardPageView> {
   @override
   Widget build(BuildContext context) {
     // show the form of widget
@@ -316,7 +317,7 @@ class OverView extends StatefulWidget {
 }
 
 class _OverViewState extends State<OverView> {
-  List<Widget> pages = [
+  List<Widget> pages = const [
     EventListView(),
     Center(
       child: Text("TO BE CONTINUE"),
@@ -335,19 +336,19 @@ class _OverViewState extends State<OverView> {
         builder: (context, model, child) {
           final buttonInfo = {
             'event': {
-              'label': '事件 - 即將到來',
+              'label': '事件-即將到來',
               'icon': 'assets/icons/calendartick.svg',
               'number': model.dashboardEventList.length,
               'index': 0,
             },
             'mission': {
-              'label': '任務 - 即將到來',
+              'label': '任務-追蹤中',
               'icon': 'assets/icons/task.svg',
               'number': model.dashboardMissionList.length,
               'index': 1,
             },
             'group': {
-              'label': '群組 - 即將到來',
+              'label': '對話-已開啟',
               'icon': 'assets/icons/messagetick.svg',
               'number': 0,
               'index': 2,
@@ -360,7 +361,7 @@ class _OverViewState extends State<OverView> {
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                       )),
-              const Divider(height: 1, thickness: 2),
+              const Divider(height: 2, thickness: 2),
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   mainAxisSize: MainAxisSize.max,
@@ -406,11 +407,14 @@ class EventListViewState extends State<EventListView> {
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, model, child) => ListView(
           children: model.dashboardEventList
-              .map((eventModel) => 
-                  ChangeNotifierProvider<EventSettingViewModel>(
-                    create: (context) => EventSettingViewModel.display(eventModel),
-                  child: const EventCardViewTemplate()
-                )).toList()),
+              .map(
+                  (eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
+                      create: (context) => EventSettingViewModel()
+                          ..initializeDisplayEvent(
+                            model: eventModel, user: model.personalprofileData),
+                      
+                      child: const EventCardViewTemplate()))
+              .toList()),
     );
   }
 }

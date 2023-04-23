@@ -27,7 +27,7 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
   @override
   void initState() {
     super.initState();
-    viewModel = EventSettingViewModel.display(widget.eventModel);
+    // viewModel = EventSettingViewModel.display(widget.eventModel);
   }
 
   @override
@@ -42,8 +42,6 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
     // DateTime endTime = eventCardViewModel.endTime;
     // List<String> contributorIds = eventCardViewModel.contributorIds;
     // Color color = eventCardViewModel.color;
-
-    // TODO: use Padding
     return ChangeNotifierProvider<EventSettingViewModel>.value(
       value: viewModel,
       builder: (context, child) => Consumer<EventSettingViewModel>(
@@ -73,12 +71,9 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ChangeNotifierProvider<EventSettingViewModel>(
-                                            create: (context) => 
-                                              EventSettingViewModel.edit(
-                                                    widget.eventModel
-                                              )..isForUser = model.isPersonal,
-                                            child: EventSettingPageView(),
+                                          ChangeNotifierProvider<EventSettingViewModel>.value(
+                                            value: model,
+                                            child: const EventSettingPageView(),
                                           )));
                             },
                             icon: const Icon(

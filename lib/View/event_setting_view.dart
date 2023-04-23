@@ -1,33 +1,19 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/View/workspace/workspace_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
-// import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
-// import 'package:grouping_project/components/card_view/event_information.dart';
-// import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
-// import 'package:grouping_project/VM/event_card_view_model.dart';
-
 /*
 * this file is used to create event or edit existed event 
 */
 
 class EventSettingPageView extends StatefulWidget {
   const EventSettingPageView({super.key});
-  // \final? EventModel model;
-  // pass view model instead of model
-  // factory EventSettingPageView.create({required AccountModel accountProfile}) =>
-  //     EventSettingPageView(model: EventSettingViewModel.create(accountProfile));
-  // factory EventSettingPageView.edit({required EventModel eventModel}) =>
-  //     EventSettingPageView(model: EventSettingViewModel.edit(eventModel));
-
   @override
   State<EventSettingPageView> createState() => _EventSettingPageViewState();
 }
@@ -36,7 +22,8 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
   @override
   Widget build(BuildContext context) {
     return Consumer<EventSettingViewModel>(
-      builder: (context, model, child) => Scaffold(
+      builder: (context, model, child) => 
+      Scaffold(
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
           child: ListView(
@@ -73,31 +60,13 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                 color: Theme.of(context).colorScheme.surfaceVariant,
               ),
               const TitleDateOfEvent(),
-              CardViewTitle(title: '參與成員', child: ContributorList()),
+              const CardViewTitle(title: '參與成員', child: ContributorList()),
               const SizedBox(
                 height: 1,
               ),
               const CardViewTitle(title: '敘述', child: IntroductionBlock()),
               const SizedBox(
                 height: 2,
-              ),
-              // TODO: connect event and mission
-              const CardViewTitle(
-                title: '相關任務',
-                child: CollabMissons(),
-              ),
-              const SizedBox(
-                height: 2,
-              ),
-              // TODO: connect note and event
-              const CardViewTitle(title: '相關共筆', child: CollabNotes()),
-              const SizedBox(
-                height: 2,
-              ),
-              // TODO: connect event and meeting
-              const CardViewTitle(
-                title: '相關會議',
-                child: CollabMeetings(),
               ),
             ],
           ),
@@ -219,7 +188,7 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
                   onChanged: model.updateTitle,
                   decoration: InputDecoration(
                       hintText: '輸入標題',
-                      errorText: model.titleValidator(),
+                      errorText: model.titleValidator(""),
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(vertical: 2),
                       border: const OutlineInputBorder()),
@@ -351,7 +320,7 @@ class _IntroductionBlockState extends State<IntroductionBlock> {
         onChanged: model.updateIntroduction,
         decoration: InputDecoration(
             hintText: '輸入標題',
-            errorText: model.introductionValidator(),
+            errorText: model.introductionValidator(""),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 2),
             border: const OutlineInputBorder()),
