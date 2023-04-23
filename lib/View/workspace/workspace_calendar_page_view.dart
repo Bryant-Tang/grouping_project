@@ -1,5 +1,7 @@
 import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
+import 'package:grouping_project/components/card_view/event/event_card.dart';
+import 'package:grouping_project/model/event_model.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -75,61 +77,58 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   /// This is the function used for showing the event and mission cards
-  Future<void> showCards({required List eventAndMission}) async {
+  Future<void> showCards({
+    required List eventAndMission,
+  }) async {
     eventAndMissionCards = [];
     // debugPrint(eventAndMission.toString());
     for (int index = 0; index < eventAndMission.length; index++) {
       // debugPrint(index.toString());
-      eventAndMissionCards.add(Card(
+      if (eventAndMission[index].toString() == 'Instance of \'MissionModel\'') {
+        eventAndMissionCards.add(Card(
           child: Padding(
-        padding: const EdgeInsets.only(left: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              eventAndMission[index].title,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            Text(
-              eventAndMission[index].introduction,
-              style: Theme.of(context)
-                  .textTheme
-                  .labelLarge!
-                  .copyWith(fontWeight: FontWeight.w400),
-            ),
-            Row(
+            padding: const EdgeInsets.only(left: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  eventAndMission[index].startTime != null
-                      ? DateFormat('yyyy-MM-dd hh:mm')
-                          .format(eventAndMission[index].startTime)
-                      : DateFormat('yyyy-MM-dd hh:mm')
-                          .format(eventAndMission[index].deadline),
+                  eventAndMission[index].title,
                   style: Theme.of(context)
                       .textTheme
-                      .labelMedium!
-                      .copyWith(fontWeight: FontWeight.bold),
+                      .labelLarge!
+                      .copyWith(fontWeight: FontWeight.w600, fontSize: 20),
                 ),
-                const Icon(Icons.arrow_right_alt_rounded),
                 Text(
-                  eventAndMission[index].endTime != null
-                      ? DateFormat('yyyy-MM-dd hh:mm')
-                          .format(eventAndMission[index].endTime)
-                      : eventAndMission[index].state,
+                  eventAndMission[index].introduction,
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(fontWeight: FontWeight.w400, fontSize: 15),
+                ),
+                Text(
+                  'Deadline: ${DateFormat('h:mm a, MMM d, y').format(eventAndMission[index].deadline)}',
                   style: Theme.of(context)
                       .textTheme
                       .labelMedium!
-                      .copyWith(fontWeight: FontWeight.bold),
-                ),
+                      .copyWith(fontWeight: FontWeight.w300, fontSize: 15),
+                )
               ],
-            )
-          ],
-        ),
-      )));
+            ),
+          ),
+        ));
+      }
     }
+    List<EventModel> eventsOnly = eventAndMission
+        .where((element) {
+          return element.toString() == 'Instance of \'EventModel\'';
+        })
+        .toList()
+        .cast();
+    eventAndMissionCards.addAll(eventsOnly
+        .map((eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
+            create: (context) => EventSettingViewModel.display(eventModel),
+            child: const EventCardViewTemplate()))
+        .toList());
     // debugPrint(
     //     'length of all the cards are: ${eventAndMissionCards.length.toString()}');
     // debugPrint('card content: ${eventAndMissionCards.toString()}');
