@@ -38,7 +38,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
         tags.insert(0, AccountTag(tag: "小組口號", content: model.slogan));
       }
     }
-    if (isProfile) {
+    if (isProfile & !isScanner) {
       if (model.isPersonalAccount) {
         return Column(children: [
           const HeadShot(),
@@ -75,11 +75,10 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
               }).toList()),
         ]);
       }
+    } else if (isScanner) {
+      return const QrCodeScannerTesting();
     } else {
-      return ChangeNotifierProvider.value(
-        value: model,
-        child: ShowQRCodeView(),
-      );
+      return ShowQRCodeView();
     }
   }
 
