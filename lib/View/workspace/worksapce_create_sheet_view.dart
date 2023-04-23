@@ -5,6 +5,7 @@ import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/workspace/workspace_dashboard_view_model.dart';
 import 'package:grouping_project/View/event_setting_view.dart';
 import 'package:grouping_project/View/mission_setting_view.dart';
+import 'package:grouping_project/components/card_view/event/event_card.dart';
 import 'package:provider/provider.dart';
 
 class CreateButton extends StatefulWidget {
@@ -120,21 +121,21 @@ class CreateButtonSheetView extends StatelessWidget {
         MaterialPageRoute(
             builder: ((context) => MultiProvider(
                   providers: [
-                    // ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
-                    //   value: model,
-                    // ),
+                    ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
+                      value: model,
+                    ),
                     ChangeNotifierProvider<EventSettingViewModel>(
                       create: (context) => EventSettingViewModel()
                       ..initializeNewEvent (
                           creatorAccount: model.personalprofileData,
-                          ownerAccount: model.accountProfileData
+                          ownerAccount: model.accountProfileData,
                       )
                     ),
                   ],
-                  child: const EventSettingPageView(),
+                  child: const EditCardView(),
                 ))));
     // Implement data refreash
-    await model.getAllData();
+    // await model.getAllData();
     if (context.mounted) {
       Navigator.pop(context);
     }

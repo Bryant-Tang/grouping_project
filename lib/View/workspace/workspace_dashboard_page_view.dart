@@ -409,13 +409,10 @@ class EventListViewState extends State<EventListView> {
           children: model.dashboardEventList
               .map(
                   (eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
-                      create: (context) {
-                        // debugPrint(eventModel.title);
-                        return EventSettingViewModel()
-                          ..creatorAccount = model.personalprofileData
-                          ..eventModel = eventModel
-                          ..getAllContibutorData();
-                      },
+                      create: (context) => EventSettingViewModel()
+                          ..initializeDisplayEvent(
+                            model: eventModel, user: model.personalprofileData),
+                      
                       child: const EventCardViewTemplate()))
               .toList()),
     );

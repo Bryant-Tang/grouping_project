@@ -200,11 +200,7 @@ class _ExpandedCardViewState extends State<ExpandedCardView> {
         Navigator.pop(context, isNeedRefresh);
       }
     }
-
     Future<void> onEdit(EventSettingViewModel model) async {}
-    Future<void> loadData(EventSettingViewModel model) async {
-      await model.getAllContibutorData();
-    }
 
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, workspaceVM, child) =>
@@ -228,7 +224,7 @@ class _ExpandedCardViewState extends State<ExpandedCardView> {
               actions: [
                 IconButton(
                   onPressed: () {
-                    debugPrint('edit event');
+                    debugPrint('edit event'); // else show dialog
                   },
                   icon: Icon(Icons.edit,
                       color: themeData.colorScheme.onSurfaceVariant),
@@ -251,7 +247,12 @@ class _ExpandedCardViewState extends State<ExpandedCardView> {
                     children: [
                       getInformationDisplay(model),
                       generateContentDisplayBlock(
-                          'イベントの説明', Text(model.introduction)),
+                          'イベントの説明',
+                          Text(
+                            model.introduction,
+                            style: themeData.textTheme.bodyLarge!
+                                .copyWith(fontSize: 18),
+                          )),
                       // startTime
                       generateContentDisplayBlock(
                           '開始時間', Text(model.formattedStartTime)),
@@ -262,37 +263,279 @@ class _ExpandedCardViewState extends State<ExpandedCardView> {
                       // Contributors
                       generateContentDisplayBlock(
                           '参加者',
-                          model.isLoading ? const CircularProgressIndicator()
-                          : model.contributorAccountModel.isEmpty
-                              ? const Text('参加者はいません')
-                              : ListView.builder(
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          itemCount: model
-                                              .contributorAccountModel.length,
-                                          itemBuilder: (context, index) {
-                                            return ListTile(
-                                              leading: CircleAvatar(
-                                                  backgroundImage: model
+                          model.isLoading
+                              ? const CircularProgressIndicator()
+                              : model.contributorAccountModel.isEmpty
+                                  ? const Text('参加者はいません')
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          model.contributorAccountModel.length,
+                                      itemBuilder: (context, index) {
+                                        return ListTile(
+                                          leading: CircleAvatar(
+                                              backgroundImage: model
+                                                      .contributorAccountModel[
+                                                          index]
+                                                      .photo
+                                                      .isEmpty
+                                                  ? Image.asset(
+                                                          'assets/images/profile_male.png')
+                                                      .image
+                                                  : Image.memory(model
                                                           .contributorAccountModel[
                                                               index]
-                                                          .photo
-                                                          .isEmpty
-                                                      ? Image.asset(
-                                                              'assets/images/profile_male.png')
-                                                          .image
-                                                      : Image.memory(model
-                                                              .contributorAccountModel[
-                                                                  index]
-                                                              .photo)
-                                                          .image),
-                                              title: Text(model
-                                                  .contributorAccountModel[
-                                                      index]
-                                                  .nickname),
-                                            );                                   
-                                })),
+                                                          .photo)
+                                                      .image),
+                                          title: Text(model
+                                              .contributorAccountModel[index]
+                                              .nickname),
+                                        );
+                                      })),
+                      // relation task in japanese
+                      generateContentDisplayBlock(
+                          '関連タスク',
+                          model.eventModel.relatedMissionIds.isEmpty
+                              ? const Text('関連タスクはありません')
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount:
+                                      model.eventModel.relatedMissionIds.length,
+                                  itemBuilder: (context, index) => Text(model
+                                      .eventModel.relatedMissionIds[index]))),
+                      // relation note
+                      generateContentDisplayBlock(
+                          '関連ノート', const Text('関連ノートはありません')),
+                      // relation message
+                      generateContentDisplayBlock(
+                          '関連メッセージ', const Text('関連メッセージはありません')),
+                    ]),
+              ),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+class EditCardView extends StatefulWidget {
+  const EditCardView({Key? key}) : super(key: key);
+  // const ExpandedCardView({super.key});
+
+  @override
+  State<EditCardView> createState() => _EditCardViewCardViewState();
+}
+class _EditCardViewCardViewState extends State<EditCardView> {
+  late ThemeData themeData;
+  Widget generateContentDisplayBlock(String blockTitle, Widget child) {
+    TextStyle blockTitleTextStyle = themeData.textTheme.titleMedium!.copyWith(
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+        color: themeData.colorScheme.secondary);
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(blockTitle, style: blockTitleTextStyle),
+            const Divider(thickness: 3),
+            child
+          ],
+        ));
+  }
+
+  Widget getInformationDisplay(EventSettingViewModel model) {
+    TextStyle titleTextStyle = themeData.textTheme.titleMedium!
+        .copyWith(fontWeight: FontWeight.bold, fontSize: 28);
+    // TextStyle timeTextStyle =
+    //     themeData.textTheme.titleSmall!.copyWith(fontSize: 14);
+    Widget eventOwnerLabel = Row(
+      children: [
+        ColorTagChip(
+            // 打上日文的 的
+            tagString: "イベント - ${model.ownerAccountName} の ワークスペース",
+            color: themeData.colorScheme.primary,
+            fontSize: 14),
+      ],
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        eventOwnerLabel,
+        TextFormField(
+          // initialValue: model.title,
+          style: titleTextStyle,
+          onChanged: model.updateTitle,
+          decoration: InputDecoration(
+              hintText: model.title,
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(vertical: 2),
+              border: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  width: 0,
+                  style: BorderStyle.none,
+                ),
+              )),
+          validator: model.titleValidator,
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // void onDelete(EventSettingViewModel model) async {
+    //   final isNeedRefresh = await showDialog(
+    //       context: context,
+    //       builder: (context) {
+    //         return AlertDialog(
+    //           title: const Text('確認'),
+    //           content: const Text('本当に削除しますか？'),
+    //           actions: [
+    //             TextButton(
+    //                 onPressed: () {
+    //                   Navigator.pop(context, false);
+    //                 },
+    //                 child: const Text('いいえ')),
+    //             TextButton(
+    //                 onPressed: () async {
+    //                   await model.deleteEvent();
+    //                   if (context.mounted) {
+    //                     Navigator.pop(context, true);
+    //                   }
+    //                 },
+    //                 child: const Text('はい')),
+    //           ],
+    //         );
+    //       });
+    //   if (context.mounted) {
+    //     Navigator.pop(context, isNeedRefresh);
+    //   }
+    // }
+
+    // Future<void> onEdit(EventSettingViewModel model) async {}
+
+    void onFinish(EventSettingViewModel model) async {
+      final isNeedRefresh = await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('確認'),
+              content: const Text('本当に編集しますか？'),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    child: const Text('いいえ')),
+                TextButton(
+                    onPressed: () async {
+                      await model.createEvent();
+                      if (context.mounted) {
+                        Navigator.pop(context, true);
+                      }
+                    },
+                    child: const Text('はい')),
+              ],
+            );
+          });
+      if (context.mounted) {
+        Navigator.pop(context, isNeedRefresh);
+      }
+    }
+
+    return Consumer<WorkspaceDashBoardViewModel>(
+      builder: (context, workspaceVM, child) =>
+          Consumer<EventSettingViewModel>(builder: (context, model, child) {
+        themeData = ThemeData(
+            colorSchemeSeed: model.color,
+            brightness: context.watch<ThemeManager>().brightness);
+        return GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: themeData.colorScheme.surface,
+              elevation: 2,
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.arrow_back_ios_rounded,
+                    color: themeData.colorScheme.onSurfaceVariant),
+              ),
+              actions: [
+                IconButton(
+                  onPressed: () => onFinish(model),
+                  icon: Icon(Icons.check ,
+                      color: themeData.colorScheme.onSurfaceVariant),
+                ),
+              ],
+            ),
+            // display all event data
+            body: SingleChildScrollView(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      getInformationDisplay(model),
+                      generateContentDisplayBlock(
+                          'イベントの説明',
+                          Text(
+                            model.introduction,
+                            style: themeData.textTheme.bodyLarge!
+                                .copyWith(fontSize: 18),
+                          )),
+                      // startTime
+                      generateContentDisplayBlock(
+                          '開始時間', Text(model.formattedStartTime)),
+                      // endTime
+                      generateContentDisplayBlock(
+                          '終了時間', Text(model.formattedEndTime)),
+                      // introduction
+                      // Contributors
+                      generateContentDisplayBlock(
+                          '参加者',
+                          model.isLoading
+                              ? const CircularProgressIndicator()
+                              : model.contributorAccountModel.isEmpty
+                                  ? const Text('参加者はいません')
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemCount:
+                                          model.contributorAccountModel.length,
+                                      itemBuilder: (context, index) {
+                                        return ListTile(
+                                          leading: CircleAvatar(
+                                              backgroundImage: model
+                                                      .contributorAccountModel[
+                                                          index]
+                                                      .photo
+                                                      .isEmpty
+                                                  ? Image.asset(
+                                                          'assets/images/profile_male.png')
+                                                      .image
+                                                  : Image.memory(model
+                                                          .contributorAccountModel[
+                                                              index]
+                                                          .photo)
+                                                      .image),
+                                          title: Text(model
+                                              .contributorAccountModel[index]
+                                              .nickname),
+                                        );
+                                      })),
                       // relation task in japanese
                       generateContentDisplayBlock(
                           '関連タスク',

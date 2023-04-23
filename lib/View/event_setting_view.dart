@@ -22,8 +22,8 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
   @override
   Widget build(BuildContext context) {
     return Consumer<EventSettingViewModel>(
-      builder: (context, model, child) =>
-       Scaffold(
+      builder: (context, model, child) => 
+      Scaffold(
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
           child: ListView(
@@ -67,24 +67,6 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
               const CardViewTitle(title: '敘述', child: IntroductionBlock()),
               const SizedBox(
                 height: 2,
-              ),
-              // TODO: connect event and mission
-              const CardViewTitle(
-                title: '相關任務',
-                child: CollabMissons(),
-              ),
-              const SizedBox(
-                height: 2,
-              ),
-              // TODO: connect note and event
-              const CardViewTitle(title: '相關共筆', child: CollabNotes()),
-              const SizedBox(
-                height: 2,
-              ),
-              // TODO: connect event and meeting
-              const CardViewTitle(
-                title: '相關會議',
-                child: CollabMeetings(),
               ),
             ],
           ),
