@@ -38,6 +38,7 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
     debugPrint("SWITCH");
     accountProfileData = profile;
     getAllData();
+    
     notifyListeners();
   }
 
@@ -81,14 +82,16 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-  Future<void> updateUserAccount() async{
+
+  Future<void> updateUserAccount() async {
     isLoading = true;
     notifyListeners();
-    personalprofileData = await DatabaseService(ownerUid: AuthService().getUid(), forUser: true)
-          .getAccount();
+    personalprofileData =
+        await DatabaseService(ownerUid: AuthService().getUid(), forUser: true)
+            .getAccount();
     if (isPersonalAccount) {
-        accountProfileData = personalprofileData;
-      }
+      accountProfileData = personalprofileData;
+    }
     isLoading = false;
     notifyListeners();
   }
@@ -112,7 +115,8 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
               : accountProfileData.id as String,
           forUser: isPersonalAccount);
       accountProfileData = await accountDatabase.getAccount();
-      debugPrint(accountProfileData.associateEntityAccount.length.toString());
+      debugPrint(
+          'associateEntityAccount ${accountProfileData.associateEntityAccount.length}');
       // personalprofileData = await personalDatabase.getAccount()
       dashboardEventList = await accountDatabase.getAllEvent();
       dashboardMissionList = await accountDatabase.getAllMission();

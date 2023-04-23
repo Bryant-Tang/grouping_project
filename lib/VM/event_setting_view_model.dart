@@ -34,15 +34,36 @@ class EventSettingViewModel extends ChangeNotifier {
   String get ownerAccountName => ownerAccount.name; // event owner account name
   DateTime get startTime => eventModel.startTime; // event start time
   DateTime get endTime => eventModel.endTime; // event end time
-  Color get color => Color(eventOwnerAccount.color);
+  Color get color => Color(eventModel.ownerAccount.color);
   List<String> get eventContributoIds => eventModel.contributorIds;
   // The list of contributor Account model whom involve in this event
   List<AccountModel> contributorAccountModel = [];
   List<AccountModel> get contributors => contributorAccountModel;
   // The list of contibutor canidatet when we select participant in edit and create mode
   List<AccountModel> get contributorCandidate =>
-      forUser ? [] : eventOwnerAccount.associateEntityAccount;
+      forUser ? [] : ownerAccount.associateEntityAccount;
   // get event card Material design  color scheem seed;
+  bool isEventContributor(AccountModel model) {
+    debugPrint(eventModel.contributorIds.contains(model.id).toString());
+    return eventModel.contributorIds.contains(model.id);
+  }
+
+  void toggleSelcted(AccountModel model) {
+    if (isEventContributor(model)) {
+      // add
+      removeContributors(model);
+    } else {
+      // remove
+      addContributors(model);
+    }
+    contributorAccountModel = [];
+    for (AccountModel candidateAccountModel in contributorCandidate) {
+      if (eventContributoIds.contains(candidateAccountModel.id!)) {
+        contributorAccountModel.add(candidateAccountModel);
+      }
+    }
+    notifyListeners();
+  }
 
   void updateTitle(String newTitle) {
     eventModel.title = newTitle;
@@ -64,21 +85,35 @@ class EventSettingViewModel extends ChangeNotifier {
 
   void updateStartTime(DateTime newStart) {
     eventModel.startTime = newStart;
+    if (eventModel.startTime.isAfter(eventModel.endTime)) {
+      DateTime temp = eventModel.startTime;
+      eventModel.startTime = eventModel.endTime;
+      eventModel.endTime = temp;
+    }
     notifyListeners();
   }
 
   void updateEndTime(DateTime newEnd) {
     eventModel.endTime = newEnd;
+    if (eventModel.startTime.isAfter(eventModel.endTime)) {
+      DateTime temp = eventModel.startTime;
+      eventModel.startTime = eventModel.endTime;
+      eventModel.endTime = temp;
+    }
     notifyListeners();
   }
 
-  void addContributors(String newContributorId) {
-    eventModel.contributorIds.add(newContributorId);
+  void addContributors(AccountModel newContributor) {
+    eventModel.contributorIds.add(newContributor.id!);
+    debugPrint(eventModel.contributorIds.toString());
+    // contributorAccountModel.add(newContributor);
     notifyListeners();
   }
 
-  void removeContributors(String removedContributorId) {
-    eventModel.contributorIds.remove(removedContributorId);
+  void removeContributors(AccountModel removedContributor) {
+    eventModel.contributorIds.remove(removedContributor.id!);
+    debugPrint(eventModel.contributorIds.toString());
+    // contributorAccountModel.remove(removedContributor);
     notifyListeners();
   }
 
@@ -87,15 +122,16 @@ class EventSettingViewModel extends ChangeNotifier {
       required AccountModel ownerAccount}) {
     this.ownerAccount = ownerAccount;
     this.creatorAccount = creatorAccount;
-    debugPrint('owner ${this.ownerAccount.id}');
-    debugPrint('creator ${this.creatorAccount.id}');
+    // debugPrint('owner ${this.ownerAccount.id}');
+    debugPrint('ownerAccount al ${ownerAccount.associateEntityAccount.length}');
     forUser = this.ownerAccount.id! == this.creatorAccount.id!;
     eventModel = EventModel(
-      startTime: DateTime.now(),
-      endTime: DateTime.now().add(const Duration(hours: 1)),
-      title: '事件名稱',
-      introduction: '事件介紹',
-    );
+        startTime: DateTime.now(),
+        endTime: DateTime.now().add(const Duration(hours: 1)),
+        title: '事件標題',
+        introduction: '事件介紹',
+        contributorIds: [creatorAccount.id!]);
+    contributorAccountModel.add(creatorAccount);
     ChangeNotifier();
   }
 
@@ -105,6 +141,8 @@ class EventSettingViewModel extends ChangeNotifier {
     eventModel = model;
     creatorAccount = user;
     forUser = eventOwnerAccount.id! == creatorAccount.id!;
+    ownerAccount = eventModel.ownerAccount;
+    // eventContributoIds.add(eventOwnerAccount.id!);
     debugPrint(forUser.toString());
     notifyListeners();
     if (isforUser == false) {
@@ -156,13 +194,40 @@ class EventSettingViewModel extends ChangeNotifier {
     }
   }
 
+  String getTimerCounter() {
+    // DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    // String formatted = formatter.format(DateTime.now());
+    String output = "";
+    Duration duration;
+    // final endDate = DateTime(2023, 4, 18, 9, 30, 0);
+    final currentTime = DateTime.now();
+    if (currentTime.isBefore(startTime)) {
+      output = '即將到來-還有';
+      duration = startTime.difference(currentTime);
+    } else if (currentTime.isAfter(startTime) &&
+        currentTime.isBefore(endTime)) {
+      output = '距離結束-尚餘';
+      duration = endTime.difference(currentTime);
+    } else {
+      return '活動已結束';
+    }
+    final days = duration.inDays.toString();
+    final hours = (duration.inHours % 24).toString();
+    final minutes = (duration.inMinutes % 60).toString();
+    final seconds = (duration.inSeconds % 60).toString();
+    return '$output ${days.padLeft(2, '0')} D ${hours.padLeft(2, '0')} H ${minutes.padLeft(2, '0')} M ${seconds.padLeft(2, '0')} S';
+  }
+
+  final Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
+    const Duration(seconds: 1),
+    (_) => DateTime.now(),
+  );
   Future<void> createEvent() async {
     // Create event with eventData
     // Add account profile id into contributorIds
-    eventModel.contributorIds.add(creatorAccount.id!);
-    await DatabaseService(
-            ownerUid: ownerAccount.id!,
-            forUser: false)
+    // eventModel.contributorIds.add(creatorAccount.id!);
+    debugPrint(eventModel.contributorIds.toString());
+    await DatabaseService(ownerUid: ownerAccount.id!, forUser: false)
         .setEvent(event: eventModel);
     notifyListeners();
   }
