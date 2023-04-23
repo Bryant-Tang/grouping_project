@@ -124,9 +124,11 @@ class CreateButtonSheetView extends StatelessWidget {
                     //   value: model,
                     // ),
                     ChangeNotifierProvider<EventSettingViewModel>(
-                      create: (context) => EventSettingViewModel.create(
-                          accountProfile: model.accountProfileData)
-                        ..isForUser = model.isPersonalAccount,
+                      create: (context) => EventSettingViewModel()
+                      ..initializeNewEvent (
+                          creatorAccount: model.personalprofileData,
+                          ownerAccount: model.accountProfileData
+                      )
                     ),
                   ],
                   child: const EventSettingPageView(),

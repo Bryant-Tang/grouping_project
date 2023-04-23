@@ -205,7 +205,7 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
                   onChanged: model.updateTitle,
                   decoration: InputDecoration(
                       hintText: '輸入標題',
-                      errorText: model.titleValidator(),
+                      errorText: model.titleValidator(""),
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(vertical: 2),
                       border: const OutlineInputBorder()),
@@ -337,7 +337,7 @@ class _IntroductionBlockState extends State<IntroductionBlock> {
         onChanged: model.updateIntroduction,
         decoration: InputDecoration(
             hintText: '輸入標題',
-            errorText: model.introductionValidator(),
+            errorText: model.introductionValidator(""),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 2),
             border: const OutlineInputBorder()),

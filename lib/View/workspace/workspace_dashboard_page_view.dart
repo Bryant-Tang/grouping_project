@@ -404,11 +404,15 @@ class EventListViewState extends State<EventListView> {
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, model, child) => ListView(
-          // padding: EdgeInsets.all(4),
           children: model.dashboardEventList
               .map((eventModel) => 
                   ChangeNotifierProvider<EventSettingViewModel>(
-                    create: (context) => EventSettingViewModel.display(eventModel),
+                    create: (context) => 
+                    EventSettingViewModel()..initializeDisplayEvent(
+                      creatorAccount: model.personalprofileData,
+                      // ownerAccount: model.accountProfileData,
+                      eventModel: eventModel, 
+                    ),
                   child: const EventCardViewTemplate()
                 )).toList()),
     );
