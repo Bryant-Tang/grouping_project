@@ -334,19 +334,19 @@ class _OverViewState extends State<OverView> {
         builder: (context, model, child) {
           final buttonInfo = {
             'event': {
-              'label': '事件 - 即將到來',
+              'label': '事件-即將到來',
               'icon': 'assets/icons/calendartick.svg',
               'number': model.dashboardEventList.length,
               'index': 0,
             },
             'mission': {
-              'label': '任務 - 即將到來',
+              'label': '任務-追蹤中',
               'icon': 'assets/icons/task.svg',
               'number': model.dashboardMissionList.length,
               'index': 1,
             },
             'group': {
-              'label': '群組 - 即將到來',
+              'label': '對話-已開啟',
               'icon': 'assets/icons/messagetick.svg',
               'number': 0,
               'index': 2,
@@ -359,7 +359,7 @@ class _OverViewState extends State<OverView> {
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
                         fontWeight: FontWeight.bold,
                       )),
-              const Divider(height: 1, thickness: 2),
+              const Divider(height: 2, thickness: 2),
               Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   mainAxisSize: MainAxisSize.max,
@@ -404,6 +404,7 @@ class EventListViewState extends State<EventListView> {
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, model, child) => ListView(
+          // padding: EdgeInsets.all(4),
           children: model.dashboardEventList
               .map((eventModel) => 
                   ChangeNotifierProvider<EventSettingViewModel>(

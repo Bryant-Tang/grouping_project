@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 class ColorTagChip extends StatelessWidget {
   const ColorTagChip(
-      {Key? key, required this.tagString, this.color = Colors.amber})
+      {Key? key, required this.tagString, this.color = Colors.amber, this.fontSize = 10})
       : super(key: key);
   final Color color;
   final String tagString;
+  final double fontSize;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -21,7 +22,7 @@ class ColorTagChip extends StatelessWidget {
             child: Text(tagString,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: color, fontWeight: FontWeight.bold, fontSize: 10)),
+                    color: color, fontWeight: FontWeight.bold, fontSize: fontSize)),
           ),
         ),
       ),

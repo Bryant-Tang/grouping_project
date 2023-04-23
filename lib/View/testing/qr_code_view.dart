@@ -40,6 +40,7 @@ class _ShowQRCodeViewState extends State<ShowQRCodeView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 QrImage(
+                  foregroundColor: Theme.of(context).colorScheme.primary,
                   data: model.stringToShow,
                   version: QrVersions.auto,
                   size: 200,
@@ -67,7 +68,7 @@ class _ShowQRCodeViewState extends State<ShowQRCodeView> {
 
 /// To scan QR code
 class QrCodeScanner extends StatefulWidget {
-  QrCodeScanner({super.key});
+  const QrCodeScanner({super.key});
 
   @override
   State<QrCodeScanner> createState() => _QrCodeScannerState();
@@ -97,6 +98,7 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
                         Expanded(
                           child: MobileScanner(
                             controller: controller,
+                            // scanWindow: Rect.fr,
                             onDetect: (capture) async {
                               model.updateBarcode(
                                   capture.barcodes[0].rawValue ?? '');
@@ -146,6 +148,76 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
                             },
                             child: const Text('Go back')),
                       ]));
+                },
+              ),
+            ));
+  }
+}
+
+class QrCodeScannerTesting extends StatefulWidget {
+  const QrCodeScannerTesting({super.key});
+
+  @override
+  State<QrCodeScannerTesting> createState() => _QrCodeScannerTestingrState();
+}
+
+class _QrCodeScannerTestingrState extends State<QrCodeScannerTesting> {
+  MobileScannerController controller = MobileScannerController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<WorkspaceDashBoardViewModel>(
+        builder: (context, value, child) => ChangeNotifierProvider(
+              create: (context) => QRViewModel(),
+              builder: (context, child) => Consumer<QRViewModel>(
+                builder: (context, model, child) {
+                  model.setPersonalModel(value.personalprofileData);
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.width * 0.8,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: MobileScanner(
+                      // scanWindow: Rect.zero,
+                      controller: controller,
+                      // scanWindow: Rect.fr,
+                      onDetect: (capture) async {
+                        model.updateBarcode(capture.barcodes[0].rawValue ?? '');
+                        controller.stop();
+                        await model.setGroupModel();
+                        // debugPrint(
+                        //     '=> Barcode detected: ${model.code}');
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: Text(
+                                      '您已被邀請加入${model.groupAccountModel.nickname}'),
+                                  actions: [
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('取消')),
+                                    TextButton(
+                                        onPressed: () async {
+                                          model.addAssociation();
+                                          await value.addGroupViaQR(model.code,
+                                              model.groupAccountModel);
+                                          Navigator.pop(context);
+                                          Navigator.pop(context);
+                                          setState(() {});
+                                        },
+                                        child: const Text('確認'))
+                                  ],
+                                ));
+                      },
+                    ),
+                  );
                 },
               ),
             ));

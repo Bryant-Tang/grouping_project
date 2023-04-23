@@ -142,58 +142,61 @@ class GroupSwitcherView extends StatelessWidget {
                       themeVM.updateColorSchemeSeed(Color(accountModel.color));
                       model.switchGroup(accountModel);
                     },
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Color(accountModel.color),
-                            backgroundImage: accountModel.photo.isNotEmpty
-                                ? Image.memory(accountModel.photo).image
-                                : Image.asset("assets/images/profile_male.png")
-                                    .image,
-                          ),
-                          const SizedBox(width: 10),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Column(
-                                // mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(accountModel.nickname,
-                                      style: themeData.textTheme.titleMedium!
-                                          .copyWith(
-                                              fontWeight: FontWeight.bold)),
-                                  accountModel.id == model.personalprofileData.id ? const SizedBox() :
-                                  Text(accountModel.introduction,
-                                      style: themeData.textTheme.titleSmall!
-                                          .copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .secondary,
-                                      ))
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              accountModel.id == model.personalprofileData.id ? const SizedBox()
-                              : Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: (accountModel.tags)
-                                    .map((tag) => ColorTagChip(
-                                        tagString: tag.tag,
-                                        color: themeData.colorScheme.primary))
-                                    .toList(),
-                              )
-                            ],
-                          )
-                        ]),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Color(accountModel.color),
+                              backgroundImage: accountModel.photo.isNotEmpty
+                                  ? Image.memory(accountModel.photo).image
+                                  : Image.asset("assets/images/profile_male.png")
+                                      .image,
+                            ),
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Column(
+                                  // mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(accountModel.nickname,
+                                        style: themeData.textTheme.titleMedium!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold)),
+                                    accountModel.id == model.personalprofileData.id ? const SizedBox() :
+                                    Text(accountModel.introduction,
+                                        style: themeData.textTheme.titleSmall!
+                                            .copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ))
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
+                                accountModel.id == model.personalprofileData.id ? const SizedBox()
+                                : Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: (accountModel.tags)
+                                      .map((tag) => ColorTagChip(
+                                          tagString: tag.tag,
+                                          color: themeData.colorScheme.primary))
+                                      .toList(),
+                                )
+                              ],
+                            )
+                          ]),
+                    ),
                   ),
                 ),
               ));

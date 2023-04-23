@@ -59,7 +59,7 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                 color: Theme.of(context).colorScheme.surfaceVariant,
               ),
               const TitleDateOfEvent(),
-              CardViewTitle(title: '參與成員', child: ContributorList()),
+              const CardViewTitle(title: '參與成員', child: ContributorList()),
               const SizedBox(
                 height: 1,
               ),
