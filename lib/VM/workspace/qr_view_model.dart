@@ -1,12 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/service_lib.dart';
+
 class QRViewModel extends ChangeNotifier {
   bool onShow = false;
   bool onScan = false;
   String stringToShow = '';
   String welcomeMessage = '';
   String code = '';
+  bool isProfile = false;
   late AccountModel groupAccountModel;
   late AccountModel personalAccountModel;
 
@@ -44,5 +46,10 @@ class QRViewModel extends ChangeNotifier {
       personalAccountModel.addEntity(groupAccountModel.id!);
       notifyListeners();
     }
+  }
+
+  void setProfileIndicator({bool? targetIndicator}) {
+    isProfile = targetIndicator ?? !isProfile;
+    notifyListeners();
   }
 }
