@@ -41,6 +41,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
           ThemeData themeData = ThemeData(
               colorSchemeSeed: model.color,
               brightness: context.watch<ThemeManager>().brightness);
+          // model.getAllContibutorData();
           return Hero(
             tag: "${model.eventModel.id}",
             child: Padding(
@@ -200,6 +201,11 @@ class _ExpandedCardViewState extends State<ExpandedCardView> {
       }
     }
 
+    Future<void> onEdit(EventSettingViewModel model) async {}
+    Future<void> loadData(EventSettingViewModel model) async {
+      await model.getAllContibutorData();
+    }
+
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, workspaceVM, child) =>
           Consumer<EventSettingViewModel>(builder: (context, model, child) {
@@ -207,98 +213,109 @@ class _ExpandedCardViewState extends State<ExpandedCardView> {
             colorSchemeSeed: model.color,
             brightness: context.watch<ThemeManager>().brightness);
         return Hero(
-            tag: '${model.eventModel.id}',
-            child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: themeData.colorScheme.surface,
-                elevation: 2,
-                leading: IconButton(
+          tag: '${model.eventModel.id}',
+          child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: themeData.colorScheme.surface,
+              elevation: 2,
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.arrow_back_ios_rounded,
+                    color: themeData.colorScheme.onSurfaceVariant),
+              ),
+              actions: [
+                IconButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    debugPrint('edit event');
                   },
-                  icon: Icon(Icons.arrow_back_ios_rounded,
+                  icon: Icon(Icons.edit,
                       color: themeData.colorScheme.onSurfaceVariant),
                 ),
-                actions: [
-                  IconButton(
-                    onPressed: () {
-                      debugPrint('edit event');
-                    },
-                    icon: Icon(Icons.edit,
-                        color: themeData.colorScheme.onSurfaceVariant),
-                  ),
-                  IconButton(
-                    onPressed: () => onDelete(model),
-                    icon: Icon(Icons.delete_rounded,
-                        color: themeData.colorScheme.onSurfaceVariant),
-                  )
-                ],
+                IconButton(
+                  onPressed: () => onDelete(model),
+                  icon: Icon(Icons.delete_rounded,
+                      color: themeData.colorScheme.onSurfaceVariant),
+                )
+              ],
+            ),
+            // display all event data
+            body: SingleChildScrollView(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      getInformationDisplay(model),
+                      generateContentDisplayBlock(
+                          'イベントの説明', Text(model.introduction)),
+                      // startTime
+                      generateContentDisplayBlock(
+                          '開始時間', Text(model.formattedStartTime)),
+                      // endTime
+                      generateContentDisplayBlock(
+                          '終了時間', Text(model.formattedEndTime)),
+                      // introduction
+                      // Contributors
+                      generateContentDisplayBlock(
+                          '参加者',
+                          model.isLoading ? const CircularProgressIndicator()
+                          : model.contributorAccountModel.isEmpty
+                              ? const Text('参加者はいません')
+                              : ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: model
+                                              .contributorAccountModel.length,
+                                          itemBuilder: (context, index) {
+                                            return ListTile(
+                                              leading: CircleAvatar(
+                                                  backgroundImage: model
+                                                          .contributorAccountModel[
+                                                              index]
+                                                          .photo
+                                                          .isEmpty
+                                                      ? Image.asset(
+                                                              'assets/images/profile_male.png')
+                                                          .image
+                                                      : Image.memory(model
+                                                              .contributorAccountModel[
+                                                                  index]
+                                                              .photo)
+                                                          .image),
+                                              title: Text(model
+                                                  .contributorAccountModel[
+                                                      index]
+                                                  .nickname),
+                                            );                                   
+                                })),
+                      // relation task in japanese
+                      generateContentDisplayBlock(
+                          '関連タスク',
+                          model.eventModel.relatedMissionIds.isEmpty
+                              ? const Text('関連タスクはありません')
+                              : ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount:
+                                      model.eventModel.relatedMissionIds.length,
+                                  itemBuilder: (context, index) => Text(model
+                                      .eventModel.relatedMissionIds[index]))),
+                      // relation note
+                      generateContentDisplayBlock(
+                          '関連ノート', const Text('関連ノートはありません')),
+                      // relation message
+                      generateContentDisplayBlock(
+                          '関連メッセージ', const Text('関連メッセージはありません')),
+                    ]),
               ),
-              // display all event data
-              body: SingleChildScrollView(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        getInformationDisplay(model),
-                        generateContentDisplayBlock(
-                            'イベントの説明', Text(model.introduction)),
-                        // startTime
-                        generateContentDisplayBlock(
-                            '開始時間', Text(model.formattedStartTime)),
-                        // endTime
-                        generateContentDisplayBlock(
-                            '終了時間', Text(model.formattedEndTime)),
-                        // introduction
-                        // Contributors
-                        generateContentDisplayBlock(
-                            '参加者',
-                            model.eventModel.contributorIds.isEmpty
-                                ? const Text('参加者はいません')
-                                : ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount:
-                                        model.eventModel.contributorIds.length,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundImage: Image.asset(
-                                                  'assets/images/profile_male.png')
-                                              .image,
-                                        ),
-                                        title: Text(model
-                                            .eventModel.contributorIds[index]),
-                                      );
-                                    },
-                                  )),
-                        // relation task in japanese
-                        generateContentDisplayBlock(
-                            '関連タスク',
-                            model.eventModel.relatedMissionIds.isEmpty
-                                ? const Text('関連タスクはありません')
-                                : ListView.builder(
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    itemCount: model
-                                        .eventModel.relatedMissionIds.length,
-                                    itemBuilder: (context, index) => Text(model
-                                        .eventModel.relatedMissionIds[index]))),
-                        // relation note
-                        generateContentDisplayBlock(
-                            '関連ノート', const Text('関連ノートはありません')),
-                        // relation message
-                        generateContentDisplayBlock(
-                            '関連メッセージ', const Text('関連メッセージはありません')),
-                      ]),
-                ),
-              ),
-            ));
+            ),
+          ),
+        );
       }),
     );
   }

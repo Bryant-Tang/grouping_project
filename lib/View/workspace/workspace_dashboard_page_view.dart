@@ -14,10 +14,12 @@ class WorkspaceDashboardPageView extends StatefulWidget {
   const WorkspaceDashboardPageView({super.key});
 
   @override
-  State<WorkspaceDashboardPageView> createState() => _WorkspaceDashboardPageViewState();
+  State<WorkspaceDashboardPageView> createState() =>
+      _WorkspaceDashboardPageViewState();
 }
 
-class _WorkspaceDashboardPageViewState extends State<WorkspaceDashboardPageView> {
+class _WorkspaceDashboardPageViewState
+    extends State<WorkspaceDashboardPageView> {
   @override
   Widget build(BuildContext context) {
     // show the form of widget
@@ -405,16 +407,17 @@ class EventListViewState extends State<EventListView> {
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, model, child) => ListView(
           children: model.dashboardEventList
-              .map((eventModel) => 
-                  ChangeNotifierProvider<EventSettingViewModel>(
-                    create: (context) => 
-                    EventSettingViewModel()..initializeDisplayEvent(
-                      creatorAccount: model.personalprofileData,
-                      // ownerAccount: model.accountProfileData,
-                      eventModel: eventModel, 
-                    ),
-                  child: const EventCardViewTemplate()
-                )).toList()),
+              .map(
+                  (eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
+                      create: (context) {
+                        // debugPrint(eventModel.title);
+                        return EventSettingViewModel()
+                          ..creatorAccount = model.personalprofileData
+                          ..eventModel = eventModel
+                          ..getAllContibutorData();
+                      },
+                      child: const EventCardViewTemplate()))
+              .toList()),
     );
   }
 }

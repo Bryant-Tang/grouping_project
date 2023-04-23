@@ -19,8 +19,10 @@ class EventSettingViewModel extends ChangeNotifier {
   // True if ownerAccount id equals to creator Account, otherwise False
   bool forUser = true;
   bool get isforUser => forUser;
-  // factory EventSettingViewModel.display(EventModel eventData,) =>
-  //     EventSettingViewModel(eventData, SettingMode.displpay);
+  bool isLoading = false;
+  // factory EventSettingViewModel.display(EventModel eventData, AccountModel user) =>
+  //       initializeDisplayEvent(model: eventData, creatorAccount: user);
+  // EventSettingViewModel(eventData, SettingMode.displpay);
   // factory EventSettingViewModel.create({required AccountModel accountProfile}) {
   //   EventSettingViewModel model =
   //       EventSettingViewModel(EventModel(), SettingMode.create);
@@ -45,7 +47,8 @@ class EventSettingViewModel extends ChangeNotifier {
   // getter of eventModel
   String get title => eventModel.title; // Event title
   String get introduction => eventModel.introduction; // Introduction od event
-  String get ownerAccountName => eventModel.ownerName; // event owner account name
+  String get ownerAccountName =>
+      eventModel.ownerName; // event owner account name
   DateTime get startTime => eventModel.startTime; // event start time
   DateTime get endTime => eventModel.endTime; // event end time
   Color get color => Color(eventModel.color);
@@ -96,8 +99,8 @@ class EventSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initializeNewEvent({
-      required AccountModel creatorAccount,
+  void initializeNewEvent(
+      {required AccountModel creatorAccount,
       required AccountModel ownerAccount}) {
     ownerAccount = ownerAccount;
     creatorAccount = creatorAccount;
@@ -109,12 +112,30 @@ class EventSettingViewModel extends ChangeNotifier {
     );
   }
 
-  Future<void> initializeDisplayEvent({required EventModel eventModel,
-      required AccountModel creatorAccount,
-      }) async {
+  Future<void> getAllContibutorData() async {
+    debugPrint('download data ${contributorAccountModel.length}');
+    isLoading = true;
+    notifyListeners();
+    for (String contributorId in eventContributoIds) {
+      contributorAccountModel.add(
+        await DatabaseService(ownerUid: contributorId, forUser: false)
+        .getAccount()
+      );
+    }
+    debugPrint('loading done ${contributorAccountModel.length}');
+    isLoading = false;
+    notifyListeners();
+  }
+
+  void initializeDisplayEvent({
+    required EventModel model,
+    required AccountModel creatorAccount,
+  }) async {
     // ownerAccount = ownerAccount;
+    isLoading = true;
+    notifyListeners();
     creatorAccount = creatorAccount;
-    eventModel = eventModel;
+    model = eventModel;
     if (isforUser == false) {
       // get all event contributor account Profile from owner Account model associate list
       // for (AccountModel candidateAccountModel in contributorCandidate) {
@@ -122,14 +143,15 @@ class EventSettingViewModel extends ChangeNotifier {
       //     contributorAccountModel.add(candidateAccountModel);
       //   }
       // }
-      for(String contributorId in eventContributoIds){
-        contributorAccountModel.add(
-          await DatabaseService(ownerUid: contributorId).getAccount()
-        ); 
+      for (String contributorId in eventContributoIds) {
+        contributorAccountModel
+            .add(await DatabaseService(ownerUid: contributorId).getAccount());
       }
     } else {
       contributorAccountModel.add(creatorAccount);
     }
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<bool> onSave() async {

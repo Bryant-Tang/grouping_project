@@ -22,7 +22,8 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
   @override
   Widget build(BuildContext context) {
     return Consumer<EventSettingViewModel>(
-      builder: (context, model, child) => Scaffold(
+      builder: (context, model, child) =>
+       Scaffold(
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
           child: ListView(
