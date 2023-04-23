@@ -149,7 +149,7 @@ class TitleDateOfEvent extends StatelessWidget {
       builder: (context, model, child) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AntiLabel(group: 'not setting yet', color: model.color),
+          // AntiLabel(group: 'not setting yet', color: model.color),
           Text(
             model.title,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
