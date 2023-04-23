@@ -27,7 +27,7 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
   @override
   void initState() {
     super.initState();
-    viewModel = EventSettingViewModel.display(widget.eventModel);
+    // viewModel = EventSettingViewModel.display(widget.eventModel);
   }
 
   @override
@@ -71,11 +71,8 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          ChangeNotifierProvider<EventSettingViewModel>(
-                                            create: (context) => 
-                                              EventSettingViewModel.edit(
-                                                    widget.eventModel
-                                              )..isForUser = model.isPersonal,
+                                          ChangeNotifierProvider<EventSettingViewModel>.value(
+                                            value: model,
                                             child: const EventSettingPageView(),
                                           )));
                             },
