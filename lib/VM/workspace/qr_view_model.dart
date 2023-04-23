@@ -8,7 +8,8 @@ class QRViewModel extends ChangeNotifier {
   String stringToShow = '';
   String welcomeMessage = '';
   String code = '';
-  bool isProfile = false;
+  bool isShare = false;
+  bool isScanner = false;
   late AccountModel groupAccountModel;
   late AccountModel personalAccountModel;
 
@@ -48,8 +49,19 @@ class QRViewModel extends ChangeNotifier {
     }
   }
 
-  void setProfileIndicator({bool? targetIndicator}) {
-    isProfile = targetIndicator ?? !isProfile;
+  void setShareIndicator({bool? targetIndicator, bool fromSetScanner = false}) {
+    isShare = targetIndicator ?? !isShare;
+    if (!fromSetScanner) {
+      setScannerIndicator(targetIndicator: false, fromSetShare: true);
+    }
+    notifyListeners();
+  }
+
+  void setScannerIndicator({bool? targetIndicator, bool fromSetShare = false}) {
+    isScanner = targetIndicator ?? !isScanner;
+    if (!fromSetShare) {
+      setShareIndicator(targetIndicator: false, fromSetScanner: true);
+    }
     notifyListeners();
   }
 }

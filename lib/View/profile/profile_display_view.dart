@@ -18,28 +18,29 @@ class ProfileDispalyPageView extends StatefulWidget {
 class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
   /// get the switched buttom sheet content
   Widget getContent(
-      {required bool isProfile, required WorkspaceDashBoardViewModel model}) {
-    List tags = List.from(model.tags);
-    List tagWithoutTitles = tags;
+      {required QRViewModel model,
+      required WorkspaceDashBoardViewModel value}) {
+    if (!model.isShare && !model.isScanner) {
+      List tags = List.from(value.tags);
+      List tagWithoutTitles = tags;
 
-    if (model.introduction != "unknown") {
-      if (model.isPersonalAccount) {
-        tags.insert(0, AccountTag(tag: "自我介紹", content: model.introduction));
-      } else {
-        debugPrint('It\'s a group account');
-        tags.insert(0, AccountTag(tag: "小組簡介", content: model.introduction));
+      if (value.introduction != "unknown") {
+        if (value.isPersonalAccount) {
+          tags.insert(0, AccountTag(tag: "自我介紹", content: value.introduction));
+        } else {
+          debugPrint('It\'s a group account');
+          tags.insert(0, AccountTag(tag: "小組簡介", content: value.introduction));
+        }
       }
-    }
-    if (model.slogan != "unknown") {
-      if (model.isPersonalAccount) {
-        tags.insert(0, AccountTag(tag: "座右銘", content: model.slogan));
-      } else {
-        debugPrint('It\'s a group account');
-        tags.insert(0, AccountTag(tag: "小組口號", content: model.slogan));
+      if (value.slogan != "unknown") {
+        if (value.isPersonalAccount) {
+          tags.insert(0, AccountTag(tag: "座右銘", content: value.slogan));
+        } else {
+          debugPrint('It\'s a group account');
+          tags.insert(0, AccountTag(tag: "小組口號", content: value.slogan));
+        }
       }
-    }
-    if (isProfile & !isScanner) {
-      if (model.isPersonalAccount) {
+      if (value.isPersonalAccount) {
         return Column(children: [
           const HeadShot(),
           Column(
@@ -75,10 +76,16 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
               }).toList()),
         ]);
       }
-    } else if (isScanner) {
-      return const QrCodeScannerTesting();
+    } else if (model.isShare) {
+      return ChangeNotifierProvider.value(
+        value: value,
+        child: ShowQRCodeView(),
+      );
     } else {
-      return ShowQRCodeView();
+      return ChangeNotifierProvider.value(
+        value: value,
+        child: const QrCodeScanner(),
+      );
     }
   }
 
@@ -87,7 +94,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, value, child) => ChangeNotifierProvider<QRViewModel>(
           create: (context) =>
-              QRViewModel()..setProfileIndicator(targetIndicator: true),
+              QRViewModel()..setShareIndicator(targetIndicator: false),
           builder: (context, child) => Consumer<QRViewModel>(
                 builder: (context, model, child) {
                   return SafeArea(
@@ -113,8 +120,7 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                               const SizedBox(
                                 height: 10,
                               ),
-                              getContent(
-                                  isProfile: model.isProfile, model: value),
+                              getContent(model: model, value: value),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -143,13 +149,13 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                                       padding: const EdgeInsets.only(left: 10),
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          model.setProfileIndicator();
+                                          model.setShareIndicator();
                                           debugPrint("QR code share");
                                         },
                                         child: Icon(
-                                          model.isProfile
-                                              ? Icons.share
-                                              : Icons.group,
+                                          model.isShare
+                                              ? Icons.group
+                                              : Icons.share,
                                           size: 15,
                                           color: Theme.of(context)
                                               .colorScheme
@@ -160,21 +166,13 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                                     padding: const EdgeInsets.only(left: 10),
                                     child: ElevatedButton(
                                       onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        ChangeNotifierProvider
-                                                            .value(
-                                                          value: model,
-                                                          child:
-                                                              QrCodeScanner(),
-                                                        )));
+                                        model.setScannerIndicator();
                                         debugPrint("Scan QR code");
                                       },
                                       child: Icon(
-                                        Icons.qr_code_scanner,
+                                        model.isScanner
+                                            ? Icons.group
+                                            : Icons.qr_code_scanner,
                                         size: 15,
                                         color: Theme.of(context)
                                             .colorScheme
@@ -300,7 +298,7 @@ class HeadShot extends StatelessWidget {
 }
 
 class ShowQRCodeView extends StatefulWidget {
-  ShowQRCodeView({
+  const ShowQRCodeView({
     super.key,
   });
 
@@ -325,7 +323,7 @@ class _ShowQRCodeViewState extends State<ShowQRCodeView> {
             } else {
               debugPrint('It\'s personal account');
               model.showGroupId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-              model.updateWelcomeMessage('Never gonna give you up~');
+              model.updateWelcomeMessage('Never gonna give you up ~');
             }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -358,14 +356,103 @@ class _ShowQRCodeViewState extends State<ShowQRCodeView> {
 }
 
 /// To scan QR code
+// class QrCodeScanner extends StatefulWidget {
+//   QrCodeScanner({super.key});
+
+//   @override
+//   State<QrCodeScanner> createState() => _QrCodeScannerState();
+// }
+
+// class _QrCodeScannerState extends State<QrCodeScanner> {
+//   MobileScannerController controller = MobileScannerController();
+
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     controller.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Consumer<WorkspaceDashBoardViewModel>(
+//         builder: (context, value, child) => ChangeNotifierProvider(
+//               create: (context) => QRViewModel(),
+//               builder: (context, child) => Consumer<QRViewModel>(
+//                 builder: (context, model, child) {
+//                   model.setPersonalModel(value.personalprofileData);
+//                   return Scaffold(
+//                       body: Column(
+//                           mainAxisAlignment: MainAxisAlignment.end,
+//                           children: [
+//                         Expanded(
+//                           child: MobileScanner(
+//                             controller: controller,
+//                             onDetect: (capture) async {
+//                               model.updateBarcode(
+//                                   capture.barcodes[0].rawValue ?? '');
+//                               controller.stop();
+//                               await model.setGroupModel();
+//                               // debugPrint(
+//                               //     '=> Barcode detected: ${model.code}');
+//                               if (mounted) {
+//                                 showDialog(
+//                                     context: context,
+//                                     builder: (context) => AlertDialog(
+//                                           title: Text(
+//                                               '您已被邀請加入${model.groupAccountModel.nickname}'),
+//                                           actions: [
+//                                             TextButton(
+//                                                 onPressed: () {
+//                                                   Navigator.pop(context);
+//                                                   Navigator.pop(context);
+//                                                 },
+//                                                 child: const Text('取消')),
+//                                             TextButton(
+//                                                 onPressed: () async {
+//                                                   model.addAssociation();
+//                                                   await value.addGroupViaQR(
+//                                                       model.code,
+//                                                       model.groupAccountModel);
+//                                                   if (mounted) {
+//                                                     Navigator.pop(context);
+//                                                     Navigator.pop(context);
+//                                                   }
+//                                                 },
+//                                                 child: const Text('確認'))
+//                                           ],
+//                                         ));
+//                               }
+//                             },
+//                           ),
+//                         ),
+//                         Text(
+//                           '掃描完成後，請稍等片刻',
+//                           style: Theme.of(context)
+//                               .textTheme
+//                               .labelLarge!
+//                               .copyWith(
+//                                   fontWeight: FontWeight.bold, fontSize: 18),
+//                         ),
+//                         ElevatedButton(
+//                             onPressed: () {
+//                               Navigator.pop(context);
+//                             },
+//                             child: const Text('Go back')),
+//                       ]));
+//                 },
+//               ),
+//             ));
+//   }
+// }
+
 class QrCodeScanner extends StatefulWidget {
-  QrCodeScanner({super.key});
+  const QrCodeScanner({super.key});
 
   @override
-  State<QrCodeScanner> createState() => _QrCodeScannerState();
+  State<QrCodeScanner> createState() => _QrCodeScannerrState();
 }
 
-class _QrCodeScannerState extends State<QrCodeScanner> {
+class _QrCodeScannerrState extends State<QrCodeScanner> {
   MobileScannerController controller = MobileScannerController();
 
   @override
@@ -377,72 +464,58 @@ class _QrCodeScannerState extends State<QrCodeScanner> {
   @override
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
-        builder: (context, value, child) => ChangeNotifierProvider(
-              create: (context) => QRViewModel(),
-              builder: (context, child) => Consumer<QRViewModel>(
-                builder: (context, model, child) {
-                  model.setPersonalModel(value.personalprofileData);
-                  return Scaffold(
-                      body: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                        Expanded(
-                          child: MobileScanner(
-                            controller: controller,
-                            onDetect: (capture) async {
-                              model.updateBarcode(
-                                  capture.barcodes[0].rawValue ?? '');
-                              controller.stop();
-                              await model.setGroupModel();
-                              // debugPrint(
-                              //     '=> Barcode detected: ${model.code}');
-                              if (mounted) {
-                                showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                          title: Text(
-                                              '您已被邀請加入${model.groupAccountModel.nickname}'),
-                                          actions: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  Navigator.pop(context);
-                                                },
-                                                child: const Text('取消')),
-                                            TextButton(
-                                                onPressed: () async {
-                                                  model.addAssociation();
-                                                  await value.addGroupViaQR(
-                                                      model.code,
-                                                      model.groupAccountModel);
-                                                  if (mounted) {
-                                                    Navigator.pop(context);
-                                                    Navigator.pop(context);
-                                                  }
-                                                },
-                                                child: const Text('確認'))
-                                          ],
-                                        ));
-                              }
-                            },
-                          ),
-                        ),
-                        Text(
-                          '掃描完成後，請稍等片刻',
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(
-                                  fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Go back')),
-                      ]));
+      builder: (context, value, child) => ChangeNotifierProvider(
+        create: (context) => QRViewModel(),
+        builder: (context, child) => Consumer<QRViewModel>(
+          builder: (context, model, child) {
+            model.setPersonalModel(value.personalprofileData);
+            return SizedBox(
+              height: MediaQuery.of(context).size.width * 0.8,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: MobileScanner(
+                // scanWindow: Rect.zero,
+                controller: controller,
+                // scanWindow: Rect.fr,
+                onDetect: (capture) async {
+                  model.updateBarcode(capture.barcodes[0].rawValue ?? '');
+                  controller.stop();
+                  await model.setGroupModel();
+                  // debugPrint(
+                  //     '=> Barcode detected: ${model.code}');
+                  if (mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title:
+                            Text('您已被邀請加入${model.groupAccountModel.nickname}'),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              },
+                              child: const Text('取消')),
+                          TextButton(
+                              onPressed: () async {
+                                model.addAssociation();
+                                await value.addGroupViaQR(
+                                    model.code, model.groupAccountModel);
+                                if (mounted) {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                }
+                              },
+                              child: const Text('確認'))
+                        ],
+                      ),
+                    );
+                  }
                 },
               ),
-            ));
+            );
+          },
+        ),
+      ),
+    );
   }
 }
