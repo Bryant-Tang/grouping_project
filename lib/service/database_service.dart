@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/exception.dart';
@@ -66,6 +67,10 @@ class DatabaseService {
     var query = _firestore
         .collection(collectionPath)
         .where(firstKey, arrayContains: condition[firstKey]);
+    // debugPrint(collectionPath);
+    // debugPrint(firstKey);
+    // debugPrint(condition[firstKey]);
+    // debugPrint((await query.get()).size.toString());
     for (var key in condition.keys.skip(1)) {
       query = query.where(key, arrayContains: condition[key]);
     }
@@ -208,11 +213,14 @@ class DatabaseService {
       {required String accountId,
       required String dataId,
       required String dataType}) async {
-    List<String> ownerdataIdList = List.from((await _getDataFitMapFirestore(
-            collectionPath: '${dataType}_account_relation',
-            condition: {'account_id': accountId}))
-        .map((eventIdSnap) => eventIdSnap.id));
+    var a = (await _getDataFitMapFirestore(
+        collectionPath: '${dataType}_account_relation',
+        condition: {'account_id': accountId}));
+    List<String> ownerdataIdList =
+        List.from(a.map((eventIdSnap) => eventIdSnap.id));
     if (ownerdataIdList.isEmpty) {
+      // debugPrint('${a.length}');
+      // debugPrint('account_id: ${accountId}');
       throw GroupingProjectException(
           message: 'The $dataType is not exist in any account.',
           code: GroupingProjectExceptionCode.notExistInDatabase,
@@ -384,6 +392,8 @@ class DatabaseService {
   }
 
   Future<MissionStateModel> getMissionState({required String stateId}) async {
+    // debugPrint(_ownerAccountId);
+    // debugPrint(stateId);
     MissionStateModel state = await _getSingleDataModelFromFire(
         dataId: stateId, defaultData: MissionStateModel.defaultUnknownState);
     return state;

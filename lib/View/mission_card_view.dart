@@ -447,23 +447,32 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                                       generateContentDisplayBlock(
                                         '進行中 In Progress',
                                          Row(
-                                          children: const [
-                                            ColorTagChip(tagString: "inprogress")
-                                          ],
+                                          children: model.inProgress.map((stateLabel) => 
+                                            ColorTagChip(
+                                              tagString: stateLabel.stateName,
+                                              color: model.stageColorMap[stateLabel.stage]!
+                                            )
+                                          ).toList(),
                                         ),
                                       ),generateContentDisplayBlock(
                                         '待討論 Pending',
                                          Row(
-                                          children: const [
-                                            ColorTagChip(tagString: "inprogress")
-                                          ],
+                                          children: model.pending
+                                              .map((stateLabel) => ColorTagChip(
+                                                  tagString: stateLabel.stateName,
+                                                  color: model.stageColorMap[stateLabel.stage]!))
+                                              .toList(),
                                         ),
                                       ),generateContentDisplayBlock(
                                         '已結束 Close',
                                          Row(
-                                          children: const [
-                                            ColorTagChip(tagString: "inprogress")
-                                          ],
+                                          children: model.close
+                                              .map((stateLabel) => ColorTagChip(
+                                                  tagString:
+                                                      stateLabel.stateName,
+                                                  color: model.stageColorMap[
+                                                      stateLabel.stage]!))
+                                              .toList(),
                                         ),
                                       )
                                     ],
@@ -480,7 +489,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
             children: [
               ColorTagChip(
                 tagString: model.missionState.stateName,
-                color: model.missionLabelColor,
+                color: model.stageColorMap[model.missionState.stage]!,
                 fontSize: 16,
               ),
               ],
@@ -941,7 +950,7 @@ class _StateOfMissionState extends State<StateOfMission> {
       MissionSettingViewModel model) {
     return InkWell(
         onTap: () {
-          model.updateState(stage, stateName);
+          // model.updateState(stage, stateName);
           Navigator.pop(context);
           // this.stage = stage;
           // this.stateName = stateName;
