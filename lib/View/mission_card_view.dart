@@ -37,6 +37,27 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
     }
   }
 
+  Widget getStateLabelButton(
+      Function callBack, MissionStateModel state, Color color) {
+    return ElevatedButton(
+        onPressed: () => callBack(),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.all(4.0),
+          side: BorderSide(color: color),
+          foregroundColor: color,
+          textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+          elevation: 1,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(backgroundColor: color, radius: 5),
+            const SizedBox(width: 5),
+            Text(state.stateName),
+          ],
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
@@ -76,6 +97,7 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                       ),
                       const SizedBox(width: 5),
                       Expanded(
+                        flex: 2,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.max,
@@ -100,14 +122,25 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                               maxLines: 1,
                               style: themeData.textTheme.titleSmall!.copyWith(
                                   // color: themeData.colorScheme.secondary,
-                                  fontSize: 14),
+                                  fontSize: 16),
                             ),
                             Row(
+                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              // crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 const Icon(Icons.timer),
                                 Text(model.formattedDeadline),
                               ],
-                            )
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            getStateLabelButton(() {}, model.missionState, model.stageColorMap[model.missionState.stage]!),
                           ],
                         ),
                       )
@@ -276,8 +309,8 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
         }));
   }
 
-  Widget getStateLabelButton(Function callBack,
-      MissionStateModel state,Color color) {
+  Widget getStateLabelButton(
+      Function callBack, MissionStateModel state, Color color) {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: ElevatedButton(
@@ -293,8 +326,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircleAvatar(
-                  backgroundColor: color, radius: 5),
+              CircleAvatar(backgroundColor: color, radius: 5),
               const SizedBox(width: 5),
               Text(state.stateName),
             ],
@@ -323,129 +355,73 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
             )));
   }
 
+  Widget getContributorButton(
+      MissionSettingViewModel model, AccountModel account) {
+    return Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: RawChip(
+            onPressed: () => model.updateContibutor(account),
+            // onDeleted: () => model.updateContibutor(account),
+            // deleteIcon: model.isContributors(account) ? const Icon(Icons.delete) : const Icon(Icons.add),
+            selected: model.isContributors(account),
+            elevation: 3,
+            label: Text(account.nickname),
+            avatar: CircleAvatar(
+                backgroundImage: account.photo.isEmpty
+                    ? Image.asset('assets/images/profile_male.png').image
+                    : Image.memory(account.photo).image)));
+  }
+
+  void onUpdateContributor(MissionSettingViewModel model) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) =>
+            ChangeNotifierProvider<MissionSettingViewModel>.value(
+              value: model,
+              child: Consumer<MissionSettingViewModel>(
+                builder: (context, model, child) => SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                          child: model.contributorCandidate.isEmpty
+                              ? const Center(child: Text('無其他成員'))
+                              : Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Wrap(
+                                      children: List.generate(
+                                          model.contributorCandidate.length,
+                                          (index) => getContributorButton(
+                                              model,
+                                              model.contributorCandidate[
+                                                  index]))),
+                                )),
+                    ],
+                  ),
+                ),
+              ),
+            ));
+    // debugPrint(model.contributors.length.toString());
+  }
+
   Widget getContributorBlock(MissionSettingViewModel model) {
     return generateContentDisplayBlock(
         '参加者',
         MaterialButton(
           onPressed: () async {
-            debugPrint(model.contributor.length.toString());
-            // await showModalBottomSheet(
-            //     context: context,
-            //     builder: (context) =>
-            //         ChangeNotifierProvider<MissionSettingViewModel>.value(
-            //           value: model,
-            //           child: Consumer<EventSettingViewModel>(
-            //             builder: (context, model, child) => SafeArea(
-            //               child: Column(
-            //                 children: [
-            //                   Expanded(
-            //                     child: model.contributorCandidate.isEmpty
-            //                         ? const Center(
-            //                             child: Text('無其他成員'),
-            //                           )
-            //                         : Padding(
-            //                             padding: const EdgeInsets.all(20.0),
-            //                             child: Wrap(
-            //                                 children: List.generate(
-            //                                     model.contributorCandidate
-            //                                         .length,
-            //                                     (index) => Padding(
-            //                                           padding:
-            //                                               const EdgeInsets.all(
-            //                                                   8.0),
-            //                                           child: ChoiceChip(
-            //                                             padding:
-            //                                                 const EdgeInsets
-            //                                                     .all(6.0),
-            //                                             labelStyle: Theme.of(
-            //                                                     context)
-            //                                                 .textTheme
-            //                                                 .labelLarge!
-            //                                                 .copyWith(
-            //                                                     fontSize: 16,
-            //                                                     fontWeight:
-            //                                                         FontWeight
-            //                                                             .bold),
-            //                                             backgroundColor:
-            //                                                 Theme.of(context)
-            //                                                     .colorScheme
-            //                                                     .surfaceVariant,
-            //                                             selectedColor: Theme.of(
-            //                                                     context)
-            //                                                 .colorScheme
-            //                                                 .primaryContainer,
-            //                                             avatar: CircleAvatar(
-            //                                                 radius: 30,
-            //                                                 backgroundImage: model
-            //                                                         .contributorCandidate[
-            //                                                             index]
-            //                                                         .photo
-            //                                                         .isEmpty
-            //                                                     ? Image.asset(
-            //                                                             'assets/images/profile_male.png')
-            //                                                         .image
-            //                                                     : Image.memory(model
-            //                                                             .contributorCandidate[
-            //                                                                 index]
-            //                                                             .photo)
-            //                                                         .image),
-            //                                             label: Text(model
-            //                                                 .contributorCandidate[
-            //                                                     index]
-            //                                                 .name),
-            //                                             onSelected: (value) {
-            //                                               debugPrint(
-            //                                                   'name ${model.contributorCandidate[index].nickname} $value');
-            //                                               model.toggleSelcted(
-            //                                                   model.contributorCandidate[
-            //                                                       index]);
-            //                                             },
-            //                                             selected: model
-            //                                                 .isEventContributor(
-            //                                                     model.contributorCandidate[
-            //                                                         index]),
-            //                                           ),
-            //                                         ))),
-            //                           ),
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            //           ),
-            //         ));
-            // debugPrint(model.contributorAccountModel.length.toString());
+            debugPrint(model.contributors.length.toString());
+            onUpdateContributor(model);
           },
-          child: model.contributorAccountModelList.isEmpty
+          child: model.contributors.isEmpty
               ? const Text('参加者はいません')
               : Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Wrap(
-                        children: List.generate(
-                            model.contributorAccountModelList.length,
-                            (index) => Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: RawChip(
-                                    elevation: 3,
-                                    label: Text(model
-                                        .contributorAccountModelList[index]
-                                        .nickname),
-                                    avatar: CircleAvatar(
-                                        backgroundImage: model
-                                                .contributorAccountModelList[
-                                                    index]
-                                                .photo
-                                                .isEmpty
-                                            ? Image.asset(
-                                                    'assets/images/profile_male.png')
-                                                .image
-                                            : Image.memory(model
-                                                    .contributorAccountModelList[
-                                                        index]
-                                                    .photo)
-                                                .image),
-                                  ),
-                                ))),
+                      children: List.generate(
+                          model.contributors.length,
+                          (index) => getContributorButton(
+                              model, model.contributors[index])),
+                    ),
                   ],
                 ),
         ));
@@ -453,70 +429,71 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
 
   Widget getStateBlock(MissionSettingViewModel model) {
     return generateContentDisplayBlock(
-      '任務狀態',
-      getStateLabelButton(
-        () => onUpdateState(model),
-        model.missionState, 
-        model.stageColorMap[model.missionState.stage]!)
-    );
+        '任務狀態',
+        getStateLabelButton(() => onUpdateState(model), model.missionState,
+            model.stageColorMap[model.missionState.stage]!));
   }
-  void onUpdateState(MissionSettingViewModel model){
+
+  void onUpdateState(MissionSettingViewModel model) {
     showModalBottomSheet(
-              context: context,
-              builder: (context) =>
-              ChangeNotifierProvider<MissionSettingViewModel>.value(
-                value: model,
-                child: Consumer<MissionSettingViewModel>(
-                  builder: (context, model, child) => SafeArea(
-                    child: Column(
-                      children: [
-                          Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                              child: ListView(
-                                  children: <Widget>[
-                                    generateContentDisplayBlock(
-                                      '進行中 In Progress',
-                                       Column(
-                                        children: List.from(model.inProgress.map((stateLabel) =>
-                                          getStateLabelButton((){
-                                            model.updateState(stateLabel);
-                                            Navigator.pop(context);
-                                          },
-                                            stateLabel,
-                                            model.stageColorMap[stateLabel.stage]!)
-                                        )))
-                                    ),generateContentDisplayBlock(
-                                      '待討論 Pending',
-                                       Column(
-                                        children: List.from(model.pending.map((stateLabel) =>
-                                          getStateLabelButton((){
-                                            model.updateState(stateLabel);
-                                            Navigator.pop(context);
-                                          },stateLabel,
-                                          model.stageColorMap[stateLabel.stage]!)
-                                        )))
-                                      ),generateContentDisplayBlock(
-                                      '已結束 Close',
-                                       Column(
-                                        children: List.from(model.close.map((stateLabel) =>
-                                          getStateLabelButton((){
-                                            model.updateState(stateLabel);
-                                            Navigator.pop(context);
-                                          },stateLabel,
-                                          model.stageColorMap[stateLabel.stage]!)
-                                        ))),
-                                      )
-                                  ],
-                                ),
-                              ),
-                                                  ),
-                      ],
-                    ),
+        context: context,
+        builder: (context) =>
+            ChangeNotifierProvider<MissionSettingViewModel>.value(
+              value: model,
+              child: Consumer<MissionSettingViewModel>(
+                builder: (context, model, child) => SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: ListView(
+                            children: <Widget>[
+                              generateContentDisplayBlock(
+                                  '進行中 In Progress',
+                                  Column(
+                                      children: List.from(model.inProgress.map(
+                                          (stateLabel) => getStateLabelButton(
+                                                  () {
+                                                model.updateState(stateLabel);
+                                                Navigator.pop(context);
+                                              },
+                                                  stateLabel,
+                                                  model.stageColorMap[
+                                                      stateLabel.stage]!))))),
+                              generateContentDisplayBlock(
+                                  '待討論 Pending',
+                                  Column(
+                                      children: List.from(model.pending.map(
+                                          (stateLabel) => getStateLabelButton(
+                                                  () {
+                                                model.updateState(stateLabel);
+                                                Navigator.pop(context);
+                                              },
+                                                  stateLabel,
+                                                  model.stageColorMap[
+                                                      stateLabel.stage]!))))),
+                              generateContentDisplayBlock(
+                                '已結束 Close',
+                                Column(
+                                    children: List.from(model.close.map(
+                                        (stateLabel) => getStateLabelButton(() {
+                                              model.updateState(stateLabel);
+                                              Navigator.pop(context);
+                                            },
+                                                stateLabel,
+                                                model.stageColorMap[
+                                                    stateLabel.stage]!)))),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ));
-
+              ),
+            ));
   }
 
   void onFinish(MissionSettingViewModel model) async {
