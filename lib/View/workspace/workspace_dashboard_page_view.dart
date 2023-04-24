@@ -411,7 +411,9 @@ class EventListViewState extends State<EventListView> {
                   (eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
                       create: (context) => EventSettingViewModel()
                           ..initializeDisplayEvent(
-                            model: eventModel, user: model.personalprofileData),
+                            model: eventModel, 
+                            user: model.personalprofileData
+                          ),
                       
                       child: const EventCardViewTemplate()))
               .toList()),

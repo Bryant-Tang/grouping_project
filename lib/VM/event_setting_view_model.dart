@@ -132,7 +132,7 @@ class EventSettingViewModel extends ChangeNotifier {
         introduction: '事件介紹',
         contributorIds: [creatorAccount.id!]);
     contributorAccountModel.add(creatorAccount);
-    ChangeNotifier();
+    notifyListeners();
   }
 
   Future<void> initializeDisplayEvent(
@@ -140,11 +140,20 @@ class EventSettingViewModel extends ChangeNotifier {
     isLoading = true;
     eventModel = model;
     creatorAccount = user;
-    forUser = eventOwnerAccount.id! == creatorAccount.id!;
     ownerAccount = eventModel.ownerAccount;
-    // eventContributoIds.add(eventOwnerAccount.id!);
-    debugPrint(forUser.toString());
+    forUser = eventOwnerAccount.id! == creatorAccount.id!;
     notifyListeners();
+    // eventContributoIds.add(eventOwnerAccount.id!);
+    debugPrint('ownerAccount ${ownerAccount.nickname.toString()}');
+    debugPrint('ownerAccount ${ownerAccount.associateEntityId.toString()}');
+    // debugPrint(forUser.toString());
+    // debugPrint(eventModel.associateEntityAccount.toString());
+    // debugPrint(eventModel.contributorIds.toString());
+    for(String associationEntityId in ownerAccount.associateEntityId){
+      ownerAccount.associateEntityAccount.add(
+        await DatabaseService(ownerUid: associationEntityId, forUser: false).getAccount()
+      );
+    }
     if (isforUser == false) {
       // get all event contributor account Profile from owner Account model associate list
       for (AccountModel candidateAccountModel in contributorCandidate) {
@@ -218,10 +227,10 @@ class EventSettingViewModel extends ChangeNotifier {
     return '$output ${days.padLeft(2, '0')} D ${hours.padLeft(2, '0')} H ${minutes.padLeft(2, '0')} M ${seconds.padLeft(2, '0')} S';
   }
 
-  final Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
-    const Duration(seconds: 1),
-    (_) => DateTime.now(),
-  );
+  // Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
+  //   const Duration(seconds: 1),
+  //   (_) => DateTime.now(),
+  // );
   Future<void> createEvent() async {
     // Create event with eventData
     // Add account profile id into contributorIds
