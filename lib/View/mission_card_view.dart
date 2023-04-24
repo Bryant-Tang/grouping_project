@@ -254,7 +254,8 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                   Navigator.of(context).push(
                     showPicker(
                         is24HrFormat: true,
-                        value: Time(hour: initialTime.hour, minute: initialTime.minute),
+                        value: Time(
+                            hour: initialTime.hour, minute: initialTime.minute),
                         onChange: (newTime) {
                           debugPrint(value.runtimeType.toString());
                           debugPrint(newTime.toString());
@@ -273,6 +274,32 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
             ),
           );
         }));
+  }
+
+  Widget getStateLabelButton(Function callBack,
+      MissionStateModel state,Color color) {
+    return Padding(
+      padding: const EdgeInsets.all(6.0),
+      child: ElevatedButton(
+          onPressed: () => callBack(),
+          style: ElevatedButton.styleFrom(
+            side: BorderSide(color: color),
+            foregroundColor: color,
+            // backgroundColor: color.withOpacity(0.1),
+            textStyle:
+                const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            elevation: 4,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                  backgroundColor: color, radius: 5),
+              const SizedBox(width: 5),
+              Text(state.stateName),
+            ],
+          )),
+    );
   }
 
   Widget getDeadlineBlock(MissionSettingViewModel model) {
@@ -427,75 +454,69 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
   Widget getStateBlock(MissionSettingViewModel model) {
     return generateContentDisplayBlock(
       '任務狀態',
-      MaterialButton(
-          onPressed: () async {
-            debugPrint(model.contributor.length.toString());
-            showModalBottomSheet(
-                context: context,
-                builder: (context) =>
-                ChangeNotifierProvider<MissionSettingViewModel>.value(
-                  value: model,
-                  child: Consumer<MissionSettingViewModel>(
-                    builder: (context, model, child) => SafeArea(
-                      child: Column(
-                        children: [
-                            Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(20),
-                                child: ListView(
-                                    children: [
-                                      generateContentDisplayBlock(
-                                        '進行中 In Progress',
-                                         Row(
-                                          children: model.inProgress.map((stateLabel) => 
-                                            ColorTagChip(
-                                              tagString: stateLabel.stateName,
-                                              color: model.stageColorMap[stateLabel.stage]!
-                                            )
-                                          ).toList(),
-                                        ),
+      getStateLabelButton(
+        () => onUpdateState(model),
+        model.missionState, 
+        model.stageColorMap[model.missionState.stage]!)
+    );
+  }
+  void onUpdateState(MissionSettingViewModel model){
+    showModalBottomSheet(
+              context: context,
+              builder: (context) =>
+              ChangeNotifierProvider<MissionSettingViewModel>.value(
+                value: model,
+                child: Consumer<MissionSettingViewModel>(
+                  builder: (context, model, child) => SafeArea(
+                    child: Column(
+                      children: [
+                          Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                              child: ListView(
+                                  children: <Widget>[
+                                    generateContentDisplayBlock(
+                                      '進行中 In Progress',
+                                       Column(
+                                        children: List.from(model.inProgress.map((stateLabel) =>
+                                          getStateLabelButton((){
+                                            model.updateState(stateLabel);
+                                            Navigator.pop(context);
+                                          },
+                                            stateLabel,
+                                            model.stageColorMap[stateLabel.stage]!)
+                                        )))
+                                    ),generateContentDisplayBlock(
+                                      '待討論 Pending',
+                                       Column(
+                                        children: List.from(model.pending.map((stateLabel) =>
+                                          getStateLabelButton((){
+                                            model.updateState(stateLabel);
+                                            Navigator.pop(context);
+                                          },stateLabel,
+                                          model.stageColorMap[stateLabel.stage]!)
+                                        )))
                                       ),generateContentDisplayBlock(
-                                        '待討論 Pending',
-                                         Row(
-                                          children: model.pending
-                                              .map((stateLabel) => ColorTagChip(
-                                                  tagString: stateLabel.stateName,
-                                                  color: model.stageColorMap[stateLabel.stage]!))
-                                              .toList(),
-                                        ),
-                                      ),generateContentDisplayBlock(
-                                        '已結束 Close',
-                                         Row(
-                                          children: model.close
-                                              .map((stateLabel) => ColorTagChip(
-                                                  tagString:
-                                                      stateLabel.stateName,
-                                                  color: model.stageColorMap[
-                                                      stateLabel.stage]!))
-                                              .toList(),
-                                        ),
+                                      '已結束 Close',
+                                       Column(
+                                        children: List.from(model.close.map((stateLabel) =>
+                                          getStateLabelButton((){
+                                            model.updateState(stateLabel);
+                                            Navigator.pop(context);
+                                          },stateLabel,
+                                          model.stageColorMap[stateLabel.stage]!)
+                                        ))),
                                       )
-                                    ],
-                                  ),
+                                  ],
                                 ),
-                                                    ),
-                        ],
-                      ),
+                              ),
+                                                  ),
+                      ],
                     ),
                   ),
-                ));
-          },
-          child: Row(
-            children: [
-              ColorTagChip(
-                tagString: model.missionState.stateName,
-                color: model.stageColorMap[model.missionState.stage]!,
-                fontSize: 16,
-              ),
-              ],
-            )         
-          ),
-        );
+                ),
+              ));
+
   }
 
   void onFinish(MissionSettingViewModel model) async {
@@ -619,8 +640,8 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               getInformationDisplay(model),
-                              getStateBlock(model),
                               getMissionDescriptionDisplay(model),
+                              getStateBlock(model),
                               getDeadlineBlock(model),
                               getContributorBlock(model),
                               generateContentDisplayBlock(
@@ -660,14 +681,14 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
 // class MissionSettingPageView extends StatefulWidget {
 //   const MissionSettingPageView({super.key});
 
-  // final MissionSettingViewModel model;
+// final MissionSettingViewModel model;
 
-  // factory MissionSettingPageView.create(
-  //         {required AccountModel accountProfile}) =>
-  //     MissionSettingPageView(
-  //         model: MissionSettingViewModel.create(accountProfile: accountProfile));
-  // factory MissionSettingPageView.edit({required MissionModel missionModel}) =>
-  //     MissionSettingPageView(model: MissionSettingViewModel.edit(missionModel));
+// factory MissionSettingPageView.create(
+//         {required AccountModel accountProfile}) =>
+//     MissionSettingPageView(
+//         model: MissionSettingViewModel.create(accountProfile: accountProfile));
+// factory MissionSettingPageView.edit({required MissionModel missionModel}) =>
+//     MissionSettingPageView(model: MissionSettingViewModel.edit(missionModel));
 
 //   @override
 //   State<MissionSettingPageView> createState() => _MissionSettingPageViewState();
@@ -681,7 +702,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
 //         body: Padding(
 //           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
 //           child: ListView(
-            
+
 //           ),
 //         ),
 //       ),
@@ -860,14 +881,14 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
 //   }
 // }
 
-class StateOfMission extends StatefulWidget {
-  const StateOfMission({super.key});
+// class StateOfMission extends StatefulWidget {
+//   const StateOfMission({super.key});
 
-  @override
-  State<StateOfMission> createState() => _StateOfMissionState();
-}
+//   @override
+//   State<StateOfMission> createState() => _StateOfMissionState();
+// }
 
-class _StateOfMissionState extends State<StateOfMission> {
+// class _StateOfMissionState extends State<StateOfMission> {
   // late List<MissionStateModel> stageDatas = [];
   // late MissionStage stage;
   // late String stateName = 'Error';
@@ -889,46 +910,46 @@ class _StateOfMissionState extends State<StateOfMission> {
   //   stateNameCrtl.dispose();
   // }
 
-  Color stageToColor(MissionStage stage) {
-    // TODO: color discussion
-    if (stage == MissionStage.progress) {
-      return Colors.blue.withOpacity(0.2);
-    } else if (stage == MissionStage.pending) {
-      return Colors.purple.withOpacity(0.2);
-    } else if (stage == MissionStage.close) {
-      return Colors.red.withOpacity(0.2);
-    } else {
-      return Colors.black38;
-    }
-  }
+  // Color stageToColor(MissionStage stage) {
+  //   // TODO: color discussion
+  //   if (stage == MissionStage.progress) {
+  //     return Colors.blue.withOpacity(0.2);
+  //   } else if (stage == MissionStage.pending) {
+  //     return Colors.purple.withOpacity(0.2);
+  //   } else if (stage == MissionStage.close) {
+  //     return Colors.red.withOpacity(0.2);
+  //   } else {
+  //     return Colors.black38;
+  //   }
+  // }
 
-  Column contextTemple(String title, List<MissionStateModel> datas,
-      MissionStage stage, MissionSettingViewModel model) {
-    List<Widget> chips = [];
+  // Column contextTemple(String title, List<MissionStateModel> datas,
+  //     MissionStage stage, MissionSettingViewModel model) {
+  //   List<Widget> chips = [];
 
-    for (int i = 0; i < datas.length; i++) {
-      chips.add(
-          chipSelected(stageToColor(stage), datas[i].stateName, stage, model));
-      chips.add(const SizedBox(
-        height: 4,
-      ));
-    }
+  //   for (int i = 0; i < datas.length; i++) {
+  //     chips.add(
+  //         chipSelected(stageToColor(stage), datas[i].stateName, stage, model));
+  //     chips.add(const SizedBox(
+  //       height: 4,
+  //     ));
+  //   }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-            const Divider(
-              height: 7,
-              thickness: 3,
-            )
-          ] +
-          chips,
-    );
-  }
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: <Widget>[
+  //           Text(
+  //             title,
+  //             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+  //           ),
+  //           const Divider(
+  //             height: 7,
+  //             thickness: 3,
+  //           )
+  //         ] +
+  //         chips,
+  //   );
+  // }
 
   // ListView chooseState(MissionSettingViewModel model) {
   //   return ListView(
@@ -946,335 +967,335 @@ class _StateOfMissionState extends State<StateOfMission> {
   //   );
   // }
 
-  InkWell chipSelected(Color color, String stateName, MissionStage stage,
-      MissionSettingViewModel model) {
-    return InkWell(
-        onTap: () {
-          // model.updateState(stage, stateName);
-          Navigator.pop(context);
-          // this.stage = stage;
-          // this.stateName = stateName;
-          // this.color = stageToColor(stage);
-          // widget.callback(stage, stateName);
-          // // debugPrint(color.toString());
-          // setState(() {
-          //   Navigator.pop(context);
-          // });
-        },
-        child: Container(
-            decoration: BoxDecoration(
-                color: color, borderRadius: BorderRadius.circular(10)),
-            child: Text(
-              ' •$stateName ',
-              style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold),
-            )));
-  }
+//   InkWell chipSelected(Color color, String stateName, MissionStage stage,
+//       MissionSettingViewModel model) {
+//     return InkWell(
+//         onTap: () {
+//           // model.updateState(stage, stateName);
+//           Navigator.pop(context);
+//           // this.stage = stage;
+//           // this.stateName = stateName;
+//           // this.color = stageToColor(stage);
+//           // widget.callback(stage, stateName);
+//           // // debugPrint(color.toString());
+//           // setState(() {
+//           //   Navigator.pop(context);
+//           // });
+//         },
+//         child: Container(
+//             decoration: BoxDecoration(
+//                 color: color, borderRadius: BorderRadius.circular(10)),
+//             child: Text(
+//               ' •$stateName ',
+//               style: const TextStyle(
+//                   color: Colors.black,
+//                   fontSize: 15,
+//                   fontWeight: FontWeight.bold),
+//             )));
+//   }
 
-  Container chipView(Color color, String stateName) {
-    return Container(
-        decoration: BoxDecoration(
-            color: color, borderRadius: BorderRadius.circular(10)),
-        child: Text(
-          ' •$stateName ',
-          style: const TextStyle(
-              color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
-        ));
-  }
+//   Container chipView(Color color, String stateName) {
+//     return Container(
+//         decoration: BoxDecoration(
+//             color: color, borderRadius: BorderRadius.circular(10)),
+//         child: Text(
+//           ' •$stateName ',
+//           style: const TextStyle(
+//               color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+//         ));
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<MissionSettingViewModel>(
-      builder: (context, model, child) => InkWell(
-          onTap: () {
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return Dialog(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: ListView(
-                        children: [
-                          contextTemple('進行中 In Progress', model.inProgress,
-                              MissionStage.progress, model),
-                          contextTemple('待討論 Pending', model.pending,
-                              MissionStage.pending, model),
-                          contextTemple('已結束 Close', model.close,
-                              MissionStage.close, model),
-                          const Divider(
-                            height: 7,
-                            thickness: 2,
-                          ),
-                          ChangeNotifierProvider<MissionSettingViewModel>.value(
-                              value: model, child: const CreateStage()),
-                          ChangeNotifierProvider<MissionSettingViewModel>.value(
-                              value: model, child: const DeleteStateName()),
-                        ],
-                      ),
-                    ),
-                  );
-                });
-          },
-          child: chipView(stageToColor(model.stateModel.stage),
-              model.stateModel.stateName)),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Consumer<MissionSettingViewModel>(
+//       builder: (context, model, child) => InkWell(
+//           onTap: () {
+//             showDialog(
+//                 context: context,
+//                 builder: (context) {
+//                   return Dialog(
+//                     child: Padding(
+//                       padding: const EdgeInsets.all(5),
+//                       child: ListView(
+//                         children: [
+//                           contextTemple('進行中 In Progress', model.inProgress,
+//                               MissionStage.progress, model),
+//                           contextTemple('待討論 Pending', model.pending,
+//                               MissionStage.pending, model),
+//                           contextTemple('已結束 Close', model.close,
+//                               MissionStage.close, model),
+//                           const Divider(
+//                             height: 7,
+//                             thickness: 2,
+//                           ),
+//                           ChangeNotifierProvider<MissionSettingViewModel>.value(
+//                               value: model, child: const CreateStage()),
+//                           ChangeNotifierProvider<MissionSettingViewModel>.value(
+//                               value: model, child: const DeleteStateName()),
+//                         ],
+//                       ),
+//                     ),
+//                   );
+//                 });
+//           },
+//           child: chipView(stageToColor(model.stateModel.stage),
+//               model.stateModel.stateName)),
+//     );
+//   }
+// }
 
-class CreateStage extends StatefulWidget {
-  const CreateStage({super.key});
+// class CreateStage extends StatefulWidget {
+//   const CreateStage({super.key});
 
-  @override
-  State<CreateStage> createState() => _CreateStageState();
-}
+//   @override
+//   State<CreateStage> createState() => _CreateStageState();
+// }
 
-class _CreateStageState extends State<CreateStage> {
-  String selectedStage = '進行中 In Progress';
-  String newStateName = '';
+// class _CreateStageState extends State<CreateStage> {
+//   String selectedStage = '進行中 In Progress';
+//   String newStateName = '';
 
-  MissionStage stringToStage(String stage) {
-    if (stage == '進行中 In Progress') {
-      return MissionStage.progress;
-    } else if (stage == '待討論 Pending') {
-      return MissionStage.pending;
-    } else if (stage == '已結束 Close') {
-      return MissionStage.close;
-    } else {
-      return MissionStage.progress;
-    }
-  }
+//   MissionStage stringToStage(String stage) {
+//     if (stage == '進行中 In Progress') {
+//       return MissionStage.progress;
+//     } else if (stage == '待討論 Pending') {
+//       return MissionStage.pending;
+//     } else if (stage == '已結束 Close') {
+//       return MissionStage.close;
+//     } else {
+//       return MissionStage.progress;
+//     }
+//   }
 
-  DropdownButton selectStage(void Function(void Function()) setNewState) {
-    return DropdownButton(
-        value: selectedStage,
-        items: const [
-          DropdownMenuItem(
-            value: '進行中 In Progress',
-            child: Text(
-              '進行中 In Progress',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-          ),
-          DropdownMenuItem(
-            value: '待討論 Pending',
-            child: Text(
-              '待討論 Pending',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-          ),
-          DropdownMenuItem(
-            value: '已結束 Close',
-            child: Text(
-              '已結束 Close',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-            ),
-          )
-        ],
-        onChanged: (value) {
-          // debugPrint('before: $selectedValue');
-          // TODO: don't use setState method
-          setNewState(() {
-            selectedStage = value;
-          });
-          // debugPrint('after: $selectedValue');
-        });
-  }
+//   DropdownButton selectStage(void Function(void Function()) setNewState) {
+//     return DropdownButton(
+//         value: selectedStage,
+//         items: const [
+//           DropdownMenuItem(
+//             value: '進行中 In Progress',
+//             child: Text(
+//               '進行中 In Progress',
+//               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+//             ),
+//           ),
+//           DropdownMenuItem(
+//             value: '待討論 Pending',
+//             child: Text(
+//               '待討論 Pending',
+//               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+//             ),
+//           ),
+//           DropdownMenuItem(
+//             value: '已結束 Close',
+//             child: Text(
+//               '已結束 Close',
+//               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+//             ),
+//           )
+//         ],
+//         onChanged: (value) {
+//           // debugPrint('before: $selectedValue');
+//           // TODO: don't use setState method
+//           setNewState(() {
+//             selectedStage = value;
+//           });
+//           // debugPrint('after: $selectedValue');
+//         });
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<MissionSettingViewModel>(
-      builder: (context, model, child) => TextButton(
-        // key: ValueKey(selectedValue),
-        onPressed: () {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  content: StatefulBuilder(
-                    builder: ((context, setNewState) {
-                      return Container(
-                          padding: const EdgeInsets.all(2),
-                          height: 180,
-                          width: 300,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Text('創建狀態 Create State',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20)),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    '階段 Stage',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15),
-                                  ),
-                                  selectStage(setNewState)
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    '名字 State Name',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15),
-                                  ),
-                                  Container(
-                                    width: 130,
-                                    padding: const EdgeInsets.only(right: 30),
-                                    child: TextField(
-                                      onChanged: (value) =>
-                                          newStateName = value,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              TextButton(
-                                  onPressed: () {
-                                    model.createState(
-                                        stringToStage(selectedStage),
-                                        newStateName);
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Ok'))
-                            ],
-                          ));
-                    }),
-                  ),
-                );
-              });
-          // setState(() {});
-        },
-        child: const Text(
-          '創建狀態 Create State',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Consumer<MissionSettingViewModel>(
+//       builder: (context, model, child) => TextButton(
+//         // key: ValueKey(selectedValue),
+//         onPressed: () {
+//           showDialog(
+//               context: context,
+//               builder: (context) {
+//                 return AlertDialog(
+//                   content: StatefulBuilder(
+//                     builder: ((context, setNewState) {
+//                       return Container(
+//                           padding: const EdgeInsets.all(2),
+//                           height: 180,
+//                           width: 300,
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.center,
+//                             children: [
+//                               const Text('創建狀態 Create State',
+//                                   style: TextStyle(
+//                                       fontWeight: FontWeight.bold,
+//                                       fontSize: 20)),
+//                               Row(
+//                                 mainAxisAlignment:
+//                                     MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   const Text(
+//                                     '階段 Stage',
+//                                     style: TextStyle(
+//                                         fontWeight: FontWeight.bold,
+//                                         fontSize: 15),
+//                                   ),
+//                                   selectStage(setNewState)
+//                                 ],
+//                               ),
+//                               Row(
+//                                 mainAxisAlignment:
+//                                     MainAxisAlignment.spaceBetween,
+//                                 children: [
+//                                   const Text(
+//                                     '名字 State Name',
+//                                     style: TextStyle(
+//                                         fontWeight: FontWeight.bold,
+//                                         fontSize: 15),
+//                                   ),
+//                                   Container(
+//                                     width: 130,
+//                                     padding: const EdgeInsets.only(right: 30),
+//                                     child: TextField(
+//                                       onChanged: (value) =>
+//                                           newStateName = value,
+//                                     ),
+//                                   )
+//                                 ],
+//                               ),
+//                               TextButton(
+//                                   onPressed: () {
+//                                     model.createState(
+//                                         stringToStage(selectedStage),
+//                                         newStateName);
+//                                     Navigator.pop(context);
+//                                     Navigator.pop(context);
+//                                   },
+//                                   child: const Text('Ok'))
+//                             ],
+//                           ));
+//                     }),
+//                   ),
+//                 );
+//               });
+//           // setState(() {});
+//         },
+//         child: const Text(
+//           '創建狀態 Create State',
+//           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-class DeleteStateName extends StatefulWidget {
-  const DeleteStateName({super.key});
-  @override
-  State<DeleteStateName> createState() => _DeleteStateNameState();
-}
+// class DeleteStateName extends StatefulWidget {
+//   const DeleteStateName({super.key});
+//   @override
+//   State<DeleteStateName> createState() => _DeleteStateNameState();
+// }
 
-class _DeleteStateNameState extends State<DeleteStateName> {
-  @override
-  Widget build(BuildContext context) {
-    Color stageToColor(MissionStage stage) {
-      // TODO: color discussion
-      if (stage == MissionStage.progress) {
-        return Colors.blue.withOpacity(0.2);
-      } else if (stage == MissionStage.pending) {
-        return Colors.purple.withOpacity(0.2);
-      } else if (stage == MissionStage.close) {
-        return Colors.red.withOpacity(0.2);
-      } else {
-        return Colors.black38;
-      }
-    }
+// class _DeleteStateNameState extends State<DeleteStateName> {
+//   @override
+//   Widget build(BuildContext context) {
+//     Color stageToColor(MissionStage stage) {
+//       // TODO: color discussion
+//       if (stage == MissionStage.progress) {
+//         return Colors.blue.withOpacity(0.2);
+//       } else if (stage == MissionStage.pending) {
+//         return Colors.purple.withOpacity(0.2);
+//       } else if (stage == MissionStage.close) {
+//         return Colors.red.withOpacity(0.2);
+//       } else {
+//         return Colors.black38;
+//       }
+//     }
 
-    InkWell chipSelected(Color color, String stateName, MissionStage stage,
-        MissionSettingViewModel model) {
-      return InkWell(
-          onTap: () {
-            if (stateName == 'in progress' ||
-                stateName == 'pending' ||
-                stateName == 'close') {
-              showDialog(
-                  context: context,
-                  builder: (context) => const AlertDialog(
-                        title: Text('不可刪除預設狀態'),
-                      ));
-            } else {
-              model.deleteStateName(stage, stateName);
-              Navigator.pop(context);
-              Navigator.pop(context);
-            }
-          },
-          child: Container(
-              decoration: BoxDecoration(
-                  color: color, borderRadius: BorderRadius.circular(10)),
-              child: Text(
-                ' •$stateName ',
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold),
-              )));
-    }
+//     InkWell chipSelected(Color color, String stateName, MissionStage stage,
+//         MissionSettingViewModel model) {
+//       return InkWell(
+//           onTap: () {
+//             if (stateName == 'in progress' ||
+//                 stateName == 'pending' ||
+//                 stateName == 'close') {
+//               showDialog(
+//                   context: context,
+//                   builder: (context) => const AlertDialog(
+//                         title: Text('不可刪除預設狀態'),
+//                       ));
+//             } else {
+//               model.deleteStateName(stage, stateName);
+//               Navigator.pop(context);
+//               Navigator.pop(context);
+//             }
+//           },
+//           child: Container(
+//               decoration: BoxDecoration(
+//                   color: color, borderRadius: BorderRadius.circular(10)),
+//               child: Text(
+//                 ' •$stateName ',
+//                 style: const TextStyle(
+//                     color: Colors.black,
+//                     fontSize: 15,
+//                     fontWeight: FontWeight.bold),
+//               )));
+//     }
 
-    Column contextTemple(String title, List<MissionStateModel> datas,
-        MissionStage stage, MissionSettingViewModel model) {
-      List<Widget> chips = [];
+//     Column contextTemple(String title, List<MissionStateModel> datas,
+//         MissionStage stage, MissionSettingViewModel model) {
+//       List<Widget> chips = [];
 
-      for (int i = 0; i < datas.length; i++) {
-        chips.add(chipSelected(
-            stageToColor(stage), datas[i].stateName, stage, model));
-        chips.add(const SizedBox(
-          height: 4,
-        ));
-      }
+//       for (int i = 0; i < datas.length; i++) {
+//         chips.add(chipSelected(
+//             stageToColor(stage), datas[i].stateName, stage, model));
+//         chips.add(const SizedBox(
+//           height: 4,
+//         ));
+//       }
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-              Text(
-                title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-              const Divider(
-                height: 7,
-                thickness: 3,
-              )
-            ] +
-            chips,
-      );
-    }
+//       return Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: <Widget>[
+//               Text(
+//                 title,
+//                 style:
+//                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+//               ),
+//               const Divider(
+//                 height: 7,
+//                 thickness: 3,
+//               )
+//             ] +
+//             chips,
+//       );
+//     }
 
-    return Consumer<MissionSettingViewModel>(
-      builder: (context, model, child) => TextButton(
-        onPressed: () => showDialog(
-            context: context,
-            builder: (context) {
-              return Dialog(
-                child: Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: ListView(
-                    children: [
-                      contextTemple('進行中 In Progress', model.inProgress,
-                          MissionStage.progress, model),
-                      contextTemple('待討論 Pending', model.pending,
-                          MissionStage.pending, model),
-                      contextTemple(
-                          '已結束 Close', model.close, MissionStage.close, model),
-                      const Divider(
-                        height: 7,
-                        thickness: 2,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
-        child: const Text('刪除狀態 Delete State'),
-      ),
-    );
-  }
-}
+//     return Consumer<MissionSettingViewModel>(
+//       builder: (context, model, child) => TextButton(
+//         onPressed: () => showDialog(
+//             context: context,
+//             builder: (context) {
+//               return Dialog(
+//                 child: Padding(
+//                   padding: const EdgeInsets.all(5),
+//                   child: ListView(
+//                     children: [
+//                       contextTemple('進行中 In Progress', model.inProgress,
+//                           MissionStage.progress, model),
+//                       contextTemple('待討論 Pending', model.pending,
+//                           MissionStage.pending, model),
+//                       contextTemple(
+//                           '已結束 Close', model.close, MissionStage.close, model),
+//                       const Divider(
+//                         height: 7,
+//                         thickness: 2,
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               );
+//             }),
+//         child: const Text('刪除狀態 Delete State'),
+//       ),
+//     );
+//   }
+// }
 
 // class ContributorList extends StatefulWidget {
 //   //參與的所有使用者
@@ -1284,47 +1305,47 @@ class _DeleteStateNameState extends State<DeleteStateName> {
 // }
 
 // class _ContributorState extends State<ContributorList> {
-  // TODO: 創建者必定要有? 如何判斷? 可以刪除?
-  // List<RawChip> people = [];
-  // List<String> peopleIds = [];
+// TODO: 創建者必定要有? 如何判斷? 可以刪除?
+// List<RawChip> people = [];
+// List<String> peopleIds = [];
 
-  // Future<RawChip> createHeadShot(String person) async {
-  /// 回傳 contributor 的頭貼
-  // var userData = await DataController()
-  //     .download(dataTypeToGet: ProfileModel(), dataId: person);
-  // io.File photo = userData.photo ?? io.File('assets/images/cover.png');
-  // bool selected = false;
-  // if (widget.eventModel != null) {
-  //   selected = widget.eventModel!.contributorIds!.contains(person);
-  //   if (selected) peopleIds.add(person);
-  // }
-  //   return RawChip(
-  //     label: Text(userData.name ?? 'unknown'),
-  //     avatar: CircleAvatar(child: Image.file(photo)),
-  //     selected: selected,
-  //     onSelected: (value) {
-  //       setState(() {
-  //         selected = value;
-  //         if (value) {
-  //           peopleIds.add(person);
-  //         } else {
-  //           peopleIds.remove(person);
-  //         }
-  //         // widget.callback(peopleIds);
-  //       });
-  //     },
-  //     elevation: 4,
-  //     selectedColor: const Color(0xFF2196F3),
-  //   );
-  // }
+// Future<RawChip> createHeadShot(String person) async {
+/// 回傳 contributor 的頭貼
+// var userData = await DataController()
+//     .download(dataTypeToGet: ProfileModel(), dataId: person);
+// io.File photo = userData.photo ?? io.File('assets/images/cover.png');
+// bool selected = false;
+// if (widget.eventModel != null) {
+//   selected = widget.eventModel!.contributorIds!.contains(person);
+//   if (selected) peopleIds.add(person);
+// }
+//   return RawChip(
+//     label: Text(userData.name ?? 'unknown'),
+//     avatar: CircleAvatar(child: Image.file(photo)),
+//     selected: selected,
+//     onSelected: (value) {
+//       setState(() {
+//         selected = value;
+//         if (value) {
+//           peopleIds.add(person);
+//         } else {
+//           peopleIds.remove(person);
+//         }
+//         // widget.callback(peopleIds);
+//       });
+//     },
+//     elevation: 4,
+//     selectedColor: const Color(0xFF2196F3),
+//   );
+// }
 
-  // Future<void> datas() async {
-  //   if (widget.eventModel != null) {
-  //     for (int i = 0; i < widget.eventModel!.contributorIds!.length; i++) {
-  //       people.add(await createHeadShot(widget.contributorIds[i]));
-  //     }
-  //   }
-  // }
+// Future<void> datas() async {
+//   if (widget.eventModel != null) {
+//     for (int i = 0; i < widget.eventModel!.contributorIds!.length; i++) {
+//       people.add(await createHeadShot(widget.contributorIds[i]));
+//     }
+//   }
+// }
 
 //   @override
 //   Widget build(BuildContext context) {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/service_lib.dart';
 import 'package:intl/intl.dart';
-import 'view_model_lib.dart';
 
 class EventSettingViewModel extends ChangeNotifier {
   // The event model
