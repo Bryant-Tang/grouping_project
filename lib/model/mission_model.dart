@@ -35,7 +35,10 @@ class MissionModel extends BaseDataModel<MissionModel> {
         this.parentMissionIds = [],
         this.childMissionIds = [],
         this.ownerAccount = AccountModel.defaultAccount,
-        super(id: 'default_mission', databasePath: 'mission', storageRequired: false);
+        super(
+            id: 'default_mission',
+            databasePath: 'mission',
+            storageRequired: false);
 
   /// ## a data model for mission
   /// * to upload/download, use `DataController`
@@ -43,20 +46,20 @@ class MissionModel extends BaseDataModel<MissionModel> {
   /// - recommend to pass state using [state]
   /// - if [state] is not given, will then seek [stateModelId], [stage], [stateName]
   /// - if all above is not given, seek the attribute of [defaultMission]
-  MissionModel(
-      {super.id,
-      String? title,
-      DateTime? deadline,
-      List<String>? contributorIds,
-      String? introduction,
-      String? stateId,
-      MissionStateModel? state,
-      List<String>? tags,
-      List<DateTime>? notifications,
-      List<String>? parentMissionIds,
-      List<String>? childMissionIds,
-      AccountModel? ownerAccount,})
-      : this.title = title ?? defaultMission.title,
+  MissionModel({
+    super.id,
+    String? title,
+    DateTime? deadline,
+    List<String>? contributorIds,
+    String? introduction,
+    String? stateId,
+    MissionStateModel? state,
+    List<String>? tags,
+    List<DateTime>? notifications,
+    List<String>? parentMissionIds,
+    List<String>? childMissionIds,
+    AccountModel? ownerAccount,
+  })  : this.title = title ?? defaultMission.title,
         this.deadline = deadline ?? defaultMission.deadline,
         this.contributorIds = contributorIds ?? defaultMission.contributorIds,
         this.introduction = introduction ?? defaultMission.introduction,
@@ -144,7 +147,6 @@ class MissionModel extends BaseDataModel<MissionModel> {
           ? _fromFirestoreTimeList(List.from(data['notifications']))
           : null,
     );
-
     return processData;
   }
 
