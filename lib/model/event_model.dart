@@ -15,8 +15,7 @@ class EventModel extends BaseDataModel<EventModel> {
   List<String> tags;
   List<DateTime> notifications;
   List<String> relatedMissionIds;
-  String ownerName;
-  int color;
+  AccountModel ownerAccount;
 
   static final EventModel defaultEvent = EventModel._default();
 
@@ -29,9 +28,9 @@ class EventModel extends BaseDataModel<EventModel> {
         this.tags = [],
         this.relatedMissionIds = [],
         this.notifications = [],
-        this.color = AccountModel.defaultAccount.color,
-        this.ownerName = AccountModel.defaultAccount.name,
-        super(id: 'default_event', databasePath: 'event', storageRequired: false);
+        this.ownerAccount = AccountModel.defaultAccount,
+        super(
+            id: 'default_event', databasePath: 'event', storageRequired: false);
 
   /// ## a data model for event
   /// * to upload/download, use `DataController`
@@ -48,14 +47,15 @@ class EventModel extends BaseDataModel<EventModel> {
       : this.title = title ?? defaultEvent.title,
         this.startTime = startTime ?? defaultEvent.startTime,
         this.endTime = endTime ?? defaultEvent.endTime,
-        this.contributorIds = contributorIds ?? List.from(defaultEvent.contributorIds),
+        this.contributorIds =
+            contributorIds ?? List.from(defaultEvent.contributorIds),
         this.introduction = introduction ?? defaultEvent.introduction,
         this.tags = tags ?? List.from(defaultEvent.tags),
         this.relatedMissionIds =
             relatedMissionIds ?? List.from(defaultEvent.relatedMissionIds),
-        this.notifications = notifications ?? List.from(defaultEvent.notifications),
-        this.color = defaultEvent.color,
-        this.ownerName = defaultEvent.ownerName,
+        this.notifications =
+            notifications ?? List.from(defaultEvent.notifications),
+        this.ownerAccount = defaultEvent.ownerAccount,
         super(
           databasePath: defaultEvent.databasePath,
           storageRequired: defaultEvent.storageRequired,
@@ -135,7 +135,6 @@ class EventModel extends BaseDataModel<EventModel> {
 
   /// set the data about owner for this instance
   void setOwner({required AccountModel ownerAccount}) {
-    ownerName = ownerAccount.name;
-    color = ownerAccount.color;
+    this.ownerAccount = ownerAccount;
   }
 }

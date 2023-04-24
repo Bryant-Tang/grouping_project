@@ -42,8 +42,6 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
     // DateTime endTime = eventCardViewModel.endTime;
     // List<String> contributorIds = eventCardViewModel.contributorIds;
     // Color color = eventCardViewModel.color;
-
-    // TODO: use Padding
     return ChangeNotifierProvider<EventSettingViewModel>.value(
       value: viewModel,
       builder: (context, child) => Consumer<EventSettingViewModel>(
@@ -78,7 +76,7 @@ class _EventInformationEnlargeState extends State<EventInformationEnlarge> {
                                               EventSettingViewModel.edit(
                                                     widget.eventModel
                                               )..isForUser = model.isPersonal,
-                                            child: EventSettingPageView(),
+                                            child: const EventSettingPageView(),
                                           )));
                             },
                             icon: const Icon(

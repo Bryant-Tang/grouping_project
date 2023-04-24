@@ -1,7 +1,5 @@
 // ignore_for_file: unnecessary_this
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
-
 import 'data_model.dart';
 
 /// ## the type for [AccountModel.tags]

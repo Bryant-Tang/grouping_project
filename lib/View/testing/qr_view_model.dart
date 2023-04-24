@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/service/service_lib.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-
 class QRViewModel extends ChangeNotifier {
   bool onShow = false;
   bool onScan = false;

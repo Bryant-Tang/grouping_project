@@ -1,14 +1,14 @@
 import 'package:grouping_project/service/database_service.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/model/user_model.dart';
+// import 'package:grouping_project/model/user_model.dart';
 
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
+// import 'package:image_picker/image_picker.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 
 /// For all auth service, you need an AuthService instance
@@ -20,7 +20,6 @@ class AuthService {
   // bool isLogged = false;
   // AuthService() {
   //   // debugPrint('AuthService init');
-  //   // TODO: check if user is logged in
   //   onAuthStateChanged.listen((UserModel? user) {
   //     if (user == null) {
   //       isLogged = false;

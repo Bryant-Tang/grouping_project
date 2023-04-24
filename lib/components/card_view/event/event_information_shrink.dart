@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 
 /*
 *   This file is used to display the information of shrink event
@@ -24,7 +24,6 @@ class EventInformationShrink extends StatelessWidget {
 
     // DateFormat parseDate = DateFormat('h:mm a, MMM d, yyyy');
 
-    // TODO: use Padding
     // return Container(
     //   width: MediaQuery.of(context).size.width - 30,
     //   // height: 100,

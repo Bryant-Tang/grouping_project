@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:grouping_project/View/helper_page/cover_view.dart';
 // import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 import 'firebase_options.dart';
-
 // 繞過登入直接進入(測試用library)
 // import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
 // import 'package:grouping_project/pages/event_data_test_page.dart';
@@ -26,21 +25,31 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<ThemeManager>(
-      create: (_) => ThemeManager(),
-      child: Consumer<ThemeManager>(
-        builder: (context, themeManager, child) => MaterialApp(
-            theme: ThemeData(
-              brightness: themeManager.brightness,
-              useMaterial3: true,
-              // primarySwatch: Colors.amber,
-              colorSchemeSeed: themeManager.colorSchemeSeed,
-              fontFamily: 'NotoSansTC',
-              // colorScheme: lightColorScheme
-            ),
-            debugShowCheckedModeBanner: false,
-            // 呼叫 home_page.dart
-            home: const CoverPage()),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeManager>(
+          create: (_) => ThemeManager(),
+        ),
+        // ChangeNotifierProvider<WorkspaceDashBoardViewModel>(
+        //   create: (_) => WorkspaceDashBoardViewModel(),
+        // ),
+      ],
+      child: ChangeNotifierProvider<ThemeManager>(
+        create: (_) => ThemeManager(),
+        child: Consumer<ThemeManager>(
+          builder: (context, themeManager, child) => MaterialApp(
+              theme: ThemeData(
+                brightness: themeManager.brightness,
+                useMaterial3: true,
+                // primarySwatch: Colors.amber,
+                colorSchemeSeed: themeManager.colorSchemeSeed,
+                fontFamily: 'NotoSansTC',
+                // colorScheme: lightColorScheme
+              ),
+              debugShowCheckedModeBanner: false,
+              // 呼叫 home_page.dart
+              home: const CoverPage()),
+        ),
       ),
     );
   }

@@ -1,33 +1,19 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/View/workspace/workspace_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
-// import 'package:grouping_project/components/card_view/event_information.dart';
 import 'package:grouping_project/components/card_view/enlarge_context_template.dart';
-// import 'package:grouping_project/components/card_view/event_information.dart';
-// import 'package:grouping_project/VM/enlarge_edit_view_model.dart';
-// import 'package:grouping_project/VM/event_card_view_model.dart';
-
 /*
 * this file is used to create event or edit existed event 
 */
 
 class EventSettingPageView extends StatefulWidget {
-  EventSettingPageView({super.key});
-  // \final? EventModel model;
-  // pass view model instead of model
-  // factory EventSettingPageView.create({required AccountModel accountProfile}) =>
-  //     EventSettingPageView(model: EventSettingViewModel.create(accountProfile));
-  // factory EventSettingPageView.edit({required EventModel eventModel}) =>
-  //     EventSettingPageView(model: EventSettingViewModel.edit(eventModel));
-
+  const EventSettingPageView({super.key});
   @override
   State<EventSettingPageView> createState() => _EventSettingPageViewState();
 }
@@ -50,40 +36,22 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.cancel)),
-                  Row(
-                    children: [
-                      model.settingMode == SettingMode.edit
-                          ? IconButton(
-                              onPressed: () {
-                                // debugPrint('remove');
-                                model.deleteEvent();
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) =>
-                                            const WorksapceBasePage()),
-                                    (route) => false);
-                              },
-                              icon: const Icon(Icons.delete))
-                          : const SizedBox(),
-                      IconButton(
-                          onPressed: () async {
-                            bool valid = await model.onSave();
-                            if (!valid && mounted) {
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text('非法輸入'),
-                                  content: Text(model.errorMessage()),
-                                ),
-                              );
-                            } else if (mounted) {
-                              Navigator.pop(context);
-                            }
-                          },
-                          icon: const Icon(Icons.done)),
-                    ],
-                  )
+                  IconButton(
+                      onPressed: () async {
+                        bool valid = await model.onSave();
+                        if (!valid && mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('非法輸入'),
+                              content: Text(model.errorMessage()),
+                            ),
+                          );
+                        } else if (mounted) {
+                          Navigator.pop(context);
+                        }
+                      },
+                      icon: const Icon(Icons.done)),
                 ],
               ),
               Divider(
@@ -91,7 +59,7 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                 color: Theme.of(context).colorScheme.surfaceVariant,
               ),
               const TitleDateOfEvent(),
-              CardViewTitle(title: '參與成員', child: ContributorList()),
+              const CardViewTitle(title: '參與成員', child: ContributorList()),
               const SizedBox(
                 height: 1,
               ),
