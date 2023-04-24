@@ -126,7 +126,10 @@ class _CalendarPageState extends State<CalendarPage> {
         .cast();
     eventAndMissionCards.addAll(eventsOnly
         .map((eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
-            create: (context) => EventSettingViewModel.display(eventModel),
+            create: (context) => EventSettingViewModel()
+            ..initializeDisplayEvent(
+              model: eventModel, 
+              user: context.read<WorkspaceDashBoardViewModel>().personalprofileData),
             child: const EventCardViewTemplate()))
         .toList());
     // debugPrint(
