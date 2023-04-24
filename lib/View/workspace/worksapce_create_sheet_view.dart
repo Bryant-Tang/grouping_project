@@ -114,7 +114,7 @@ class CreateButtonSheetView extends StatelessWidget {
   const CreateButtonSheetView({Key? key}) : super(key: key);
   void createEvent(
       WorkspaceDashBoardViewModel model, BuildContext context) async {
-    await Navigator.push(
+    final isNeedRefreash = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: ((context) => MultiProvider(
@@ -133,6 +133,9 @@ class CreateButtonSheetView extends StatelessWidget {
                 ))));
     // Implement data refreash
     // await model.getAllData();
+    if(isNeedRefreash){
+      await model.getAllData();
+    }
     if (context.mounted) {
       Navigator.pop(context);
     }
@@ -140,7 +143,7 @@ class CreateButtonSheetView extends StatelessWidget {
 
   void createMission(
       WorkspaceDashBoardViewModel model, BuildContext context) async {
-    await Navigator.push(
+    final isNeedRefreash = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: ((context) => MultiProvider(
@@ -158,7 +161,9 @@ class CreateButtonSheetView extends StatelessWidget {
                   child: const MissionEditCardView(),
                 ))));
     // Implement data refreash
-    await model.getAllData();
+    if (isNeedRefreash) {
+      await model.getAllData();
+    }
     if (context.mounted) {
       Navigator.pop(context);
     }

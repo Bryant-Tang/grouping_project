@@ -20,7 +20,8 @@ class WorkspaceDashboardPageView extends StatefulWidget {
       _WorkspaceDashboardPageViewState();
 }
 
-class _WorkspaceDashboardPageViewState extends State<WorkspaceDashboardPageView> {
+class _WorkspaceDashboardPageViewState
+    extends State<WorkspaceDashboardPageView> {
   @override
   Widget build(BuildContext context) {
     // show the form of widget
@@ -42,72 +43,65 @@ class Progress extends StatefulWidget {
 }
 
 class _ProgressState extends State<Progress> {
+  List<Widget> _allObject = [];
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('PROGRESSING',
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    fontWeight: FontWeight.bold,
-                  )),
-          const Divider(
-            thickness: 2,
-          ),
-          Expanded(
-            child: PageView(children: const [
-              ProgressingCard(
-                colorSeed: Color(0xFF38A0FF),
+    return Consumer<WorkspaceDashBoardViewModel>(
+      builder: (_, model, child) {
+        _allObject.addAll(model.events
+            .map((eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
+                create: (context) => EventSettingViewModel()
+                  ..initializeDisplayEvent(
+                      model: eventModel, user: model.personalprofileData),
+                child: const EventProgressingCard()))
+            .toList());
+        _allObject.addAll(model.missions
+            .map((missionModel) =>
+                ChangeNotifierProvider<MissionSettingViewModel>(
+                    create: (context) => MissionSettingViewModel()
+                      ..initializeDisplayMission(
+                          model: missionModel, user: model.personalprofileData),
+                    child: const MissionProgressingCard()))
+            .toList());
+        return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('PROGRESSING',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontWeight: FontWeight.bold,
+                      )),
+              const Divider(
+                thickness: 2,
               ),
-              ProgressingCard(
-                colorSeed: Colors.red,
-              ),
-              ProgressingCard(
-                colorSeed: Colors.green,
-              ),
-              ProgressingCard(
-                colorSeed: Colors.amber,
-              ),
-              ProgressingCard(
-                colorSeed: Colors.black,
-              ),
-            ]),
-          ),
-        ]));
+              Expanded(
+                  child: PageView(
+                children: _allObject,
+              )),
+            ]));
+      },
+    );
   }
 }
 
-class ProgressingCard extends StatefulWidget {
-  const ProgressingCard({super.key, required this.colorSeed});
-  final Color colorSeed;
+class EventProgressingCard extends StatefulWidget {
+  const EventProgressingCard({super.key});
 
   @override
-  State<ProgressingCard> createState() => _ProgressingCardState();
+  State<EventProgressingCard> createState() => _EventProgressingCardState();
 }
 
-class _ProgressingCardState extends State<ProgressingCard> {
-  final objectType = 'Event';
-
-  final relatedMissionNumber = 10;
-
-  final relatedMissionFinishedNumber = 4;
-
-  final relatedNoteNumber = 3;
-
-  final relatedMessageNumber = 4;
-
-  final eventTitle = '教授meeting 報告';
-
+class _EventProgressingCardState extends State<EventProgressingCard> {
   // final colorSeed = const Color(0xFF38A0FF);
   ThemeData themeData = ThemeData();
 
-  Widget getTagWidget() {
+  Widget getTagWidget(String tagName) {
     return Padding(
         padding: const EdgeInsets.fromLTRB(0, 4, 6, 4),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
           decoration: BoxDecoration(
-            color: themeData.colorScheme.primaryContainer,
+            // color: themeData.colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: themeData.colorScheme.primary, width: 1),
           ),
@@ -122,7 +116,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
                 width: 4,
               ),
               Text(
-                '個人專區 - 事件',
+                tagName,
                 style: themeData.textTheme.labelSmall!.copyWith(
                     color: themeData.colorScheme.onPrimaryContainer,
                     fontSize: 10,
@@ -133,9 +127,9 @@ class _ProgressingCardState extends State<ProgressingCard> {
         ));
   }
 
-  Widget getTitle() {
+  Widget getTitle(String title) {
     return Text(
-      eventTitle,
+      title,
       style: themeData.textTheme.titleLarge!.copyWith(
           color: themeData.colorScheme.onSurface,
           fontSize: 16,
@@ -143,32 +137,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
     );
   }
 
-  Widget getDateTime() {
-    DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
-    String formatted = formatter.format(DateTime.now());
-    final endDate = DateTime(2023, 4, 18, 9, 30, 0);
-    final startDate = DateTime.now();
-    final duration = endDate.difference(startDate);
-    final days = duration.inDays;
-    final hours = duration.inHours % 24;
-    final minutes = duration.inMinutes % 60;
-    final seconds = duration.inSeconds % 60;
-    return Row(
-      children: [
-        Icon(Icons.timer, color: themeData.colorScheme.secondary, size: 16),
-        const SizedBox(width: 4),
-        Text(
-          '${days.toString().padLeft(2, '0')} D ${hours.toString().padLeft(2, '0')} H ${minutes.toString().padLeft(2, '0')} M ${seconds.toString().padLeft(2, '0')} S',
-          style: themeData.textTheme.labelSmall!.copyWith(
-              fontSize: 12,
-              color: themeData.colorScheme.secondary,
-              fontWeight: FontWeight.bold),
-        )
-      ],
-    );
-  }
-
-  Widget getDashBoard() {
+  Widget getDashBoard(EventSettingViewModel model) {
     final filter =
         ColorFilter.mode(themeData.colorScheme.secondary, BlendMode.srcIn);
     const iconSize = 25.0;
@@ -196,7 +165,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
             ],
           ),
           Text(
-            relatedMissionNumber.toString(),
+            model.eventModel.relatedMissionIds.length.toString(),
             style: numberStyle,
           ),
           Column(
@@ -210,7 +179,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
             ],
           ),
           Text(
-            relatedMessageNumber.toString(),
+            model.eventModel.notifications.length.toString(),
             style: numberStyle,
           ),
           Column(
@@ -224,7 +193,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
             ],
           ),
           Text(
-            relatedNoteNumber.toString(),
+            model.eventModel.notifications.length.toString(),
             style: numberStyle,
           ),
         ],
@@ -232,7 +201,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
     );
   }
 
-  Widget getCircularProgresIndicator() {
+  Widget getCircularProgresIndicator(EventSettingViewModel model) {
     return Stack(
       children: [
         Align(
@@ -241,7 +210,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
             width: 60,
             height: 60,
             child: CircularProgressIndicator(
-              value: (relatedMissionFinishedNumber / relatedMissionNumber),
+              value: model.onTimePercentage(),
               strokeWidth: 8,
               backgroundColor: themeData.colorScheme.primary.withOpacity(0.2),
               valueColor:
@@ -252,7 +221,7 @@ class _ProgressingCardState extends State<ProgressingCard> {
         Align(
           alignment: Alignment.center,
           child: Text(
-            '${(relatedMissionFinishedNumber / relatedMissionNumber * 100).round()}%',
+            '${(model.onTimePercentage() * 100).round()}%',
             style: themeData.textTheme.titleSmall!.copyWith(
                 color: themeData.colorScheme.primary,
                 fontWeight: FontWeight.bold),
@@ -270,43 +239,289 @@ class _ProgressingCardState extends State<ProgressingCard> {
   Widget build(BuildContext context) {
     // DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
     // String formatted = formatter.format(DateTime.now());
-
-    return Consumer<ThemeManager>(builder: (context, themeManager, _) {
-      themeData = ThemeData(
-          colorSchemeSeed: widget.colorSeed,
-          brightness: themeManager.brightness);
-      return StreamBuilder<DateTime>(
-          stream: _currentTimeStream,
-          builder: (context, snapshot) {
-            return Card(
-                color: themeData.colorScheme.surface,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        // data part of the info card
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            getTagWidget(),
-                            getTitle(),
-                            getDateTime(),
-                            getDashBoard(),
-                          ],
+    return Consumer<EventSettingViewModel>(
+      builder: (context, model, child) {
+        themeData = ThemeData(
+            colorSchemeSeed: model.color,
+            brightness: context.watch<ThemeManager>().brightness);
+        return StreamBuilder<DateTime>(
+            stream: _currentTimeStream,
+            builder: (context, snapshot) {
+              return Card(
+                  color: themeData.colorScheme.surface,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          // data part of the info card
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              getTagWidget(
+                                  '${model.eventModel.ownerAccount.name} - 事件'),
+                              Text(
+                                model.title,
+                                style: themeData.textTheme.titleLarge!.copyWith(
+                                    color: themeData.colorScheme.onSurface,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.timer,
+                                      color: themeData.colorScheme.secondary,
+                                      size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    model.getTimerCounter(),
+                                    style: themeData.textTheme.labelSmall!
+                                        .copyWith(
+                                            fontSize: 12,
+                                            color:
+                                                themeData.colorScheme.secondary,
+                                            fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                              getDashBoard(model),
+                            ],
+                          ),
                         ),
-                      ),
-                      Expanded(
-                          flex: 1,
-                          child: Center(
-                            child: getCircularProgresIndicator(),
-                          )),
-                    ],
-                  ),
-                ));
-          });
-    });
+                        Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: model.onTime()
+                                  ? getCircularProgresIndicator(model)
+                                  : const SizedBox(),
+                            )),
+                      ],
+                    ),
+                  ));
+            });
+      },
+    );
+  }
+}
+
+class MissionProgressingCard extends StatefulWidget {
+  const MissionProgressingCard({super.key});
+
+  @override
+  State<MissionProgressingCard> createState() =>
+      _MissionProgressingCardCardState();
+}
+
+class _MissionProgressingCardCardState extends State<MissionProgressingCard> {
+  // final colorSeed = const Color(0xFF38A0FF);
+  ThemeData themeData = ThemeData();
+
+  Widget getTagWidget(String tagName) {
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(0, 4, 6, 4),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+          decoration: BoxDecoration(
+            // color: themeData.colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: themeData.colorScheme.primary, width: 1),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircleAvatar(
+                backgroundColor: themeData.colorScheme.onPrimaryContainer,
+                radius: 3,
+              ),
+              const SizedBox(
+                width: 4,
+              ),
+              Text(
+                tagName,
+                style: themeData.textTheme.labelSmall!.copyWith(
+                    color: themeData.colorScheme.onPrimaryContainer,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ));
+  }
+
+  Widget getTitle(String title) {
+    return Text(
+      title,
+      style: themeData.textTheme.titleLarge!.copyWith(
+          color: themeData.colorScheme.onSurface,
+          fontSize: 16,
+          fontWeight: FontWeight.bold),
+    );
+  }
+
+  Widget getDashBoard(MissionSettingViewModel model) {
+    final filter =
+        ColorFilter.mode(themeData.colorScheme.secondary, BlendMode.srcIn);
+    const iconSize = 25.0;
+    final iconLabelStyle =
+        themeData.textTheme.labelSmall!.copyWith(fontSize: 8);
+    final numberStyle = themeData.textTheme.titleLarge!.copyWith(
+        fontSize: 20,
+        color: themeData.colorScheme.primary,
+        fontWeight: FontWeight.bold);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            children: [
+              SvgPicture.asset(
+                'assets/icons/task.svg',
+                width: iconSize,
+                colorFilter: filter,
+              ),
+              Text('相關任務', style: iconLabelStyle)
+            ],
+          ),
+          Text(
+            model.missionModel.childMissionIds.length.toString(),
+            style: numberStyle,
+          ),
+          Column(
+            children: [
+              SvgPicture.asset(
+                'assets/icons/messagetick.svg',
+                width: iconSize,
+                colorFilter: filter,
+              ),
+              Text('相關話題', style: iconLabelStyle)
+            ],
+          ),
+          Text(
+            model.missionModel.notifications.length.toString(),
+            style: numberStyle,
+          ),
+          Column(
+            children: [
+              SvgPicture.asset(
+                'assets/icons/appBar/note.svg',
+                width: iconSize,
+                colorFilter: filter,
+              ),
+              Text('相關筆記', style: iconLabelStyle)
+            ],
+          ),
+          Text(
+            model.missionModel.notifications.length.toString(),
+            style: numberStyle,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget getCircularProgresIndicator(MissionSettingViewModel model) {
+    return Stack(
+      children: [
+        Align(
+          alignment: Alignment.center,
+          child: SizedBox(
+            width: 60,
+            height: 60,
+            child: CircularProgressIndicator(
+              value: 0,
+              // TODO : implement this progressbar value
+              strokeWidth: 8,
+              backgroundColor: themeData.colorScheme.primary.withOpacity(0.2),
+              valueColor:
+                  AlwaysStoppedAnimation<Color>(themeData.colorScheme.primary),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.center,
+          child: Text(
+            '${0}%',
+            style: themeData.textTheme.titleSmall!.copyWith(
+                color: themeData.colorScheme.primary,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+
+  final Stream<DateTime> _currentTimeStream = Stream<DateTime>.periodic(
+    const Duration(seconds: 1),
+    (_) => DateTime.now(),
+  );
+  @override
+  Widget build(BuildContext context) {
+    // DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    // String formatted = formatter.format(DateTime.now());
+    return Consumer<MissionSettingViewModel>(
+      builder: (context, model, child) {
+        themeData = ThemeData(
+            colorSchemeSeed: model.stageColorMap[model.stateModel.stage],
+            brightness: context.watch<ThemeManager>().brightness);
+        return StreamBuilder<DateTime>(
+            stream: _currentTimeStream,
+            builder: (context, snapshot) {
+              return Card(
+                  color: themeData.colorScheme.surface,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          // data part of the info card
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              getTagWidget(
+                                  '${model.ownerAccountName} - ${model.stateModel.stateName}'),
+                              Text(
+                                model.title,
+                                style: themeData.textTheme.titleLarge!.copyWith(
+                                    color: themeData.colorScheme.onSurface,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.timer,
+                                      color: themeData.colorScheme.secondary,
+                                      size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    model.getTimerCounter(),
+                                    style: themeData.textTheme.labelSmall!
+                                        .copyWith(
+                                            fontSize: 12,
+                                            color:
+                                                themeData.colorScheme.secondary,
+                                            fontWeight: FontWeight.bold),
+                                  )
+                                ],
+                              ),
+                              getDashBoard(model),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                            flex: 1,
+                            child: Center(
+                                child: getCircularProgresIndicator(model))),
+                      ],
+                    ),
+                  ));
+            });
+      },
+    );
   }
 }
 
@@ -406,14 +621,11 @@ class EventListViewState extends State<EventListView> {
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, model, child) => ListView(
           children: model.events
-              .map(
-                  (eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
+              .map((eventModel) =>
+                  ChangeNotifierProvider<EventSettingViewModel>(
                       create: (context) => EventSettingViewModel()
-                          ..initializeDisplayEvent(
-                            model: eventModel, 
-                            user: model.personalprofileData
-                          ),
-                      
+                        ..initializeDisplayEvent(
+                            model: eventModel, user: model.personalprofileData),
                       child: const EventCardViewTemplate()))
               .toList()),
     );
@@ -436,7 +648,8 @@ class MissionListViewState extends State<MissionListView> {
                   ChangeNotifierProvider<MissionSettingViewModel>(
                       create: (context) => MissionSettingViewModel()
                         ..initializeDisplayMission(
-                            model: missionModel, user: model.personalprofileData),
+                            model: missionModel,
+                            user: model.personalprofileData),
                       child: const MissionCardViewTemplate()))
               .toList()),
     );

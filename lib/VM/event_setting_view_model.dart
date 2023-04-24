@@ -30,10 +30,12 @@ class EventSettingViewModel extends ChangeNotifier {
   AccountModel get eventOwnerAccount => eventModel.ownerAccount;
   String get title => eventModel.title; // Event title
   String get introduction => eventModel.introduction; // Introduction od event
-  String get ownerAccountName => eventOwnerAccount.name; // event owner account name
+  String get ownerAccountName =>
+      eventOwnerAccount.name; // event owner account name
   DateTime get startTime => eventModel.startTime; // event start time
   DateTime get endTime => eventModel.endTime; // event end time
   Color get color => Color(eventModel.ownerAccount.color);
+
   // The list of contributor Account model whom involve in this event
   List<AccountModel> get contributors => forUser
       ? [creatorAccount]
@@ -42,6 +44,16 @@ class EventSettingViewModel extends ChangeNotifier {
   List<AccountModel> get contributorCandidate =>
       forUser ? [] : eventOwnerAccount.associateEntityAccount;
   // get event card Material design  color scheem seed;
+  bool onTime() {
+    final currentTime = DateTime.now();
+    return currentTime.isAfter(startTime) && currentTime.isBefore(endTime);
+  }
+
+  double onTimePercentage() {
+    Duration eventTotalTime = endTime.difference(startTime);
+    Duration currentTime = endTime.difference(DateTime.now());
+    return 1 - (currentTime.inSeconds / eventTotalTime.inSeconds);
+  }
 
   void updateContibutor(AccountModel model) {
     isContributors(model)
@@ -91,7 +103,6 @@ class EventSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-
   void initializeNewEvent(
       {required AccountModel creatorAccount,
       required AccountModel ownerAccount}) {
@@ -120,7 +131,7 @@ class EventSettingViewModel extends ChangeNotifier {
     // ownerAccount = eventModel.ownerAccount;
     forUser = eventOwnerAccount.id! == creatorAccount.id!;
     notifyListeners();
-   
+
     isLoading = false;
     notifyListeners();
   }
@@ -179,6 +190,30 @@ class EventSettingViewModel extends ChangeNotifier {
     return '$output ${days.padLeft(2, '0')} D ${hours.padLeft(2, '0')} H ${minutes.padLeft(2, '0')} M ${seconds.padLeft(2, '0')} S';
   }
 
+  String getPercentage() {
+    // DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    // String formatted = formatter.format(DateTime.now());
+    String output = "";
+    Duration duration;
+    // final endDate = DateTime(2023, 4, 18, 9, 30, 0);
+    final currentTime = DateTime.now();
+    if (currentTime.isBefore(startTime)) {
+      output = '即將到來-還有';
+      duration = startTime.difference(currentTime);
+    } else if (currentTime.isAfter(startTime) &&
+        currentTime.isBefore(endTime)) {
+      output = '距離結束-尚餘';
+      duration = endTime.difference(currentTime);
+    } else {
+      return '活動已結束';
+    }
+    final days = duration.inDays.toString();
+    final hours = (duration.inHours % 24).toString();
+    final minutes = (duration.inMinutes % 60).toString();
+    final seconds = (duration.inSeconds % 60).toString();
+    return '$output ${days.padLeft(2, '0')} D ${hours.padLeft(2, '0')} H ${minutes.padLeft(2, '0')} M ${seconds.padLeft(2, '0')} S';
+  }
+
   // Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
   //   const Duration(seconds: 1),
   //   (_) => DateTime.now(),
@@ -197,17 +232,13 @@ class EventSettingViewModel extends ChangeNotifier {
   Future<void> editEvent() async {
     // edit event with eventData
     debugPrint("on save ${eventModel.contributorIds.toString()}");
-    await DatabaseService(
-            ownerUid: eventOwnerAccount.id!,
-            forUser: false)
+    await DatabaseService(ownerUid: eventOwnerAccount.id!, forUser: false)
         .setEvent(event: eventModel);
     notifyListeners();
   }
 
   Future<void> deleteEvent() async {
-    await DatabaseService(
-            ownerUid: eventOwnerAccount.id!,
-            forUser: false)
+    await DatabaseService(ownerUid: eventOwnerAccount.id!, forUser: false)
         .deleteEvent(eventModel);
     notifyListeners();
   }
