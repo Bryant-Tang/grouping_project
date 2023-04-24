@@ -13,7 +13,7 @@ class EventSettingViewModel extends ChangeNotifier {
   // Scenario2 -> Create (need to be initialize) -> edit
   EventModel eventModel = EventModel();
   // Event 的擁有者, group or people Account。
-  AccountModel ownerAccount = AccountModel();
+  // AccountModel ownerAccount = AccountModel();
   // Event 的創建者, 只有在第一次create的時候有用。
   AccountModel creatorAccount = AccountModel();
   // True if ownerAccount id equals to creator Account, otherwise False
@@ -31,7 +31,8 @@ class EventSettingViewModel extends ChangeNotifier {
   AccountModel get eventOwnerAccount => eventModel.ownerAccount;
   String get title => eventModel.title; // Event title
   String get introduction => eventModel.introduction; // Introduction od event
-  String get ownerAccountName => ownerAccount.name; // event owner account name
+  String get ownerAccountName =>
+      eventOwnerAccount.name; // event owner account name
   DateTime get startTime => eventModel.startTime; // event start time
   DateTime get endTime => eventModel.endTime; // event end time
   Color get color => Color(eventModel.ownerAccount.color);
@@ -41,7 +42,7 @@ class EventSettingViewModel extends ChangeNotifier {
   List<AccountModel> get contributors => contributorAccountModel;
   // The list of contibutor canidatet when we select participant in edit and create mode
   List<AccountModel> get contributorCandidate =>
-      forUser ? [] : ownerAccount.associateEntityAccount;
+      forUser ? [] : eventModel.ownerAccount.associateEntityAccount;
   // get event card Material design  color scheem seed;
   bool isEventContributor(AccountModel model) {
     debugPrint(eventModel.contributorIds.contains(model.id).toString());
@@ -120,11 +121,11 @@ class EventSettingViewModel extends ChangeNotifier {
   void initializeNewEvent(
       {required AccountModel creatorAccount,
       required AccountModel ownerAccount}) {
-    this.ownerAccount = ownerAccount;
-    this.creatorAccount = creatorAccount;
+    // event.ownerAccount = ownerAccount;
+    creatorAccount = creatorAccount;
     // debugPrint('owner ${this.ownerAccount.id}');
     debugPrint('ownerAccount al ${ownerAccount.associateEntityAccount.length}');
-    forUser = this.ownerAccount.id! == this.creatorAccount.id!;
+
     eventModel = EventModel(
         startTime: DateTime.now(),
         endTime: DateTime.now().add(const Duration(hours: 1)),
@@ -132,6 +133,8 @@ class EventSettingViewModel extends ChangeNotifier {
         introduction: '事件介紹',
         contributorIds: [creatorAccount.id!]);
     contributorAccountModel.add(creatorAccount);
+    eventModel.ownerAccount = ownerAccount;
+    forUser = eventOwnerAccount.id! == creatorAccount.id!;
     notifyListeners();
   }
 
@@ -140,22 +143,24 @@ class EventSettingViewModel extends ChangeNotifier {
     isLoading = true;
     eventModel = model;
     creatorAccount = user;
-    ownerAccount = eventModel.ownerAccount;
+    // ownerAccount = eventModel.ownerAccount;
     forUser = eventOwnerAccount.id! == creatorAccount.id!;
     notifyListeners();
     // eventContributoIds.add(eventOwnerAccount.id!);
-    debugPrint('ownerAccount ${ownerAccount.nickname.toString()}');
-    debugPrint('ownerAccount ${ownerAccount.associateEntityId.toString()}');
+    // debugPrint('ownerAccount ${eventModel.ownerAccount.nickname.toString()}');
+    // debugPrint('ownerAccount ${eventModel.ownerAccount.associateEntityId.toString()}');
     // debugPrint(forUser.toString());
     // debugPrint(eventModel.associateEntityAccount.toString());
     // debugPrint(eventModel.contributorIds.toString());
-    for(String associationEntityId in ownerAccount.associateEntityId){
-      ownerAccount.associateEntityAccount.add(
-        await DatabaseService(ownerUid: associationEntityId, forUser: false).getAccount()
-      );
-    }
+    eventOwnerAccount.associateEntityAccount = [];
     if (isforUser == false) {
       // get all event contributor account Profile from owner Account model associate list
+      for (String associationEntityId
+          in eventModel.ownerAccount.associateEntityId) {
+        eventModel.ownerAccount.associateEntityAccount.add(
+            await DatabaseService(ownerUid: associationEntityId, forUser: false)
+                .getAccount());
+      }
       for (AccountModel candidateAccountModel in contributorCandidate) {
         if (eventContributoIds.contains(candidateAccountModel.id!)) {
           contributorAccountModel.add(candidateAccountModel);
@@ -168,6 +173,7 @@ class EventSettingViewModel extends ChangeNotifier {
       // }
     } else {
       contributorAccountModel.add(creatorAccount);
+      eventOwnerAccount.associateEntityAccount.add(creatorAccount);
     }
     isLoading = false;
     notifyListeners();
@@ -235,23 +241,25 @@ class EventSettingViewModel extends ChangeNotifier {
     // Create event with eventData
     // Add account profile id into contributorIds
     // eventModel.contributorIds.add(creatorAccount.id!);
-    debugPrint(eventModel.contributorIds.toString());
-    await DatabaseService(ownerUid: ownerAccount.id!, forUser: false)
+    debugPrint("on save ${eventModel.contributorIds.toString()}");
+    // debugPrint(eventModel.contributorIds.toString());
+    await DatabaseService(ownerUid: eventOwnerAccount.id!, forUser: false)
         .setEvent(event: eventModel);
     notifyListeners();
   }
 
   Future<void> editEvent() async {
     // edit event with eventData
+    debugPrint("on save ${eventModel.contributorIds.toString()}");
     await DatabaseService(
-            ownerUid: forUser ? AuthService().getUid() : ownerAccount.id!,
+            ownerUid: forUser ? AuthService().getUid() : eventOwnerAccount.id!,
             forUser: forUser)
         .setEvent(event: eventModel);
   }
 
   Future<void> deleteEvent() async {
     await DatabaseService(
-            ownerUid: forUser ? AuthService().getUid() : ownerAccount.id!,
+            ownerUid: forUser ? AuthService().getUid() : eventOwnerAccount.id!,
             forUser: forUser)
         .deleteEvent(eventModel);
     notifyListeners();

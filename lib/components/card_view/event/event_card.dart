@@ -577,6 +577,9 @@ class _EditCardViewCardViewState extends State<EditCardView> {
           );
         });
     if (context.mounted) {
+      // context
+      //     .watch<ThemeManager>()
+      //     .updateColorSchemeSeed(Color(context.watch<WorkspaceDashBoardViewModel>().accountProfileData.color));
       Navigator.pop(context, isNeedRefresh);
     }
   }
@@ -674,82 +677,88 @@ class _EditCardViewCardViewState extends State<EditCardView> {
   );
   @override
   Widget build(BuildContext context) {
-    return Consumer<WorkspaceDashBoardViewModel>(
-      builder: (context, workspaceVM, child) =>
-          Consumer<EventSettingViewModel>(builder: (context, model, child) {
-        return StreamBuilder<DateTime>(
-          stream: currentTimeStream,
-          builder: (context, snapshot) => GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Hero(
-              tag: "${model.eventModel.id}",
-              child: Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  elevation: 2,
-                  leading: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.arrow_back_ios_rounded,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant),
-                  ),
-                  actions: [
-                    IconButton(
-                      onPressed: () => onFinish(model),
-                      icon: Icon(Icons.check,
+    return Consumer<ThemeManager>(
+      builder: (context, theme, child) => 
+      Consumer<WorkspaceDashBoardViewModel>(
+        builder: (context, workspaceVM, child) =>
+            Consumer<EventSettingViewModel>(builder: (context, model, child) {
+            // theme.updateColorSchemeSeed(model.color);
+          return StreamBuilder<DateTime>(
+            stream: currentTimeStream,
+            builder: (context, snapshot) => GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Hero(
+                tag: "${model.eventModel.id}",
+                child: Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    elevation: 2,
+                    leading: IconButton(
+                      onPressed: () {
+                        // theme.updateColorSchemeSeed(
+                        //   Color(workspaceVM.accountProfileData.color));
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.arrow_back_ios_rounded,
                           color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
-                    IconButton(onPressed: () => onDelete(model),
-                     icon: const Icon(Icons.delete))
-                  ],
-                ),
-                // display all event data
-                body: SingleChildScrollView(
-                  child: Form(
-                    key: formKey,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            getInformationDisplay(model),
-                            getEventDescriptionDisplay(model),
-                            getStartTimeBlock(model),
-                            getEndTimeBlock(model),
-                            getContributorBlock(model),
-                            generateContentDisplayBlock(
-                                '関連タスク',
-                                model.eventModel.relatedMissionIds.isEmpty
-                                    ? const Text('関連タスクはありません')
-                                    : ListView.builder(
-                                        shrinkWrap: true,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        itemCount: model
-                                            .eventModel.relatedMissionIds.length,
-                                        itemBuilder: (context, index) => Text(
-                                            model.eventModel
-                                                .relatedMissionIds[index]))),
-                            // relation note
-                            generateContentDisplayBlock(
-                                '関連ノート', const Text('関連ノートはありません')),
-                            // relation message
-                            generateContentDisplayBlock(
-                                '関連メッセージ', const Text('関連メッセージはありません')),
-                          ]),
+                    actions: [
+                      IconButton(
+                        onPressed: () => onFinish(model),
+                        icon: Icon(Icons.check,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                      IconButton(onPressed: () => onDelete(model),
+                       icon: const Icon(Icons.delete))
+                    ],
+                  ),
+                  // display all event data
+                  body: SingleChildScrollView(
+                    child: Form(
+                      key: formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              getInformationDisplay(model),
+                              getEventDescriptionDisplay(model),
+                              getStartTimeBlock(model),
+                              getEndTimeBlock(model),
+                              getContributorBlock(model),
+                              generateContentDisplayBlock(
+                                  '関連タスク',
+                                  model.eventModel.relatedMissionIds.isEmpty
+                                      ? const Text('関連タスクはありません')
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: model
+                                              .eventModel.relatedMissionIds.length,
+                                          itemBuilder: (context, index) => Text(
+                                              model.eventModel
+                                                  .relatedMissionIds[index]))),
+                              // relation note
+                              generateContentDisplayBlock(
+                                  '関連ノート', const Text('関連ノートはありません')),
+                              // relation message
+                              generateContentDisplayBlock(
+                                  '関連メッセージ', const Text('関連メッセージはありません')),
+                            ]),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 }
