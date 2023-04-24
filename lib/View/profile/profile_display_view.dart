@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:grouping_project/VM/view_model_lib.dart';
+import 'package:grouping_project/VM/workspace/qr_view_model.dart';
 import 'package:grouping_project/View/profile/profile_edit_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
-import 'package:grouping_project/View/testing/qr_code_view.dart';
 
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 
 class ProfileDispalyPageView extends StatefulWidget {
@@ -14,32 +16,31 @@ class ProfileDispalyPageView extends StatefulWidget {
 }
 
 class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
-  bool isProfile = true;
-  bool isScanner = false; 
-
+  /// get the switched buttom sheet content
   Widget getContent(
-      {required bool isProfile, required WorkspaceDashBoardViewModel model}) {
-    List tags = List.from(model.tags);
-    List tagWithoutTitles = tags;
+      {required QRViewModel model,
+      required WorkspaceDashBoardViewModel value}) {
+    if (!model.isShare && !model.isScanner) {
+      List tags = List.from(value.tags);
+      List tagWithoutTitles = tags;
 
-    if (model.introduction != "unknown") {
-      if (model.isPersonalAccount) {
-        tags.insert(0, AccountTag(tag: "自我介紹", content: model.introduction));
-      } else {
-        debugPrint('It\'s a group account');
-        tags.insert(0, AccountTag(tag: "小組簡介", content: model.introduction));
+      if (value.introduction != "unknown") {
+        if (value.isPersonalAccount) {
+          tags.insert(0, AccountTag(tag: "自我介紹", content: value.introduction));
+        } else {
+          debugPrint('It\'s a group account');
+          tags.insert(0, AccountTag(tag: "小組簡介", content: value.introduction));
+        }
       }
-    }
-    if (model.slogan != "unknown") {
-      if (model.isPersonalAccount) {
-        tags.insert(0, AccountTag(tag: "座右銘", content: model.slogan));
-      } else {
-        debugPrint('It\'s a group account');
-        tags.insert(0, AccountTag(tag: "小組口號", content: model.slogan));
+      if (value.slogan != "unknown") {
+        if (value.isPersonalAccount) {
+          tags.insert(0, AccountTag(tag: "座右銘", content: value.slogan));
+        } else {
+          debugPrint('It\'s a group account');
+          tags.insert(0, AccountTag(tag: "小組口號", content: value.slogan));
+        }
       }
-    }
-    if (isProfile & !isScanner) {
-      if (model.isPersonalAccount) {
+      if (value.isPersonalAccount) {
         return Column(children: [
           const HeadShot(),
           Column(
@@ -75,121 +76,119 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
               }).toList()),
         ]);
       }
-    }
-    else if(isScanner){
-      return const QrCodeScannerTesting();
-    } 
-    else {
-      return ShowQRCodeView();
+    } else if (model.isShare) {
+      return ChangeNotifierProvider.value(
+        value: value,
+        child: ShowQRCodeView(),
+      );
+    } else {
+      return ChangeNotifierProvider.value(
+        value: value,
+        child: const QrCodeScanner(),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
-        builder: (context, model, child) {
-      return SafeArea(
-        child: Container(
-          clipBehavior: Clip.hardEdge,
-          margin: const EdgeInsets.fromLTRB(3, 3, 3, 0),
-          decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20), topRight: Radius.circular(20))),
-          child: SingleChildScrollView(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    height: 12,
-                    width: MediaQuery.of(context).size.width,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  getContent(isProfile: isProfile, model: model),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () async {
-                          await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) =>
-                                    ProfileEditPageView(
-                                        model: ProfileEditViewModel()
-                                          ..profile = model.accountProfile),
-                              ));
-                          await model.getAllData();
-                        },
-                        child: Icon(
-                          Icons.edit,
-                          size: 15,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+      builder: (context, value, child) => ChangeNotifierProvider<QRViewModel>(
+          create: (context) =>
+              QRViewModel()..setShareIndicator(targetIndicator: false),
+          builder: (context, child) => Consumer<QRViewModel>(
+                builder: (context, model, child) {
+                  return SafeArea(
+                    child: Container(
+                      clipBehavior: Clip.hardEdge,
+                      margin: const EdgeInsets.fromLTRB(3, 3, 3, 0),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20))),
+                      child: SingleChildScrollView(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                height: 12,
+                                width: MediaQuery.of(context).size.width,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              getContent(model: model, value: value),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (BuildContext context) =>
+                                                ProfileEditPageView(
+                                                    model:
+                                                        ProfileEditViewModel()
+                                                          ..profile = value
+                                                              .accountProfile),
+                                          ));
+                                      await value.getAllData();
+                                    },
+                                    child: Icon(
+                                      Icons.edit,
+                                      size: 15,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                  Padding(
+                                      padding: const EdgeInsets.only(left: 10),
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          model.setShareIndicator();
+                                          debugPrint("QR code share");
+                                        },
+                                        child: Icon(
+                                          model.isShare
+                                              ? Icons.group
+                                              : Icons.share,
+                                          size: 15,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        ),
+                                      )),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        model.setScannerIndicator();
+                                        debugPrint("Scan QR code");
+                                      },
+                                      child: Icon(
+                                        model.isScanner
+                                            ? Icons.group
+                                            : Icons.qr_code_scanner,
+                                        size: 15,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ]),
                       ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          isProfile = !isProfile;
-                          setState(() {});
-                          // showModalBottomSheet(
-                          //     context: context,
-                          //     shape: const RoundedRectangleBorder(
-                          //         borderRadius: BorderRadius.only(
-                          //             topLeft: Radius.circular(20),
-                          //             topRight: Radius.circular(20))),
-                          //     builder: (context) =>
-                          //         ChangeNotifierProvider.value(
-                          //           value: model,
-                          //           child: ShowQRCodeView(),
-                          //         ));
-                          debugPrint("QR code share");
-                        },
-                        child: Icon(
-                          isProfile ? Icons.share : Icons.group,
-                          size: 15,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          isScanner = !isScanner;
-                          setState(() {
-                            
-                          });
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (BuildContext context) =>
-                          //             ChangeNotifierProvider.value(
-                          //               value: model,
-                          //               child: QrCodeScanner(),
-                          //             )));
-                          // debugPrint("Scan QR code");
-                        },
-                        child: Icon(
-                          Icons.qr_code_scanner,
-                          size: 15,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ]),
-          ),
-        ),
-      );
-    });
+                    ),
+                  );
+                },
+              )),
+    );
   }
 }
 
@@ -294,6 +293,229 @@ class HeadShot extends StatelessWidget {
           ),
         ],
       )),
+    );
+  }
+}
+
+class ShowQRCodeView extends StatefulWidget {
+  const ShowQRCodeView({
+    super.key,
+  });
+
+  @override
+  State<ShowQRCodeView> createState() => _ShowQRCodeViewState();
+}
+
+class _ShowQRCodeViewState extends State<ShowQRCodeView> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<WorkspaceDashBoardViewModel>(
+      builder: (context, value, child) => ChangeNotifierProvider<QRViewModel>(
+        create: (_) => QRViewModel(),
+        builder: (context, child) => Consumer<QRViewModel>(
+          builder: (context, model, child) {
+            debugPrint('Trying to show QR code');
+            if (value.isPersonalAccount == false) {
+              debugPrint('Printing group id, ${value.accountProfile.id}');
+              model.showGroupId(value.accountProfile.id);
+              model.updateWelcomeMessage(
+                  'Welcome to ${value.accountProfile.name}!');
+            } else {
+              debugPrint('It\'s personal account');
+              model.showGroupId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+              model.updateWelcomeMessage('Never gonna give you up ~');
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                QrImage(
+                  data: model.stringToShow,
+                  version: QrVersions.auto,
+                  size: 200,
+                  gapless: false,
+                ),
+                Text(model.welcomeMessage,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelLarge!
+                        .copyWith(fontWeight: FontWeight.bold, fontSize: 18)),
+                // Padding(
+                //     padding: const EdgeInsets.only(top: 20),
+                //     child: ElevatedButton(
+                //       onPressed: () => Navigator.pop(context),
+                //       child: const Text('Go Back'),
+                //     )),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// To scan QR code
+// class QrCodeScanner extends StatefulWidget {
+//   QrCodeScanner({super.key});
+
+//   @override
+//   State<QrCodeScanner> createState() => _QrCodeScannerState();
+// }
+
+// class _QrCodeScannerState extends State<QrCodeScanner> {
+//   MobileScannerController controller = MobileScannerController();
+
+//   @override
+//   void dispose() {
+//     super.dispose();
+//     controller.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Consumer<WorkspaceDashBoardViewModel>(
+//         builder: (context, value, child) => ChangeNotifierProvider(
+//               create: (context) => QRViewModel(),
+//               builder: (context, child) => Consumer<QRViewModel>(
+//                 builder: (context, model, child) {
+//                   model.setPersonalModel(value.personalprofileData);
+//                   return Scaffold(
+//                       body: Column(
+//                           mainAxisAlignment: MainAxisAlignment.end,
+//                           children: [
+//                         Expanded(
+//                           child: MobileScanner(
+//                             controller: controller,
+//                             onDetect: (capture) async {
+//                               model.updateBarcode(
+//                                   capture.barcodes[0].rawValue ?? '');
+//                               controller.stop();
+//                               await model.setGroupModel();
+//                               // debugPrint(
+//                               //     '=> Barcode detected: ${model.code}');
+//                               if (mounted) {
+//                                 showDialog(
+//                                     context: context,
+//                                     builder: (context) => AlertDialog(
+//                                           title: Text(
+//                                               '您已被邀請加入${model.groupAccountModel.nickname}'),
+//                                           actions: [
+//                                             TextButton(
+//                                                 onPressed: () {
+//                                                   Navigator.pop(context);
+//                                                   Navigator.pop(context);
+//                                                 },
+//                                                 child: const Text('取消')),
+//                                             TextButton(
+//                                                 onPressed: () async {
+//                                                   model.addAssociation();
+//                                                   await value.addGroupViaQR(
+//                                                       model.code,
+//                                                       model.groupAccountModel);
+//                                                   if (mounted) {
+//                                                     Navigator.pop(context);
+//                                                     Navigator.pop(context);
+//                                                   }
+//                                                 },
+//                                                 child: const Text('確認'))
+//                                           ],
+//                                         ));
+//                               }
+//                             },
+//                           ),
+//                         ),
+//                         Text(
+//                           '掃描完成後，請稍等片刻',
+//                           style: Theme.of(context)
+//                               .textTheme
+//                               .labelLarge!
+//                               .copyWith(
+//                                   fontWeight: FontWeight.bold, fontSize: 18),
+//                         ),
+//                         ElevatedButton(
+//                             onPressed: () {
+//                               Navigator.pop(context);
+//                             },
+//                             child: const Text('Go back')),
+//                       ]));
+//                 },
+//               ),
+//             ));
+//   }
+// }
+
+class QrCodeScanner extends StatefulWidget {
+  const QrCodeScanner({super.key});
+
+  @override
+  State<QrCodeScanner> createState() => _QrCodeScannerrState();
+}
+
+class _QrCodeScannerrState extends State<QrCodeScanner> {
+  MobileScannerController controller = MobileScannerController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<WorkspaceDashBoardViewModel>(
+      builder: (context, value, child) => ChangeNotifierProvider(
+        create: (context) => QRViewModel(),
+        builder: (context, child) => Consumer<QRViewModel>(
+          builder: (context, model, child) {
+            model.setPersonalModel(value.personalprofileData);
+            return SizedBox(
+              height: MediaQuery.of(context).size.width * 0.8,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: MobileScanner(
+                // scanWindow: Rect.zero,
+                controller: controller,
+                // scanWindow: Rect.fr,
+                onDetect: (capture) async {
+                  model.updateBarcode(capture.barcodes[0].rawValue ?? '');
+                  controller.stop();
+                  await model.setGroupModel();
+                  // debugPrint(
+                  //     '=> Barcode detected: ${model.code}');
+                  if (mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title:
+                            Text('您已被邀請加入${model.groupAccountModel.nickname}'),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              },
+                              child: const Text('取消')),
+                          TextButton(
+                              onPressed: () async {
+                                model.addAssociation();
+                                await value.addGroupViaQR(
+                                    model.code, model.groupAccountModel);
+                                if (mounted) {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                }
+                              },
+                              child: const Text('確認'))
+                        ],
+                      ),
+                    );
+                  }
+                },
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
