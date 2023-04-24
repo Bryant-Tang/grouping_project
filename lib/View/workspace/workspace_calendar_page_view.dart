@@ -1,6 +1,6 @@
 import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/components/card_view/event/event_card.dart';
+import 'package:grouping_project/View/event_card_view.dart';
 import 'package:grouping_project/model/event_model.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
