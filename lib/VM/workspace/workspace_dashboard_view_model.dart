@@ -71,11 +71,11 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
   List<AccountModel> get allGroupProfile =>
       List.from(personalprofileData.associateEntityAccount)
         ..insert(0, personalprofileData);
+  
   void switchGroup(AccountModel profile) {
     debugPrint("SWITCH");
     accountProfileData = profile;
     getAllData();
-
     notifyListeners();
   }
 

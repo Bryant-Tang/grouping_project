@@ -1,8 +1,10 @@
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
+import 'package:grouping_project/View/mission_card_view.dart';
 import 'package:grouping_project/components/button/overview_choice_button.dart';
 import 'package:flutter/material.dart';
-import 'package:grouping_project/components/card_view/event/event_card.dart';
+import 'package:grouping_project/View/event_card_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -18,8 +20,7 @@ class WorkspaceDashboardPageView extends StatefulWidget {
       _WorkspaceDashboardPageViewState();
 }
 
-class _WorkspaceDashboardPageViewState
-    extends State<WorkspaceDashboardPageView> {
+class _WorkspaceDashboardPageViewState extends State<WorkspaceDashboardPageView> {
   @override
   Widget build(BuildContext context) {
     // show the form of widget
@@ -319,9 +320,7 @@ class OverView extends StatefulWidget {
 class _OverViewState extends State<OverView> {
   List<Widget> pages = const [
     EventListView(),
-    Center(
-      child: Text("TO BE CONTINUE"),
-    ),
+    MissionListView(),
     // MissionListView(),
     // Image.asset('assets/images/technical_support.png'),
     Center(
@@ -416,6 +415,29 @@ class EventListViewState extends State<EventListView> {
                           ),
                       
                       child: const EventCardViewTemplate()))
+              .toList()),
+    );
+  }
+}
+
+class MissionListView extends StatefulWidget {
+  const MissionListView({super.key});
+  @override
+  State<MissionListView> createState() => MissionListViewState();
+}
+
+class MissionListViewState extends State<MissionListView> {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<WorkspaceDashBoardViewModel>(
+      builder: (context, model, child) => ListView(
+          children: model.missions
+              .map((missionModel) =>
+                  ChangeNotifierProvider<MissionSettingViewModel>(
+                      create: (context) => MissionSettingViewModel()
+                        ..initializeDisplayMission(
+                            model: missionModel, user: model.personalprofileData),
+                      child: const MissionCardViewTemplate()))
               .toList()),
     );
   }

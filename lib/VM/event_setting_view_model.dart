@@ -21,7 +21,7 @@ class EventSettingViewModel extends ChangeNotifier {
   bool get isforUser => forUser;
   bool isLoading = false;
 
-  SettingMode settingMode = SettingMode.create;
+  // SettingMode settingMode = SettingMode.create;
   // timeer output format
   DateFormat dataformat = DateFormat('h:mm a, MMM d, y');
   String get formattedStartTime => dataformat.format(startTime);
@@ -179,21 +179,21 @@ class EventSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> onSave() async {
-    debugPrint("setting mode $settingMode");
-    if (title.isEmpty ||
-        introduction.isEmpty ||
-        startTime.isAfter(endTime) ||
-        endTime.isBefore(DateTime.now())) {
-      return false;
-    }
-    if (settingMode == SettingMode.create) {
-      await createEvent();
-    } else if (settingMode == SettingMode.edit) {
-      await editEvent();
-    }
-    return true;
-  }
+  // Future<bool> onSave() async {
+  //   debugPrint("setting mode $settingMode");
+  //   if (title.isEmpty ||
+  //       introduction.isEmpty ||
+  //       startTime.isAfter(endTime) ||
+  //       endTime.isBefore(DateTime.now())) {
+  //     return false;
+  //   }
+  //   if (settingMode == SettingMode.create) {
+  //     await createEvent();
+  //   } else if (settingMode == SettingMode.edit) {
+  //     await editEvent();
+  //   }
+  //   return true;
+  // }
 
   String errorMessage() {
     if (title.isEmpty) {
@@ -252,15 +252,16 @@ class EventSettingViewModel extends ChangeNotifier {
     // edit event with eventData
     debugPrint("on save ${eventModel.contributorIds.toString()}");
     await DatabaseService(
-            ownerUid: forUser ? AuthService().getUid() : eventOwnerAccount.id!,
-            forUser: forUser)
+            ownerUid: eventOwnerAccount.id!,
+            forUser: false)
         .setEvent(event: eventModel);
+    notifyListeners();
   }
 
   Future<void> deleteEvent() async {
     await DatabaseService(
-            ownerUid: forUser ? AuthService().getUid() : eventOwnerAccount.id!,
-            forUser: forUser)
+            ownerUid: eventOwnerAccount.id!,
+            forUser: false)
         .deleteEvent(eventModel);
     notifyListeners();
   }
