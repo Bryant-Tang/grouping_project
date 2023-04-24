@@ -14,10 +14,12 @@ class WorkspaceDashboardPageView extends StatefulWidget {
   const WorkspaceDashboardPageView({super.key});
 
   @override
-  State<WorkspaceDashboardPageView> createState() => _WorkspaceDashboardPageViewState();
+  State<WorkspaceDashboardPageView> createState() =>
+      _WorkspaceDashboardPageViewState();
 }
 
-class _WorkspaceDashboardPageViewState extends State<WorkspaceDashboardPageView> {
+class _WorkspaceDashboardPageViewState
+    extends State<WorkspaceDashboardPageView> {
   @override
   Widget build(BuildContext context) {
     // show the form of widget
@@ -336,13 +338,13 @@ class _OverViewState extends State<OverView> {
             'event': {
               'label': '事件-即將到來',
               'icon': 'assets/icons/calendartick.svg',
-              'number': model.dashboardEventList.length,
+              'number': model.dashboardEventNumber,
               'index': 0,
             },
             'mission': {
               'label': '任務-追蹤中',
               'icon': 'assets/icons/task.svg',
-              'number': model.dashboardMissionList.length,
+              'number': model.dashboardeMissionNumber,
               'index': 1,
             },
             'group': {
@@ -404,13 +406,17 @@ class EventListViewState extends State<EventListView> {
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, model, child) => ListView(
-          // padding: EdgeInsets.all(4),
-          children: model.dashboardEventList
-              .map((eventModel) => 
-                  ChangeNotifierProvider<EventSettingViewModel>(
-                    create: (context) => EventSettingViewModel.display(eventModel),
-                  child: const EventCardViewTemplate()
-                )).toList()),
+          children: model.events
+              .map(
+                  (eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
+                      create: (context) => EventSettingViewModel()
+                          ..initializeDisplayEvent(
+                            model: eventModel, 
+                            user: model.personalprofileData
+                          ),
+                      
+                      child: const EventCardViewTemplate()))
+              .toList()),
     );
   }
 }

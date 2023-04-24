@@ -5,103 +5,177 @@ import 'package:intl/intl.dart';
 import 'view_model_lib.dart';
 
 class EventSettingViewModel extends ChangeNotifier {
-  EventModel eventData = EventModel();
-  AccountModel profile = AccountModel();
+  // The event model
+  // In display mode, call initialzeEventDisplay and pass eventModel to this VM
+  // In edit mode, call initialzeNewEvent to create new event model
+  // and pass owenr account and crator account to this model
+  // Scenario1 -> dispaly (need to be initialize) -> edit
+  // Scenario2 -> Create (need to be initialize) -> edit
+  EventModel eventModel = EventModel();
+  // Event 的擁有者, group or people Account。
+  // AccountModel ownerAccount = AccountModel();
+  // Event 的創建者, 只有在第一次create的時候有用。
+  AccountModel creatorAccount = AccountModel();
+  // True if ownerAccount id equals to creator Account, otherwise False
+  bool forUser = true;
+  bool get isforUser => forUser;
+  bool isLoading = false;
 
   SettingMode settingMode = SettingMode.create;
-  WorkspaceMode workspaceMode = WorkspaceMode.personal;
-  bool isPersonal = true;
+  // timeer output format
+  DateFormat dataformat = DateFormat('h:mm a, MMM d, y');
+  String get formattedStartTime => dataformat.format(startTime);
+  String get formattedEndTime => dataformat.format(endTime);
 
-  String get introduction => eventData.introduction;
-  String get title => eventData.title;
-  String get ownerAccountName {
-    // debugPrint(eventData.ownerName);
-    return eventData.ownerName;
+  // getter of eventModel
+  AccountModel get eventOwnerAccount => eventModel.ownerAccount;
+  String get title => eventModel.title; // Event title
+  String get introduction => eventModel.introduction; // Introduction od event
+  String get ownerAccountName =>
+      eventOwnerAccount.name; // event owner account name
+  DateTime get startTime => eventModel.startTime; // event start time
+  DateTime get endTime => eventModel.endTime; // event end time
+  Color get color => Color(eventModel.ownerAccount.color);
+  List<String> get eventContributoIds => eventModel.contributorIds;
+  // The list of contributor Account model whom involve in this event
+  List<AccountModel> contributorAccountModel = [];
+  List<AccountModel> get contributors => contributorAccountModel;
+  // The list of contibutor canidatet when we select participant in edit and create mode
+  List<AccountModel> get contributorCandidate =>
+      forUser ? [] : eventModel.ownerAccount.associateEntityAccount;
+  // get event card Material design  color scheem seed;
+  bool isEventContributor(AccountModel model) {
+    debugPrint(eventModel.contributorIds.contains(model.id).toString());
+    return eventModel.contributorIds.contains(model.id);
   }
 
-  DateTime get startTime => eventData.startTime;
-  DateTime get endTime => eventData.endTime;
-  List<AccountModel> contributorProfile = [];
-  List<AccountModel> get contributors => contributorProfile;
-  List<AccountModel> get groupMember => profile.associateEntityAccount;
-  Color get color => Color(eventData.color);
-  bool get forUser => isPersonal;
-  set isForUser(bool forUser) {
-    isPersonal = forUser;
-    notifyListeners();
-  }
-
-  EventSettingViewModel(this.eventData, this.settingMode);
-
-  factory EventSettingViewModel.display(EventModel eventData) =>
-      EventSettingViewModel(eventData, SettingMode.displpay);
-  factory EventSettingViewModel.create({required AccountModel accountProfile}) {
-    EventSettingViewModel model =
-        EventSettingViewModel(EventModel(), SettingMode.create);
-    model.updateStartTime(DateTime.now());
-    model.updateEndTime(DateTime.now().add(const Duration(days: 1)));
-    model.updateTitle('New Title');
-    model.updateIntroduction('');
-    model.setProfile = accountProfile;
-    // model.setProfile = profile;
-    return model;
-  }
-  factory EventSettingViewModel.edit(EventModel eventData) =>
-      EventSettingViewModel(eventData, SettingMode.edit);
-
-  set setModel(EventModel newModel) {
-    eventData = newModel;
+  void toggleSelcted(AccountModel model) {
+    if (isEventContributor(model)) {
+      // add
+      removeContributors(model);
+    } else {
+      // remove
+      addContributors(model);
+    }
+    contributorAccountModel = [];
+    for (AccountModel candidateAccountModel in contributorCandidate) {
+      if (eventContributoIds.contains(candidateAccountModel.id!)) {
+        contributorAccountModel.add(candidateAccountModel);
+      }
+    }
     notifyListeners();
   }
 
   void updateTitle(String newTitle) {
-    eventData.title = newTitle;
+    eventModel.title = newTitle;
     notifyListeners();
   }
 
-  String? titleValidator() {
+  String? titleValidator(value) {
     return title.isEmpty ? '不可為空' : null;
   }
 
   void updateIntroduction(String newIntro) {
-    eventData.introduction = newIntro;
+    eventModel.introduction = newIntro;
     notifyListeners();
   }
 
-  String? introductionValidator() {
+  String? introductionValidator(value) {
     return introduction.isEmpty ? '不可為空' : null;
   }
 
   void updateStartTime(DateTime newStart) {
-    eventData.startTime = newStart;
+    eventModel.startTime = newStart;
+    if (eventModel.startTime.isAfter(eventModel.endTime)) {
+      DateTime temp = eventModel.startTime;
+      eventModel.startTime = eventModel.endTime;
+      eventModel.endTime = temp;
+    }
     notifyListeners();
   }
 
   void updateEndTime(DateTime newEnd) {
-    eventData.endTime = newEnd;
+    eventModel.endTime = newEnd;
+    if (eventModel.startTime.isAfter(eventModel.endTime)) {
+      DateTime temp = eventModel.startTime;
+      eventModel.startTime = eventModel.endTime;
+      eventModel.endTime = temp;
+    }
     notifyListeners();
   }
 
-  String get formattedStartTime =>
-      DateFormat('h:mm a, MMM d, y').format(startTime);
-  String get formattedEndTime => DateFormat('h:mm a, MMM d, y').format(endTime);
-  // String diffTimeFromNow() {
-  //   Duration difference = endTime.difference(DateTime.now());
-
-  //   int days = difference.inDays;
-  //   int hours = difference.inHours % 24;
-  //   int minutes = difference.inMinutes % 60;
-
-  //   return '剩餘 $days D $hours H $minutes M';
-  // }
-
-  void addContributors(String newContributorId) {
-    eventData.contributorIds.add(newContributorId);
+  void addContributors(AccountModel newContributor) {
+    eventModel.contributorIds.add(newContributor.id!);
+    debugPrint(eventModel.contributorIds.toString());
+    // contributorAccountModel.add(newContributor);
     notifyListeners();
   }
 
-  void removeContributors(String removedContributorId) {
-    eventData.contributorIds.remove(removedContributorId);
+  void removeContributors(AccountModel removedContributor) {
+    eventModel.contributorIds.remove(removedContributor.id!);
+    debugPrint(eventModel.contributorIds.toString());
+    // contributorAccountModel.remove(removedContributor);
+    notifyListeners();
+  }
+
+  void initializeNewEvent(
+      {required AccountModel creatorAccount,
+      required AccountModel ownerAccount}) {
+    // event.ownerAccount = ownerAccount;
+    creatorAccount = creatorAccount;
+    // debugPrint('owner ${this.ownerAccount.id}');
+    debugPrint('ownerAccount al ${ownerAccount.associateEntityAccount.length}');
+
+    eventModel = EventModel(
+        startTime: DateTime.now(),
+        endTime: DateTime.now().add(const Duration(hours: 1)),
+        title: '事件標題',
+        introduction: '事件介紹',
+        contributorIds: [creatorAccount.id!]);
+    contributorAccountModel.add(creatorAccount);
+    eventModel.ownerAccount = ownerAccount;
+    forUser = eventOwnerAccount.id! == creatorAccount.id!;
+    notifyListeners();
+  }
+
+  Future<void> initializeDisplayEvent(
+      {required EventModel model, required AccountModel user}) async {
+    isLoading = true;
+    eventModel = model;
+    creatorAccount = user;
+    // ownerAccount = eventModel.ownerAccount;
+    forUser = eventOwnerAccount.id! == creatorAccount.id!;
+    notifyListeners();
+    // eventContributoIds.add(eventOwnerAccount.id!);
+    // debugPrint('ownerAccount ${eventModel.ownerAccount.nickname.toString()}');
+    // debugPrint('ownerAccount ${eventModel.ownerAccount.associateEntityId.toString()}');
+    // debugPrint(forUser.toString());
+    // debugPrint(eventModel.associateEntityAccount.toString());
+    // debugPrint(eventModel.contributorIds.toString());
+    eventOwnerAccount.associateEntityAccount = [];
+    if (isforUser == false) {
+      // get all event contributor account Profile from owner Account model associate list
+      for (String associationEntityId
+          in eventModel.ownerAccount.associateEntityId) {
+        eventModel.ownerAccount.associateEntityAccount.add(
+            await DatabaseService(ownerUid: associationEntityId, forUser: false)
+                .getAccount());
+      }
+      for (AccountModel candidateAccountModel in contributorCandidate) {
+        if (eventContributoIds.contains(candidateAccountModel.id!)) {
+          contributorAccountModel.add(candidateAccountModel);
+        }
+      }
+      debugPrint(contributorAccountModel.length.toString());
+      // for (String contributorId in eventContributoIds) {
+      //   contributorAccountModel
+      //       .add(await DatabaseService(ownerUid: contributorId).getAccount());
+      // }
+    } else {
+      contributorAccountModel.add(creatorAccount);
+      eventOwnerAccount.associateEntityAccount.add(creatorAccount);
+    }
+    isLoading = false;
     notifyListeners();
   }
 
@@ -115,18 +189,9 @@ class EventSettingViewModel extends ChangeNotifier {
     }
     if (settingMode == SettingMode.create) {
       await createEvent();
-      // debugPrint('profile id ${profile.id}');
-      // await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
-      //     .setEvent(event: eventData);
-      // debugPrint("Create 成功");
-      // Create Event
     } else if (settingMode == SettingMode.edit) {
-      await DatabaseService(
-              ownerUid: forUser ? AuthService().getUid() : profile.id!,
-              forUser: forUser)
-          .setEvent(event: eventData);
-      // Edit Event
-    } else {}
+      await editEvent();
+    }
     return true;
   }
 
@@ -143,39 +208,60 @@ class EventSettingViewModel extends ChangeNotifier {
       return 'unknown error';
     }
   }
-  Future<void> createEvent() async{
-    if(isPersonal){
-      eventData.contributorIds.add(profile.id!);
-    }else{
-     final personalID = (await DatabaseService(ownerUid: AuthService().getUid(), forUser: true).getAccount()).id!;
-      eventData.contributorIds.add(personalID);
+
+  String getTimerCounter() {
+    // DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    // String formatted = formatter.format(DateTime.now());
+    String output = "";
+    Duration duration;
+    // final endDate = DateTime(2023, 4, 18, 9, 30, 0);
+    final currentTime = DateTime.now();
+    if (currentTime.isBefore(startTime)) {
+      output = '即將到來-還有';
+      duration = startTime.difference(currentTime);
+    } else if (currentTime.isAfter(startTime) &&
+        currentTime.isBefore(endTime)) {
+      output = '距離結束-尚餘';
+      duration = endTime.difference(currentTime);
+    } else {
+      return '活動已結束';
     }
+    final days = duration.inDays.toString();
+    final hours = (duration.inHours % 24).toString();
+    final minutes = (duration.inMinutes % 60).toString();
+    final seconds = (duration.inSeconds % 60).toString();
+    return '$output ${days.padLeft(2, '0')} D ${hours.padLeft(2, '0')} H ${minutes.padLeft(2, '0')} M ${seconds.padLeft(2, '0')} S';
+  }
+
+  // Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
+  //   const Duration(seconds: 1),
+  //   (_) => DateTime.now(),
+  // );
+  Future<void> createEvent() async {
+    // Create event with eventData
+    // Add account profile id into contributorIds
+    // eventModel.contributorIds.add(creatorAccount.id!);
+    debugPrint("on save ${eventModel.contributorIds.toString()}");
+    // debugPrint(eventModel.contributorIds.toString());
+    await DatabaseService(ownerUid: eventOwnerAccount.id!, forUser: false)
+        .setEvent(event: eventModel);
+    notifyListeners();
+  }
+
+  Future<void> editEvent() async {
+    // edit event with eventData
+    debugPrint("on save ${eventModel.contributorIds.toString()}");
     await DatabaseService(
-            ownerUid: forUser ? AuthService().getUid() : profile.id!,
+            ownerUid: forUser ? AuthService().getUid() : eventOwnerAccount.id!,
             forUser: forUser)
-        .setEvent(event: eventData);
-    // I can't get the id of the event
-    // I need to edit myself to contributor list
+        .setEvent(event: eventModel);
   }
 
   Future<void> deleteEvent() async {
-     await DatabaseService(ownerUid: forUser ? AuthService().getUid() : profile.id!, forUser: forUser)
-          .deleteEvent(eventData);
-    notifyListeners();
-  }
-
-  set setSettingMode(SettingMode mode) {
-    settingMode = mode;
-    notifyListeners();
-  }
-
-  set setWorkspaceMode(WorkspaceMode mode) {
-    workspaceMode = mode;
-    notifyListeners();
-  }
-
-  set setProfile(AccountModel newProfile) {
-    profile = newProfile;
+    await DatabaseService(
+            ownerUid: forUser ? AuthService().getUid() : eventOwnerAccount.id!,
+            forUser: forUser)
+        .deleteEvent(eventModel);
     notifyListeners();
   }
 }

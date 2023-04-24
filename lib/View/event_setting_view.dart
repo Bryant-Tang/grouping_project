@@ -22,7 +22,8 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
   @override
   Widget build(BuildContext context) {
     return Consumer<EventSettingViewModel>(
-      builder: (context, model, child) => Scaffold(
+      builder: (context, model, child) => 
+      Scaffold(
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
           child: ListView(
@@ -30,12 +31,12 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                      onPressed: () {
-                        debugPrint('back');
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.cancel)),
+                  // IconButton(
+                  //     onPressed: () {
+                  //       debugPrint('back');
+                  //       Navigator.pop(context);
+                  //     },
+                  //     icon: const Icon(Icons.cancel)),
                   IconButton(
                       onPressed: () async {
                         bool valid = await model.onSave();
@@ -54,37 +55,19 @@ class _EventSettingPageViewState extends State<EventSettingPageView> {
                       icon: const Icon(Icons.done)),
                 ],
               ),
-              Divider(
-                thickness: 1.5,
-                color: Theme.of(context).colorScheme.surfaceVariant,
-              ),
-              const TitleDateOfEvent(),
-              const CardViewTitle(title: '參與成員', child: ContributorList()),
-              const SizedBox(
-                height: 1,
-              ),
-              const CardViewTitle(title: '敘述', child: IntroductionBlock()),
-              const SizedBox(
-                height: 2,
-              ),
-              // TODO: connect event and mission
-              const CardViewTitle(
-                title: '相關任務',
-                child: CollabMissons(),
-              ),
-              const SizedBox(
-                height: 2,
-              ),
-              // TODO: connect note and event
-              const CardViewTitle(title: '相關共筆', child: CollabNotes()),
-              const SizedBox(
-                height: 2,
-              ),
-              // TODO: connect event and meeting
-              const CardViewTitle(
-                title: '相關會議',
-                child: CollabMeetings(),
-              ),
+              // Divider(
+              //   thickness: 1.5,
+              //   color: Theme.of(context).colorScheme.surfaceVariant,
+              // ),
+              // const TitleDateOfEvent(),
+              // const CardViewTitle(title: '參與成員', child: ContributorList()),
+              // const SizedBox(
+              //   height: 1,
+              // ),
+              // const CardViewTitle(title: '敘述', child: IntroductionBlock()),
+              // const SizedBox(
+              //   height: 2,
+              // ),
             ],
           ),
         ),
@@ -103,8 +86,7 @@ class TitleDateOfEvent extends StatefulWidget {
 class TitleDateOfEventState extends State<TitleDateOfEvent> {
   @override
   Widget build(BuildContext context) {
-    void timePickerDialog(
-        DateTime show, int state, EventSettingViewModel model) {
+    void timePickerDialog( DateTime show, int state, EventSettingViewModel model) {
       Time tmp = Time(hour: 0, minute: 0);
       Navigator.of(context).push(
         showPicker(
@@ -141,11 +123,11 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
     //   timePickerDialog(tmp, 1);
     // }
 
-    void cancelChange() {
-      setState(() {
-        Navigator.pop(context);
-      });
-    }
+    // void cancelChange() {
+    //   setState(() {
+    //     Navigator.pop(context);
+    //   });
+    // }
 
     // void selectStartTime() {
     //   showDialog(
@@ -200,18 +182,18 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
                 //   title,
                 //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 // ),
-                TextFormField(
-                  initialValue: model.title,
-                  onChanged: model.updateTitle,
-                  decoration: InputDecoration(
-                      hintText: '輸入標題',
-                      errorText: model.titleValidator(),
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 2),
-                      border: const OutlineInputBorder()),
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+                // TextFormField(
+                //   initialValue: model.title,
+                //   onChanged: model.updateTitle,
+                //   decoration: InputDecoration(
+                //       hintText: '輸入標題',
+                //       errorText: model.titleValidator(""),
+                //       isDense: true,
+                //       contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                //       border: const OutlineInputBorder()),
+                //   style: const TextStyle(
+                //       fontSize: 20, fontWeight: FontWeight.bold),
+                // ),
                 Row(
                   children: [
                     TextButton(
@@ -233,7 +215,7 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
                                       Navigator.pop(context);
                                       timePickerDialog(tmp, 0, model);
                                     },
-                                    onCancel: cancelChange,
+                                    // onCancel: cancelChange,
                                     initialSelectedRange: PickerDateRange(
                                         DateTime.now(), DateTime.now()),
                                     showActionButtons: true,
@@ -275,7 +257,7 @@ class TitleDateOfEventState extends State<TitleDateOfEvent> {
                                       Navigator.pop(context);
                                       timePickerDialog(tmp, 1, model);
                                     },
-                                    onCancel: cancelChange,
+                                    // onCancel: cancelChange,
                                     initialSelectedRange: PickerDateRange(
                                         DateTime.now(), DateTime.now()),
                                     showActionButtons: true,
@@ -337,7 +319,7 @@ class _IntroductionBlockState extends State<IntroductionBlock> {
         onChanged: model.updateIntroduction,
         decoration: InputDecoration(
             hintText: '輸入標題',
-            errorText: model.introductionValidator(),
+            errorText: model.introductionValidator(""),
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(vertical: 2),
             border: const OutlineInputBorder()),
