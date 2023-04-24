@@ -124,11 +124,12 @@ class _CalendarPageState extends State<CalendarPage> {
         })
         .toList()
         .cast();
-    eventAndMissionCards.addAll(eventsOnly
-        .map((eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
-            create: (context) => EventSettingViewModel.display(eventModel),
-            child: const EventCardViewTemplate()))
-        .toList());
+        // TODO: fix
+    // eventAndMissionCards.addAll(eventsOnly
+    //     .map((eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
+    //         create: (context) => EventSettingViewModel.display(eventModel),
+    //         child: const EventCardViewTemplate()))
+    //     .toList());
     // debugPrint(
     //     'length of all the cards are: ${eventAndMissionCards.length.toString()}');
     // debugPrint('card content: ${eventAndMissionCards.toString()}');
