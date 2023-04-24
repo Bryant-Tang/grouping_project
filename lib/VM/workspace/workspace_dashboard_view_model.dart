@@ -19,9 +19,46 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
   List<EventModel> dashboardEventList = [];
   AccountModel get accountProfile => accountProfileData;
   AccountModel get userProfile => personalprofileData;
-  // AccountModel get groupProfile => profileData;
-  List<MissionModel> get missions => dashboardMissionList;
-  List<EventModel> get events => dashboardEventList;
+  List<EventModel> get events {
+    if (isPersonalAccount) {
+      final indexs = dashboardEventList.where(
+          (event) => event.contributorIds.contains(personalprofileData.id));
+      debugPrint(dashboardEventList.length.toString());
+      return List.generate(indexs.length, (index) => dashboardEventList[index]);
+    }
+    debugPrint(dashboardEventList.length.toString());
+    return dashboardEventList;
+  }
+  List<MissionModel> get missions {
+    if (isPersonalAccount) {
+      final indexs = dashboardMissionList.where(
+          (event) => event.contributorIds.contains(personalprofileData.id));
+      // debugPrint(dashboardMissionList.length.toString());
+      return List.generate(indexs.length, (index) => dashboardMissionList[index]);
+    }
+    // debugPrint(dashboardMissionList.length.toString());
+    return dashboardMissionList;
+  }
+  int get dashboardEventNumber {
+    if (isPersonalAccount) {
+      final indexs = dashboardEventList.where(
+          (event) => event.contributorIds.contains(personalprofileData.id));
+      // debugPrint(dashboardEventList.length.toString());
+      return indexs.length;
+    }
+    // debugPrint(dashboardEventList.length.toString());
+    return dashboardEventList.length;
+  }
+  int get dashboardeMissionNumber {
+    if (isPersonalAccount) {
+      final indexs = dashboardMissionList.where(
+          (event) => event.contributorIds.contains(personalprofileData.id));
+      // debugPrint(dashboardEventList.length.toString());
+      return indexs.length;
+    }
+    // debugPrint(dashboardEventList.length.toString());
+    return dashboardMissionList.length;
+  }
 
   String get workspaceName => accountProfileData.nickname;
   String get introduction => accountProfileData.introduction;
@@ -38,6 +75,7 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
     debugPrint("SWITCH");
     accountProfileData = profile;
     getAllData();
+
     notifyListeners();
   }
 
@@ -81,14 +119,16 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-  Future<void> updateUserAccount() async{
+
+  Future<void> updateUserAccount() async {
     isLoading = true;
     notifyListeners();
-    personalprofileData = await DatabaseService(ownerUid: AuthService().getUid(), forUser: true)
-          .getAccount();
+    personalprofileData =
+        await DatabaseService(ownerUid: AuthService().getUid(), forUser: true)
+            .getAccount();
     if (isPersonalAccount) {
-        accountProfileData = personalprofileData;
-      }
+      accountProfileData = personalprofileData;
+    }
     isLoading = false;
     notifyListeners();
   }
@@ -112,7 +152,8 @@ class WorkspaceDashBoardViewModel extends ChangeNotifier {
               : accountProfileData.id as String,
           forUser: isPersonalAccount);
       accountProfileData = await accountDatabase.getAccount();
-      debugPrint(accountProfileData.associateEntityAccount.length.toString());
+      debugPrint(
+          'associateEntityAccount ${accountProfileData.associateEntityAccount.length}');
       // personalprofileData = await personalDatabase.getAccount()
       dashboardEventList = await accountDatabase.getAllEvent();
       dashboardMissionList = await accountDatabase.getAllMission();
