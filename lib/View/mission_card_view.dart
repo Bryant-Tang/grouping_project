@@ -247,27 +247,27 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
               height: MediaQuery.of(context).size.height * 0.4,
               width: MediaQuery.of(context).size.height * 0.8,
               child: SfDateRangePicker(
+                initialSelectedDate: initialTime,
                 onSubmit: (value) {
                   debugPrint(value.toString());
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     showPicker(
                         is24HrFormat: true,
-                        value: Time(
-                            hour: initialTime.hour, minute: initialTime.minute),
+                        value: Time(hour: initialTime.hour, minute: initialTime.minute),
                         onChange: (newTime) {
                           debugPrint(value.runtimeType.toString());
                           debugPrint(newTime.toString());
-                          callBack((value as DateTime).add(Duration(
-                              hours: newTime.hour, minutes: newTime.minute)));
+                          callBack((value as DateTime).copyWith(
+                            hour: newTime.hour,
+                            minute: newTime.minute,
+                          ));
                         }),
                   );
                 },
                 onCancel: () {
                   Navigator.pop(context);
                 },
-                initialSelectedRange:
-                    PickerDateRange(DateTime.now(), DateTime.now()),
                 showActionButtons: true,
               ),
             ),

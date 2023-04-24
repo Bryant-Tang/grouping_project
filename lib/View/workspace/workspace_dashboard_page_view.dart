@@ -20,8 +20,7 @@ class WorkspaceDashboardPageView extends StatefulWidget {
       _WorkspaceDashboardPageViewState();
 }
 
-class _WorkspaceDashboardPageViewState
-    extends State<WorkspaceDashboardPageView> {
+class _WorkspaceDashboardPageViewState extends State<WorkspaceDashboardPageView> {
   @override
   Widget build(BuildContext context) {
     // show the form of widget

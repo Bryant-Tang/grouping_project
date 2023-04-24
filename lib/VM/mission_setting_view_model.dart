@@ -14,11 +14,10 @@ class MissionSettingViewModel extends ChangeNotifier {
   List<MissionStateModel> close = [];
 
   // String newStateModel
-  // AccountModel get missionOwnerAccount => missionModel.ownerAccount;
-  String get owner => missionModel.ownerName;
+  AccountModel get missionOwnerAccount => missionModel.ownerAccount;
   String get introduction => missionModel.introduction;
   String get title => missionModel.title;
-  String get ownerAccountName => missionModel.ownerName;
+  String get ownerAccountName => missionOwnerAccount.nickname;
   DateTime get missionDeadline => missionModel.deadline;
   MissionStateModel get missionState => missionModel.state;
   // Color get stateColor =>
@@ -37,7 +36,7 @@ class MissionSettingViewModel extends ChangeNotifier {
 
   DateFormat dataformat = DateFormat('h:mm a, MMM d, y');
   String get formattedDeadline => dataformat.format(missionDeadline);
-  Color get color => Color(missionModel.color);
+  Color get color => Color(missionOwnerAccount.color);
 
   List<AccountModel> contributorProfile = [];
   List<AccountModel> get contributors => contributorProfile;
@@ -154,20 +153,21 @@ class MissionSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void getAllState() async {
-    final allState = await DatabaseService(
-            ownerUid: forUser ? AuthService().getUid() : creatorAccount.id!,
-            forUser: forUser)
-        .getAllMissionState();
-    final inProgressIndexs = allState.where((state) => state.stage == MissionStage.progress);
-    inProgress = List.generate(inProgressIndexs.length, (index) => allState[index]);
-
-    final inPendingIndexs = allState.where((state) => state.stage == MissionStage.pending);
+  Future<void> getAllState() async {
+    final allState =
+        await DatabaseService(ownerUid: missionOwnerAccount.id!, forUser: false)
+            .getAllMissionState();
+    final inProgressIndexs =
+        allState.where((state) => state.stage == MissionStage.progress);
+    inProgress =
+        List.generate(inProgressIndexs.length, (index) => allState[index]);
+    final inPendingIndexs =
+        allState.where((state) => state.stage == MissionStage.pending);
     pending = List.generate(inPendingIndexs.length, (index) => allState[index]);
 
-    final inCloseIndexs = allState.where((state) => state.stage == MissionStage.progress);
+    final inCloseIndexs =
+        allState.where((state) => state.stage == MissionStage.progress);
     close = List.generate(inCloseIndexs.length, (index) => allState[index]);
-
     notifyListeners();
   }
 
@@ -204,33 +204,31 @@ class MissionSettingViewModel extends ChangeNotifier {
   //   }
   // }
 
-  void initializeNewMission({required AccountModel creatorAccount}) {
-    // event.ownerAccount = ownerAccount;
+  Future<void> initializeNewMission(
+      {required AccountModel creatorAccount,
+      required AccountModel ownerAcount}) async {
     this.creatorAccount = creatorAccount;
-    debugPrint('owner ${this.creatorAccount.id}');
-    // debugPrint('ownerAccount al ${ownerAccount.associateEntityAccount.length}');
+    forUser = missionOwnerAccount.id! == creatorAccount.id!;
+    // debugPrint('owner ${this.creatorAccount.id}');
     missionModel = MissionModel(
       deadline: DateTime.now().add(const Duration(hours: 1)),
       title: '任務標題',
       introduction: '任務介紹',
       contributorIds: [creatorAccount.id!],
     );
+    missionModel.ownerAccount = ownerAcount;
     updateState(MissionStage.progress, '進行中');
-    addContributors(creatorAccount.id!);
-    contributorAccountModelList.add(creatorAccount);
-    // model.getAllState();
-    // model.updateState(MissionStage.progress, 'in progress');
-    // missionModel.ownerAccount = ownerAccount;
-    // forUser = eventOwnerAccount.id! == creatorAccount.id!;
-    forUser = true;
-    notifyListeners();
     isLoading = true;
-    getAllState();
+    notifyListeners();
+    // await getAllState();
+    // await get all contibutor candidate
+    contributorAccountModelList.add(creatorAccount);
     isLoading = false;
     notifyListeners();
   }
 
-  Future<void> initializeDisplayMission({required MissionModel model, required AccountModel user}) async {
+  Future<void> initializeDisplayMission(
+      {required MissionModel model, required AccountModel user}) async {
     isLoading = true;
     missionModel = model;
     creatorAccount = user;
@@ -247,11 +245,10 @@ class MissionSettingViewModel extends ChangeNotifier {
     // debugPrint(forUser.toString());
     // debugPrint(eventModel.associateEntityAccount.toString());
     // debugPrint(eventModel.contributorIds.toString());
-    // eventOwnerAccount.associateEntityAccount = [];
-    // if (isforUser == false) {
+    // missionOwnerAccount.associateEntityAccount = [];
+    // if (forUser == false) {
     //   // get all event contributor account Profile from owner Account model associate list
-    //   for (String associationEntityId
-    //       in eventModel.ownerAccount.associateEntityId) {
+    //   for (String associationEntityId in missionModel.ownerAccount.associateEntityId) {
     //     eventModel.ownerAccount.associateEntityAccount.add(
     //         await DatabaseService(ownerUid: associationEntityId, forUser: false)
     //             .getAccount());
@@ -261,36 +258,39 @@ class MissionSettingViewModel extends ChangeNotifier {
     //       contributorAccountModel.add(candidateAccountModel);
     //     }
     //   }
-    // debugPrint(contributorAccountModel.length.toString());
+    // // debugPrint(contributorAccountModel.length.toString());
     // for (String contributorId in eventContributoIds) {
     //   contributorAccountModel
     //       .add(await DatabaseService(ownerUid: contributorId).getAccount());
     // }
     // } else {
-    //eventOwnerAccount.associateEntityAccount.add(creatorAccount);
+    //   missionOwnerAccount.associateEntityAccount.add(creatorAccount);
     // }
     isLoading = false;
     notifyListeners();
   }
 
   Future<void> createMission() async {
-    debugPrint("on save ${missionModel.contributorIds.toString()}");
-    await DatabaseService(ownerUid: creatorAccount.id!, forUser: false)
+    // debugPrint("on save ${missionModel.contributorIds.toString()}");
+    // debugPrint("on save ${missionOwnerAccount.id}");
+    // debugPrint("deadline $missionDeadline");
+    await DatabaseService(ownerUid: missionOwnerAccount.id!, forUser: false)
         .setMission(mission: missionModel);
     notifyListeners();
   }
 
-  Future<void> editMission() async {
-    // edit event with eventData
-    debugPrint("on save ${missionModel.contributorIds.toString()}");
-    // TODO: Change to owner account
-    await DatabaseService(ownerUid: creatorAccount.id!, forUser: false)
-        .setMission(mission: missionModel);
-    notifyListeners();
-  }
+  // Future<void> editMission() async {
+  //   // edit event with eventData
+  //   // debugPrint("on save ${missionModel.contributorIds.toString()}");
+  //   // debugPrint("deadline $missionDeadline");
+  //   // TODO: Change to owner account
+  //   await DatabaseService(ownerUid: missionOwnerAccount.id!, forUser: false)
+  //       .setMission(mission: missionModel);
+  //   notifyListeners();
+  // }
 
   Future<void> deleteMission() async {
-    await DatabaseService(ownerUid: creatorAccount.id!, forUser: false)
+    await DatabaseService(ownerUid: missionOwnerAccount.id!, forUser: false)
         .deleteMission(missionModel);
     notifyListeners();
   }

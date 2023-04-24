@@ -103,7 +103,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                               children: [
                                 Text(model.formattedStartTime),
                                 const Icon(Icons.arrow_right_rounded),
-                                Text(model.formattedEndTime),
+                                Text(model.formattedEndTime, overflow: TextOverflow.fade),
                               ],
                             )
                           ],
@@ -460,17 +460,20 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                             hour: initialTime.hour, minute: initialTime.minute),
                         onChange: (newTime) {
                           debugPrint(value.runtimeType.toString());
-                          debugPrint(newTime.toString());
-                          callBack((value as DateTime).add(Duration(
-                              hours: newTime.hour, minutes: newTime.minute)));
+                          debugPrint(newTime.toString());   
+                          callBack( 
+                            (value as DateTime).copyWith(
+                              hour: newTime.hour,
+                              minute: newTime.minute,
+                            )
+                          );
                         }),
                   );
                 },
                 onCancel: () {
                   Navigator.pop(context);
                 },
-                initialSelectedRange:
-                    PickerDateRange(DateTime.now(), DateTime.now()),
+                initialSelectedDate: initialTime,
                 showActionButtons: true,
               ),
             ),
@@ -604,69 +607,69 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                                         child: Text('無其他成員'),
                                       )
                                     : Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Wrap(
-                                            children: List.generate(
-                                                model.contributorCandidate
-                                                    .length,
-                                                (index) => Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Wrap(
+                                        children: List.generate(
+                                              model.contributorCandidate
+                                                  .length,
+                                              (index) => Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10),
+                                                    child: ChoiceChip(
                                                       padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: ChoiceChip(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(6.0),
-                                                        labelStyle: Theme.of(
-                                                                context)
-                                                            .textTheme
-                                                            .labelLarge!
-                                                            .copyWith(
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                        backgroundColor:
-                                                            Theme.of(context)
-                                                                .colorScheme
-                                                                .surfaceVariant,
-                                                        selectedColor: Theme.of(
-                                                                context)
-                                                            .colorScheme
-                                                            .primaryContainer,
-                                                        avatar: CircleAvatar(
-                                                            radius: 30,
-                                                            backgroundImage: model
-                                                                    .contributorCandidate[
-                                                                        index]
-                                                                    .photo
-                                                                    .isEmpty
-                                                                ? Image.asset(
-                                                                        'assets/images/profile_male.png')
-                                                                    .image
-                                                                : Image.memory(model
-                                                                        .contributorCandidate[
-                                                                            index]
-                                                                        .photo)
-                                                                    .image),
-                                                        label: Text(model
-                                                            .contributorCandidate[
-                                                                index]
-                                                            .name),
-                                                        onSelected: (value) {
-                                                          debugPrint(
-                                                              'name ${model.contributorCandidate[index].nickname} $value');
-                                                          model.toggleSelcted(
+                                                          const EdgeInsets
+                                                              .all(6.0),
+                                                      labelStyle: Theme.of(
+                                                              context)
+                                                          .textTheme
+                                                          .labelLarge!
+                                                          .copyWith(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                      backgroundColor:
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .surfaceVariant,
+                                                      selectedColor: Theme.of(
+                                                              context)
+                                                          .colorScheme
+                                                          .primaryContainer,
+                                                      avatar: CircleAvatar(
+                                                          radius: 30,
+                                                          backgroundImage: model
+                                                                  .contributorCandidate[
+                                                                      index]
+                                                                  .photo
+                                                                  .isEmpty
+                                                              ? Image.asset(
+                                                                      'assets/images/profile_male.png')
+                                                                  .image
+                                                              : Image.memory(model
+                                                                      .contributorCandidate[
+                                                                          index]
+                                                                      .photo)
+                                                                  .image),
+                                                      label: Text(model
+                                                          .contributorCandidate[
+                                                              index]
+                                                          .name),
+                                                      onSelected: (value) {
+                                                        debugPrint(
+                                                            'name ${model.contributorCandidate[index].nickname} $value');
+                                                        model.toggleSelcted(
+                                                            model.contributorCandidate[
+                                                                index]);
+                                                      },
+                                                      selected: model
+                                                          .isEventContributor(
                                                               model.contributorCandidate[
-                                                                  index]);
-                                                        },
-                                                        selected: model
-                                                            .isEventContributor(
-                                                                model.contributorCandidate[
-                                                                    index]),
-                                                      ),
-                                                    ))),
-                                      ),
+                                                                  index]),
+                                                    ),
+                                                  ))),
+                                    ),
                               ),
                             ],
                           ),
@@ -677,36 +680,31 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
           },
           child: model.contributorAccountModel.isEmpty
               ? const Text('参加者はいません')
-              : Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Wrap(
-                        children: List.generate(
-                            model.contributorAccountModel.length,
-                            (index) => Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: RawChip(
-                                    elevation: 3,
-                                    label: Text(model
-                                        .contributorAccountModel[index]
-                                        .nickname),
-                                    avatar: CircleAvatar(
-                                        backgroundImage: model
-                                                .contributorAccountModel[index]
-                                                .photo
-                                                .isEmpty
-                                            ? Image.asset(
-                                                    'assets/images/profile_male.png')
-                                                .image
-                                            : Image.memory(model
-                                                    .contributorAccountModel[
-                                                        index]
-                                                    .photo)
-                                                .image),
-                                  ),
-                                ))),
-                  ],
-                ),
+              : Wrap(
+                  children: List.generate(
+                      model.contributorAccountModel.length,
+                      (index) => Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: RawChip(
+                              elevation: 3,
+                              label: Text(model
+                                  .contributorAccountModel[index]
+                                  .nickname),
+                              avatar: CircleAvatar(
+                                  backgroundImage: model
+                                          .contributorAccountModel[index]
+                                          .photo
+                                          .isEmpty
+                                      ? Image.asset(
+                                              'assets/images/profile_male.png')
+                                          .image
+                                      : Image.memory(model
+                                              .contributorAccountModel[
+                                                  index]
+                                              .photo)
+                                          .image),
+                            ),
+                          ))),
         ));
   }
 

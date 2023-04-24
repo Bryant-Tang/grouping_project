@@ -98,6 +98,7 @@ class CreateButtonTemplate extends StatelessWidget {
                   ),
                   Text(descroption,
                       softWrap: true,
+                      overflow: TextOverflow.fade,
                       style: Theme.of(context).textTheme.labelMedium!)
                 ],
               ),
@@ -150,7 +151,9 @@ class CreateButtonSheetView extends StatelessWidget {
                     ChangeNotifierProvider<MissionSettingViewModel>(
                         create: (context) => MissionSettingViewModel()
                           ..initializeNewMission(
-                              creatorAccount: model.personalprofileData)),
+                              creatorAccount: model.personalprofileData,
+                              ownerAcount: model.accountProfileData
+                            )),
                   ],
                   child: const MissionEditCardView(),
                 ))));
@@ -222,7 +225,7 @@ class CreateButtonSheetView extends StatelessWidget {
               children: [
                 CreateButtonTemplate(
                   title: '話題 TOPIC',
-                  descroption: '與夥伴們任意開啟一個話題、指定任務、事件，或聊聊新的idea吧。',
+                  descroption: '與夥伴們任意開啟一個話題、指定任務、事件，或聊聊新的idea。',
                   assestPath: 'assets/images/topic.png',
                   onTap: () => createTopic(model, context),
                 ),
