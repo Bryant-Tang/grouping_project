@@ -35,8 +35,8 @@ class MissionSettingViewModel extends ChangeNotifier {
       ? [creatorAccount]
       : List.from(contributorCandidate.where((accountModel) =>
           missionModel.contributorIds.contains(accountModel.id!)));
-  List<AccountModel> get contributorCandidate =>
-      forUser ? [] : missionOwnerAccount.associateEntityAccount;
+  List<AccountModel> get contributorCandidate =>forUser 
+    ? [] : missionOwnerAccount.associateEntityAccount;
   MissionStateModel get stateModel => missionModel.state;
   bool isLoading = true;
   // List<String> get missionContributoIds => missionModel.contributorIds;
@@ -219,8 +219,7 @@ class MissionSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> initializeDisplayMission(
-      {required MissionModel model, required AccountModel user}) async {
+  Future<void> initializeDisplayMission({required MissionModel model, required AccountModel user}) async {
     isLoading = true;
     missionModel = model;
     creatorAccount = user;
@@ -228,14 +227,9 @@ class MissionSettingViewModel extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     await getAllState();
-
-    // eventContributoIds.add(eventOwnerAccount.id!);
-    // debugPrint('ownerAccount ${eventModel.ownerAccount.nickname.toString()}');
-    // debugPrint('ownerAccount ${eventModel.ownerAccount.associateEntityId.toString()}');
-    // debugPrint(forUser.toString());
-    // debugPrint(eventModel.associateEntityAccount.toString());
-    // debugPrint(eventModel.contributorIds.toString());
-    // missionOwnerAccount.associateEntityAccount = [];
+    missionModel.ownerAccount = await DatabaseService(
+            ownerUid: missionModel.ownerAccount.id!, forUser: false)
+        .getAccount();
     isLoading = false;
     notifyListeners();
   }
