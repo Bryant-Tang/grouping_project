@@ -534,7 +534,7 @@ class _QrCodeScannerrState extends State<QrCodeScanner> {
                               child: const Text('取消')),
                           TextButton(
                               onPressed: () async {
-                                model.addAssociation();
+                                // model.addAssociation();
                                 await value.addGroupViaQR(
                                     model.code, model.groupAccountModel);
                                 if (mounted) {

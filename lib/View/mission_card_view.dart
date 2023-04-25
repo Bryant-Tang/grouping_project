@@ -16,7 +16,8 @@ class MissionCardViewTemplate extends StatefulWidget {
 }
 
 class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
-  void onClick(WorkspaceDashBoardViewModel workspaceVM, MissionSettingViewModel missionSettingVM) async {
+  void onClick(WorkspaceDashBoardViewModel workspaceVM,
+      MissionSettingViewModel missionSettingVM) async {
     debugPrint('open mission page');
     const animationDuration = Duration(milliseconds: 400);
     final isNeedRefresh = await Navigator.push(
@@ -139,7 +140,8 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            getStateLabelButton(() {}, model.missionState, model.stageColorMap[model.missionState.stage]!),
+                            getStateLabelButton(() {}, model.missionState,
+                                model.stageColorMap[model.missionState.stage]!),
                           ],
                         ),
                       )
@@ -211,7 +213,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
     Widget eventOwnerLabel = Row(
       children: [
         ColorTagChip(
-            tagString: "イベント - ${model.ownerAccountName} の ワークスペース",
+            tagString: "事件 - ${model.ownerAccountName} 的工作區",
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14),
       ],
@@ -248,7 +250,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
         .titleMedium!
         .copyWith(fontWeight: FontWeight.bold, fontSize: 20);
     return generateContentDisplayBlock(
-        'イベントの説明',
+        '任務介紹',
         TextFormField(
           initialValue: model.introduction == "任務介紹" ? "" : model.introduction,
           style: textStyle,
@@ -308,7 +310,8 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
         }));
   }
 
-  Widget getStateLabelButton(Function callBack, MissionStateModel state, Color color) {
+  Widget getStateLabelButton(
+      Function callBack, MissionStateModel state, Color color) {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: ElevatedButton(
@@ -317,7 +320,8 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
             side: BorderSide(color: color),
             foregroundColor: color,
             // backgroundColor: color.withOpacity(0.1),
-            textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            textStyle:
+                const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             elevation: 4,
           ),
           child: Row(
@@ -333,7 +337,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
 
   Widget getDeadlineBlock(MissionSettingViewModel model) {
     return generateContentDisplayBlock(
-      '截止時間',
+        '截止時間',
         ElevatedButton(
             onPressed: () => showTimePicker(
                 model.updateDeadline, context, model.missionDeadline),
@@ -402,7 +406,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
 
   Widget getContributorBlock(MissionSettingViewModel model) {
     return generateContentDisplayBlock(
-        '参加者',
+        '參與者',
         MaterialButton(
           onPressed: () async {
             // debugPrint(model.missionModel.contributorIds.length.toString());
@@ -410,12 +414,17 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
           },
           child: model.contributors.isEmpty
               ? const Text('参加者はいません')
-              : Wrap(
-                children: List.generate(
-                    model.contributors.length,
-                    (index) => getContributorButton(
-                        model, model.contributors[index])),
-              ),
+              : Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Wrap(
+                      children: List.generate(
+                          model.contributors.length,
+                          (index) => getContributorButton(
+                              model, model.contributors[index])),
+                    ),
+                  ],
+                ),
         ));
   }
 
@@ -495,13 +504,13 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
           builder: (context) {
             return AlertDialog(
               title: const Text('確認'),
-              content: const Text('本当に編集しますか？'),
+              content: const Text('是否確認編輯?'),
               actions: [
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context, false);
                     },
-                    child: const Text('いいえ')),
+                    child: const Text('否')),
                 TextButton(
                     onPressed: () async {
                       await model.createMission();
@@ -509,7 +518,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                         Navigator.pop(context, true);
                       }
                     },
-                    child: const Text('はい')),
+                    child: const Text('是')),
               ],
             );
           });
@@ -525,13 +534,13 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
         builder: (context) {
           return AlertDialog(
             title: const Text('確認'),
-            content: const Text('本当に削除しますか？'),
+            content: const Text('是否確認刪除'),
             actions: [
               TextButton(
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
-                  child: const Text('いいえ')),
+                  child: const Text('否')),
               TextButton(
                   onPressed: () async {
                     await model.deleteMission();
@@ -539,7 +548,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                       Navigator.pop(context, true);
                     }
                   },
-                  child: const Text('はい')),
+                  child: const Text('是')),
             ],
           );
         });
@@ -613,8 +622,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                               getStateBlock(model),
                               getDeadlineBlock(model),
                               getContributorBlock(model),
-                              generateContentDisplayBlock(
-                                  '関連タスク', Text('関連タスクはありません')),
+                              generateContentDisplayBlock('子任務', Text('沒有子任務')),
                               // model.missionModel.relatedMissionIds.isEmpty
                               //     ? const
 
@@ -629,10 +637,10 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                               //                 .relatedMissionIds[index]))),
                               // relation note
                               generateContentDisplayBlock(
-                                  '関連ノート', const Text('関連ノートはありません')),
+                                  '關聯筆記', const Text('沒有關聯筆記')),
                               // relation message
                               generateContentDisplayBlock(
-                                  '関連メッセージ', const Text('関連メッセージはありません')),
+                                  '關聯話題', const Text('沒有關聯話題')),
                             ]),
                       ),
                     ),
