@@ -197,6 +197,10 @@ class _CalendarPageState extends State<CalendarPage> {
                           }
                         },
                         calendarStyle: CalendarStyle(
+                          markerDecoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context).colorScheme.onBackground,
+                          ),
                           // Decoration for today
                           todayDecoration: BoxDecoration(
                             border: Border.all(

@@ -213,7 +213,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
     Widget eventOwnerLabel = Row(
       children: [
         ColorTagChip(
-            tagString: "イベント - ${model.ownerAccountName} の ワークスペース",
+            tagString: "事件 - ${model.ownerAccountName} 的工作區",
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14),
       ],
@@ -250,7 +250,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
         .titleMedium!
         .copyWith(fontWeight: FontWeight.bold, fontSize: 20);
     return generateContentDisplayBlock(
-        'イベントの説明',
+        '任務介紹',
         TextFormField(
           initialValue: model.introduction == "任務介紹" ? "" : model.introduction,
           style: textStyle,
@@ -406,14 +406,14 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
 
   Widget getContributorBlock(MissionSettingViewModel model) {
     return generateContentDisplayBlock(
-        '参加者',
+        '參與者',
         MaterialButton(
           onPressed: () async {
             debugPrint(model.contributors.length.toString());
             onUpdateContributor(model);
           },
           child: model.contributors.isEmpty
-              ? const Text('参加者はいません')
+              ? const Text('沒有參與')
               : Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
@@ -504,13 +504,13 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
           builder: (context) {
             return AlertDialog(
               title: const Text('確認'),
-              content: const Text('本当に編集しますか？'),
+              content: const Text('是否確認編輯?'),
               actions: [
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context, false);
                     },
-                    child: const Text('いいえ')),
+                    child: const Text('否')),
                 TextButton(
                     onPressed: () async {
                       await model.createMission();
@@ -518,7 +518,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                         Navigator.pop(context, true);
                       }
                     },
-                    child: const Text('はい')),
+                    child: const Text('是')),
               ],
             );
           });
@@ -534,13 +534,13 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
         builder: (context) {
           return AlertDialog(
             title: const Text('確認'),
-            content: const Text('本当に削除しますか？'),
+            content: const Text('是否確認刪除'),
             actions: [
               TextButton(
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
-                  child: const Text('いいえ')),
+                  child: const Text('否')),
               TextButton(
                   onPressed: () async {
                     await model.deleteMission();
@@ -548,7 +548,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                       Navigator.pop(context, true);
                     }
                   },
-                  child: const Text('はい')),
+                  child: const Text('是')),
             ],
           );
         });
@@ -622,8 +622,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                               getStateBlock(model),
                               getDeadlineBlock(model),
                               getContributorBlock(model),
-                              generateContentDisplayBlock(
-                                  '関連タスク', Text('関連タスクはありません')),
+                              generateContentDisplayBlock('子任務', Text('沒有子任務')),
                               // model.missionModel.relatedMissionIds.isEmpty
                               //     ? const
 
@@ -638,10 +637,10 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
                               //                 .relatedMissionIds[index]))),
                               // relation note
                               generateContentDisplayBlock(
-                                  '関連ノート', const Text('関連ノートはありません')),
+                                  '關聯筆記', const Text('沒有關聯筆記')),
                               // relation message
                               generateContentDisplayBlock(
-                                  '関連メッセージ', const Text('関連メッセージはありません')),
+                                  '關聯話題', const Text('沒有關聯話題')),
                             ]),
                       ),
                     ),

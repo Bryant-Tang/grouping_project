@@ -386,8 +386,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
     Widget eventOwnerLabel = Row(
       children: [
         ColorTagChip(
-            tagString:
-                "イベント - ${model.eventModel.ownerAccount.nickname} の ワークスペース",
+            tagString: "事件 - ${model.eventModel.ownerAccount.nickname} 的工作區",
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14),
       ],
@@ -424,7 +423,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
         .titleMedium!
         .copyWith(fontWeight: FontWeight.bold, fontSize: 20);
     return generateContentDisplayBlock(
-        'イベントの説明',
+        '事件介紹',
         TextFormField(
           initialValue: model.introduction == "事件介紹" ? "" : model.introduction,
           style: textStyle,
@@ -507,7 +506,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
 
   Widget getEndTimeBlock(EventSettingViewModel model) {
     return generateContentDisplayBlock(
-        '終了時間',
+        '結束時間',
         ElevatedButton(
             onPressed: () =>
                 showTimePicker(model.updateEndTime, context, model.endTime),
@@ -576,14 +575,14 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
 
   Widget getContributorBlock(EventSettingViewModel model) {
     return generateContentDisplayBlock(
-        '参加者',
+        '參與者',
         MaterialButton(
           onPressed: () async {
             debugPrint(model.contributors.length.toString());
             onUpdateContributor(model);
           },
           child: model.contributors.isEmpty
-              ? const Text('参加者はいません')
+              ? const Text('沒有參與者')
               : Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
@@ -605,13 +604,13 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
           builder: (context) {
             return AlertDialog(
               title: const Text('確認'),
-              content: const Text('本当に編集しますか？'),
+              content: const Text('是否確認編輯?'),
               actions: [
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context, false);
                     },
-                    child: const Text('いいえ')),
+                    child: const Text('否')),
                 TextButton(
                     onPressed: () async {
                       await model.createEvent();
@@ -619,7 +618,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                         Navigator.pop(context, true);
                       }
                     },
-                    child: const Text('はい')),
+                    child: const Text('確認')),
               ],
             );
           });
@@ -635,13 +634,13 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
         builder: (context) {
           return AlertDialog(
             title: const Text('確認'),
-            content: const Text('本当に削除しますか？'),
+            content: const Text('是否確認刪除?'),
             actions: [
               TextButton(
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
-                  child: const Text('いいえ')),
+                  child: const Text('否')),
               TextButton(
                   onPressed: () async {
                     await model.deleteEvent();
@@ -649,7 +648,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                       Navigator.pop(context, true);
                     }
                   },
-                  child: const Text('はい')),
+                  child: const Text('是')),
             ],
           );
         });
@@ -722,9 +721,9 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                               getEndTimeBlock(model),
                               getContributorBlock(model),
                               generateContentDisplayBlock(
-                                  '関連タスク',
+                                  '子任務',
                                   model.eventModel.relatedMissionIds.isEmpty
-                                      ? const Text('関連タスクはありません')
+                                      ? const Text('沒有子任務')
                                       : ListView.builder(
                                           shrinkWrap: true,
                                           physics:
@@ -736,10 +735,10 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                                                   .relatedMissionIds[index]))),
                               // relation note
                               generateContentDisplayBlock(
-                                  '関連ノート', const Text('関連ノートはありません')),
+                                  '關聯筆記', const Text('沒有關聯筆記')),
                               // relation message
                               generateContentDisplayBlock(
-                                  '関連メッセージ', const Text('関連メッセージはありません')),
+                                  '關聯話題', const Text('沒有關聯話題')),
                             ]),
                       ),
                     ),
