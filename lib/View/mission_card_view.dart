@@ -120,13 +120,13 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                               maxLines: 1,
                               style: themeData.textTheme.titleSmall!.copyWith(
                                   // color: themeData.colorScheme.secondary,
-                                  fontSize: 16),
+                                  fontSize: 14),
                             ),
                             Row(
                               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              // crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const Icon(Icons.timer),
+                                const Icon(Icons.timer, size: 18),
                                 Text(model.formattedDeadline),
                               ],
                             ),
@@ -137,7 +137,7 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                         flex: 2,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             getStateLabelButton(() {}, model.missionState, model.stageColorMap[model.missionState.stage]!),
                           ],
@@ -405,22 +405,17 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
         '参加者',
         MaterialButton(
           onPressed: () async {
-            debugPrint(model.contributors.length.toString());
+            // debugPrint(model.missionModel.contributorIds.length.toString());
             onUpdateContributor(model);
           },
           child: model.contributors.isEmpty
               ? const Text('参加者はいません')
-              : Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Wrap(
-                      children: List.generate(
-                          model.contributors.length,
-                          (index) => getContributorButton(
-                              model, model.contributors[index])),
-                    ),
-                  ],
-                ),
+              : Wrap(
+                children: List.generate(
+                    model.contributors.length,
+                    (index) => getContributorButton(
+                        model, model.contributors[index])),
+              ),
         ));
   }
 

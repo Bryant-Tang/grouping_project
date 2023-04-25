@@ -75,9 +75,10 @@ class _ProgressState extends State<Progress> {
                 thickness: 2,
               ),
               Expanded(
-                  child: PageView(
-                children: _allObject,
-              )),
+                  child: _allObject.isNotEmpty
+                  ? PageView(children: _allObject)
+                  : const Center(child:Text('你還未建立任何事件或任務'))
+              ),
             ]));
       },
     );
