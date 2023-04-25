@@ -414,17 +414,12 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
           },
           child: model.contributors.isEmpty
               ? const Text('参加者はいません')
-              : Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Wrap(
-                      children: List.generate(
-                          model.contributors.length,
-                          (index) => getContributorButton(
-                              model, model.contributors[index])),
-                    ),
-                  ],
-                ),
+              : Wrap(
+                children: List.generate(
+                    model.contributors.length,
+                    (index) => getContributorButton(
+                        model, model.contributors[index])),
+              ),
         ));
   }
 
