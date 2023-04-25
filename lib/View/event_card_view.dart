@@ -2,6 +2,7 @@ import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/color_tag_chip.dart';
+import 'package:grouping_project/model/model_lib.dart';
 
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -14,8 +15,7 @@ class EventCardViewTemplate extends StatefulWidget {
 }
 
 class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
-  void onClick(WorkspaceDashBoardViewModel workspaceVM,
-      EventSettingViewModel eventSettingVM) async {
+  void onClick(WorkspaceDashBoardViewModel workspaceVM, EventSettingViewModel eventSettingVM) async {
     debugPrint('open event page');
     const animationDuration = Duration(milliseconds: 400);
     final isNeedRefresh = await Navigator.push(
@@ -29,7 +29,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                       value: eventSettingVM),
                   ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
                       value: workspaceVM)
-                ], child: const EditCardView())));
+                ], child: const EventEditCardView())));
     if (isNeedRefresh != null && isNeedRefresh) {
       await workspaceVM.getAllData();
     }
@@ -80,7 +80,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                             Row(
                               children: [
                                 ColorTagChip(
-                                    tagString: model.ownerAccountName,
+                                    tagString: model.eventOwnerAccount.nickname,
                                     color: themeData.colorScheme.primary),
                               ],
                             ),
@@ -103,7 +103,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                               children: [
                                 Text(model.formattedStartTime),
                                 const Icon(Icons.arrow_right_rounded),
-                                Text(model.formattedEndTime),
+                                Text(model.formattedEndTime, overflow: TextOverflow.fade),
                               ],
                             )
                           ],
@@ -130,79 +130,79 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
 // }
 
 // class _ExpandedCardViewState extends State<ExpandedCardView> {
-  // late ThemeData themeData;
-  // Widget generateContentDisplayBlock(String blockTitle, Widget child) {
-  //   TextStyle blockTitleTextStyle = themeData.textTheme.titleMedium!.copyWith(
-  //       fontWeight: FontWeight.bold,
-  //       fontSize: 16,
-  //       color: themeData.colorScheme.secondary);
-  //   return Padding(
-  //       padding: const EdgeInsets.symmetric(vertical: 10),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           Text(blockTitle, style: blockTitleTextStyle),
-  //           const Divider(thickness: 3),
-  //           child
-  //         ],
-  //       ));
-  // }
+// late ThemeData themeData;
+// Widget generateContentDisplayBlock(String blockTitle, Widget child) {
+//   TextStyle blockTitleTextStyle = themeData.textTheme.titleMedium!.copyWith(
+//       fontWeight: FontWeight.bold,
+//       fontSize: 16,
+//       color: themeData.colorScheme.secondary);
+//   return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 10),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           Text(blockTitle, style: blockTitleTextStyle),
+//           const Divider(thickness: 3),
+//           child
+//         ],
+//       ));
+// }
 
-  // Widget getInformationDisplay(EventSettingViewModel model) {
-  //   TextStyle titleTextStyle = themeData.textTheme.titleMedium!
-  //       .copyWith(fontWeight: FontWeight.bold, fontSize: 28);
-  //   // TextStyle timeTextStyle =
-  //   //     themeData.textTheme.titleSmall!.copyWith(fontSize: 14);
-  //   Widget eventOwnerLabel = Row(
-  //     children: [
-  //       ColorTagChip(
-  //           // 打上日文的 的
-  //           tagString: "イベント - ${model.ownerAccountName} の ワークスペース",
-  //           color: themeData.colorScheme.primary,
-  //           fontSize: 14),
-  //     ],
-  //   );
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     mainAxisAlignment: MainAxisAlignment.start,
-  //     children: [
-  //       eventOwnerLabel,
-  //       Text(model.title, style: titleTextStyle),
-  //     ],
-  //   );
-  // }
+// Widget getInformationDisplay(EventSettingViewModel model) {
+//   TextStyle titleTextStyle = themeData.textTheme.titleMedium!
+//       .copyWith(fontWeight: FontWeight.bold, fontSize: 28);
+//   // TextStyle timeTextStyle =
+//   //     themeData.textTheme.titleSmall!.copyWith(fontSize: 14);
+//   Widget eventOwnerLabel = Row(
+//     children: [
+//       ColorTagChip(
+//           // 打上日文的 的
+//           tagString: "イベント - ${model.ownerAccountName} の ワークスペース",
+//           color: themeData.colorScheme.primary,
+//           fontSize: 14),
+//     ],
+//   );
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     mainAxisAlignment: MainAxisAlignment.start,
+//     children: [
+//       eventOwnerLabel,
+//       Text(model.title, style: titleTextStyle),
+//     ],
+//   );
+// }
 
-  // void onDelete(EventSettingViewModel model) async {
-  //   final isNeedRefresh = await showDialog(
-  //       context: context,
-  //       builder: (context) {
-  //         return AlertDialog(
-  //           title: const Text('確認'),
-  //           content: const Text('本当に削除しますか？'),
-  //           actions: [
-  //             TextButton(
-  //                 onPressed: () {
-  //                   Navigator.pop(context, false);
-  //                 },
-  //                 child: const Text('いいえ')),
-  //             TextButton(
-  //                 onPressed: () async {
-  //                   await model.deleteEvent();
-  //                   if (context.mounted) {
-  //                     Navigator.pop(context, true);
-  //                   }
-  //                 },
-  //                 child: const Text('はい')),
-  //           ],
-  //         );
-  //       });
-  //   if (context.mounted) {
-  //     Navigator.pop(context, isNeedRefresh);
-  //   }
-  // }
+// void onDelete(EventSettingViewModel model) async {
+//   final isNeedRefresh = await showDialog(
+//       context: context,
+//       builder: (context) {
+//         return AlertDialog(
+//           title: const Text('確認'),
+//           content: const Text('本当に削除しますか？'),
+//           actions: [
+//             TextButton(
+//                 onPressed: () {
+//                   Navigator.pop(context, false);
+//                 },
+//                 child: const Text('いいえ')),
+//             TextButton(
+//                 onPressed: () async {
+//                   await model.deleteEvent();
+//                   if (context.mounted) {
+//                     Navigator.pop(context, true);
+//                   }
+//                 },
+//                 child: const Text('はい')),
+//           ],
+//         );
+//       });
+//   if (context.mounted) {
+//     Navigator.pop(context, isNeedRefresh);
+//   }
+// }
 
-  // Future<void> onEdit(EventSettingViewModel model) async {}
-  
+// Future<void> onEdit(EventSettingViewModel model) async {}
+
 //   @override
 //   Widget build(BuildContext context) {
 //     // return Consumer<WorkspaceDashBoardViewModel>(
@@ -326,15 +326,15 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
 //   }
 // }
 
-class EditCardView extends StatefulWidget {
-  const EditCardView({Key? key}) : super(key: key);
+class EventEditCardView extends StatefulWidget {
+  const EventEditCardView({Key? key}) : super(key: key);
   // const ExpandedCardView({super.key});
 
   @override
-  State<EditCardView> createState() => _EditCardViewCardViewState();
+  State<EventEditCardView> createState() => _EditCardViewCardViewState();
 }
 
-class _EditCardViewCardViewState extends State<EditCardView> {
+class _EditCardViewCardViewState extends State<EventEditCardView> {
   // late ThemeData themeData;
 
   Widget getDateTime(EventSettingViewModel model) {
@@ -382,7 +382,7 @@ class _EditCardViewCardViewState extends State<EditCardView> {
     Widget eventOwnerLabel = Row(
       children: [
         ColorTagChip(
-            tagString: "イベント - ${model.ownerAccountName} の ワークスペース",
+            tagString: "イベント - ${model.eventModel.ownerAccount.nickname} の ワークスペース",
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14),
       ],
@@ -460,17 +460,20 @@ class _EditCardViewCardViewState extends State<EditCardView> {
                             hour: initialTime.hour, minute: initialTime.minute),
                         onChange: (newTime) {
                           debugPrint(value.runtimeType.toString());
-                          debugPrint(newTime.toString());
-                          callBack((value as DateTime).add(Duration(
-                              hours: newTime.hour, minutes: newTime.minute)));
+                          debugPrint(newTime.toString());   
+                          callBack( 
+                            (value as DateTime).copyWith(
+                              hour: newTime.hour,
+                              minute: newTime.minute,
+                            )
+                          );
                         }),
                   );
                 },
                 onCancel: () {
                   Navigator.pop(context);
                 },
-                initialSelectedRange:
-                    PickerDateRange(DateTime.now(), DateTime.now()),
+                initialSelectedDate: initialTime,
                 showActionButtons: true,
               ),
             ),
@@ -520,6 +523,78 @@ class _EditCardViewCardViewState extends State<EditCardView> {
             )));
   }
 
+  Widget getContributorButton(EventSettingViewModel model, AccountModel account) {
+    return Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: RawChip(
+            onPressed: () => model.updateContibutor(account),
+            // onDeleted: () => model.updateContibutor(account),
+            // deleteIcon: model.isContributors(account) ? const Icon(Icons.delete) : const Icon(Icons.add),
+            selected: model.isContributors(account),
+            elevation: 3,
+            label: Text(account.nickname),
+            avatar: CircleAvatar(
+                backgroundImage: account.photo.isEmpty
+                    ? Image.asset('assets/images/profile_male.png').image
+                    : Image.memory(account.photo).image)));
+  }
+
+  void onUpdateContributor(EventSettingViewModel model) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) =>
+            ChangeNotifierProvider<EventSettingViewModel>.value(
+              value: model,
+              child: Consumer<EventSettingViewModel>(
+                builder: (context, model, child) => SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                          child: model.contributorCandidate.isEmpty
+                              ? const Center(child: Text('無其他成員'))
+                              : Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Wrap(
+                                      children: List.generate(
+                                          model.contributorCandidate.length,
+                                          (index) => getContributorButton(
+                                              model,
+                                              model.contributorCandidate[
+                                                  index]))),
+                                )),
+                    ],
+                  ),
+                ),
+              ),
+            ));
+    // debugPrint(model.contributors.length.toString());
+  }
+
+  Widget getContributorBlock(EventSettingViewModel model) {
+    return generateContentDisplayBlock(
+        '参加者',
+        MaterialButton(
+          onPressed: () async {
+            debugPrint(model.contributors.length.toString());
+            onUpdateContributor(model);
+          },
+          child: model.contributors.isEmpty
+              ? const Text('参加者はいません')
+              : Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Wrap(
+                      children: List.generate(
+                          model.contributors.length,
+                          (index) => getContributorButton(
+                              model, model.contributors[index])),
+                    ),
+                  ],
+                ),
+        ));
+  }
+
+
   void onFinish(EventSettingViewModel model) async {
     if (formKey.currentState!.validate()) {
       final isNeedRefresh = await showDialog(
@@ -551,7 +626,6 @@ class _EditCardViewCardViewState extends State<EditCardView> {
     }
   }
 
-  
   void onDelete(EventSettingViewModel model) async {
     final isNeedRefresh = await showDialog(
         context: context,
@@ -584,91 +658,7 @@ class _EditCardViewCardViewState extends State<EditCardView> {
     }
   }
 
-  Widget getContributorBlock(EventSettingViewModel model) {
-    return generateContentDisplayBlock(
-        '参加者',
-          MaterialButton(
-                onPressed: () async{
-                  debugPrint(model.contributorCandidate.length.toString());
-                  await showModalBottomSheet(
-                      context: context,
-                      builder: (context) => ChangeNotifierProvider<EventSettingViewModel>.value(
-                        value: model,
-                        child: Consumer<EventSettingViewModel>(
-                          builder: (context, model, child) =>
-                          SafeArea(
-                            child: Column(
-                              children: [
-                                Expanded(
-                                      child: model.contributorCandidate.isEmpty   
-                                      ? const Center(child: Text('無其他成員'),)
-                                      : Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Wrap(
-                                          children: List.generate(model.contributorCandidate.length,
-                                            (index) => Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child: ChoiceChip(
-                                                padding: const EdgeInsets.all(6.0),
-                                                labelStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
-                                                backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-                                                selectedColor: Theme.of(context).colorScheme.primaryContainer,
-                                                avatar: CircleAvatar( radius: 30,
-                                                  backgroundImage: model.contributorCandidate[index].photo.isEmpty
-                                                  ? Image.asset('assets/images/profile_male.png').image
-                                                  : Image.memory(model.contributorCandidate[index].photo).image),
-                                                label:Text(model.contributorCandidate[index].name),
-                                                onSelected: (value){
-                                                  debugPrint('name ${model.contributorCandidate[index].nickname} $value');
-                                                  model.toggleSelcted(model.contributorCandidate[index]);
-                                                },
-                                                selected: model.isEventContributor(model.contributorCandidate[index]),
-                                              ),
-                                            )
-                                          )
-                                        ),
-                                      ),
-                                    ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ));
-                  debugPrint(model.contributorAccountModel.length.toString());
-                },
-                child: model.contributorAccountModel.isEmpty
-                  ? const Text('参加者はいません')
-                  :Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                    Wrap(
-                        children: List.generate(
-                            model.contributorAccountModel.length,
-                            (index) => Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: RawChip(
-                                    elevation: 3,
-                                    label: Text(model
-                                        .contributorAccountModel[index].nickname),
-                                    avatar: CircleAvatar(
-                                        backgroundImage: model
-                                                .contributorAccountModel[index]
-                                                .photo
-                                                .isEmpty
-                                            ? Image.asset(
-                                                    'assets/images/profile_male.png')
-                                                .image
-                                            : Image.memory(model
-                                                    .contributorAccountModel[
-                                                        index]
-                                                    .photo)
-                                                .image),
-                                  ),
-                            ))),
-                  ],
-                ),
-              ));
-  }
+  
 
   final formKey = GlobalKey<FormState>();
   Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
@@ -678,11 +668,10 @@ class _EditCardViewCardViewState extends State<EditCardView> {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeManager>(
-      builder: (context, theme, child) => 
-      Consumer<WorkspaceDashBoardViewModel>(
+      builder: (context, theme, child) => Consumer<WorkspaceDashBoardViewModel>(
         builder: (context, workspaceVM, child) =>
             Consumer<EventSettingViewModel>(builder: (context, model, child) {
-            // theme.updateColorSchemeSeed(model.color);
+          // theme.updateColorSchemeSeed(model.color);
           return StreamBuilder<DateTime>(
             stream: currentTimeStream,
             builder: (context, snapshot) => GestureDetector(
@@ -697,21 +686,22 @@ class _EditCardViewCardViewState extends State<EditCardView> {
                     elevation: 2,
                     leading: IconButton(
                       onPressed: () {
-                        // theme.updateColorSchemeSeed(
-                        //   Color(workspaceVM.accountProfileData.color));
                         Navigator.pop(context);
                       },
                       icon: Icon(Icons.arrow_back_ios_rounded,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     actions: [
                       IconButton(
                         onPressed: () => onFinish(model),
                         icon: Icon(Icons.check,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
-                      IconButton(onPressed: () => onDelete(model),
-                       icon: const Icon(Icons.delete))
+                      IconButton(
+                          onPressed: () => onDelete(model),
+                          icon: const Icon(Icons.delete))
                     ],
                   ),
                   // display all event data
@@ -738,8 +728,8 @@ class _EditCardViewCardViewState extends State<EditCardView> {
                                           shrinkWrap: true,
                                           physics:
                                               const NeverScrollableScrollPhysics(),
-                                          itemCount: model
-                                              .eventModel.relatedMissionIds.length,
+                                          itemCount: model.eventModel
+                                              .relatedMissionIds.length,
                                           itemBuilder: (context, index) => Text(
                                               model.eventModel
                                                   .relatedMissionIds[index]))),

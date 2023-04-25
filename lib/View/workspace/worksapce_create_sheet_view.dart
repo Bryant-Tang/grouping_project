@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/VM/event_setting_view_model.dart';
 import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/workspace/workspace_dashboard_view_model.dart';
-import 'package:grouping_project/View/event_setting_view.dart';
-import 'package:grouping_project/View/mission_setting_view.dart';
-import 'package:grouping_project/components/card_view/event/event_card.dart';
+import 'package:grouping_project/View/mission_card_view.dart';
+import 'package:grouping_project/View/event_card_view.dart';
 import 'package:provider/provider.dart';
 
 class CreateButton extends StatefulWidget {
@@ -77,7 +75,7 @@ class CreateButtonTemplate extends StatelessWidget {
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
               ),
-            // borderRadius: BorderRadius.circular(5),
+              // borderRadius: BorderRadius.circular(5),
             ),
             onPressed: onTap,
             // splashFactory: InkRipple.splashFactory,
@@ -87,21 +85,21 @@ class CreateButtonTemplate extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   LayoutBuilder(
-                    builder: (context, constraints) => SizedBox(
-                      width: constraints.maxWidth,
-                      child: Image.asset(assestPath),
-                      )
-                  ),
-                  Text(title,
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
-                  ),
+                      builder: (context, constraints) => SizedBox(
+                            width: constraints.maxWidth,
+                            child: Image.asset(assestPath),
+                          )),
                   Text(
-                    descroption,
-                    softWrap: true,
+                    title,
                     style: Theme.of(context)
                         .textTheme
-                        .labelMedium!
-                  )
+                        .titleMedium!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(descroption,
+                      softWrap: true,
+                      overflow: TextOverflow.fade,
+                      style: Theme.of(context).textTheme.labelMedium!)
                 ],
               ),
             ),
@@ -116,7 +114,7 @@ class CreateButtonSheetView extends StatelessWidget {
   const CreateButtonSheetView({Key? key}) : super(key: key);
   void createEvent(
       WorkspaceDashBoardViewModel model, BuildContext context) async {
-    await Navigator.push(
+    final isNeedRefreash = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: ((context) => MultiProvider(
@@ -125,17 +123,19 @@ class CreateButtonSheetView extends StatelessWidget {
                       value: model,
                     ),
                     ChangeNotifierProvider<EventSettingViewModel>(
-                      create: (context) => EventSettingViewModel()
-                      ..initializeNewEvent (
-                          creatorAccount: model.personalprofileData,
-                          ownerAccount: model.accountProfileData,
-                      )
-                    ),
+                        create: (context) => EventSettingViewModel()
+                          ..initializeNewEvent(
+                            creatorAccount: model.personalprofileData,
+                            ownerAccount: model.accountProfileData,
+                          )),
                   ],
-                  child: const EditCardView(),
+                  child: const EventEditCardView(),
                 ))));
     // Implement data refreash
     // await model.getAllData();
+    if(isNeedRefreash){
+      await model.getAllData();
+    }
     if (context.mounted) {
       Navigator.pop(context);
     }
@@ -143,25 +143,27 @@ class CreateButtonSheetView extends StatelessWidget {
 
   void createMission(
       WorkspaceDashBoardViewModel model, BuildContext context) async {
-    await Navigator.push(
+    final isNeedRefreash = await Navigator.push(
         context,
         MaterialPageRoute(
             builder: ((context) => MultiProvider(
                   providers: [
-                    // ChangeNotifierProvider<
-                    //     WorkspaceDashBoardViewModel>.value(
-                    //   value: model,
-                    // ),
-                    ChangeNotifierProvider<MissionSettingViewModel>(
-                      create: (context) => MissionSettingViewModel.create(
-                          accountProfile: model.accountProfileData)
-                        ..isForUser = model.isPersonalAccount,
+                    ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
+                      value: model,
                     ),
+                    ChangeNotifierProvider<MissionSettingViewModel>(
+                        create: (context) => MissionSettingViewModel()
+                          ..initializeNewMission(
+                              creatorAccount: model.personalprofileData,
+                              ownerAcount: model.accountProfileData
+                            )),
                   ],
-                  child: const MissionSettingPageView(),
+                  child: const MissionEditCardView(),
                 ))));
     // Implement data refreash
-    await model.getAllData();
+    if (isNeedRefreash) {
+      await model.getAllData();
+    }
     if (context.mounted) {
       Navigator.pop(context);
     }
@@ -190,7 +192,7 @@ class CreateButtonSheetView extends StatelessWidget {
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (context, model, child) => SafeArea(
         child: Container(
-          margin: const EdgeInsets.fromLTRB(5, 5, 5, 0),
+          margin: const EdgeInsets.fromLTRB(5, 5, 5, 5),
           child: Column(children: [
             Container(
               height: 12,
@@ -204,10 +206,11 @@ class CreateButtonSheetView extends StatelessWidget {
             Center(
                 child: Text(
               'CREATE 創建',
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             )),
+           //  Divider(thickness: 1,),
             Row(
               children: [
                 CreateButtonTemplate(
@@ -216,7 +219,7 @@ class CreateButtonSheetView extends StatelessWidget {
                   assestPath: 'assets/images/Event.png',
                   onTap: () => createEvent(model, context),
                 ),
-                CreateButtonTemplate(    
+                CreateButtonTemplate(
                   title: '任務 MISSION',
                   descroption: '建立一個新的任務、作業、里程碑，利用狀態來去做追蹤。',
                   assestPath: 'assets/images/Mission.png',
@@ -228,7 +231,7 @@ class CreateButtonSheetView extends StatelessWidget {
               children: [
                 CreateButtonTemplate(
                   title: '話題 TOPIC',
-                  descroption: '與夥伴們任意開啟一個話題、指定任務、事件，或聊聊新的idea吧。',
+                  descroption: '與夥伴們任意開啟一個話題、指定任務、事件，或聊聊新的idea。',
                   assestPath: 'assets/images/topic.png',
                   onTap: () => createTopic(model, context),
                 ),

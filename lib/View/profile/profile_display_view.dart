@@ -330,6 +330,7 @@ class _ShowQRCodeViewState extends State<ShowQRCodeView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 QrImage(
+                  foregroundColor: Theme.of(context).colorScheme.secondary,
                   data: model.stringToShow,
                   version: QrVersions.auto,
                   size: 200,
