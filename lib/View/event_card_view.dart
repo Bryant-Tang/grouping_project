@@ -15,8 +15,7 @@ class EventCardViewTemplate extends StatefulWidget {
 }
 
 class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
-  void onClick(WorkspaceDashBoardViewModel workspaceVM,
-      EventSettingViewModel eventSettingVM) async {
+  void onClick(WorkspaceDashBoardViewModel workspaceVM, EventSettingViewModel eventSettingVM) async {
     debugPrint('open event page');
     const animationDuration = Duration(milliseconds: 400);
     final isNeedRefresh = await Navigator.push(
@@ -81,7 +80,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                             Row(
                               children: [
                                 ColorTagChip(
-                                    tagString: model.ownerAccountName,
+                                    tagString: model.eventOwnerAccount.nickname,
                                     color: themeData.colorScheme.primary),
                               ],
                             ),
@@ -383,7 +382,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
     Widget eventOwnerLabel = Row(
       children: [
         ColorTagChip(
-            tagString: "イベント - ${model.ownerAccountName} の ワークスペース",
+            tagString: "イベント - ${model.eventModel.ownerAccount.nickname} の ワークスペース",
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14),
       ],

@@ -43,11 +43,11 @@ class Progress extends StatefulWidget {
 }
 
 class _ProgressState extends State<Progress> {
-  List<Widget> _allObject = [];
   @override
   Widget build(BuildContext context) {
     return Consumer<WorkspaceDashBoardViewModel>(
       builder: (_, model, child) {
+        List<Widget> _allObject = [];
         _allObject.addAll(model.events
             .map((eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
                 create: (context) => EventSettingViewModel()
@@ -69,7 +69,7 @@ class _ProgressState extends State<Progress> {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('PROGRESSING',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.bold,
                       )),
               const Divider(
                 thickness: 2,
@@ -260,7 +260,7 @@ class _EventProgressingCardState extends State<EventProgressingCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               getTagWidget(
-                                  '${model.eventModel.ownerAccount.name} - 事件'),
+                                  '${model.eventModel.ownerAccount.nickname} - 事件'),
                               Text(
                                 model.title,
                                 style: themeData.textTheme.titleLarge!.copyWith(
