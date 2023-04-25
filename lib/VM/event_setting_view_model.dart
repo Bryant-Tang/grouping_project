@@ -51,10 +51,10 @@ class EventSettingViewModel extends ChangeNotifier {
 
   void toggleSelcted(AccountModel model) {
     if (isEventContributor(model)) {
-      // add
+      // remove
       removeContributors(model);
     } else {
-      // remove
+      // add
       addContributors(model);
     }
     contributorAccountModel = [];
@@ -67,7 +67,7 @@ class EventSettingViewModel extends ChangeNotifier {
   }
 
   void updateTitle(String newTitle) {
-    eventModel.title = newTitle;
+    eventModel.title = newTitle == '' ? '事件標題' : newTitle;
     notifyListeners();
   }
 
@@ -76,7 +76,7 @@ class EventSettingViewModel extends ChangeNotifier {
   }
 
   void updateIntroduction(String newIntro) {
-    eventModel.introduction = newIntro;
+    eventModel.introduction = newIntro == '' ? '事件介紹' : newIntro;
     notifyListeners();
   }
 
@@ -122,7 +122,7 @@ class EventSettingViewModel extends ChangeNotifier {
       {required AccountModel creatorAccount,
       required AccountModel ownerAccount}) {
     // event.ownerAccount = ownerAccount;
-    creatorAccount = creatorAccount;
+    this.creatorAccount = creatorAccount;
     // debugPrint('owner ${this.ownerAccount.id}');
     debugPrint('ownerAccount al ${ownerAccount.associateEntityAccount.length}');
 
@@ -179,21 +179,21 @@ class EventSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> onSave() async {
-    debugPrint("setting mode $settingMode");
-    if (title.isEmpty ||
-        introduction.isEmpty ||
-        startTime.isAfter(endTime) ||
-        endTime.isBefore(DateTime.now())) {
-      return false;
-    }
-    if (settingMode == SettingMode.create) {
-      await createEvent();
-    } else if (settingMode == SettingMode.edit) {
-      await editEvent();
-    }
-    return true;
-  }
+  // Future<bool> onSave() async {
+  //   debugPrint("setting mode $settingMode");
+  //   if (title.isEmpty ||
+  //       introduction.isEmpty ||
+  //       startTime.isAfter(endTime) ||
+  //       endTime.isBefore(DateTime.now())) {
+  //     return false;
+  //   }
+  //   if (settingMode == SettingMode.create) {
+  //     await createEvent();
+  //   } else if (settingMode == SettingMode.edit) {
+  //     await editEvent();
+  //   }
+  //   return true;
+  // }
 
   String errorMessage() {
     if (title.isEmpty) {
