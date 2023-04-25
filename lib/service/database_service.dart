@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/exception.dart';
@@ -66,6 +67,10 @@ class DatabaseService {
     var query = _firestore
         .collection(collectionPath)
         .where(firstKey, arrayContains: condition[firstKey]);
+    // debugPrint(collectionPath);
+    // debugPrint(firstKey);
+    // debugPrint(condition[firstKey]);
+    // debugPrint((await query.get()).size.toString());
     for (var key in condition.keys.skip(1)) {
       query = query.where(key, arrayContains: condition[key]);
     }
@@ -200,7 +205,8 @@ class DatabaseService {
 
   Future<String> createGroupAccount() async {
     String newAccountId = await _createAccount();
-    await _bindDefaultMissionStateWithAccount();
+    await DatabaseService(ownerUid: newAccountId, forUser: false)
+        ._bindDefaultMissionStateWithAccount();
     return newAccountId;
   }
 
@@ -208,11 +214,14 @@ class DatabaseService {
       {required String accountId,
       required String dataId,
       required String dataType}) async {
-    List<String> ownerdataIdList = List.from((await _getDataFitMapFirestore(
-            collectionPath: '${dataType}_account_relation',
-            condition: {'account_id': accountId}))
-        .map((eventIdSnap) => eventIdSnap.id));
+    var a = (await _getDataFitMapFirestore(
+        collectionPath: '${dataType}_account_relation',
+        condition: {'account_id': accountId}));
+    List<String> ownerdataIdList =
+        List.from(a.map((eventIdSnap) => eventIdSnap.id));
     if (ownerdataIdList.isEmpty) {
+      // debugPrint('${a.length}');
+      // debugPrint('account_id: ${accountId}');
       throw GroupingProjectException(
           message: 'The $dataType is not exist in any account.',
           code: GroupingProjectExceptionCode.notExistInDatabase,
@@ -249,9 +258,12 @@ class DatabaseService {
         relation.data()?['account_id'] is Iterable
             ? List.from(relation.data()?['account_id'])
             : [];
-    await _setMapDataFirestore(data: {
-      'account_id': [...originalAccountList, await _getOwnerAccountId()]
-    }, collectionPath: '${dataType}_account_relation', dataId: dataId);
+    String accountId = await _getOwnerAccountId();
+    if (!originalAccountList.contains(accountId)) {
+      await _setMapDataFirestore(data: {
+        'account_id': [...originalAccountList, await _getOwnerAccountId()]
+      }, collectionPath: '${dataType}_account_relation', dataId: dataId);
+    }
   }
 
   Future<void> _setDataModelToFire<T extends BaseDataModel<T>>(
@@ -358,7 +370,7 @@ class DatabaseService {
 
   Future<MissionModel> _checkMissionTimeOut(MissionModel mission) async {
     if (mission.state != MissionStateModel.defaultTimeOutState &&
-        mission.deadline.isAfter(DateTime.now())) {
+        mission.deadline.isBefore(DateTime.now())) {
       mission.setStateByStateModel(MissionStateModel.defaultTimeOutState);
       setMission(mission: mission);
     }
@@ -384,6 +396,8 @@ class DatabaseService {
   }
 
   Future<MissionStateModel> getMissionState({required String stateId}) async {
+    // debugPrint(_ownerAccountId);
+    // debugPrint(stateId);
     MissionStateModel state = await _getSingleDataModelFromFire(
         dataId: stateId, defaultData: MissionStateModel.defaultUnknownState);
     return state;
@@ -402,17 +416,17 @@ class DatabaseService {
     List<String> dataIdList =
         List.from(idSnapList.map((docSnap) => docSnap.id));
 
-    List<T> eventList = [];
+    List<T> dataList = [];
 
     for (var dataId in dataIdList) {
       var docSnap = await _getDocSnapFirestore(
           collectionPath: defaultData.databasePath, dataId: dataId);
-      T event =
+      T data =
           defaultData.fromFirestore(id: docSnap.id, data: docSnap.data() ?? {});
-      eventList.add(event);
+      dataList.add(data);
     }
 
-    return eventList;
+    return dataList;
   }
 
   Future<List<EventModel>> _getSingleAccountAllEvent() async {

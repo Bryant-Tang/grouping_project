@@ -17,7 +17,7 @@ class ColorTagChip extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             color: color.withOpacity(0.1)),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
           child: Center(
             child: Text(tagString,
                 textAlign: TextAlign.center,
