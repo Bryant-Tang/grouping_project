@@ -74,15 +74,52 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
                   );
                 }
               }).toList()),
+          Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: value.accountProfileData.associateEntityAccount
+                  .map((account) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: account.photo.isEmpty
+                        ? Image.asset('assets/images/profile_male.png').image
+                        : Image.memory(account.photo).image),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Text(
+                        account.nickname,
+                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 2,
+                  ),
+                  Divider(
+                    thickness: 1.5,
+                    color: Theme.of(context).colorScheme.secondary,
+                    height: 20,
+                  ),
+                ],
+              )),
+      )
+.toList()),
         ]);
       }
     } else if (model.isShare) {
-      return ChangeNotifierProvider.value(
+      return ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
         value: value,
-        child: ShowQRCodeView(),
+        child: const ShowQRCodeView(),
       );
     } else {
-      return ChangeNotifierProvider.value(
+      return ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
         value: value,
         child: const QrCodeScanner(),
       );
@@ -198,7 +235,8 @@ class CustomLabel extends StatelessWidget {
       required this.title,
       required this.information,
       this.forGroupTags = false});
-
+    
+  Widget? child;
   final String title;
   final String information;
   bool forGroupTags;
@@ -474,9 +512,7 @@ class _QrCodeScannerrState extends State<QrCodeScanner> {
               height: MediaQuery.of(context).size.width * 0.8,
               width: MediaQuery.of(context).size.width * 0.8,
               child: MobileScanner(
-                // scanWindow: Rect.zero,
                 controller: controller,
-                // scanWindow: Rect.fr,
                 onDetect: (capture) async {
                   model.updateBarcode(capture.barcodes[0].rawValue ?? '');
                   controller.stop();
@@ -498,7 +534,7 @@ class _QrCodeScannerrState extends State<QrCodeScanner> {
                               child: const Text('取消')),
                           TextButton(
                               onPressed: () async {
-                                model.addAssociation();
+                                // model.addAssociation();
                                 await value.addGroupViaQR(
                                     model.code, model.groupAccountModel);
                                 if (mounted) {
