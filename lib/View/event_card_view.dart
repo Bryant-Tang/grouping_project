@@ -2,6 +2,7 @@ import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/components/color_tag_chip.dart';
+import 'package:grouping_project/model/model_lib.dart';
 
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -14,8 +15,7 @@ class EventCardViewTemplate extends StatefulWidget {
 }
 
 class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
-  void onClick(WorkspaceDashBoardViewModel workspaceVM,
-      EventSettingViewModel eventSettingVM) async {
+  void onClick(WorkspaceDashBoardViewModel workspaceVM, EventSettingViewModel eventSettingVM) async {
     debugPrint('open event page');
     const animationDuration = Duration(milliseconds: 400);
     final isNeedRefresh = await Navigator.push(
@@ -80,7 +80,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                             Row(
                               children: [
                                 ColorTagChip(
-                                    tagString: model.ownerAccountName,
+                                    tagString: model.eventOwnerAccount.nickname,
                                     color: themeData.colorScheme.primary),
                               ],
                             ),
@@ -382,7 +382,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
     Widget eventOwnerLabel = Row(
       children: [
         ColorTagChip(
-            tagString: "イベント - ${model.ownerAccountName} の ワークスペース",
+            tagString: "イベント - ${model.eventModel.ownerAccount.nickname} の ワークスペース",
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14),
       ],
@@ -523,6 +523,78 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
             )));
   }
 
+  Widget getContributorButton(EventSettingViewModel model, AccountModel account) {
+    return Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: RawChip(
+            onPressed: () => model.updateContibutor(account),
+            // onDeleted: () => model.updateContibutor(account),
+            // deleteIcon: model.isContributors(account) ? const Icon(Icons.delete) : const Icon(Icons.add),
+            selected: model.isContributors(account),
+            elevation: 3,
+            label: Text(account.nickname),
+            avatar: CircleAvatar(
+                backgroundImage: account.photo.isEmpty
+                    ? Image.asset('assets/images/profile_male.png').image
+                    : Image.memory(account.photo).image)));
+  }
+
+  void onUpdateContributor(EventSettingViewModel model) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) =>
+            ChangeNotifierProvider<EventSettingViewModel>.value(
+              value: model,
+              child: Consumer<EventSettingViewModel>(
+                builder: (context, model, child) => SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                          child: model.contributorCandidate.isEmpty
+                              ? const Center(child: Text('無其他成員'))
+                              : Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Wrap(
+                                      children: List.generate(
+                                          model.contributorCandidate.length,
+                                          (index) => getContributorButton(
+                                              model,
+                                              model.contributorCandidate[
+                                                  index]))),
+                                )),
+                    ],
+                  ),
+                ),
+              ),
+            ));
+    // debugPrint(model.contributors.length.toString());
+  }
+
+  Widget getContributorBlock(EventSettingViewModel model) {
+    return generateContentDisplayBlock(
+        '参加者',
+        MaterialButton(
+          onPressed: () async {
+            debugPrint(model.contributors.length.toString());
+            onUpdateContributor(model);
+          },
+          child: model.contributors.isEmpty
+              ? const Text('参加者はいません')
+              : Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Wrap(
+                      children: List.generate(
+                          model.contributors.length,
+                          (index) => getContributorButton(
+                              model, model.contributors[index])),
+                    ),
+                  ],
+                ),
+        ));
+  }
+
+
   void onFinish(EventSettingViewModel model) async {
     if (formKey.currentState!.validate()) {
       final isNeedRefresh = await showDialog(
@@ -586,127 +658,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
     }
   }
 
-  Widget getContributorBlock(EventSettingViewModel model) {
-    return generateContentDisplayBlock(
-        '参加者',
-        MaterialButton(
-          onPressed: () async {
-            debugPrint(model.contributorCandidate.length.toString());
-            await showModalBottomSheet(
-                context: context,
-                builder: (context) =>
-                    ChangeNotifierProvider<EventSettingViewModel>.value(
-                      value: model,
-                      child: Consumer<EventSettingViewModel>(
-                        builder: (context, model, child) => SafeArea(
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: model.contributorCandidate.isEmpty
-                                    ? const Center(
-                                        child: Text('無其他成員'),
-                                      )
-                                    : Padding(
-                                      padding: const EdgeInsets.all(20.0),
-                                      child: Wrap(
-                                        children: List.generate(
-                                              model.contributorCandidate
-                                                  .length,
-                                              (index) => Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            10),
-                                                    child: ChoiceChip(
-                                                      padding:
-                                                          const EdgeInsets
-                                                              .all(6.0),
-                                                      labelStyle: Theme.of(
-                                                              context)
-                                                          .textTheme
-                                                          .labelLarge!
-                                                          .copyWith(
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                      backgroundColor:
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .surfaceVariant,
-                                                      selectedColor: Theme.of(
-                                                              context)
-                                                          .colorScheme
-                                                          .primaryContainer,
-                                                      avatar: CircleAvatar(
-                                                          radius: 30,
-                                                          backgroundImage: model
-                                                                  .contributorCandidate[
-                                                                      index]
-                                                                  .photo
-                                                                  .isEmpty
-                                                              ? Image.asset(
-                                                                      'assets/images/profile_male.png')
-                                                                  .image
-                                                              : Image.memory(model
-                                                                      .contributorCandidate[
-                                                                          index]
-                                                                      .photo)
-                                                                  .image),
-                                                      label: Text(model
-                                                          .contributorCandidate[
-                                                              index]
-                                                          .name),
-                                                      onSelected: (value) {
-                                                        debugPrint(
-                                                            'name ${model.contributorCandidate[index].nickname} $value');
-                                                        model.toggleSelcted(
-                                                            model.contributorCandidate[
-                                                                index]);
-                                                      },
-                                                      selected: model
-                                                          .isEventContributor(
-                                                              model.contributorCandidate[
-                                                                  index]),
-                                                    ),
-                                                  ))),
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ));
-            debugPrint(model.contributorAccountModel.length.toString());
-          },
-          child: model.contributorAccountModel.isEmpty
-              ? const Text('参加者はいません')
-              : Wrap(
-                  children: List.generate(
-                      model.contributorAccountModel.length,
-                      (index) => Padding(
-                            padding: const EdgeInsets.all(4.0),
-                            child: RawChip(
-                              elevation: 3,
-                              label: Text(model
-                                  .contributorAccountModel[index]
-                                  .nickname),
-                              avatar: CircleAvatar(
-                                  backgroundImage: model
-                                          .contributorAccountModel[index]
-                                          .photo
-                                          .isEmpty
-                                      ? Image.asset(
-                                              'assets/images/profile_male.png')
-                                          .image
-                                      : Image.memory(model
-                                              .contributorAccountModel[
-                                                  index]
-                                              .photo)
-                                          .image),
-                            ),
-                          ))),
-        ));
-  }
+  
 
   final formKey = GlobalKey<FormState>();
   Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
@@ -734,8 +686,6 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                     elevation: 2,
                     leading: IconButton(
                       onPressed: () {
-                        // theme.updateColorSchemeSeed(
-                        //   Color(workspaceVM.accountProfileData.color));
                         Navigator.pop(context);
                       },
                       icon: Icon(Icons.arrow_back_ios_rounded,
