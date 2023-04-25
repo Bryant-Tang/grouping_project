@@ -31,19 +31,17 @@ class MissionSettingViewModel extends ChangeNotifier {
   DateFormat dataformat = DateFormat('h:mm a, MMM d, y');
   String get formattedDeadline => dataformat.format(missionDeadline);
   Color get color => Color(missionOwnerAccount.color);
-
-  List<AccountModel> contributorProfile = [];
-  List<AccountModel> get contributors => contributorProfile;
-  List<AccountModel> get groupMember => creatorAccount.associateEntityAccount;
-  List<AccountModel> get contributor => contributorAccountModelList;
+  List<AccountModel> get contributors => forUser
+      ? [creatorAccount]
+      : List.from(contributorCandidate.where((accountModel) =>
+          missionModel.contributorIds.contains(accountModel.id!)));
+  List<AccountModel> get contributorCandidate =>
+      forUser ? [] : missionOwnerAccount.associateEntityAccount;
   MissionStateModel get stateModel => missionModel.state;
   bool isLoading = true;
+  // List<String> get missionContributoIds => missionModel.contributorIds;
 
-  // bool get forUser => isPersonal;
-  // MissionSettingViewModel(this.missionModel, this.settingMode);
-
-  // model.getAllState();
-  // model.updateState(MissionStage.progress, 'in progress');
+  // The list of contibutor canidatet when we select participant in edit and create mode
 
   void updateTitle(String newTitle) {
     missionModel.title = newTitle;
@@ -85,65 +83,74 @@ class MissionSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addContributors(String newContributorId) {
-    missionModel.contributorIds.add(newContributorId);
-    notifyListeners();
-  }
+  // void addContributors(String newContributorId) {
+  //   missionModel.contributorIds.add(newContributorId);
+  //   notifyListeners();
+  // }
 
-  void removeContributors(String removedContributorId) {
-    missionModel.contributorIds.remove(removedContributorId);
-    notifyListeners();
-  }
+  // void removeContributors(String removedContributorId) {
+  //   missionModel.contributorIds.remove(removedContributorId);
+  //   notifyListeners();
+  // }
 
   void updateState(MissionStateModel newState) {
     missionModel.setStateByStateModel(newState);
     notifyListeners();
   }
 
-  void createState(MissionStage newStage, String newStateName) async {
-    // TODO: 沒有及時刷新
-    await DatabaseService(
-            ownerUid: forUser ? AuthService().getUid() : creatorAccount.id!,
-            forUser: forUser)
-        .setMissionState(
-            state: MissionStateModel(stage: newStage, stateName: newStateName));
-    getAllState();
+  void updateContibutor(AccountModel model) {
+    isContributors(model)
+        ? missionModel.contributorIds.remove(model.id!)
+        : missionModel.contributorIds.add(model.id!);
     notifyListeners();
   }
 
-  void deleteStateName(
-      MissionStage selectedStage, String selectedStateName) async {
-    MissionStateModel beDeleted;
-    if (selectedStage == MissionStage.progress) {
-      beDeleted = inProgress
-          .firstWhere((element) => element.stateName == selectedStateName);
-    } else if (selectedStage == MissionStage.pending) {
-      beDeleted = pending
-          .firstWhere((element) => element.stateName == selectedStateName);
-    } else if (selectedStage == MissionStage.close) {
-      beDeleted =
-          close.firstWhere((element) => element.stateName == selectedStateName);
-    } else {
-      beDeleted = MissionStateModel();
-    }
-    if (stateModel.stateName == selectedStateName) {
-      String name = '';
-      if (selectedStage == MissionStage.progress) {
-        name = 'in progress';
-      } else if (selectedStage == MissionStage.pending) {
-        name = 'pending';
-      } else if (selectedStage == MissionStage.close) {
-        name = 'finish';
-      } else {}
-      // updateState(selectedStage, name);
-    }
-    await DatabaseService(
-            ownerUid: forUser ? AuthService().getUid() : creatorAccount.id!,
-            forUser: forUser)
-        .deleteMissionState(beDeleted);
-    getAllState();
-    notifyListeners();
-  }
+  bool isContributors(AccountModel model) =>
+      missionModel.contributorIds.contains(model.id!);
+  // void createState(MissionStage newStage, String newStateName) async {
+  //   // TODO: 沒有及時刷新
+  //   await DatabaseService(
+  //           ownerUid: forUser ? AuthService().getUid() : creatorAccount.id!,
+  //           forUser: forUser)
+  //       .setMissionState(
+  //           state: MissionStateModel(stage: newStage, stateName: newStateName));
+  //   getAllState();
+  //   notifyListeners();
+  // }
+
+  // void deleteStateName(
+  //     MissionStage selectedStage, String selectedStateName) async {
+  //   MissionStateModel beDeleted;
+  //   if (selectedStage == MissionStage.progress) {
+  //     beDeleted = inProgress
+  //         .firstWhere((element) => element.stateName == selectedStateName);
+  //   } else if (selectedStage == MissionStage.pending) {
+  //     beDeleted = pending
+  //         .firstWhere((element) => element.stateName == selectedStateName);
+  //   } else if (selectedStage == MissionStage.close) {
+  //     beDeleted =
+  //         close.firstWhere((element) => element.stateName == selectedStateName);
+  //   } else {
+  //     beDeleted = MissionStateModel();
+  //   }
+  //   if (stateModel.stateName == selectedStateName) {
+  //     String name = '';
+  //     if (selectedStage == MissionStage.progress) {
+  //       name = 'in progress';
+  //     } else if (selectedStage == MissionStage.pending) {
+  //       name = 'pending';
+  //     } else if (selectedStage == MissionStage.close) {
+  //       name = 'finish';
+  //     } else {}
+  //     // updateState(selectedStage, name);
+  //   }
+  //   await DatabaseService(
+  //           ownerUid: forUser ? AuthService().getUid() : creatorAccount.id!,
+  //           forUser: forUser)
+  //       .deleteMissionState(beDeleted);
+  //   getAllState();
+  //   notifyListeners();
+  // }
 
   Future<void> getAllState() async {
     debugPrint(missionOwnerAccount.id!);
@@ -152,15 +159,10 @@ class MissionSettingViewModel extends ChangeNotifier {
             .getAllMissionState();
     inProgress = List.from(
         allState.where((state) => state.stage == MissionStage.progress));
-    // inProgress = List.generate(inProgressIndexs.length, (index) => allState[index]);
     pending = List.from(
         allState.where((state) => state.stage == MissionStage.pending));
     close =
         List.from(allState.where((state) => state.stage == MissionStage.close));
-    // close = List.generate(inCloseIndexs.length, (index) => allState[index]);
-    // for (MissionStateModel state in allState) {
-    //   debugPrint('${state.stateName}');
-    // }
     notifyListeners();
   }
 
@@ -201,7 +203,6 @@ class MissionSettingViewModel extends ChangeNotifier {
       {required AccountModel creatorAccount,
       required AccountModel ownerAcount}) async {
     this.creatorAccount = creatorAccount;
-    // debugPrint('owner ${this.creatorAccount.id}');
     missionModel = MissionModel(
       deadline: DateTime.now().add(const Duration(hours: 1)),
       title: '任務標題',
@@ -214,11 +215,6 @@ class MissionSettingViewModel extends ChangeNotifier {
     notifyListeners();
     await getAllState();
     missionModel.setStateByStateModel(MissionStateModel.defaultProgressState);
-    debugPrint(inProgress.length.toString());
-    debugPrint(pending.length.toString());
-    debugPrint(close.length.toString());
-    // await get all contibutor candidate
-    contributorAccountModelList.add(creatorAccount);
     isLoading = false;
     notifyListeners();
   }
@@ -228,12 +224,11 @@ class MissionSettingViewModel extends ChangeNotifier {
     isLoading = true;
     missionModel = model;
     creatorAccount = user;
-    // await getAllState();
-    // ownerAccount = eventModel.ownerAccount;
     forUser = missionOwnerAccount.id! == creatorAccount.id!;
-    addContributors(creatorAccount.id!);
-    contributorAccountModelList.add(creatorAccount);
+    isLoading = true;
     notifyListeners();
+    await getAllState();
+
     // eventContributoIds.add(eventOwnerAccount.id!);
     // debugPrint('ownerAccount ${eventModel.ownerAccount.nickname.toString()}');
     // debugPrint('ownerAccount ${eventModel.ownerAccount.associateEntityId.toString()}');
@@ -241,26 +236,6 @@ class MissionSettingViewModel extends ChangeNotifier {
     // debugPrint(eventModel.associateEntityAccount.toString());
     // debugPrint(eventModel.contributorIds.toString());
     // missionOwnerAccount.associateEntityAccount = [];
-    // if (forUser == false) {
-    //   // get all event contributor account Profile from owner Account model associate list
-    //   for (String associationEntityId in missionModel.ownerAccount.associateEntityId) {
-    //     eventModel.ownerAccount.associateEntityAccount.add(
-    //         await DatabaseService(ownerUid: associationEntityId, forUser: false)
-    //             .getAccount());
-    //   }
-    //   for (AccountModel candidateAccountModel in contributorCandidate) {
-    //     if (eventContributoIds.contains(candidateAccountModel.id!)) {
-    //       contributorAccountModel.add(candidateAccountModel);
-    //     }
-    //   }
-    // // debugPrint(contributorAccountModel.length.toString());
-    // for (String contributorId in eventContributoIds) {
-    //   contributorAccountModel
-    //       .add(await DatabaseService(ownerUid: contributorId).getAccount());
-    // }
-    // } else {
-    //   missionOwnerAccount.associateEntityAccount.add(creatorAccount);
-    // }
     isLoading = false;
     notifyListeners();
   }
