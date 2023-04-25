@@ -578,21 +578,16 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
         '參與者',
         MaterialButton(
           onPressed: () async {
-            debugPrint(model.contributors.length.toString());
+            // debugPrint(model.eventModel.contributorIds.length.toString());
             onUpdateContributor(model);
           },
           child: model.contributors.isEmpty
-              ? const Text('沒有參與者')
-              : Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Wrap(
-                      children: List.generate(
-                          model.contributors.length,
-                          (index) => getContributorButton(
-                              model, model.contributors[index])),
-                    ),
-                  ],
+              ? const Text('参加者はいません')
+              : Wrap(
+                  children: List.generate(
+                      model.contributors.length,
+                      (index) => getContributorButton(
+                          model, model.contributors[index])),
                 ),
         ));
   }

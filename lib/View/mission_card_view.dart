@@ -125,9 +125,9 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                             ),
                             Row(
                               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              // crossAxisAlignment: CrossAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const Icon(Icons.timer),
+                                const Icon(Icons.timer, size: 18),
                                 Text(model.formattedDeadline),
                               ],
                             ),
@@ -138,7 +138,7 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                         flex: 2,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             getStateLabelButton(() {}, model.missionState,
                                 model.stageColorMap[model.missionState.stage]!),
@@ -409,11 +409,11 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
         '參與者',
         MaterialButton(
           onPressed: () async {
-            debugPrint(model.contributors.length.toString());
+            // debugPrint(model.missionModel.contributorIds.length.toString());
             onUpdateContributor(model);
           },
           child: model.contributors.isEmpty
-              ? const Text('沒有參與')
+              ? const Text('参加者はいません')
               : Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
