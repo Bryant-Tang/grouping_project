@@ -1,7 +1,9 @@
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/event_card_view.dart';
-import 'package:grouping_project/model/event_model.dart';
+import 'package:grouping_project/View/mission_card_view.dart';
+import 'package:grouping_project/model/model_lib.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -82,42 +84,23 @@ class _CalendarPageState extends State<CalendarPage> {
   }) async {
     eventAndMissionCards = [];
     // debugPrint(eventAndMission.toString());
-    for (int index = 0; index < eventAndMission.length; index++) {
-      // debugPrint(index.toString());
-      if (eventAndMission[index].toString() == 'Instance of \'MissionModel\'') {
-        eventAndMissionCards.add(Card(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  eventAndMission[index].title,
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(fontWeight: FontWeight.w600, fontSize: 20),
-                ),
-                Text(
-                  eventAndMission[index].introduction,
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge!
-                      .copyWith(fontWeight: FontWeight.w400, fontSize: 15),
-                ),
-                Text(
-                  'Deadline: ${DateFormat('h:mm a, MMM d, y').format(eventAndMission[index].deadline)}',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelMedium!
-                      .copyWith(fontWeight: FontWeight.w300, fontSize: 15),
-                )
-              ],
-            ),
-          ),
-        ));
-      }
-    }
+
+    List<MissionModel> missionOnly = eventAndMission
+        .where((element) {
+          return element.toString() == 'Instance of \'MissionModel\'';
+        })
+        .toList()
+        .cast();
+    eventAndMissionCards.addAll(missionOnly
+        .map((eventModel) => ChangeNotifierProvider<MissionSettingViewModel>(
+            create: (context) => MissionSettingViewModel()
+              ..initializeDisplayMission(
+                  model: eventModel,
+                  user: context
+                      .read<WorkspaceDashBoardViewModel>()
+                      .personalprofileData),
+            child: const MissionCardViewTemplate()))
+        .toList());
     List<EventModel> eventsOnly = eventAndMission
         .where((element) {
           return element.toString() == 'Instance of \'EventModel\'';
@@ -127,9 +110,11 @@ class _CalendarPageState extends State<CalendarPage> {
     eventAndMissionCards.addAll(eventsOnly
         .map((eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
             create: (context) => EventSettingViewModel()
-            ..initializeDisplayEvent(
-              model: eventModel, 
-              user: context.read<WorkspaceDashBoardViewModel>().personalprofileData),
+              ..initializeDisplayEvent(
+                  model: eventModel,
+                  user: context
+                      .read<WorkspaceDashBoardViewModel>()
+                      .personalprofileData),
             child: const EventCardViewTemplate()))
         .toList());
     // debugPrint(

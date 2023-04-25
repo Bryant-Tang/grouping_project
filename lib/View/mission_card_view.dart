@@ -16,7 +16,8 @@ class MissionCardViewTemplate extends StatefulWidget {
 }
 
 class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
-  void onClick(WorkspaceDashBoardViewModel workspaceVM, MissionSettingViewModel missionSettingVM) async {
+  void onClick(WorkspaceDashBoardViewModel workspaceVM,
+      MissionSettingViewModel missionSettingVM) async {
     debugPrint('open mission page');
     const animationDuration = Duration(milliseconds: 400);
     final isNeedRefresh = await Navigator.push(
@@ -120,7 +121,7 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                               maxLines: 1,
                               style: themeData.textTheme.titleSmall!.copyWith(
                                   // color: themeData.colorScheme.secondary,
-                                  fontSize: 16),
+                                  fontSize: 14),
                             ),
                             Row(
                               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,7 +140,8 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            getStateLabelButton(() {}, model.missionState, model.stageColorMap[model.missionState.stage]!),
+                            getStateLabelButton(() {}, model.missionState,
+                                model.stageColorMap[model.missionState.stage]!),
                           ],
                         ),
                       )
@@ -308,7 +310,8 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
         }));
   }
 
-  Widget getStateLabelButton(Function callBack, MissionStateModel state, Color color) {
+  Widget getStateLabelButton(
+      Function callBack, MissionStateModel state, Color color) {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: ElevatedButton(
@@ -317,7 +320,8 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
             side: BorderSide(color: color),
             foregroundColor: color,
             // backgroundColor: color.withOpacity(0.1),
-            textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+            textStyle:
+                const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
             elevation: 4,
           ),
           child: Row(
@@ -333,7 +337,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
 
   Widget getDeadlineBlock(MissionSettingViewModel model) {
     return generateContentDisplayBlock(
-      '截止時間',
+        '截止時間',
         ElevatedButton(
             onPressed: () => showTimePicker(
                 model.updateDeadline, context, model.missionDeadline),

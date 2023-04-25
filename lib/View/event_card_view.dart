@@ -15,7 +15,8 @@ class EventCardViewTemplate extends StatefulWidget {
 }
 
 class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
-  void onClick(WorkspaceDashBoardViewModel workspaceVM, EventSettingViewModel eventSettingVM) async {
+  void onClick(WorkspaceDashBoardViewModel workspaceVM,
+      EventSettingViewModel eventSettingVM) async {
     debugPrint('open event page');
     const animationDuration = Duration(milliseconds: 400);
     final isNeedRefresh = await Navigator.push(
@@ -103,7 +104,10 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                               children: [
                                 Text(model.formattedStartTime),
                                 const Icon(Icons.arrow_right_rounded),
-                                Text(model.formattedEndTime, overflow: TextOverflow.fade),
+                                Expanded(
+                                  child: Text(model.formattedEndTime,
+                                      maxLines: 1, overflow: TextOverflow.fade),
+                                )
                               ],
                             )
                           ],
@@ -382,7 +386,8 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
     Widget eventOwnerLabel = Row(
       children: [
         ColorTagChip(
-            tagString: "イベント - ${model.eventModel.ownerAccount.nickname} の ワークスペース",
+            tagString:
+                "イベント - ${model.eventModel.ownerAccount.nickname} の ワークスペース",
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14),
       ],
@@ -460,13 +465,11 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                             hour: initialTime.hour, minute: initialTime.minute),
                         onChange: (newTime) {
                           debugPrint(value.runtimeType.toString());
-                          debugPrint(newTime.toString());   
-                          callBack( 
-                            (value as DateTime).copyWith(
-                              hour: newTime.hour,
-                              minute: newTime.minute,
-                            )
-                          );
+                          debugPrint(newTime.toString());
+                          callBack((value as DateTime).copyWith(
+                            hour: newTime.hour,
+                            minute: newTime.minute,
+                          ));
                         }),
                   );
                 },
@@ -523,7 +526,8 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
             )));
   }
 
-  Widget getContributorButton(EventSettingViewModel model, AccountModel account) {
+  Widget getContributorButton(
+      EventSettingViewModel model, AccountModel account) {
     return Padding(
         padding: const EdgeInsets.all(6.0),
         child: RawChip(
@@ -594,7 +598,6 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
         ));
   }
 
-
   void onFinish(EventSettingViewModel model) async {
     if (formKey.currentState!.validate()) {
       final isNeedRefresh = await showDialog(
@@ -657,8 +660,6 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
       Navigator.pop(context, isNeedRefresh);
     }
   }
-
-  
 
   final formKey = GlobalKey<FormState>();
   Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
