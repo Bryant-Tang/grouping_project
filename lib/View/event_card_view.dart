@@ -582,7 +582,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
             onUpdateContributor(model);
           },
           child: model.contributors.isEmpty
-              ? const Text('参加者はいません')
+              ? const Text('沒有參與者')
               : Wrap(
                   children: List.generate(
                       model.contributors.length,
