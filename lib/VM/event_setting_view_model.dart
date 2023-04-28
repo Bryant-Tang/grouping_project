@@ -109,7 +109,7 @@ class EventSettingViewModel extends ChangeNotifier {
     // event.ownerAccount = ownerAccount;
     this.creatorAccount = creatorAccount;
     // debugPrint('owner ${this.ownerAccount.id}');
-    debugPrint('ownerAccount al ${ownerAccount.associateEntityAccount.length}');
+    // debugPrint('ownerAccount ${ownerAccount.associateEntityAccount.length}');
 
     eventModel = EventModel(
         startTime: DateTime.now(),
@@ -125,13 +125,14 @@ class EventSettingViewModel extends ChangeNotifier {
 
   Future<void> initializeDisplayEvent(
       {required EventModel model, required AccountModel user}) async {
-    isLoading = true;
     eventModel = model;
     creatorAccount = user;
-    // ownerAccount = eventModel.ownerAccount;
     forUser = eventOwnerAccount.id! == creatorAccount.id!;
+    isLoading = true;
     notifyListeners();
-
+    eventModel.ownerAccount = await DatabaseService(
+            ownerUid: eventModel.ownerAccount.id!, forUser: false)
+        .getAccount();
     isLoading = false;
     notifyListeners();
   }

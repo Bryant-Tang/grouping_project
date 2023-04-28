@@ -15,7 +15,8 @@ class EventCardViewTemplate extends StatefulWidget {
 }
 
 class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
-  void onClick(WorkspaceDashBoardViewModel workspaceVM, EventSettingViewModel eventSettingVM) async {
+  void onClick(WorkspaceDashBoardViewModel workspaceVM,
+      EventSettingViewModel eventSettingVM) async {
     debugPrint('open event page');
     const animationDuration = Duration(milliseconds: 400);
     final isNeedRefresh = await Navigator.push(
@@ -103,7 +104,10 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                               children: [
                                 Text(model.formattedStartTime),
                                 const Icon(Icons.arrow_right_rounded),
-                                Text(model.formattedEndTime, overflow: TextOverflow.fade),
+                                Expanded(
+                                  child: Text(model.formattedEndTime,
+                                      maxLines: 1, overflow: TextOverflow.fade),
+                                )
                               ],
                             )
                           ],
@@ -382,7 +386,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
     Widget eventOwnerLabel = Row(
       children: [
         ColorTagChip(
-            tagString: "イベント - ${model.eventModel.ownerAccount.nickname} の ワークスペース",
+            tagString: "事件 - ${model.eventModel.ownerAccount.nickname} 的工作區",
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14),
       ],
@@ -417,9 +421,9 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
     TextStyle textStyle = Theme.of(context)
         .textTheme
         .titleMedium!
-        .copyWith(fontWeight: FontWeight.bold, fontSize: 20);
+        .copyWith(fontWeight: FontWeight.bold, fontSize: 16);
     return generateContentDisplayBlock(
-        'イベントの説明',
+        '事件介紹',
         TextFormField(
           initialValue: model.introduction == "事件介紹" ? "" : model.introduction,
           style: textStyle,
@@ -460,13 +464,11 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                             hour: initialTime.hour, minute: initialTime.minute),
                         onChange: (newTime) {
                           debugPrint(value.runtimeType.toString());
-                          debugPrint(newTime.toString());   
-                          callBack( 
-                            (value as DateTime).copyWith(
-                              hour: newTime.hour,
-                              minute: newTime.minute,
-                            )
-                          );
+                          debugPrint(newTime.toString());
+                          callBack((value as DateTime).copyWith(
+                            hour: newTime.hour,
+                            minute: newTime.minute,
+                          ));
                         }),
                   );
                 },
@@ -504,7 +506,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
 
   Widget getEndTimeBlock(EventSettingViewModel model) {
     return generateContentDisplayBlock(
-        '終了時間',
+        '結束時間',
         ElevatedButton(
             onPressed: () =>
                 showTimePicker(model.updateEndTime, context, model.endTime),
@@ -523,7 +525,8 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
             )));
   }
 
-  Widget getContributorButton(EventSettingViewModel model, AccountModel account) {
+  Widget getContributorButton(
+      EventSettingViewModel model, AccountModel account) {
     return Padding(
         padding: const EdgeInsets.all(6.0),
         child: RawChip(
@@ -572,28 +575,22 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
 
   Widget getContributorBlock(EventSettingViewModel model) {
     return generateContentDisplayBlock(
-        '参加者',
+        '參與者',
         MaterialButton(
           onPressed: () async {
-            debugPrint(model.contributors.length.toString());
+            // debugPrint(model.eventModel.contributorIds.length.toString());
             onUpdateContributor(model);
           },
           child: model.contributors.isEmpty
-              ? const Text('参加者はいません')
-              : Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Wrap(
-                      children: List.generate(
-                          model.contributors.length,
-                          (index) => getContributorButton(
-                              model, model.contributors[index])),
-                    ),
-                  ],
+              ? const Text('沒有參與者')
+              : Wrap(
+                  children: List.generate(
+                      model.contributors.length,
+                      (index) => getContributorButton(
+                          model, model.contributors[index])),
                 ),
         ));
   }
-
 
   void onFinish(EventSettingViewModel model) async {
     if (formKey.currentState!.validate()) {
@@ -602,13 +599,13 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
           builder: (context) {
             return AlertDialog(
               title: const Text('確認'),
-              content: const Text('本当に編集しますか？'),
+              content: const Text('是否確認編輯?'),
               actions: [
                 TextButton(
                     onPressed: () {
                       Navigator.pop(context, false);
                     },
-                    child: const Text('いいえ')),
+                    child: const Text('否')),
                 TextButton(
                     onPressed: () async {
                       await model.createEvent();
@@ -616,7 +613,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                         Navigator.pop(context, true);
                       }
                     },
-                    child: const Text('はい')),
+                    child: const Text('確認')),
               ],
             );
           });
@@ -632,13 +629,13 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
         builder: (context) {
           return AlertDialog(
             title: const Text('確認'),
-            content: const Text('本当に削除しますか？'),
+            content: const Text('是否確認刪除?'),
             actions: [
               TextButton(
                   onPressed: () {
                     Navigator.pop(context, false);
                   },
-                  child: const Text('いいえ')),
+                  child: const Text('否')),
               TextButton(
                   onPressed: () async {
                     await model.deleteEvent();
@@ -646,7 +643,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                       Navigator.pop(context, true);
                     }
                   },
-                  child: const Text('はい')),
+                  child: const Text('是')),
             ],
           );
         });
@@ -657,8 +654,6 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
       Navigator.pop(context, isNeedRefresh);
     }
   }
-
-  
 
   final formKey = GlobalKey<FormState>();
   Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
@@ -721,9 +716,9 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                               getEndTimeBlock(model),
                               getContributorBlock(model),
                               generateContentDisplayBlock(
-                                  '関連タスク',
+                                  '子任務',
                                   model.eventModel.relatedMissionIds.isEmpty
-                                      ? const Text('関連タスクはありません')
+                                      ? const Text('沒有子任務')
                                       : ListView.builder(
                                           shrinkWrap: true,
                                           physics:
@@ -735,10 +730,10 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                                                   .relatedMissionIds[index]))),
                               // relation note
                               generateContentDisplayBlock(
-                                  '関連ノート', const Text('関連ノートはありません')),
+                                  '關聯筆記', const Text('沒有關聯筆記')),
                               // relation message
                               generateContentDisplayBlock(
-                                  '関連メッセージ', const Text('関連メッセージはありません')),
+                                  '關聯話題', const Text('沒有關聯話題')),
                             ]),
                       ),
                     ),
