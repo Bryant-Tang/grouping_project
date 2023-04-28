@@ -63,6 +63,7 @@ class _ProgressState extends State<Progress> {
                           model: missionModel, user: model.personalprofileData),
                     child: const MissionProgressingCard()))
             .toList());
+        
         return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             child:

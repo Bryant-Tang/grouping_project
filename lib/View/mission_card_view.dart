@@ -248,7 +248,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
     TextStyle textStyle = Theme.of(context)
         .textTheme
         .titleMedium!
-        .copyWith(fontWeight: FontWeight.bold, fontSize: 20);
+        .copyWith(fontWeight: FontWeight.bold, fontSize: 16);
     return generateContentDisplayBlock(
         '任務介紹',
         TextFormField(
@@ -283,7 +283,7 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
               child: SfDateRangePicker(
                 initialSelectedDate: initialTime,
                 onSubmit: (value) {
-                  debugPrint(value.toString());
+                  // debugPrint(value.toString());
                   Navigator.pop(context);
                   Navigator.of(context).push(
                     showPicker(
@@ -414,17 +414,12 @@ class _EditCardViewCardViewState extends State<MissionEditCardView> {
           },
           child: model.contributors.isEmpty
               ? const Text('参加者はいません')
-              : Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Wrap(
-                      children: List.generate(
-                          model.contributors.length,
-                          (index) => getContributorButton(
-                              model, model.contributors[index])),
-                    ),
-                  ],
-                ),
+              : Wrap(
+                children: List.generate(
+                    model.contributors.length,
+                    (index) => getContributorButton(
+                        model, model.contributors[index])),
+              ),
         ));
   }
 
