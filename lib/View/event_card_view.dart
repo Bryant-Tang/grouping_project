@@ -421,7 +421,7 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
     TextStyle textStyle = Theme.of(context)
         .textTheme
         .titleMedium!
-        .copyWith(fontWeight: FontWeight.bold, fontSize: 20);
+        .copyWith(fontWeight: FontWeight.bold, fontSize: 16);
     return generateContentDisplayBlock(
         '事件介紹',
         TextFormField(
