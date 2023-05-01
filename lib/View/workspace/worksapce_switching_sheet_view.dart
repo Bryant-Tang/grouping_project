@@ -39,7 +39,7 @@ class _SwitchWorkSpaceSheetState extends State<SwitchWorkSpaceSheet> {
                   Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Center(
-                      child: Text('WOKSPACE',
+                      child: Text('WORKSPACE',
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium!
@@ -169,14 +169,14 @@ class GroupSwitcherView extends StatelessWidget {
                                     Text(accountModel.nickname,
                                         style: themeData.textTheme.titleMedium!
                                             .copyWith(
-                                                fontWeight: FontWeight.bold)),
+                                                fontWeight: FontWeight.bold, color: themeData
+                                                    .colorScheme.primary)),
                                     accountModel.id == model.personalprofileData.id ? const SizedBox() :
                                     Text(accountModel.introduction,
                                         style: themeData.textTheme.titleSmall!
                                             .copyWith(
                                           fontWeight: FontWeight.bold,
-                                          color: Theme.of(context)
-                                              .colorScheme
+                                          color: themeData.colorScheme
                                               .secondary,
                                         ))
                                   ],

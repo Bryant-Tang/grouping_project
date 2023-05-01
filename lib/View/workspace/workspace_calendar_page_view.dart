@@ -1,8 +1,8 @@
 import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/View/event_card_view.dart';
-import 'package:grouping_project/View/mission_card_view.dart';
+import 'package:grouping_project/View/EditableCard/event_card_view.dart';
+import 'package:grouping_project/View/EditableCard/mission_card_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
