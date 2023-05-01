@@ -66,7 +66,7 @@ class EventSettingViewModel extends ChangeNotifier {
       eventModel.contributorIds.contains(model.id!);
 
   void updateTitle(String newTitle) {
-    eventModel.title = newTitle;
+    eventModel.title = newTitle == '' ? '事件標題' : newTitle;
     notifyListeners();
   }
 
@@ -75,7 +75,7 @@ class EventSettingViewModel extends ChangeNotifier {
   }
 
   void updateIntroduction(String newIntro) {
-    eventModel.introduction = newIntro;
+    eventModel.introduction = newIntro == '' ? '事件介紹' : newIntro;
     notifyListeners();
   }
 
