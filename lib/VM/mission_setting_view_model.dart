@@ -45,7 +45,7 @@ class MissionSettingViewModel extends ChangeNotifier {
   // The list of contibutor canidatet when we select participant in edit and create mode
 
   void updateTitle(String newTitle) {
-    missionModel.title = newTitle;
+    missionModel.title = newTitle == '' ? '事件標題' : newTitle;
     notifyListeners();
   }
 
@@ -54,7 +54,7 @@ class MissionSettingViewModel extends ChangeNotifier {
   }
 
   void updateIntroduction(String newIntro) {
-    missionModel.introduction = newIntro;
+    missionModel.introduction = newIntro == '' ? '事件介紹' : newIntro;
     notifyListeners();
   }
 
