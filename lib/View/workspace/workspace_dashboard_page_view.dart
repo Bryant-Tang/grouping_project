@@ -1,10 +1,10 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/View/mission_card_view.dart';
+import 'package:grouping_project/View/EditableCard/mission_card_view.dart';
 import 'package:grouping_project/components/button/overview_choice_button.dart';
 import 'package:flutter/material.dart';
-import 'package:grouping_project/View/event_card_view.dart';
+import 'package:grouping_project/View/EditableCard/event_card_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
