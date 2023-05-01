@@ -385,7 +385,7 @@ class _RecommendPageState extends State<RecommendPage> {
                           height: 120,
                         ),
                         const SizedBox(
-                          height: 20,
+                          height: 10,
                         ),
                         const Text(
                           "修改個人資訊",

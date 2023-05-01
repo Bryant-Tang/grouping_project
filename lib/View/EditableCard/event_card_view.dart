@@ -110,7 +110,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                                 const Icon(Icons.arrow_right_rounded),
                                 Expanded(
                                   child: Text(model.formattedEndTime,
-                                      maxLines: 1, overflow: TextOverflow.fade),
+                                      maxLines: 1, overflow: TextOverflow.ellipsis),
                                 )
                               ],
                             )
