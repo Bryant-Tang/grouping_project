@@ -65,10 +65,9 @@ class _CalendarPageState extends State<CalendarPage> {
       {required DateTime selectedDay,
       required DateTime focusedDay,
       required CalendarViewModel model}) async {
-    if ((selectedDay.month != _focusedDay.month) ||
-        (selectedDay.year != _focusedDay.year)) {
+    if (selectedDay.year != _focusedDay.year) {
       await model.getEventsAndMissionsByDate(selectedDay);
-      await model.toMapAMonth(year: selectedDay.year, month: selectedDay.month);
+      await model.toMapAYear(year: selectedDay.year);
     }
     _selectedDay = selectedDay;
     _focusedDay = focusedDay;
@@ -140,7 +139,7 @@ class _CalendarPageState extends State<CalendarPage> {
         eventAndMission: model.eventsMap[DateTime(
                 _focusedDay.year, _focusedDay.month, _focusedDay.day)] ??
             []);
-    await model.toMapAMonth(year: _focusedDay.year, month: _focusedDay.month);
+    await model.toMapAYear(year: _focusedDay.year);
   }
 
   @override
@@ -269,9 +268,12 @@ class _CalendarPageState extends State<CalendarPage> {
                               selectedDay: selectedDay);
                         },
                         onPageChanged: (focusedDay) async {
-                          _focusedDay = focusedDay;
-                          await calenderVM.toMapAMonth(
-                              year: _focusedDay.year, month: _focusedDay.month);
+                          if (focusedDay.year != _focusedDay.year) {
+                            _focusedDay = focusedDay;
+                            await calenderVM.toMapAYear(
+                              year: _focusedDay.year,
+                            );
+                          }
                         },
                       ),
                     ),
