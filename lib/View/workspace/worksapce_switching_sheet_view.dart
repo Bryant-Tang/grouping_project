@@ -39,7 +39,7 @@ class _SwitchWorkSpaceSheetState extends State<SwitchWorkSpaceSheet> {
                   Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Center(
-                      child: Text('WOKSPACE',
+                      child: Text('WORKSPACE',
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium!
