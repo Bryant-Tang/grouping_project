@@ -190,7 +190,6 @@ class _CalendarPageState extends State<CalendarPage> {
                           if (tempDate != null) {
                             _focusedDay = tempDate;
                             _selectedDay = tempDate;
-                            eventAndMissionCards.clear();
                             await onDaySelected(
                                 selectedDay: _selectedDay,
                                 focusedDay: _focusedDay,
@@ -258,7 +257,6 @@ class _CalendarPageState extends State<CalendarPage> {
                           return isSameDay(_selectedDay, day);
                         },
                         onDaySelected: (selectedDay, focusedDay) async {
-                          eventAndMissionCards.clear();
                           await onDaySelected(
                               model: calenderVM,
                               focusedDay: focusedDay,
