@@ -19,6 +19,7 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
   void onClick(WorkspaceDashBoardViewModel workspaceVM,
       MissionSettingViewModel missionSettingVM) async {
     debugPrint('open mission page');
+    context.read<ThemeManager>().updateColorSchemeSeed(missionSettingVM.color);
     const animationDuration = Duration(milliseconds: 400);
     final isNeedRefresh = await Navigator.push(
         context,
@@ -34,6 +35,11 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                 ], child: const MissionEditCardView())));
     if (isNeedRefresh != null && isNeedRefresh) {
       await workspaceVM.getAllData();
+    }
+    if (mounted) {
+      context
+          .read<ThemeManager>()
+          .updateColorSchemeSeed(Color(workspaceVM.accountProfileData.color));
     }
   }
 
