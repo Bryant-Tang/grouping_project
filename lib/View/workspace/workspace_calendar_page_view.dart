@@ -5,7 +5,7 @@ import 'package:grouping_project/View/event_card_view.dart';
 import 'package:grouping_project/View/mission_card_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +22,7 @@ class _CalendarPageState extends State<CalendarPage> {
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
   late List<Widget> eventAndMissionCards = [];
+  bool isShowing = false;
 
   // CalendarViewModel model = CalendarViewModel();
 
@@ -73,7 +74,7 @@ class _CalendarPageState extends State<CalendarPage> {
     _focusedDay = focusedDay;
     await showCards(
         eventAndMission: model.eventsMap[DateTime(
-                _focusedDay.year, _focusedDay.month, _focusedDay.day)] ??
+                _selectedDay.year, _selectedDay.month, _selectedDay.day)] ??
             []);
     setState(() {});
   }
@@ -82,6 +83,7 @@ class _CalendarPageState extends State<CalendarPage> {
   Future<void> showCards({
     required List eventAndMission,
   }) async {
+    isShowing = true;
     eventAndMissionCards = [];
     // debugPrint(eventAndMission.toString());
 
@@ -91,11 +93,14 @@ class _CalendarPageState extends State<CalendarPage> {
         })
         .toList()
         .cast();
+    if (missionOnly.isNotEmpty) {
+      debugPrint(missionOnly.first.title);
+    }
     eventAndMissionCards.addAll(missionOnly
-        .map((eventModel) => ChangeNotifierProvider<MissionSettingViewModel>(
+        .map((missionModel) => ChangeNotifierProvider<MissionSettingViewModel>(
             create: (context) => MissionSettingViewModel()
               ..initializeDisplayMission(
-                  model: eventModel,
+                  model: missionModel,
                   user: context
                       .read<WorkspaceDashBoardViewModel>()
                       .personalprofileData),
@@ -107,6 +112,10 @@ class _CalendarPageState extends State<CalendarPage> {
         })
         .toList()
         .cast();
+    if (eventsOnly.isNotEmpty) {
+      debugPrint(eventsOnly.first.title);
+    }
+    setState(() {});
     eventAndMissionCards.addAll(eventsOnly
         .map((eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
             create: (context) => EventSettingViewModel()
@@ -117,6 +126,8 @@ class _CalendarPageState extends State<CalendarPage> {
                       .personalprofileData),
             child: const EventCardViewTemplate()))
         .toList());
+    isShowing = false;
+    setState(() {});
     // debugPrint(
     //     'length of all the cards are: ${eventAndMissionCards.length.toString()}');
     // debugPrint('card content: ${eventAndMissionCards.toString()}');
@@ -189,7 +200,8 @@ class _CalendarPageState extends State<CalendarPage> {
                           if (tempDate != null) {
                             _focusedDay = tempDate;
                             _selectedDay = tempDate;
-                            onDaySelected(
+
+                            await onDaySelected(
                                 selectedDay: _selectedDay,
                                 focusedDay: _focusedDay,
                                 model: calenderVM);
@@ -250,11 +262,12 @@ class _CalendarPageState extends State<CalendarPage> {
                         selectedDayPredicate: (day) {
                           return isSameDay(_selectedDay, day);
                         },
-                        onDaySelected: (selectedDay, focusedDay) =>
-                            onDaySelected(
-                                model: calenderVM,
-                                focusedDay: focusedDay,
-                                selectedDay: selectedDay),
+                        onDaySelected: (selectedDay, focusedDay) async {
+                          await onDaySelected(
+                              model: calenderVM,
+                              focusedDay: focusedDay,
+                              selectedDay: selectedDay);
+                        },
                         onPageChanged: (focusedDay) async {
                           _focusedDay = focusedDay;
                           await calenderVM.toMapAMonth(
@@ -263,7 +276,7 @@ class _CalendarPageState extends State<CalendarPage> {
                       ),
                     ),
                     Expanded(
-                      child: calenderVM.isMapping
+                      child: isShowing
                           ? Center(
                               child: Column(
                                 children: [
