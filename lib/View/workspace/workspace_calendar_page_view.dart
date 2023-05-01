@@ -72,6 +72,7 @@ class _CalendarPageState extends State<CalendarPage> {
     }
     _selectedDay = selectedDay;
     _focusedDay = focusedDay;
+    setState(() {});
   }
 
   /// This is the function used for showing the event and mission cards
@@ -79,7 +80,6 @@ class _CalendarPageState extends State<CalendarPage> {
     required List eventAndMission,
   }) async {
     isShowing = true;
-    setState(() {});
 
     List<MissionModel> missionOnly = eventAndMission
         .where((element) {
@@ -105,7 +105,6 @@ class _CalendarPageState extends State<CalendarPage> {
         })
         .toList()
         .cast();
-    setState(() {});
     eventAndMissionCards.addAll(eventsOnly
         .map((eventModel) => Container(
             key: ValueKey(eventModel),
@@ -119,7 +118,6 @@ class _CalendarPageState extends State<CalendarPage> {
                 child: const EventCardViewTemplate())))
         .toList());
     isShowing = false;
-    setState(() {});
     // debugPrint(
     //     'length of all the cards are: ${eventAndMissionCards.length.toString()}');
     // debugPrint('card content: ${eventAndMissionCards.toString()}');
@@ -192,12 +190,17 @@ class _CalendarPageState extends State<CalendarPage> {
                           if (tempDate != null) {
                             _focusedDay = tempDate;
                             _selectedDay = tempDate;
-
+                            eventAndMissionCards.clear();
                             await onDaySelected(
                                 selectedDay: _selectedDay,
                                 focusedDay: _focusedDay,
                                 model: calenderVM);
-                            setState(() {});
+                            showCards(
+                                eventAndMission: calenderVM.eventsMap[DateTime(
+                                        _focusedDay.year,
+                                        _focusedDay.month,
+                                        _focusedDay.day)] ??
+                                    []);
                           }
                         },
                         calendarStyle: CalendarStyle(
