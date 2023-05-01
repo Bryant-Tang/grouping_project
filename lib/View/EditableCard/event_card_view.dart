@@ -15,24 +15,30 @@ class EventCardViewTemplate extends StatefulWidget {
 }
 
 class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
-
-  void onClick(WorkspaceDashBoardViewModel workspaceVM, EventSettingViewModel eventSettingVM) async {
+  void onClick(WorkspaceDashBoardViewModel workspaceVM,
+      EventSettingViewModel eventSettingVM) async {
     // debugPrint('open event page');
+    context.read<ThemeManager>().updateColorSchemeSeed(eventSettingVM.color);
     const animationDuration = Duration(milliseconds: 400);
-    final isNeedRefresh = await Navigator.push(context,
-      PageRouteBuilder(
-          transitionDuration: animationDuration,
-          reverseTransitionDuration: animationDuration,
-          pageBuilder: (BuildContext context, __, ___) =>
-              MultiProvider(providers: [
-                ChangeNotifierProvider<EventSettingViewModel>.value(
-                    value: eventSettingVM),
-                ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
-                    value: workspaceVM)
-              ], child: const EventEditCardView())));
+    final isNeedRefresh = await Navigator.push(
+        context,
+        PageRouteBuilder(
+            transitionDuration: animationDuration,
+            reverseTransitionDuration: animationDuration,
+            pageBuilder: (BuildContext context, __, ___) =>
+                MultiProvider(providers: [
+                  ChangeNotifierProvider<EventSettingViewModel>.value(
+                      value: eventSettingVM),
+                  ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
+                      value: workspaceVM)
+                ], child: const EventEditCardView())));
     if (isNeedRefresh != null && isNeedRefresh) {
       await workspaceVM.getAllData();
     }
+    if(mounted){
+      context.read<ThemeManager>().updateColorSchemeSeed(Color(workspaceVM.accountProfileData.color));
+    }
+    
   }
 
   @override
@@ -459,7 +465,6 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
       builder: (context, theme, child) => Consumer<WorkspaceDashBoardViewModel>(
         builder: (context, workspaceVM, child) =>
             Consumer<EventSettingViewModel>(builder: (context, model, child) {
-          // theme.updateColorSchemeSeed(model.color);
           return StreamBuilder<DateTime>(
             stream: currentTimeStream,
             builder: (context, snapshot) => GestureDetector(
@@ -508,11 +513,14 @@ class _EditCardViewCardViewState extends State<EventEditCardView> {
                               getStartTimeBlock(model),
                               getEndTimeBlock(model),
                               getContributorBlock(model),
-                              generateContentDisplayBlock('子任務', const Text('沒有子任務')),
+                              generateContentDisplayBlock(
+                                  '子任務', const Text('沒有子任務')),
                               // relation note
-                              generateContentDisplayBlock('關聯筆記', const Text('沒有關聯筆記')),
+                              generateContentDisplayBlock(
+                                  '關聯筆記', const Text('沒有關聯筆記')),
                               // relation message
-                              generateContentDisplayBlock('關聯話題', const Text('沒有關聯話題')),
+                              generateContentDisplayBlock(
+                                  '關聯話題', const Text('沒有關聯話題')),
                             ]),
                       ),
                     ),
