@@ -169,14 +169,14 @@ class GroupSwitcherView extends StatelessWidget {
                                     Text(accountModel.nickname,
                                         style: themeData.textTheme.titleMedium!
                                             .copyWith(
-                                                fontWeight: FontWeight.bold)),
+                                                fontWeight: FontWeight.bold, color: themeData
+                                                    .colorScheme.primary)),
                                     accountModel.id == model.personalprofileData.id ? const SizedBox() :
                                     Text(accountModel.introduction,
                                         style: themeData.textTheme.titleSmall!
                                             .copyWith(
                                           fontWeight: FontWeight.bold,
-                                          color: Theme.of(context)
-                                              .colorScheme
+                                          color: themeData.colorScheme
                                               .secondary,
                                         ))
                                   ],
