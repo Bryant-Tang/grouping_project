@@ -328,6 +328,9 @@ class _RecommendPageState extends State<RecommendPage> {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width * 0.35;
+    var height = width * 1.3;
+
     return Consumer<SignUpViewModel>(
       builder: (context, model, child) => SignUpPageTemplate(
         titleWithContent:
@@ -337,8 +340,10 @@ class _RecommendPageState extends State<RecommendPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 150,
-              height: 200,
+              // width: 150,
+              width: width,
+              // height: 200,
+              height: height,
               // padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -356,7 +361,6 @@ class _RecommendPageState extends State<RecommendPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                   onPressed: () {
-                    // TODO: Fix this problem
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -380,20 +384,30 @@ class _RecommendPageState extends State<RecommendPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        Image.asset(
-                          "assets/images/profile_male.png",
-                          height: 120,
+                        Expanded(
+                          flex: 3,
+                          child: Image.asset(
+                            "assets/images/profile_male.png",
+                            height: 120,
+                          ),
                         ),
-                        const SizedBox(
-                          height: 10,
+                        // Expanded(
+                        //   flex: 1,
+                        //   child: SizedBox(
+                        //     // height: height * 0.07,
+                        //   ),
+                        // ),
+                        const Expanded(
+                          flex: 1,
+                          child: Text(
+                            "修改名片",
+                            style: TextStyle(
+                                color: Colors.amber,
+                                // TODO: change the size of fontsize
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        const Text(
-                          "修改個人資訊",
-                          style: TextStyle(
-                              color: Colors.amber,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        )
                       ],
                     ),
                   )),
@@ -402,8 +416,10 @@ class _RecommendPageState extends State<RecommendPage> {
               width: 20,
             ),
             Container(
-              width: 150,
-              height: 200,
+              // width: 150,
+              width: width,
+              // height: 200,
+              height: height,
               // padding: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -429,25 +445,32 @@ class _RecommendPageState extends State<RecommendPage> {
                                 )));
                   },
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: const EdgeInsets.all(4.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.max,
                       children: [
-                        Image.asset(
-                          "assets/images/conference.png",
-                          height: 120,
+                        Expanded(
+                          flex: 3,
+                          child: Image.asset(
+                            "assets/images/conference.png",
+                            height: 120,
+                          ),
                         ),
-                        const SizedBox(
-                          height: 20,
+                        // SizedBox(
+                        //   height: height * 0.07,
+                        // ),
+                        const Expanded(
+                          flex: 1,
+                          child: Text(
+                            "創建小組",
+                            style: TextStyle(
+                                color: Colors.amber,
+                                // TODO: change the size of fontsize
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          ),
                         ),
-                        const Text(
-                          "創建小組",
-                          style: TextStyle(
-                              color: Colors.amber,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        )
                       ],
                     ),
                   )),

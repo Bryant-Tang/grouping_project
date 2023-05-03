@@ -36,7 +36,7 @@ class _ProfileEditPageViewState extends State<ProfileEditPageView>
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Expanded(
-                            flex: 1,
+                            flex: 7,
                             child: PageView(
                               onPageChanged: model.onPageChange,
                               children: const [
@@ -46,32 +46,38 @@ class _ProfileEditPageViewState extends State<ProfileEditPageView>
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 60.0,
-                            child: Center(
-                              child: TabPageSelector(
-                                controller:
-                                    TabController(length: 3, vsync: this)
-                                      ..index = model.currentPageIndex,
-                                color: Theme.of(context).colorScheme.surface,
-                                selectedColor:
-                                    Theme.of(context).colorScheme.primary,
-                                indicatorSize: 16,
+                          Expanded(
+                            flex: 1,
+                            child: SizedBox(
+                              // height: 60.0,
+                              child: Center(
+                                child: TabPageSelector(
+                                  controller:
+                                      TabController(length: 3, vsync: this)
+                                        ..index = model.currentPageIndex,
+                                  color: Theme.of(context).colorScheme.surface,
+                                  selectedColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  indicatorSize: 16,
+                                ),
                               ),
                             ),
                           ),
-                          NavigationToggleBar(
-                              goBackButtonText: "Cancel",
-                              goToNextButtonText: "Save",
-                              goToNextButtonHandler: () async {
-                                await model.upload();
-                                if (mounted) {
+                          Expanded(
+                            flex: 1,
+                            child: NavigationToggleBar(
+                                goBackButtonText: "Cancel",
+                                goToNextButtonText: "Save",
+                                goToNextButtonHandler: () async {
+                                  await model.upload();
+                                  if (mounted) {
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                                goBackButtonHandler: () {
                                   Navigator.of(context).pop();
-                                }
-                              },
-                              goBackButtonHandler: () {
-                                Navigator.of(context).pop();
-                              })
+                                }),
+                          )
                         ],
                       ),
                     ),
@@ -166,54 +172,62 @@ class _PersonProfileImageUploadgState extends State<ProfileImageUpload> {
       builder: (context, model, child) =>
           Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
         HeadlineWithContent(headLineText: headLineText, content: contentText),
-        Center(
-            child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                    radius: 120,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceVariant,
-                    backgroundImage: model.profileImage.isNotEmpty
-                        ? Image.memory(model.profileImage).image
-                        : Image.asset('assets/images/profile_male.png').image),
-              ),
-              MaterialButton(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
-                color: Theme.of(context).colorScheme.primary,
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20))),
-                onPressed: () async {
-                  final selectedPhoto = await ImagePicker()
-                      .pickImage(source: ImageSource.gallery);
-                  if (selectedPhoto != null) {
-                    model.updateProfileImage(
-                        await File(selectedPhoto.path).readAsBytes());
-                  }
-                },
-                child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '上傳圖片',
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+        Expanded(
+          child: Center(
+              child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 9,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                        radius: 120,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.surfaceVariant,
+                        backgroundImage: model.profileImage.isNotEmpty
+                            ? Image.memory(model.profileImage).image
+                            : Image.asset('assets/images/profile_male.png').image),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: MaterialButton(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+                    color: Theme.of(context).colorScheme.primary,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    onPressed: () async {
+                      final selectedPhoto = await ImagePicker()
+                          .pickImage(source: ImageSource.gallery);
+                      if (selectedPhoto != null) {
+                        model.updateProfileImage(
+                            await File(selectedPhoto.path).readAsBytes());
+                      }
+                    },
+                    child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '上傳圖片',
+                            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          Icon(
+                            Icons.file_upload_outlined,
                             color: Theme.of(context).colorScheme.onPrimary,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      Icon(
-                        Icons.file_upload_outlined,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      )
-                    ]),
-              )
-            ],
-          ),
-        )),
+                          )
+                        ]),
+                  ),
+                )
+              ],
+            ),
+          )),
+        ),
       ]),
     );
   }
