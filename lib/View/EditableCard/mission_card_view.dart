@@ -78,7 +78,8 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
             child: Padding(
               padding: const EdgeInsets.all(5.0),
               child: AspectRatio(
-                aspectRatio: 3.3,
+              // TODO: delete ratio?
+                aspectRatio: 3.2,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: themeData.colorScheme.surface,
