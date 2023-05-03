@@ -17,6 +17,7 @@ class _ProfileEditPageViewState extends State<ProfileEditPageView>
     with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
+    var verticalHeight = MediaQuery.of(context).size.height * 0.15;
     return ChangeNotifierProvider<ProfileEditViewModel>.value(
       value: widget.model,
       child: Consumer<ProfileEditViewModel>(
@@ -30,8 +31,8 @@ class _ProfileEditPageViewState extends State<ProfileEditPageView>
                       FocusScope.of(context).requestFocus(FocusNode());
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 150),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 30, vertical: verticalHeight),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
@@ -105,48 +106,51 @@ class _ProfileSettingState extends State<ProfileSetting> {
   Widget build(BuildContext context) {
     return Consumer<ProfileEditViewModel>(
       builder: (context, model, child) => Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           HeadlineWithContent(headLineText: headLineText, content: contextText),
-          const SizedBox(height: 35),
-          Form(
-            // key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                TextFormField(
-                  initialValue: model.userName,
-                  decoration: const InputDecoration(
-                    label: Text("使用者名稱 / User Name"),
-                    icon: Icon(Icons.person_pin_outlined),
-                  ),
-                  onChanged: model.updateUserName,
-                ),
-                TextFormField(
-                  initialValue: model.realName,
-                  decoration: const InputDecoration(
-                    label: Text("本名 / Real Name"),
-                    icon: Icon(Icons.person_pin_outlined),
-                  ),
-                  onChanged: model.updateRealName,
-                ),
-                TextFormField(
-                    initialValue: model.slogan,
+          // const Expanded(child: SizedBox(height: 30)),
+          Expanded(
+            child: Form(
+              // key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  TextFormField(
+                    initialValue: model.userName,
                     decoration: const InputDecoration(
-                      label: Text("心情小語 / 座右銘"),
+                      label: Text("使用者名稱 / User Name"),
+                      icon: Icon(Icons.person_pin_outlined),
+                    ),
+                    onChanged: model.updateUserName,
+                  ),
+                  TextFormField(
+                    initialValue: model.realName,
+                    decoration: const InputDecoration(
+                      label: Text("本名 / Real Name"),
+                      icon: Icon(Icons.person_pin_outlined),
+                    ),
+                    onChanged: model.updateRealName,
+                  ),
+                  TextFormField(
+                      initialValue: model.slogan,
+                      decoration: const InputDecoration(
+                        label: Text("心情小語 / 座右銘"),
+                        icon: Icon(Icons.chat),
+                      ),
+                      onChanged: model.updateSlogan),
+                  TextFormField(
+                    maxLength: 100,
+                    initialValue: model.introduction,
+                    decoration: const InputDecoration(
+                      label: Text("自我介紹"),
                       icon: Icon(Icons.chat),
                     ),
-                    onChanged: model.updateSlogan),
-                TextFormField(
-                  maxLength: 100,
-                  initialValue: model.introduction,
-                  decoration: const InputDecoration(
-                    label: Text("自我介紹"),
-                    icon: Icon(Icons.chat),
-                  ),
-                  onChanged: model.updateIntroduction,
-                )
-              ],
+                    onChanged: model.updateIntroduction,
+                  )
+                ],
+              ),
             ),
           )
         ],
