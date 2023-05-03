@@ -17,6 +17,7 @@ class _ProfileEditPageViewState extends State<ProfileEditPageView>
     with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
+    var verticalHeight = MediaQuery.of(context).size.height * 0.15;
     return ChangeNotifierProvider<ProfileEditViewModel>.value(
       value: widget.model,
       child: Consumer<ProfileEditViewModel>(
@@ -30,13 +31,13 @@ class _ProfileEditPageViewState extends State<ProfileEditPageView>
                       FocusScope.of(context).requestFocus(FocusNode());
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 30, vertical: 150),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 30, vertical: verticalHeight),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Expanded(
-                            flex: 1,
+                            flex: 7,
                             child: PageView(
                               onPageChanged: model.onPageChange,
                               children: const [
@@ -46,32 +47,38 @@ class _ProfileEditPageViewState extends State<ProfileEditPageView>
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 60.0,
-                            child: Center(
-                              child: TabPageSelector(
-                                controller:
-                                    TabController(length: 3, vsync: this)
-                                      ..index = model.currentPageIndex,
-                                color: Theme.of(context).colorScheme.surface,
-                                selectedColor:
-                                    Theme.of(context).colorScheme.primary,
-                                indicatorSize: 16,
+                          Expanded(
+                            flex: 1,
+                            child: SizedBox(
+                              // height: 60.0,
+                              child: Center(
+                                child: TabPageSelector(
+                                  controller:
+                                      TabController(length: 3, vsync: this)
+                                        ..index = model.currentPageIndex,
+                                  color: Theme.of(context).colorScheme.surface,
+                                  selectedColor:
+                                      Theme.of(context).colorScheme.primary,
+                                  indicatorSize: 16,
+                                ),
                               ),
                             ),
                           ),
-                          NavigationToggleBar(
-                              goBackButtonText: "Cancel",
-                              goToNextButtonText: "Save",
-                              goToNextButtonHandler: () async {
-                                await model.upload();
-                                if (mounted) {
+                          Expanded(
+                            flex: 1,
+                            child: NavigationToggleBar(
+                                goBackButtonText: "Cancel",
+                                goToNextButtonText: "Save",
+                                goToNextButtonHandler: () async {
+                                  await model.upload();
+                                  if (mounted) {
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                                goBackButtonHandler: () {
                                   Navigator.of(context).pop();
-                                }
-                              },
-                              goBackButtonHandler: () {
-                                Navigator.of(context).pop();
-                              })
+                                }),
+                          )
                         ],
                       ),
                     ),
@@ -99,48 +106,51 @@ class _ProfileSettingState extends State<ProfileSetting> {
   Widget build(BuildContext context) {
     return Consumer<ProfileEditViewModel>(
       builder: (context, model, child) => Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        // mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           HeadlineWithContent(headLineText: headLineText, content: contextText),
-          const SizedBox(height: 35),
-          Form(
-            // key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                TextFormField(
-                  initialValue: model.userName,
-                  decoration: const InputDecoration(
-                    label: Text("使用者名稱 / User Name"),
-                    icon: Icon(Icons.person_pin_outlined),
-                  ),
-                  onChanged: model.updateUserName,
-                ),
-                TextFormField(
-                  initialValue: model.realName,
-                  decoration: const InputDecoration(
-                    label: Text("本名 / Real Name"),
-                    icon: Icon(Icons.person_pin_outlined),
-                  ),
-                  onChanged: model.updateRealName,
-                ),
-                TextFormField(
-                    initialValue: model.slogan,
+          // const Expanded(child: SizedBox(height: 30)),
+          Expanded(
+            child: Form(
+              // key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  TextFormField(
+                    initialValue: model.userName,
                     decoration: const InputDecoration(
-                      label: Text("心情小語 / 座右銘"),
+                      label: Text("使用者名稱 / User Name"),
+                      icon: Icon(Icons.person_pin_outlined),
+                    ),
+                    onChanged: model.updateUserName,
+                  ),
+                  TextFormField(
+                    initialValue: model.realName,
+                    decoration: const InputDecoration(
+                      label: Text("本名 / Real Name"),
+                      icon: Icon(Icons.person_pin_outlined),
+                    ),
+                    onChanged: model.updateRealName,
+                  ),
+                  TextFormField(
+                      initialValue: model.slogan,
+                      decoration: const InputDecoration(
+                        label: Text("心情小語 / 座右銘"),
+                        icon: Icon(Icons.chat),
+                      ),
+                      onChanged: model.updateSlogan),
+                  TextFormField(
+                    maxLength: 100,
+                    initialValue: model.introduction,
+                    decoration: const InputDecoration(
+                      label: Text("自我介紹"),
                       icon: Icon(Icons.chat),
                     ),
-                    onChanged: model.updateSlogan),
-                TextFormField(
-                  maxLength: 100,
-                  initialValue: model.introduction,
-                  decoration: const InputDecoration(
-                    label: Text("自我介紹"),
-                    icon: Icon(Icons.chat),
-                  ),
-                  onChanged: model.updateIntroduction,
-                )
-              ],
+                    onChanged: model.updateIntroduction,
+                  )
+                ],
+              ),
             ),
           )
         ],
@@ -166,54 +176,62 @@ class _PersonProfileImageUploadgState extends State<ProfileImageUpload> {
       builder: (context, model, child) =>
           Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
         HeadlineWithContent(headLineText: headLineText, content: contentText),
-        Center(
-            child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircleAvatar(
-                    radius: 120,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceVariant,
-                    backgroundImage: model.profileImage.isNotEmpty
-                        ? Image.memory(model.profileImage).image
-                        : Image.asset('assets/images/profile_male.png').image),
-              ),
-              MaterialButton(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
-                color: Theme.of(context).colorScheme.primary,
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20))),
-                onPressed: () async {
-                  final selectedPhoto = await ImagePicker()
-                      .pickImage(source: ImageSource.gallery);
-                  if (selectedPhoto != null) {
-                    model.updateProfileImage(
-                        await File(selectedPhoto.path).readAsBytes());
-                  }
-                },
-                child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '上傳圖片',
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+        Expanded(
+          child: Center(
+              child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 9,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                        radius: 120,
+                        backgroundColor:
+                            Theme.of(context).colorScheme.surfaceVariant,
+                        backgroundImage: model.profileImage.isNotEmpty
+                            ? Image.memory(model.profileImage).image
+                            : Image.asset('assets/images/profile_male.png').image),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: MaterialButton(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
+                    color: Theme.of(context).colorScheme.primary,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    onPressed: () async {
+                      final selectedPhoto = await ImagePicker()
+                          .pickImage(source: ImageSource.gallery);
+                      if (selectedPhoto != null) {
+                        model.updateProfileImage(
+                            await File(selectedPhoto.path).readAsBytes());
+                      }
+                    },
+                    child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '上傳圖片',
+                            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          Icon(
+                            Icons.file_upload_outlined,
                             color: Theme.of(context).colorScheme.onPrimary,
-                            fontWeight: FontWeight.w600),
-                      ),
-                      Icon(
-                        Icons.file_upload_outlined,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      )
-                    ]),
-              )
-            ],
-          ),
-        )),
+                          )
+                        ]),
+                  ),
+                )
+              ],
+            ),
+          )),
+        ),
       ]),
     );
   }

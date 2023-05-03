@@ -53,8 +53,9 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
             tag: "${model.eventModel.id}",
             child: Padding(
               padding: const EdgeInsets.all(5.0),
+              // TODO: delete ratio?
               child: AspectRatio(
-                aspectRatio: 3.3,
+                aspectRatio: 3.2,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: themeData.colorScheme.surface,
