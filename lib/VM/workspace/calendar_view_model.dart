@@ -31,12 +31,14 @@ class CalendarViewModel extends ChangeNotifier {
     isLoaded = false;
   }
 
-  Future<void> toMapAMonth({required int year, required int month}) async {
+  Future<void> toMapAYear({required int year}) async {
     isMapping = true;
     eventsMap = {};
-    for (int i = 0; i < daysPerMonth[month - 1]; i++) {
-      DateTime date = DateTime(year, month, i + 1);
-      await getEventsAndMissionsByDate(date);
+    for (int month = 1; month < 13; month++) {
+      for (int j = 0; j < daysPerMonth[month - 1]; j++) {
+        DateTime date = DateTime(year, month, j + 1);
+        await getEventsAndMissionsByDate(date);
+      }
     }
     // debugPrint('The map is: $eventsMap');
     isMapping = false;

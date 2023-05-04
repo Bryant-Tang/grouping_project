@@ -5,7 +5,7 @@ import 'package:grouping_project/View/EditableCard/event_card_view.dart';
 import 'package:grouping_project/View/EditableCard/mission_card_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import 'package:intl/intl.dart';
+// import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +22,7 @@ class _CalendarPageState extends State<CalendarPage> {
   late DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay = DateTime.now();
   late List<Widget> eventAndMissionCards = [];
+  bool isShowing = false;
 
   // CalendarViewModel model = CalendarViewModel();
 
@@ -64,26 +65,21 @@ class _CalendarPageState extends State<CalendarPage> {
       {required DateTime selectedDay,
       required DateTime focusedDay,
       required CalendarViewModel model}) async {
-    if ((selectedDay.month != _focusedDay.month) ||
-        (selectedDay.year != _focusedDay.year)) {
+    eventAndMissionCards.clear();
+    if (selectedDay.year != _focusedDay.year) {
       await model.getEventsAndMissionsByDate(selectedDay);
-      await model.toMapAMonth(year: selectedDay.year, month: selectedDay.month);
+      await model.toMapAYear(year: selectedDay.year);
     }
     _selectedDay = selectedDay;
     _focusedDay = focusedDay;
-    await showCards(
-        eventAndMission: model.eventsMap[DateTime(
-                _focusedDay.year, _focusedDay.month, _focusedDay.day)] ??
-            []);
     setState(() {});
   }
 
   /// This is the function used for showing the event and mission cards
-  Future<void> showCards({
+  void showCards({
     required List eventAndMission,
   }) async {
-    eventAndMissionCards = [];
-    // debugPrint(eventAndMission.toString());
+    isShowing = true;
 
     List<MissionModel> missionOnly = eventAndMission
         .where((element) {
@@ -92,14 +88,16 @@ class _CalendarPageState extends State<CalendarPage> {
         .toList()
         .cast();
     eventAndMissionCards.addAll(missionOnly
-        .map((eventModel) => ChangeNotifierProvider<MissionSettingViewModel>(
-            create: (context) => MissionSettingViewModel()
-              ..initializeDisplayMission(
-                  model: eventModel,
-                  user: context
-                      .read<WorkspaceDashBoardViewModel>()
-                      .personalprofileData),
-            child: const MissionCardViewTemplate()))
+        .map((missionModel) => Container(
+            key: ValueKey(missionModel),
+            child: ChangeNotifierProvider<MissionSettingViewModel>(
+                create: (context) => MissionSettingViewModel()
+                  ..initializeDisplayMission(
+                      model: missionModel,
+                      user: context
+                          .read<WorkspaceDashBoardViewModel>()
+                          .personalprofileData),
+                child: const MissionCardViewTemplate())))
         .toList());
     List<EventModel> eventsOnly = eventAndMission
         .where((element) {
@@ -108,15 +106,18 @@ class _CalendarPageState extends State<CalendarPage> {
         .toList()
         .cast();
     eventAndMissionCards.addAll(eventsOnly
-        .map((eventModel) => ChangeNotifierProvider<EventSettingViewModel>(
-            create: (context) => EventSettingViewModel()
-              ..initializeDisplayEvent(
-                  model: eventModel,
-                  user: context
-                      .read<WorkspaceDashBoardViewModel>()
-                      .personalprofileData),
-            child: const EventCardViewTemplate()))
+        .map((eventModel) => Container(
+            key: ValueKey(eventModel),
+            child: ChangeNotifierProvider<EventSettingViewModel>(
+                create: (context) => EventSettingViewModel()
+                  ..initializeDisplayEvent(
+                      model: eventModel,
+                      user: context
+                          .read<WorkspaceDashBoardViewModel>()
+                          .personalprofileData),
+                child: const EventCardViewTemplate())))
         .toList());
+    isShowing = false;
     // debugPrint(
     //     'length of all the cards are: ${eventAndMissionCards.length.toString()}');
     // debugPrint('card content: ${eventAndMissionCards.toString()}');
@@ -125,11 +126,11 @@ class _CalendarPageState extends State<CalendarPage> {
   /// refresh the page
   Future<void> onRefresh(CalendarViewModel model) async {
     await model.getEventsAndMissionsByDate(_focusedDay);
-    await showCards(
+    showCards(
         eventAndMission: model.eventsMap[DateTime(
                 _focusedDay.year, _focusedDay.month, _focusedDay.day)] ??
             []);
-    await model.toMapAMonth(year: _focusedDay.year, month: _focusedDay.month);
+    await model.toMapAYear(year: _focusedDay.year);
   }
 
   @override
@@ -189,11 +190,16 @@ class _CalendarPageState extends State<CalendarPage> {
                           if (tempDate != null) {
                             _focusedDay = tempDate;
                             _selectedDay = tempDate;
-                            onDaySelected(
+                            await onDaySelected(
                                 selectedDay: _selectedDay,
                                 focusedDay: _focusedDay,
                                 model: calenderVM);
-                            setState(() {});
+                            showCards(
+                                eventAndMission: calenderVM.eventsMap[DateTime(
+                                        _focusedDay.year,
+                                        _focusedDay.month,
+                                        _focusedDay.day)] ??
+                                    []);
                           }
                         },
                         calendarStyle: CalendarStyle(
@@ -250,72 +256,36 @@ class _CalendarPageState extends State<CalendarPage> {
                         selectedDayPredicate: (day) {
                           return isSameDay(_selectedDay, day);
                         },
-                        onDaySelected: (selectedDay, focusedDay) =>
-                            onDaySelected(
-                                model: calenderVM,
-                                focusedDay: focusedDay,
-                                selectedDay: selectedDay),
+                        onDaySelected: (selectedDay, focusedDay) async {
+                          await onDaySelected(
+                              model: calenderVM,
+                              focusedDay: focusedDay,
+                              selectedDay: selectedDay);
+                          showCards(
+                              eventAndMission: calenderVM.eventsMap[DateTime(
+                                      _focusedDay.year,
+                                      _focusedDay.month,
+                                      _focusedDay.day)] ??
+                                  []);
+                        },
                         onPageChanged: (focusedDay) async {
-                          _focusedDay = focusedDay;
-                          await calenderVM.toMapAMonth(
-                              year: _focusedDay.year, month: _focusedDay.month);
+                          if (focusedDay.year != _focusedDay.year) {
+                            _focusedDay = focusedDay;
+                            await calenderVM.toMapAYear(
+                              year: _focusedDay.year,
+                            );
+                          }
                         },
                       ),
                     ),
                     Expanded(
-                      child: calenderVM.isMapping
-                          ? Center(
-                              child: Column(
-                                children: [
-                                  Padding(
-                                      padding: const EdgeInsets.only(top: 10),
-                                      child: Text(
-                                        'Event and Mission Lists are still loading',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .labelLarge!
-                                            .copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16),
-                                      )),
-                                  const Padding(
-                                      padding: EdgeInsets.only(top: 30),
-                                      child: CircularProgressIndicator())
-                                ],
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: eventAndMissionCards.length,
-                              itemBuilder: (context, index) {
-                                return eventAndMissionCards[index];
-                              },
-                            ),
+                      child: ListView.builder(
+                        itemCount: eventAndMissionCards.length,
+                        itemBuilder: (context, index) {
+                          return eventAndMissionCards[index];
+                        },
+                      ),
                     ),
-                    // ElevatedButton(
-                    //     onPressed: () async {
-                    //       // await DatabaseService(
-                    //       //         ownerUid: AuthService().getUid())
-                    //       //     .setEvent(
-                    //       //         event: EventModel(
-                    //       //   title: 'test event title',
-                    //       //   startTime: DateTime.now(),
-                    //       //   endTime:
-                    //       //       DateTime.now().add(const Duration(days: 7)),
-                    //       //   introduction: 'test event introduction',
-                    //       // ));
-                    //       await DatabaseService(
-                    //               ownerUid: AuthService().getUid())
-                    //           .setMission(
-                    //               mission: MissionModel(
-                    //                   title: 'test mission title',
-                    //                   deadline: DateTime.now()
-                    //                       .add(const Duration(days: 7)),
-                    //                   state: MissionStateModel
-                    //                       .defaultProgressState,
-                    //                   introduction:
-                    //                       'test mission introduction'));
-                    //     },
-                    //     child: const Text('Test add'))
                   ],
                 ),
               ));
