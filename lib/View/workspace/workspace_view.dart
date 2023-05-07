@@ -7,7 +7,7 @@ import 'package:grouping_project/View/profile/profile_display_view.dart';
 import 'package:grouping_project/View/workspace/worksapce_create_sheet_view.dart';
 import 'package:grouping_project/View/workspace/workspace_dashboard_page_view.dart';
 import 'package:provider/provider.dart';
-import 'package:grouping_project/View/workspace/workspace_calendar_page_view.dart';
+import 'package:grouping_project/View/workspace/workspace_personal_calendar_page_view.dart';
 import 'worksapce_switching_sheet_view.dart';
 
 class WorksapceBasePage extends StatefulWidget {
@@ -23,7 +23,7 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
   // final model = WorkspaceDashboardViewModel();
   final _pages = const <Widget>[
     WorkspaceDashboardPageView(),
-    CalendarPage(),
+    CalendarViewPage(),
     Center(child: BuildingPage(errorMessage: "Message Page")),
     Center(child: BuildingPage(errorMessage: "Note Page")),
   ];
@@ -87,7 +87,7 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
                     value: model,
                     builder: (context, child) => const SwitchWorkSpaceSheet());
               });
-          if(res!=null && res){
+          if (res != null && res) {
             await model.updateUserAccount();
           }
         },
@@ -138,18 +138,18 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<WorkspaceDashBoardViewModel>(
-          create: (context) => WorkspaceDashBoardViewModel()..getAllData(),
-        ),
-        ChangeNotifierProvider<CalendarViewModel>(
-          create: (context) => CalendarViewModel(),
-        )
-      ],
-      child: Consumer<ThemeManager>(
-          builder: (context, themeManager, child) =>
-              Consumer<WorkspaceDashBoardViewModel>(
-                  builder: (context, model, child){
+        providers: [
+          ChangeNotifierProvider<WorkspaceDashBoardViewModel>(
+            create: (context) => WorkspaceDashBoardViewModel()..getAllData(),
+          ),
+          ChangeNotifierProvider<CalendarViewModel>(
+            create: (context) => CalendarViewModel(),
+          )
+        ],
+        child: Consumer<ThemeManager>(
+            builder: (context, themeManager, child) =>
+                Consumer<WorkspaceDashBoardViewModel>(
+                  builder: (context, model, child) {
                     return WillPopScope(
                       onWillPop: () async {
                         return false; // 禁用返回鍵
@@ -174,12 +174,11 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
                               extendBody: true,
                               floatingActionButton: const CreateButton(),
                               // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-                              bottomNavigationBar:
-                                  getNavigationBar(model, themeManager, context),
+                              bottomNavigationBar: getNavigationBar(
+                                  model, themeManager, context),
                             ),
-                          );},
-          
-        )
-    ));
+                    );
+                  },
+                )));
   }
 }
