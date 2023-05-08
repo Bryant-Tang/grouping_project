@@ -137,15 +137,8 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider<WorkspaceDashBoardViewModel>(
-            create: (context) => WorkspaceDashBoardViewModel()..getAllData(),
-          ),
-          ChangeNotifierProvider<CalendarViewModel>(
-            create: (context) => CalendarViewModel(),
-          )
-        ],
+    return ChangeNotifierProvider<WorkspaceDashBoardViewModel>(
+        create: (context) => WorkspaceDashBoardViewModel()..getAllData(),
         child: Consumer<ThemeManager>(
             builder: (context, themeManager, child) =>
                 Consumer<WorkspaceDashBoardViewModel>(
