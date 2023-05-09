@@ -33,48 +33,72 @@ class CalendarViewModel extends ChangeNotifier {
   getActivityByDots() {
     Map<DateTime, List<String>> dayMap = {};
     List<BaseDataModel> oneForAday = [];
-    debugPrint('at mission part');
+    DateTime key;
+    debugPrint('At mission part');
     for (var element in _missions) {
-      DateTime key = DateTime(
-          element.deadline.year, element.deadline.month, element.deadline.day);
+      element.deadline.hour == 0 && element.deadline.minute == 0
+          ? key = DateTime(element.deadline.year, element.deadline.month,
+                  element.deadline.day, 12)
+              .add(const Duration(days: -1))
+          : key = DateTime(element.deadline.year, element.deadline.month,
+              element.deadline.day, 12);
       if (!dayMap.containsKey(key)) {
         debugPrint('not contain key: $key');
         debugPrint('element title: ${element.title}');
+        debugPrint('element owner: ${element.ownerAccount.nickname}\n');
         dayMap[key] = [];
         dayMap[key]!.add(element.ownerAccount.nickname);
-        oneForAday.add(element);
+        MissionModel toAdd = MissionModel(
+          deadline: key.copyWith(hour: 12),
+        );
+        toAdd.setOwner(ownerAccount: element.ownerAccount);
+        oneForAday.add(toAdd);
       } else {
+        debugPrint('element owner: ${element.ownerAccount.nickname}\n');
         if (!dayMap[key]!.contains(element.ownerAccount.nickname)) {
           dayMap[key]!.add(element.ownerAccount.nickname);
-          oneForAday.add(element);
+          MissionModel toAdd = MissionModel(
+            deadline: key.copyWith(hour: 12),
+          );
+          toAdd.setOwner(ownerAccount: element.ownerAccount);
+          oneForAday.add(toAdd);
         }
       }
       // else {
       //   debugPrint('contain key: $key');
       // }
     }
-    debugPrint('at event part');
+    debugPrint('At event part');
     for (var element in _events) {
       DateTime startTime = DateTime(element.startTime.year,
-          element.startTime.month, element.startTime.day);
+          element.startTime.month, element.startTime.day, 12);
       DateTime endTime = DateTime(
-          element.endTime.year, element.endTime.month, element.endTime.day);
-      DateTime currentDay =
-          DateTime(startTime.year, startTime.month, startTime.day);
+          element.endTime.year, element.endTime.month, element.endTime.day, 12);
+      DateTime currentDay = startTime.copyWith();
       debugPrint('currentDay: $currentDay');
       while ((currentDay.isBefore(endTime) ||
           currentDay.isAtSameMomentAs(endTime))) {
         if (!dayMap.containsKey(currentDay)) {
           debugPrint('not contain key: $currentDay');
           debugPrint('element title: ${element.title}');
+          debugPrint('element owner: ${element.ownerAccount.nickname}\n');
           dayMap[currentDay] = [];
           dayMap[currentDay]!.add(element.ownerAccount.nickname);
-          oneForAday.add(element);
-        } else {
-          if (!dayMap[currentDay]!.contains(element.ownerAccount.nickname)) {
-            dayMap[currentDay]!.add(element.ownerAccount.nickname);
-            oneForAday.add(element);
-          }
+          MissionModel toAdd = MissionModel(
+            deadline: currentDay.copyWith(hour: 12),
+          );
+          toAdd.setOwner(ownerAccount: element.ownerAccount);
+          oneForAday.add(toAdd);
+        } else if (!dayMap[currentDay]!
+            .contains(element.ownerAccount.nickname)) {
+          debugPrint('element owners: ${dayMap[currentDay]}');
+          debugPrint('element owner: ${element.ownerAccount.nickname}\n');
+          dayMap[currentDay]!.add(element.ownerAccount.nickname);
+          MissionModel toAdd = MissionModel(
+            deadline: currentDay.copyWith(hour: 12),
+          );
+          toAdd.setOwner(ownerAccount: element.ownerAccount);
+          oneForAday.add(toAdd);
         }
         //  else {
         //   debugPrint('contain key: $currentDay');
@@ -317,7 +341,7 @@ class CalendarViewModel extends ChangeNotifier {
     List<BaseDataModel> totalList = [];
     totalList.addAll(_events.cast<BaseDataModel>());
     totalList.addAll(_missions.cast<BaseDataModel>());
-    debugPrint('totalList length before: ${totalList.length}');
+    // debugPrint('totalList length before: ${totalList.length}');
     DateTime theDateStart = DateTime(controller.selectedDate!.year,
         controller.selectedDate!.month, controller.selectedDate!.day, 0, 0, 0);
     DateTime theDateEnd = DateTime(
@@ -337,8 +361,9 @@ class CalendarViewModel extends ChangeNotifier {
         // debugPrint('theDateEnd: $theDateEnd\n');
         bool result = ((element.startTime.isBefore(theDateEnd) ||
                     element.startTime.isAtSameMomentAs(theDateEnd)) &&
-                (element.endTime.isAfter(theDateStart)) ||
-            element.endTime.isAtSameMomentAs(theDateStart));
+                (element.endTime.isAfter(theDateStart))
+            //  || element.endTime.isAtSameMomentAs(theDateStart)
+            );
         // debugPrint('${element.title} result: $result');
         return result;
       } else {
@@ -347,10 +372,20 @@ class CalendarViewModel extends ChangeNotifier {
         // debugPrint('element.title: ${element.title}');
         // debugPrint('element.startTime: ${element.deadline}');
         // debugPrint('theDateEnd: $theDateEnd\n');
-        bool result = DateTime(controller.selectedDate!.year,
-                controller.selectedDate!.month, controller.selectedDate!.day) ==
-            DateTime(element.deadline.year, element.deadline.month,
-                element.deadline.day);
+        bool result = element.deadline.hour == 0 && element.deadline.minute == 0
+            ? DateTime(
+                    controller.selectedDate!.year,
+                    controller.selectedDate!.month,
+                    controller.selectedDate!.day) ==
+                DateTime(element.deadline.year, element.deadline.month,
+                        element.deadline.day)
+                    .add(const Duration(days: -1))
+            : DateTime(
+                    controller.selectedDate!.year,
+                    controller.selectedDate!.month,
+                    controller.selectedDate!.day) ==
+                DateTime(element.deadline.year, element.deadline.month,
+                    element.deadline.day);
         // debugPrint('${element.title} result: $result');
         return result;
       }
@@ -359,7 +394,7 @@ class CalendarViewModel extends ChangeNotifier {
         child: ListView.builder(
       itemCount: resultList.length,
       itemBuilder: (context, index) {
-        debugPrint('totalList length after: ${resultList.length}');
+        // debugPrint('totalList length after: ${resultList.length}');
         return Container(
           key: ValueKey(resultList[index]),
           child: showMonthDotView(
@@ -386,19 +421,50 @@ class CalendarSource extends CalendarDataSource {
   }
   @override
   DateTime getStartTime(int index) {
+    // appointments?[index].toString() == 'Instance of \'EventModel\''
+    //     ? debugPrint(
+    //         'getStartTime: ${(appointments?[index] as EventModel).startTime}')
+    //     : debugPrint(
+    //         'getStartTime: ${(appointments?[index] as MissionModel).deadline}');
     return appointments?[index].toString() == 'Instance of \'EventModel\''
-        ? (appointments?[index] as EventModel).startTime
+        ? (appointments?[index] as EventModel).startTime.hour == 0 &&
+                (appointments?[index] as EventModel).startTime.minute == 0
+            ? (appointments?[index] as EventModel)
+                .startTime
+                .copyWith(hour: 0, minute: 1)
+            : (appointments?[index] as EventModel).startTime
         : (appointments?[index] as MissionModel)
-            .deadline
-            .copyWith()
-            .add(const Duration(minutes: -15));
+                    .deadline
+                    .copyWith()
+                    .add(const Duration(minutes: -15))
+                    .day !=
+                (appointments?[index] as MissionModel).deadline.copyWith().day
+            ? (appointments?[index] as MissionModel)
+                .deadline
+                .copyWith(minute: 1)
+            : (appointments?[index] as MissionModel)
+                .deadline
+                .copyWith()
+                .add(const Duration(minutes: -15));
   }
 
   @override
   DateTime getEndTime(int index) {
     return appointments?[index].toString() == 'Instance of \'EventModel\''
-        ? (appointments?[index] as EventModel).endTime
-        : (appointments?[index] as MissionModel).deadline;
+        ? (appointments?[index] as EventModel).endTime.hour == 0 &&
+                (appointments?[index] as EventModel).endTime.minute == 0
+            ? (appointments?[index] as EventModel)
+                .endTime
+                .copyWith(hour: 23, minute: 59)
+                .add(Duration(days: -1))
+            : (appointments?[index] as EventModel).endTime
+        : (appointments?[index] as MissionModel).deadline.hour == 0 &&
+                (appointments?[index] as MissionModel).deadline.minute == 0
+            ? (appointments?[index] as MissionModel)
+                .deadline
+                .copyWith(hour: 23, minute: 59)
+                .add(Duration(days: -1))
+            : (appointments?[index] as MissionModel).deadline.copyWith();
   }
 
   @override
