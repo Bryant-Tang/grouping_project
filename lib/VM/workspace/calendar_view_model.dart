@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:googleapis/bigquerydatatransfer/v1.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/data_model.dart';
-import 'package:grouping_project/service/service_lib.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -34,7 +32,7 @@ class CalendarViewModel extends ChangeNotifier {
     Map<DateTime, List<String>> dayMap = {};
     List<BaseDataModel> oneForAday = [];
     DateTime key;
-    debugPrint('At mission part');
+    // debugPrint('At mission part');
     for (var element in _missions) {
       element.deadline.hour == 0 && element.deadline.minute == 0
           ? key = DateTime(element.deadline.year, element.deadline.month,
@@ -43,9 +41,9 @@ class CalendarViewModel extends ChangeNotifier {
           : key = DateTime(element.deadline.year, element.deadline.month,
               element.deadline.day, 12);
       if (!dayMap.containsKey(key)) {
-        debugPrint('not contain key: $key');
-        debugPrint('element title: ${element.title}');
-        debugPrint('element owner: ${element.ownerAccount.nickname}\n');
+        // debugPrint('not contain key: $key');
+        // debugPrint('element title: ${element.title}');
+        // debugPrint('element owner: ${element.ownerAccount.nickname}\n');
         dayMap[key] = [];
         dayMap[key]!.add(element.ownerAccount.nickname);
         MissionModel toAdd = MissionModel(
@@ -54,7 +52,7 @@ class CalendarViewModel extends ChangeNotifier {
         toAdd.setOwner(ownerAccount: element.ownerAccount);
         oneForAday.add(toAdd);
       } else {
-        debugPrint('element owner: ${element.ownerAccount.nickname}\n');
+        // debugPrint('element owner: ${element.ownerAccount.nickname}\n');
         if (!dayMap[key]!.contains(element.ownerAccount.nickname)) {
           dayMap[key]!.add(element.ownerAccount.nickname);
           MissionModel toAdd = MissionModel(
@@ -68,20 +66,20 @@ class CalendarViewModel extends ChangeNotifier {
       //   debugPrint('contain key: $key');
       // }
     }
-    debugPrint('At event part');
+    // debugPrint('At event part');
     for (var element in _events) {
       DateTime startTime = DateTime(element.startTime.year,
           element.startTime.month, element.startTime.day, 12);
       DateTime endTime = DateTime(
           element.endTime.year, element.endTime.month, element.endTime.day, 12);
       DateTime currentDay = startTime.copyWith();
-      debugPrint('currentDay: $currentDay');
+      // debugPrint('currentDay: $currentDay');
       while ((currentDay.isBefore(endTime) ||
           currentDay.isAtSameMomentAs(endTime))) {
         if (!dayMap.containsKey(currentDay)) {
-          debugPrint('not contain key: $currentDay');
-          debugPrint('element title: ${element.title}');
-          debugPrint('element owner: ${element.ownerAccount.nickname}\n');
+          // debugPrint('not contain key: $currentDay');
+          // debugPrint('element title: ${element.title}');
+          // debugPrint('element owner: ${element.ownerAccount.nickname}\n');
           dayMap[currentDay] = [];
           dayMap[currentDay]!.add(element.ownerAccount.nickname);
           MissionModel toAdd = MissionModel(
@@ -91,8 +89,8 @@ class CalendarViewModel extends ChangeNotifier {
           oneForAday.add(toAdd);
         } else if (!dayMap[currentDay]!
             .contains(element.ownerAccount.nickname)) {
-          debugPrint('element owners: ${dayMap[currentDay]}');
-          debugPrint('element owner: ${element.ownerAccount.nickname}\n');
+          // debugPrint('element owners: ${dayMap[currentDay]}');
+          // debugPrint('element owner: ${element.ownerAccount.nickname}\n');
           dayMap[currentDay]!.add(element.ownerAccount.nickname);
           MissionModel toAdd = MissionModel(
             deadline: currentDay.copyWith(hour: 12),
@@ -221,7 +219,6 @@ class CalendarViewModel extends ChangeNotifier {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      // TODO: VM
                       data.toString() == 'Instance of \'EventModel\''
                           // Is event
                           ? ((data as EventModel).startTime.day ==
@@ -292,7 +289,7 @@ class CalendarViewModel extends ChangeNotifier {
                             (data as EventModel).endTime.day
                         ? const SizedBox()
                         : Text(
-                            '(${controller.selectedDate!.day - (data as EventModel).startTime.day + 1}/${(data as EventModel).endTime.day - (data as EventModel).startTime.day + 1})',
+                            '(${controller.selectedDate!.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1}/${(data as EventModel).endTime.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1})',
                             style: TextStyle(
                                 fontSize: height * 0.2,
                                 fontWeight: FontWeight.bold),
@@ -456,14 +453,14 @@ class CalendarSource extends CalendarDataSource {
             ? (appointments?[index] as EventModel)
                 .endTime
                 .copyWith(hour: 23, minute: 59)
-                .add(Duration(days: -1))
+                .add(const Duration(days: -1))
             : (appointments?[index] as EventModel).endTime
         : (appointments?[index] as MissionModel).deadline.hour == 0 &&
                 (appointments?[index] as MissionModel).deadline.minute == 0
             ? (appointments?[index] as MissionModel)
                 .deadline
                 .copyWith(hour: 23, minute: 59)
-                .add(Duration(days: -1))
+                .add(const Duration(days: -1))
             : (appointments?[index] as MissionModel).deadline.copyWith();
   }
 
