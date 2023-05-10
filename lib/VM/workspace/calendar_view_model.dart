@@ -4,21 +4,41 @@ import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 //TODO: same day conpare is not ok for different month(should compare by int day)
 class CalendarViewModel extends ChangeNotifier {
   late CalendarSource _activitySource;
   late List<EventModel> _events;
   late List<MissionModel> _missions;
-  late Widget _activityListView;
+  Widget _activityListView = SizedBox();
+  late DateTime _selectedDate;
+  late CalendarController controller;
 
   CalendarViewModel(WorkspaceDashBoardViewModel workspaceVM) {
     _events = workspaceVM.events;
     _missions = workspaceVM.missions;
+
+    _selectedDate =
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   }
 
   CalendarSource get activitySource => _activitySource;
   Widget get activityListView => _activityListView;
+  DateTime get selectedDate => _selectedDate;
+  set selectedDate(DateTime value) => _selectedDate = value;
+
+  changeView(
+      {required CalendarController controller,
+      required CalendarTapDetails calendarTapDetails,
+      required bool mounted}) {
+    debugPrint(calendarTapDetails.date.toString());
+    debugPrint(_selectedDate.toString());
+    if (calendarTapDetails.date == _selectedDate) {
+      controller.view = CalendarView.day;
+      showActivityList(controller: controller, mounted: mounted);
+    }
+  }
 
   /// return the activity source for label type calendar
   getActivityByLabel() {
@@ -28,6 +48,7 @@ class CalendarViewModel extends ChangeNotifier {
   }
 
   /// return the activity source for dots type calendar
+  /// Which is one dot a most in a day
   getActivityByDots() {
     Map<DateTime, List<String>> dayMap = {};
     List<BaseDataModel> oneForAday = [];
@@ -108,7 +129,7 @@ class CalendarViewModel extends ChangeNotifier {
     _activitySource = CalendarSource(oneForAday);
   }
 
-  /// onlu for day view in sfCalendar
+  /// only for day view in sfCalendar
   showDayView(
       {required BaseDataModel data,
       required BuildContext context,
@@ -199,7 +220,8 @@ class CalendarViewModel extends ChangeNotifier {
     }
   }
 
-  showMonthDotView(
+  /// For seperating the agenda view template
+  showMonthDotAgendaView(
       {required BaseDataModel data,
       required BuildContext context,
       CalendarAppointmentDetails? calendarAppointmentDetails,
@@ -210,93 +232,93 @@ class CalendarViewModel extends ChangeNotifier {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
       child: Row(children: [
-        Expanded(
-            flex: 3,
-            child: Row(
+        // Expanded(
+        // flex: 3,
+        // child:
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      data.toString() == 'Instance of \'EventModel\''
-                          // Is event
-                          ? ((data as EventModel).startTime.day ==
-                                  DateTime.now().day
+                Text(
+                  data.toString() == 'Instance of \'EventModel\''
+                      // Is event
+                      ? ((data as EventModel).startTime.day ==
+                              DateTime.now().day
+                          ? DateFormat('hh:mm a')
+                              .format((data as EventModel).startTime)
+                          : (data as EventModel).startTime.day ==
+                                  controller.selectedDate!.day
                               ? DateFormat('hh:mm a')
                                   .format((data as EventModel).startTime)
-                              : (data as EventModel).startTime.day ==
-                                      controller.selectedDate!.day
-                                  ? DateFormat('hh:mm a')
-                                      .format((data as EventModel).startTime)
-                                  : '00:00 AM')
-                          // Is mission
-                          : ((data as MissionModel)
+                              : '00:00 AM')
+                      // Is mission
+                      : ((data as MissionModel)
+                                  .deadline
+                                  .copyWith()
+                                  .add(const Duration(minutes: -15))
+                                  .day ==
+                              DateTime.now().day
+                          ? DateFormat('hh:mm a').format((data as MissionModel)
+                              .deadline
+                              .copyWith()
+                              .add(const Duration(minutes: -15)))
+                          : (data as MissionModel)
                                       .deadline
                                       .copyWith()
                                       .add(const Duration(minutes: -15))
                                       .day ==
-                                  DateTime.now().day
+                                  controller.selectedDate!.day
                               ? DateFormat('hh:mm a').format(
                                   (data as MissionModel)
                                       .deadline
                                       .copyWith()
                                       .add(const Duration(minutes: -15)))
-                              : (data as MissionModel)
-                                          .deadline
-                                          .copyWith()
-                                          .add(const Duration(minutes: -15))
-                                          .day ==
-                                      controller.selectedDate!.day
-                                  ? DateFormat('hh:mm a').format(
-                                      (data as MissionModel)
-                                          .deadline
-                                          .copyWith()
-                                          .add(const Duration(minutes: -15)))
-                                  : '00:00 AM'),
-                      style: TextStyle(
-                          fontSize: height * 0.2, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      // TODO: VM
-                      data.toString() == 'Instance of \'EventModel\''
-                          ? ((data as EventModel).endTime.day ==
-                                  DateTime.now().day
+                              : '00:00 AM'),
+                  style: TextStyle(
+                      fontSize: height * 0.2, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  // TODO: VM
+                  data.toString() == 'Instance of \'EventModel\''
+                      ? ((data as EventModel).endTime.day == DateTime.now().day
+                          ? DateFormat('hh:mm a')
+                              .format((data as EventModel).endTime)
+                          : (data as EventModel).endTime.day ==
+                                  controller.selectedDate!.day
                               ? DateFormat('hh:mm a')
                                   .format((data as EventModel).endTime)
-                              : (data as EventModel).endTime.day ==
-                                      controller.selectedDate!.day
-                                  ? DateFormat('hh:mm a')
-                                      .format((data as EventModel).endTime)
-                                  : '23:59 PM')
-                          // Is mission
-                          : ((data as MissionModel).deadline.day ==
-                                  DateTime.now().day
+                              : '23:59 PM')
+                      // Is mission
+                      : ((data as MissionModel).deadline.day ==
+                              DateTime.now().day
+                          ? DateFormat('hh:mm a')
+                              .format((data as MissionModel).deadline)
+                          : (data as MissionModel).deadline.day ==
+                                  controller.selectedDate!.day
                               ? DateFormat('hh:mm a')
                                   .format((data as MissionModel).deadline)
-                              : (data as MissionModel).deadline.day ==
-                                      controller.selectedDate!.day
-                                  ? DateFormat('hh:mm a')
-                                      .format((data as MissionModel).deadline)
-                                  : '00:00 AM'),
-                      style: TextStyle(
-                          fontSize: height * 0.2, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                              : '00:00 AM'),
+                  style: TextStyle(
+                      fontSize: height * 0.2, fontWeight: FontWeight.bold),
                 ),
-                data.toString() == 'Instance of \'EventModel\''
-                    ? ((data as EventModel).startTime.day ==
-                            (data as EventModel).endTime.day
-                        ? const SizedBox()
-                        : Text(
-                            '(${controller.selectedDate!.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1}/${(data as EventModel).endTime.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1})',
-                            style: TextStyle(
-                                fontSize: height * 0.2,
-                                fontWeight: FontWeight.bold),
-                          ))
-                    : const SizedBox()
               ],
-            )),
+            ),
+            data.toString() == 'Instance of \'EventModel\''
+                ? ((data as EventModel).startTime.day ==
+                        (data as EventModel).endTime.day
+                    ? const SizedBox()
+                    : Text(
+                        '(${controller.selectedDate!.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1}/${(data as EventModel).endTime.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1})',
+                        style: TextStyle(
+                            fontSize: height * 0.2,
+                            fontWeight: FontWeight.bold),
+                      ))
+                : const SizedBox()
+          ],
+        ),
+        // ),
         Expanded(
             flex: 1,
             child: VerticalDivider(
@@ -333,74 +355,117 @@ class CalendarViewModel extends ChangeNotifier {
     );
   }
 
-  showActivityList(
-      {required CalendarController controller, required bool mounted}) {
-    List<BaseDataModel> totalList = [];
-    totalList.addAll(_events.cast<BaseDataModel>());
-    totalList.addAll(_missions.cast<BaseDataModel>());
-    // debugPrint('totalList length before: ${totalList.length}');
-    DateTime theDateStart = DateTime(controller.selectedDate!.year,
-        controller.selectedDate!.month, controller.selectedDate!.day, 0, 0, 0);
-    DateTime theDateEnd = DateTime(
-        controller.selectedDate!.year,
-        controller.selectedDate!.month,
-        controller.selectedDate!.day,
-        23,
-        59,
-        59);
-    List<BaseDataModel> resultList = totalList.where((element) {
-      if (element.toString() == 'Instance of \'EventModel\'') {
-        element = element as EventModel;
-        // debugPrint('theDateStart: $theDateStart');
-        // debugPrint('element.title: ${element.title}');
-        // debugPrint('element.startTime: ${element.startTime}');
-        // debugPrint('element.endTime: ${element.endTime}');
-        // debugPrint('theDateEnd: $theDateEnd\n');
-        bool result = ((element.startTime.isBefore(theDateEnd) ||
-                    element.startTime.isAtSameMomentAs(theDateEnd)) &&
-                (element.endTime.isAfter(theDateStart))
-            //  || element.endTime.isAtSameMomentAs(theDateStart)
-            );
-        // debugPrint('${element.title} result: $result');
-        return result;
-      } else {
-        element = element as MissionModel;
-        // debugPrint('theDateStart: $theDateStart');
-        // debugPrint('element.title: ${element.title}');
-        // debugPrint('element.startTime: ${element.deadline}');
-        // debugPrint('theDateEnd: $theDateEnd\n');
-        bool result = element.deadline.hour == 0 && element.deadline.minute == 0
-            ? DateTime(
-                    controller.selectedDate!.year,
-                    controller.selectedDate!.month,
-                    controller.selectedDate!.day) ==
-                DateTime(element.deadline.year, element.deadline.month,
-                        element.deadline.day)
-                    .add(const Duration(days: -1))
-            : DateTime(
-                    controller.selectedDate!.year,
-                    controller.selectedDate!.month,
-                    controller.selectedDate!.day) ==
-                DateTime(element.deadline.year, element.deadline.month,
-                    element.deadline.day);
-        // debugPrint('${element.title} result: $result');
-        return result;
-      }
-    }).toList();
-    _activityListView = Expanded(
-        child: ListView.builder(
-      itemCount: resultList.length,
-      itemBuilder: (context, index) {
-        // debugPrint('totalList length after: ${resultList.length}');
-        return Container(
-          key: ValueKey(resultList[index]),
-          child: showMonthDotView(
-              data: resultList[index],
-              context: context,
-              controller: controller),
+  Future<DateTime?> popupDatePicker(
+      BuildContext context, CalendarController controller) {
+    DateTime? selectedDate = DateTime.now();
+    return showDialog<DateTime>(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          child: SizedBox(
+            height: 400,
+            // width: 200,
+            child: SfDateRangePicker(
+              initialSelectedDate: DateTime.now(),
+              selectionMode: DateRangePickerSelectionMode.single,
+              showActionButtons: true,
+              onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                controller.selectedDate = args.value;
+                controller.displayDate = args.value;
+              },
+              onCancel: () {
+                Navigator.pop(context);
+              },
+              onSubmit: (p0) {
+                Navigator.pop(context, selectedDate);
+              },
+            ),
+          ),
         );
       },
-    ));
+    );
+  }
+
+  showActivityList(
+      {required CalendarController controller, required bool mounted}) {
+    if (controller.view == CalendarView.day) {
+      _activityListView = SizedBox();
+    } else {
+      List<BaseDataModel> totalList = [];
+      totalList.addAll(_events.cast<BaseDataModel>());
+      totalList.addAll(_missions.cast<BaseDataModel>());
+      // debugPrint('totalList length before: ${totalList.length}');
+      DateTime theDateStart = DateTime(
+          controller.selectedDate!.year,
+          controller.selectedDate!.month,
+          controller.selectedDate!.day,
+          0,
+          0,
+          0);
+      DateTime theDateEnd = DateTime(
+          controller.selectedDate!.year,
+          controller.selectedDate!.month,
+          controller.selectedDate!.day,
+          23,
+          59,
+          59);
+      List<BaseDataModel> resultList = totalList.where((element) {
+        if (element.toString() == 'Instance of \'EventModel\'') {
+          element = element as EventModel;
+          // debugPrint('theDateStart: $theDateStart');
+          // debugPrint('element.title: ${element.title}');
+          // debugPrint('element.startTime: ${element.startTime}');
+          // debugPrint('element.endTime: ${element.endTime}');
+          // debugPrint('theDateEnd: $theDateEnd\n');
+          bool result = ((element.startTime.isBefore(theDateEnd) ||
+                      element.startTime.isAtSameMomentAs(theDateEnd)) &&
+                  (element.endTime.isAfter(theDateStart))
+              //  || element.endTime.isAtSameMomentAs(theDateStart)
+              );
+          // debugPrint('${element.title} result: $result');
+          return result;
+        } else {
+          element = element as MissionModel;
+          // debugPrint('theDateStart: $theDateStart');
+          // debugPrint('element.title: ${element.title}');
+          // debugPrint('element.startTime: ${element.deadline}');
+          // debugPrint('theDateEnd: $theDateEnd\n');
+          bool result =
+              element.deadline.hour == 0 && element.deadline.minute == 0
+                  ? DateTime(
+                          controller.selectedDate!.year,
+                          controller.selectedDate!.month,
+                          controller.selectedDate!.day) ==
+                      DateTime(element.deadline.year, element.deadline.month,
+                              element.deadline.day)
+                          .add(const Duration(days: -1))
+                  : DateTime(
+                          controller.selectedDate!.year,
+                          controller.selectedDate!.month,
+                          controller.selectedDate!.day) ==
+                      DateTime(element.deadline.year, element.deadline.month,
+                          element.deadline.day);
+          // debugPrint('${element.title} result: $result');
+          return result;
+        }
+      }).toList();
+      _activityListView = Expanded(
+        flex: 1,
+        child: ListView.builder(
+          itemCount: resultList.length,
+          itemBuilder: (context, index) {
+            // debugPrint('totalList length after: ${resultList.length}');
+            return Container(
+              key: ValueKey(resultList[index]),
+              child: showMonthDotAgendaView(
+                  data: resultList[index],
+                  context: context,
+                  controller: controller),
+            );
+          },
+        ),
+      );
+    }
     if (mounted) {
       notifyListeners();
     }
