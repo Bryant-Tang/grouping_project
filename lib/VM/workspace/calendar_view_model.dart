@@ -11,16 +11,23 @@ class CalendarViewModel extends ChangeNotifier {
   late CalendarSource _activitySource;
   late List<EventModel> _events;
   late List<MissionModel> _missions;
-  Widget _activityListView = SizedBox();
-  late DateTime _selectedDate;
+  late DateTime _selectedDate = DateTime.now();
   late CalendarController controller;
+  Widget _activityListView = SizedBox();
+
+  List<MissionStateModel> inProgress = [];
+  List<MissionStateModel> pending = [];
+  List<MissionStateModel> close = [];
+  Map<MissionStage, Color> stageColorMap = {
+    MissionStage.progress: Colors.blue,
+    MissionStage.pending: Colors.red,
+    MissionStage.close: Colors.green,
+    // state the color 應該要在後端上面
+  };
 
   CalendarViewModel(WorkspaceDashBoardViewModel workspaceVM) {
     _events = workspaceVM.events;
     _missions = workspaceVM.missions;
-
-    _selectedDate =
-        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   }
 
   CalendarSource get activitySource => _activitySource;
@@ -32,8 +39,6 @@ class CalendarViewModel extends ChangeNotifier {
       {required CalendarController controller,
       required CalendarTapDetails calendarTapDetails,
       required bool mounted}) {
-    debugPrint(calendarTapDetails.date.toString());
-    debugPrint(_selectedDate.toString());
     if (calendarTapDetails.date == _selectedDate) {
       controller.view = CalendarView.day;
       showActivityList(controller: controller, mounted: mounted);
@@ -53,7 +58,6 @@ class CalendarViewModel extends ChangeNotifier {
     Map<DateTime, List<String>> dayMap = {};
     List<BaseDataModel> oneForAday = [];
     DateTime key;
-    // debugPrint('At mission part');
     for (var element in _missions) {
       element.deadline.hour == 0 && element.deadline.minute == 0
           ? key = DateTime(element.deadline.year, element.deadline.month,
@@ -62,9 +66,6 @@ class CalendarViewModel extends ChangeNotifier {
           : key = DateTime(element.deadline.year, element.deadline.month,
               element.deadline.day, 12);
       if (!dayMap.containsKey(key)) {
-        // debugPrint('not contain key: $key');
-        // debugPrint('element title: ${element.title}');
-        // debugPrint('element owner: ${element.ownerAccount.nickname}\n');
         dayMap[key] = [];
         dayMap[key]!.add(element.ownerAccount.nickname);
         MissionModel toAdd = MissionModel(
@@ -73,7 +74,6 @@ class CalendarViewModel extends ChangeNotifier {
         toAdd.setOwner(ownerAccount: element.ownerAccount);
         oneForAday.add(toAdd);
       } else {
-        // debugPrint('element owner: ${element.ownerAccount.nickname}\n');
         if (!dayMap[key]!.contains(element.ownerAccount.nickname)) {
           dayMap[key]!.add(element.ownerAccount.nickname);
           MissionModel toAdd = MissionModel(
@@ -83,24 +83,16 @@ class CalendarViewModel extends ChangeNotifier {
           oneForAday.add(toAdd);
         }
       }
-      // else {
-      //   debugPrint('contain key: $key');
-      // }
     }
-    // debugPrint('At event part');
     for (var element in _events) {
       DateTime startTime = DateTime(element.startTime.year,
           element.startTime.month, element.startTime.day, 12);
       DateTime endTime = DateTime(
           element.endTime.year, element.endTime.month, element.endTime.day, 12);
       DateTime currentDay = startTime.copyWith();
-      // debugPrint('currentDay: $currentDay');
       while ((currentDay.isBefore(endTime) ||
           currentDay.isAtSameMomentAs(endTime))) {
         if (!dayMap.containsKey(currentDay)) {
-          // debugPrint('not contain key: $currentDay');
-          // debugPrint('element title: ${element.title}');
-          // debugPrint('element owner: ${element.ownerAccount.nickname}\n');
           dayMap[currentDay] = [];
           dayMap[currentDay]!.add(element.ownerAccount.nickname);
           MissionModel toAdd = MissionModel(
@@ -110,8 +102,6 @@ class CalendarViewModel extends ChangeNotifier {
           oneForAday.add(toAdd);
         } else if (!dayMap[currentDay]!
             .contains(element.ownerAccount.nickname)) {
-          // debugPrint('element owners: ${dayMap[currentDay]}');
-          // debugPrint('element owner: ${element.ownerAccount.nickname}\n');
           dayMap[currentDay]!.add(element.ownerAccount.nickname);
           MissionModel toAdd = MissionModel(
             deadline: currentDay.copyWith(hour: 12),
@@ -119,9 +109,6 @@ class CalendarViewModel extends ChangeNotifier {
           toAdd.setOwner(ownerAccount: element.ownerAccount);
           oneForAday.add(toAdd);
         }
-        //  else {
-        //   debugPrint('contain key: $currentDay');
-        // }
 
         currentDay = currentDay.add(const Duration(days: 1));
       }
@@ -230,7 +217,10 @@ class CalendarViewModel extends ChangeNotifier {
         ? 50
         : calendarAppointmentDetails.bounds.height;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+      padding: const EdgeInsets.symmetric(
+        vertical: 5,
+        horizontal: 7,
+      ),
       child: Row(children: [
         // Expanded(
         // flex: 3,
@@ -254,31 +244,27 @@ class CalendarViewModel extends ChangeNotifier {
                                   .format((data as EventModel).startTime)
                               : '00:00 AM')
                       // Is mission
-                      : ((data as MissionModel)
-                                  .deadline
-                                  .copyWith()
-                                  .add(const Duration(minutes: -15))
-                                  .day ==
-                              DateTime.now().day
-                          ? DateFormat('hh:mm a').format((data as MissionModel)
-                              .deadline
-                              .copyWith()
-                              .add(const Duration(minutes: -15)))
-                          : (data as MissionModel)
-                                      .deadline
-                                      .copyWith()
-                                      .add(const Duration(minutes: -15))
-                                      .day ==
-                                  controller.selectedDate!.day
-                              ? DateFormat('hh:mm a').format(
-                                  (data as MissionModel)
-                                      .deadline
-                                      .copyWith()
-                                      .add(const Duration(minutes: -15)))
-                              : '00:00 AM'),
+                      : '',
                   style: TextStyle(
                       fontSize: height * 0.2, fontWeight: FontWeight.bold),
                 ),
+                data.toString() == 'Instance of \'EventModel\''
+                    ? const SizedBox()
+                    : Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                                color: stageColorMap[
+                                    (data as MissionModel).state.stage]!,
+                                width: 1),
+                          ),
+                        ),
+                        child: Text(
+                          (data as MissionModel).state.stateName,
+                          style: TextStyle(
+                              fontSize: height * 0.2,
+                              fontWeight: FontWeight.w600),
+                        )),
                 Text(
                   // TODO: VM
                   data.toString() == 'Instance of \'EventModel\''
@@ -305,25 +291,33 @@ class CalendarViewModel extends ChangeNotifier {
                 ),
               ],
             ),
-            data.toString() == 'Instance of \'EventModel\''
-                ? ((data as EventModel).startTime.day ==
-                        (data as EventModel).endTime.day
-                    ? const SizedBox()
-                    : Text(
-                        '(${controller.selectedDate!.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1}/${(data as EventModel).endTime.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1})',
-                        style: TextStyle(
-                            fontSize: height * 0.2,
-                            fontWeight: FontWeight.bold),
-                      ))
-                : const SizedBox()
+            Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: data.toString() == 'Instance of \'EventModel\''
+                    ? ((data as EventModel).startTime.day ==
+                            (data as EventModel).endTime.day
+                        ? const SizedBox()
+                        : Text(
+                            '(${controller.selectedDate!.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1}/${(data as EventModel).endTime.copyWith(hour: 12, minute: 0).difference((data as EventModel).startTime.copyWith(hour: 12, minute: 0)).inDays + 1})',
+                            style: TextStyle(
+                                fontSize: height * 0.2,
+                                fontWeight: FontWeight.bold),
+                          ))
+                    : const SizedBox())
           ],
         ),
         // ),
         Expanded(
-            flex: 1,
-            child: VerticalDivider(
-              color: Theme.of(context).colorScheme.primaryContainer,
-            )),
+          flex: 1,
+          child: Container(
+              height: 30,
+              child: VerticalDivider(
+                thickness: 2,
+                color: data.toString() == 'Instance of \'EventModel\''
+                    ? Color((data as EventModel).ownerAccount.color)
+                    : Color((data as MissionModel).ownerAccount.color),
+              )),
+        ),
         Expanded(
             flex: 7,
             child: Row(
@@ -394,7 +388,6 @@ class CalendarViewModel extends ChangeNotifier {
       List<BaseDataModel> totalList = [];
       totalList.addAll(_events.cast<BaseDataModel>());
       totalList.addAll(_missions.cast<BaseDataModel>());
-      // debugPrint('totalList length before: ${totalList.length}');
       DateTime theDateStart = DateTime(
           controller.selectedDate!.year,
           controller.selectedDate!.month,
@@ -412,24 +405,14 @@ class CalendarViewModel extends ChangeNotifier {
       List<BaseDataModel> resultList = totalList.where((element) {
         if (element.toString() == 'Instance of \'EventModel\'') {
           element = element as EventModel;
-          // debugPrint('theDateStart: $theDateStart');
-          // debugPrint('element.title: ${element.title}');
-          // debugPrint('element.startTime: ${element.startTime}');
-          // debugPrint('element.endTime: ${element.endTime}');
-          // debugPrint('theDateEnd: $theDateEnd\n');
           bool result = ((element.startTime.isBefore(theDateEnd) ||
                       element.startTime.isAtSameMomentAs(theDateEnd)) &&
                   (element.endTime.isAfter(theDateStart))
               //  || element.endTime.isAtSameMomentAs(theDateStart)
               );
-          // debugPrint('${element.title} result: $result');
           return result;
         } else {
           element = element as MissionModel;
-          // debugPrint('theDateStart: $theDateStart');
-          // debugPrint('element.title: ${element.title}');
-          // debugPrint('element.startTime: ${element.deadline}');
-          // debugPrint('theDateEnd: $theDateEnd\n');
           bool result =
               element.deadline.hour == 0 && element.deadline.minute == 0
                   ? DateTime(
@@ -445,16 +428,14 @@ class CalendarViewModel extends ChangeNotifier {
                           controller.selectedDate!.day) ==
                       DateTime(element.deadline.year, element.deadline.month,
                           element.deadline.day);
-          // debugPrint('${element.title} result: $result');
           return result;
         }
       }).toList();
       _activityListView = Expanded(
-        flex: 1,
+        flex: 2,
         child: ListView.builder(
           itemCount: resultList.length,
           itemBuilder: (context, index) {
-            // debugPrint('totalList length after: ${resultList.length}');
             return Container(
               key: ValueKey(resultList[index]),
               child: showMonthDotAgendaView(
@@ -483,11 +464,6 @@ class CalendarSource extends CalendarDataSource {
   }
   @override
   DateTime getStartTime(int index) {
-    // appointments?[index].toString() == 'Instance of \'EventModel\''
-    //     ? debugPrint(
-    //         'getStartTime: ${(appointments?[index] as EventModel).startTime}')
-    //     : debugPrint(
-    //         'getStartTime: ${(appointments?[index] as MissionModel).deadline}');
     return appointments?[index].toString() == 'Instance of \'EventModel\''
         ? (appointments?[index] as EventModel).startTime.hour == 0 &&
                 (appointments?[index] as EventModel).startTime.minute == 0

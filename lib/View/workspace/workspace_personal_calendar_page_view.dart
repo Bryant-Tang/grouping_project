@@ -47,11 +47,12 @@ class CalendarViewPageState extends State<CalendarViewPage> {
               });
               return Column(children: [
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Center(
                     child: Padding(
                       // TODO: limit calendar height
-                      padding: const EdgeInsets.only(bottom: 90),
+                      padding:
+                          const EdgeInsets.only(bottom: 10, left: 5, right: 5),
                       child: SfCalendar(
                         view: CalendarView.month,
                         controller: controller,
