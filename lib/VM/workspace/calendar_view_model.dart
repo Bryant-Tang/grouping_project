@@ -12,8 +12,8 @@ class CalendarViewModel extends ChangeNotifier {
   late List<EventModel> _events;
   late List<MissionModel> _missions;
   late DateTime _selectedDate = DateTime.now();
-  late CalendarController controller;
   Widget _activityListView = SizedBox();
+  List<BaseDataModel> activityAtTheDay = [];
 
   List<MissionStateModel> inProgress = [];
   List<MissionStateModel> pending = [];
@@ -41,15 +41,63 @@ class CalendarViewModel extends ChangeNotifier {
       required bool mounted}) {
     if (calendarTapDetails.date == _selectedDate) {
       controller.view = CalendarView.day;
+      getActivityByLabel();
+      debugPrint('Source changed');
       showActivityList(controller: controller, mounted: mounted);
     }
+  }
+
+  setDate(CalendarController controller) {
+    activityAtTheDay = [];
+
+    activityAtTheDay.addAll(_events.cast<BaseDataModel>());
+    activityAtTheDay.addAll(_missions.cast<BaseDataModel>());
+
+    DateTime theDateStart = DateTime(controller.selectedDate!.year,
+        controller.selectedDate!.month, controller.selectedDate!.day, 0, 0, 0);
+    DateTime theDateEnd = DateTime(
+        controller.selectedDate!.year,
+        controller.selectedDate!.month,
+        controller.selectedDate!.day,
+        23,
+        59,
+        59);
+
+    activityAtTheDay = activityAtTheDay.where((element) {
+      if (element.toString() == 'Instance of \'EventModel\'') {
+        element = element as EventModel;
+        bool result = ((element.startTime.isBefore(theDateEnd) ||
+                    element.startTime.isAtSameMomentAs(theDateEnd)) &&
+                (element.endTime.isAfter(theDateStart))
+            //  || element.endTime.isAtSameMomentAs(theDateStart)
+            );
+        return result;
+      } else {
+        element = element as MissionModel;
+        bool result = element.deadline.hour == 0 && element.deadline.minute == 0
+            ? DateTime(
+                    controller.selectedDate!.year,
+                    controller.selectedDate!.month,
+                    controller.selectedDate!.day) ==
+                DateTime(element.deadline.year, element.deadline.month,
+                        element.deadline.day)
+                    .add(const Duration(days: -1))
+            : DateTime(
+                    controller.selectedDate!.year,
+                    controller.selectedDate!.month,
+                    controller.selectedDate!.day) ==
+                DateTime(element.deadline.year, element.deadline.month,
+                    element.deadline.day);
+        return result;
+      }
+    }).toList();
   }
 
   /// return the activity source for label type calendar
   getActivityByLabel() {
     //TODO:return labels for the group
     _activitySource = CalendarSource(
-        (_events as List<BaseDataModel>) + (_missions as List<BaseDataModel>));
+        _events.cast<BaseDataModel>() + _missions.cast<BaseDataModel>());
   }
 
   /// return the activity source for dots type calendar
@@ -123,8 +171,11 @@ class CalendarViewModel extends ChangeNotifier {
       required CalendarAppointmentDetails calendarAppointmentDetails,
       required CalendarController controller}) {
     if (data.toString() == 'Instance of \'EventModel\'') {
+      debugPrint('It\' event');
       data = data as EventModel;
-      return data.startTime.day == data.endTime.day
+      debugPrint('title: ${data.title}');
+      return data.startTime.copyWith(hour: 0, minute: 0) ==
+              data.endTime.copyWith(hour: 0, minute: 0)
           ? Container(
               //TODO: when time range is very small => overflow occur
               padding: const EdgeInsets.all(5),
@@ -173,7 +224,9 @@ class CalendarViewModel extends ChangeNotifier {
             );
     } else {
       // TODO:check if the mission look right
+      debugPrint('It\' mission');
       data = data as MissionModel;
+      debugPrint('title: ${data.title}');
       return Container(
         //TODO: when time range is very small => overflow occur
         padding: const EdgeInsets.all(5),
@@ -385,61 +438,61 @@ class CalendarViewModel extends ChangeNotifier {
     if (controller.view == CalendarView.day) {
       _activityListView = SizedBox();
     } else {
-      List<BaseDataModel> totalList = [];
-      totalList.addAll(_events.cast<BaseDataModel>());
-      totalList.addAll(_missions.cast<BaseDataModel>());
-      DateTime theDateStart = DateTime(
-          controller.selectedDate!.year,
-          controller.selectedDate!.month,
-          controller.selectedDate!.day,
-          0,
-          0,
-          0);
-      DateTime theDateEnd = DateTime(
-          controller.selectedDate!.year,
-          controller.selectedDate!.month,
-          controller.selectedDate!.day,
-          23,
-          59,
-          59);
-      List<BaseDataModel> resultList = totalList.where((element) {
-        if (element.toString() == 'Instance of \'EventModel\'') {
-          element = element as EventModel;
-          bool result = ((element.startTime.isBefore(theDateEnd) ||
-                      element.startTime.isAtSameMomentAs(theDateEnd)) &&
-                  (element.endTime.isAfter(theDateStart))
-              //  || element.endTime.isAtSameMomentAs(theDateStart)
-              );
-          return result;
-        } else {
-          element = element as MissionModel;
-          bool result =
-              element.deadline.hour == 0 && element.deadline.minute == 0
-                  ? DateTime(
-                          controller.selectedDate!.year,
-                          controller.selectedDate!.month,
-                          controller.selectedDate!.day) ==
-                      DateTime(element.deadline.year, element.deadline.month,
-                              element.deadline.day)
-                          .add(const Duration(days: -1))
-                  : DateTime(
-                          controller.selectedDate!.year,
-                          controller.selectedDate!.month,
-                          controller.selectedDate!.day) ==
-                      DateTime(element.deadline.year, element.deadline.month,
-                          element.deadline.day);
-          return result;
-        }
-      }).toList();
+      // List<BaseDataModel> totalList = [];
+      // totalList.addAll(_events.cast<BaseDataModel>());
+      // totalList.addAll(_missions.cast<BaseDataModel>());
+      // DateTime theDateStart = DateTime(
+      //     controller.selectedDate!.year,
+      //     controller.selectedDate!.month,
+      //     controller.selectedDate!.day,
+      //     0,
+      //     0,
+      //     0);
+      // DateTime theDateEnd = DateTime(
+      //     controller.selectedDate!.year,
+      //     controller.selectedDate!.month,
+      //     controller.selectedDate!.day,
+      //     23,
+      //     59,
+      //     59);
+      // List<BaseDataModel> resultList = totalList.where((element) {
+      //   if (element.toString() == 'Instance of \'EventModel\'') {
+      //     element = element as EventModel;
+      //     bool result = ((element.startTime.isBefore(theDateEnd) ||
+      //                 element.startTime.isAtSameMomentAs(theDateEnd)) &&
+      //             (element.endTime.isAfter(theDateStart))
+      //         //  || element.endTime.isAtSameMomentAs(theDateStart)
+      //         );
+      //     return result;
+      //   } else {
+      //     element = element as MissionModel;
+      //     bool result =
+      //         element.deadline.hour == 0 && element.deadline.minute == 0
+      //             ? DateTime(
+      //                     controller.selectedDate!.year,
+      //                     controller.selectedDate!.month,
+      //                     controller.selectedDate!.day) ==
+      //                 DateTime(element.deadline.year, element.deadline.month,
+      //                         element.deadline.day)
+      //                     .add(const Duration(days: -1))
+      //             : DateTime(
+      //                     controller.selectedDate!.year,
+      //                     controller.selectedDate!.month,
+      //                     controller.selectedDate!.day) ==
+      //                 DateTime(element.deadline.year, element.deadline.month,
+      //                     element.deadline.day);
+      //     return result;
+      //   }
+      // }).toList();
       _activityListView = Expanded(
         flex: 2,
         child: ListView.builder(
-          itemCount: resultList.length,
+          itemCount: activityAtTheDay.length,
           itemBuilder: (context, index) {
             return Container(
-              key: ValueKey(resultList[index]),
+              key: ValueKey(activityAtTheDay[index]),
               child: showMonthDotAgendaView(
-                  data: resultList[index],
+                  data: activityAtTheDay[index],
                   context: context,
                   controller: controller),
             );

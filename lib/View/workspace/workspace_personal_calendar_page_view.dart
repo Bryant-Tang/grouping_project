@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
 import 'package:grouping_project/model/data_model.dart';
+import 'package:grouping_project/model/event_model.dart';
+import 'package:grouping_project/model/mission_model.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
@@ -40,7 +42,9 @@ class CalendarViewPageState extends State<CalendarViewPage> {
           create: (context) => CalendarViewModel(workspaceVM),
           child: Consumer<CalendarViewModel>(
             builder: (context, calendarVM, child) {
-              calendarVM.getActivityByDots();
+              controller.view == CalendarView.month
+                  ? calendarVM.getActivityByDots()
+                  : calendarVM.getActivityByLabel();
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 calendarVM.showActivityList(
                     controller: controller, mounted: false);
@@ -83,9 +87,17 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                             calendarVM.selectedDate =
                                 calendarSelectionDetails.date ??
                                     calendarVM.selectedDate;
+                            calendarVM.setDate(controller);
                             calendarVM.showActivityList(
                                 controller: controller, mounted: mounted);
                           }
+                        },
+                        onViewChanged: (viewChangedDetails) {
+                          controller.view == CalendarView.month
+                              ? calendarVM.getActivityByDots()
+                              : calendarVM.getActivityByLabel();
+                          calendarVM.showActivityList(
+                              controller: controller, mounted: mounted);
                         },
                         // allowViewNavigation: true,
                         headerStyle: CalendarHeaderStyle(
@@ -116,6 +128,7 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                           // this is iterator
                           final BaseDataModel data =
                               calendarAppointmentDetails.appointments.first;
+                          // debugPrint((data as MissionModel).title);
                           // the view of event
                           // 如果當前顯示是 day，切換顯示方式
                           if (controller.view == CalendarView.day) {
@@ -127,6 +140,11 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                                 calendarAppointmentDetails:
                                     calendarAppointmentDetails,
                                 controller: controller);
+                            // return calendarVM.showTotalDayView(
+                            //     context: context,
+                            //     calendarAppointmentDetails:
+                            //         calendarAppointmentDetails,
+                            //     controller: controller);
                           } else if (controller.view == CalendarView.month) {
                             // debugPrint(calendarAppointmentDetails.bounds.height.toString());
                             return calendarVM.showMonthDotAgendaView(
