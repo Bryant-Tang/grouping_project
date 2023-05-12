@@ -56,5 +56,4 @@ class LoginModel {
     // debugPrint("login successfully");
     return LoginState.loginSuccess;
   }
-
 }
