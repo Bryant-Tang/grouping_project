@@ -10,10 +10,12 @@ part 'profile.dart';
 part 'database_document.dart';
 
 abstract class _DatabaseCollectionName {
-  static const String account = 'account';
-  static const String profile = 'profile';
-  static const String uidCorrespondAccount = 'uid_account';
-  static const String event = 'event';
+  static String account = 'account';
+  static String profile = 'profile';
+  static String uidCorrespondAccount = 'uid_account';
+  static String event = 'event';
+  static String mission = 'mission';
+  static String state = 'state';
 }
 
 abstract class _DefaultFieldValue {
@@ -26,8 +28,9 @@ abstract class _DefaultFieldValue {
 class DatabaseService {
   static final _firestore = FirebaseFirestore.instance;
 
-  final Account _account;
-
+  //
+  // For constructing DatabaseService
+  Account _account;
   DatabaseService._create(Account account) : _account = account;
   static Future<DatabaseService> withAccountChecking(Account account) async {
     if ((await account._ref.get()).exists) {
@@ -40,14 +43,8 @@ class DatabaseService {
         stackTrace: StackTrace.current);
   }
 
-  static Future<Account> getUserAccount(String uid) async {
-    return Account._fromDatabase(
-        accountSnap: (await _firestore
-            .collection(_DatabaseCollectionName.uidCorrespondAccount)
-            .doc(uid)
-            .get()));
-  }
-
+  //
+  // For simply create document in database without binding
   static Future<Event> _createEventWithoutBinding() async {
     final eventRef =
         await _firestore.collection(_DatabaseCollectionName.event).add({});
@@ -75,6 +72,8 @@ class DatabaseService {
     return account;
   }
 
+  //
+  // For create document and bind it to the specific place
   static Future<Account> createUserAccount({required String uid}) async {
     Account account = await _createAccountWithoutBinding();
     await _firestore
@@ -82,11 +81,6 @@ class DatabaseService {
         .doc(uid)
         .set({_DatabaseCollectionName.account: account._ref});
     return account;
-  }
-
-  static Future<Profile> getSimpleProfile(
-      DocumentReference<Map<String, dynamic>> profileRef) async {
-    return Profile._fromDatabase(profileSnap: await profileRef.get());
   }
 
   Future<Account> createGroupAccount() async {
@@ -112,5 +106,68 @@ class DatabaseService {
     return event;
   }
 
-  
+  //
+  // For get only document itself without owner profile
+  static Future<Account> getUserAccount(String uid) async {
+    return Account._fromDatabase(
+        accountSnap: (await _firestore
+            .collection(_DatabaseCollectionName.uidCorrespondAccount)
+            .doc(uid)
+            .get()));
+  }
+
+  static Future<Profile> getSimpleProfile(
+      DocumentReference<Map<String, dynamic>> profileRef) async {
+    return Profile._fromDatabase(profileSnap: await profileRef.get());
+  }
+
+  Future<void> _reloadAccount() async {
+    _account = Account._fromDatabase(accountSnap: await _account._ref.get());
+  }
+
+  //
+  // For set document
+  void _throwExceptionDocumentNotBelongToAccount() {
+    throw GroupingProjectException(
+        message: 'This document is not belong to the controlled account.',
+        code: GroupingProjectExceptionCode.wrongParameter,
+        stackTrace: StackTrace.current);
+  }
+
+  Future<void> _setDocument(DatabaseDocument document) async {
+    await document._ref.set(document._toDatabase());
+  }
+
+  Future<void> _setAccount() async {
+    await _setDocument(_account);
+  }
+
+  Future<void> setProfile(Profile profile) async {
+    _reloadAccount();
+    if (profile._ref.path != _account.profile.path) {
+      _throwExceptionDocumentNotBelongToAccount();
+    }
+    await _setDocument(profile);
+  }
+
+  Future<void> setEvent(Event event) async {
+    _reloadAccount();
+    if (!(List.from(_account.event.map((ref) => ref.path))
+        .contains(event._ref.path))) {
+      _throwExceptionDocumentNotBelongToAccount();
+    }
+    await _setDocument(event);
+  }
+
+  //
+  // For get document with owner account and profile
+  Future<DataResult<Null>> getProfile() async {
+    return DataResult._create(
+        ownerAccountRef: _account._ref,
+        ownerProfile: await getSimpleProfile(_account.profile),
+        data: []);
+  }
+
+  Future<DataResult<Event>> getEvent(
+      DocumentReference<Map<String, dynamic>> eventRef) {}
 }
