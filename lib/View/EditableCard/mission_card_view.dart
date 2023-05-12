@@ -79,7 +79,7 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
               padding: const EdgeInsets.all(5.0),
               child: AspectRatio(
               // TODO: delete ratio?
-                aspectRatio: 3.2,
+                aspectRatio: 3.3,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: themeData.colorScheme.surface,
@@ -121,21 +121,23 @@ class _MissionCardViewTemplateState extends State<MissionCardViewTemplate> {
                                 style: themeData.textTheme.titleMedium!
                                     .copyWith(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 16)),
+                                        fontSize: 14)),
                             Text(
                               model.introduction,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: themeData.textTheme.titleSmall!.copyWith(
                                   // color: themeData.colorScheme.secondary,
-                                  fontSize: 14),
+                                  fontSize: 12),
                             ),
                             Row(
                               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 const Icon(Icons.timer, size: 18),
-                                Text(model.formattedDeadline),
+                                Text(model.formattedDeadline,
+                                      style: themeData.textTheme.titleSmall!
+                                          .copyWith(fontSize: 12, color: themeData.colorScheme.primary),),
                               ],
                             ),
                           ],

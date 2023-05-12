@@ -59,7 +59,6 @@ dependencies:
   qr_flutter: ^4.0.0
   mobile_scanner: ^3.2.0
   http: ^0.13.5
-  syncfusion_flutter_calendar: ^21.2.3
 
 dev_dependencies:
   flutter_test:
