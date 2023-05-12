@@ -53,6 +53,7 @@ dependencies:
   firebase_storage: ^11.1.0
   path_provider: ^2.0.14
   syncfusion_flutter_datepicker: ^21.0.0
+  syncfusion_flutter_calendar: ^21.2.3
   day_night_time_picker: ^1.2.0
   path: ^1.8.3
   qr_flutter: ^4.0.0
