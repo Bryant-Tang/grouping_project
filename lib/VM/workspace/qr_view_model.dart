@@ -19,6 +19,9 @@ class QRViewModel extends ChangeNotifier {
 
   void updateBarcode(String barcode) {
     code = barcode;
+    if (code != 'https://reurl.cc/EG3gy1') {
+      //TODO: Open the video
+    }
     notifyListeners();
   }
 

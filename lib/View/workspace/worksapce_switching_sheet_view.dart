@@ -25,7 +25,8 @@ class _SwitchWorkSpaceSheetState extends State<SwitchWorkSpaceSheet> {
             decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20))),
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -39,7 +40,7 @@ class _SwitchWorkSpaceSheetState extends State<SwitchWorkSpaceSheet> {
                   Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: Center(
-                      child: Text('WOKSPACE',
+                      child: Text('WORKSPACE',
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium!
@@ -49,8 +50,10 @@ class _SwitchWorkSpaceSheetState extends State<SwitchWorkSpaceSheet> {
                   const Divider(thickness: 2, indent: 20, endIndent: 20),
                   Column(
                     children: List.generate(
-                        model.allGroupProfile.length, (index) => GroupSwitcherView(
-                          accountModel: model.allGroupProfile.elementAt(index))),
+                        model.allGroupProfile.length,
+                        (index) => GroupSwitcherView(
+                            accountModel:
+                                model.allGroupProfile.elementAt(index))),
                   ),
                   MaterialButton(
                       onPressed: () async {
@@ -108,7 +111,8 @@ class _SwitchWorkSpaceSheetState extends State<SwitchWorkSpaceSheet> {
                                   .labelLarge!
                                   .copyWith(
                                       fontWeight: FontWeight.bold,
-                                      color: Theme.of(context).colorScheme.error))
+                                      color:
+                                          Theme.of(context).colorScheme.error))
                         ],
                       )),
                 ]),
@@ -134,9 +138,9 @@ class GroupSwitcherView extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
                 child: Card(
-                  color: accountModel.id != model.accountProfileData.id 
-                    ? themeData.colorScheme.surface
-                    : themeData.colorScheme.surfaceVariant,
+                  color: accountModel.id != model.accountProfileData.id
+                      ? themeData.colorScheme.surface
+                      : themeData.colorScheme.surfaceVariant,
                   child: MaterialButton(
                     onPressed: () {
                       themeVM.updateColorSchemeSeed(Color(accountModel.color));
@@ -154,7 +158,8 @@ class GroupSwitcherView extends StatelessWidget {
                               backgroundColor: Color(accountModel.color),
                               backgroundImage: accountModel.photo.isNotEmpty
                                   ? Image.memory(accountModel.photo).image
-                                  : Image.asset("assets/images/profile_male.png")
+                                  : Image.asset(
+                                          "assets/images/profile_male.png")
                                       .image,
                             ),
                             const SizedBox(width: 10),
@@ -169,30 +174,36 @@ class GroupSwitcherView extends StatelessWidget {
                                     Text(accountModel.nickname,
                                         style: themeData.textTheme.titleMedium!
                                             .copyWith(
-                                                fontWeight: FontWeight.bold)),
-                                    accountModel.id == model.personalprofileData.id ? const SizedBox() :
-                                    Text(accountModel.introduction,
-                                        style: themeData.textTheme.titleSmall!
-                                            .copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondary,
-                                        ))
+                                                fontWeight: FontWeight.bold,
+                                                color: themeData
+                                                    .colorScheme.primary)),
+                                    accountModel.id ==
+                                            model.personalprofileData.id
+                                        ? const SizedBox()
+                                        : Text(accountModel.introduction,
+                                            style: themeData
+                                                .textTheme.titleSmall!
+                                                .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: themeData
+                                                  .colorScheme.secondary,
+                                            ))
                                   ],
                                 ),
                                 const SizedBox(height: 5),
-                                accountModel.id == model.personalprofileData.id ? const SizedBox()
-                                : Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: (accountModel.tags)
-                                      .map((tag) => ColorTagChip(
-                                          tagString: tag.tag,
-                                          color: themeData.colorScheme.primary))
-                                      .toList(),
-                                )
+                                accountModel.id == model.personalprofileData.id
+                                    ? const SizedBox()
+                                    : Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: (accountModel.tags)
+                                            .map((tag) => ColorTagChip(
+                                                tagString: tag.tag,
+                                                color: themeData
+                                                    .colorScheme.primary))
+                                            .toList(),
+                                      )
                               ],
                             )
                           ]),

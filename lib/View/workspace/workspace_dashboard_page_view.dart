@@ -1,10 +1,10 @@
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
-import 'package:grouping_project/View/mission_card_view.dart';
+import 'package:grouping_project/View/EditableCard/mission_card_view.dart';
 import 'package:grouping_project/components/button/overview_choice_button.dart';
 import 'package:flutter/material.dart';
-import 'package:grouping_project/View/event_card_view.dart';
+import 'package:grouping_project/View/EditableCard/event_card_view.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +29,9 @@ class _WorkspaceDashboardPageViewState
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: const [
-          Expanded(flex: 1, child: Progress()),
+          // adjust child size
+          // ref. https://stackoverflow.com/questions/52645944/flutter-expanded-vs-flexible
+          Flexible(flex: 1, child: Progress()),
           Expanded(flex: 3, child: OverView()),
         ]);
   }
@@ -64,23 +66,25 @@ class _ProgressState extends State<Progress> {
                     child: const MissionProgressingCard()))
             .toList());
         
-        return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('PROGRESSING',
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontWeight: FontWeight.bold,
-                      )),
-              const Divider(
-                thickness: 2,
-              ),
-              Expanded(
-                  child: _allObject.isNotEmpty
-                  ? PageView(children: _allObject)
-                  : const Center(child:Text('你還未建立任何事件或任務'))
-              ),
-            ]));
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          // TODO: give minimul height
+          constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height * 0.23),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('PROGRESSING',
+            style: Theme.of(context).textTheme.titleMedium!.copyWith(
+            fontWeight: FontWeight.bold,
+                )),
+                const Divider(
+          thickness: 2,
+                ),
+                Expanded(
+            child: _allObject.isNotEmpty
+            ? PageView(children: _allObject)
+            : const Center(child:Text('你還未建立任何事件或任務'))
+                ),
+              ]),
+        );
       },
     );
   }

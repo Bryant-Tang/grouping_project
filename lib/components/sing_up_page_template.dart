@@ -20,11 +20,12 @@ class _SignUpPageTemplateState extends State<SignUpPageTemplate> {
   // final AuthService _authService = AuthService();
   @override
   Widget build(BuildContext context) {
+    var verticalHeight = MediaQuery.of(context).size.height * 0.15;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       // backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 120),
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: verticalHeight),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,

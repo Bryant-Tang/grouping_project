@@ -26,6 +26,7 @@ class MissionSettingViewModel extends ChangeNotifier {
     MissionStage.progress: Colors.blue,
     MissionStage.pending: Colors.red,
     MissionStage.close: Colors.green,
+    // state the color 應該要在後端上面
   };
 
   DateFormat dataformat = DateFormat('h:mm a, MMM d, y');
@@ -44,7 +45,7 @@ class MissionSettingViewModel extends ChangeNotifier {
   // The list of contibutor canidatet when we select participant in edit and create mode
 
   void updateTitle(String newTitle) {
-    missionModel.title = newTitle;
+    missionModel.title = newTitle == '' ? '任務標題' : newTitle;
     notifyListeners();
   }
 
@@ -53,7 +54,7 @@ class MissionSettingViewModel extends ChangeNotifier {
   }
 
   void updateIntroduction(String newIntro) {
-    missionModel.introduction = newIntro;
+    missionModel.introduction = newIntro == '' ? '任務介紹' : newIntro;
     notifyListeners();
   }
 
@@ -243,15 +244,6 @@ class MissionSettingViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> editMission() async {
-  //   // edit event with eventData
-  //   // debugPrint("on save ${missionModel.contributorIds.toString()}");
-  //   // debugPrint("deadline $missionDeadline");
-  //   // TODO: Change to owner account
-  //   await DatabaseService(ownerUid: missionOwnerAccount.id!, forUser: false)
-  //       .setMission(mission: missionModel);
-  //   notifyListeners();
-  // }
 
   Future<void> deleteMission() async {
     await DatabaseService(ownerUid: missionOwnerAccount.id!, forUser: false)

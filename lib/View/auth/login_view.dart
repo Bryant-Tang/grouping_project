@@ -23,80 +23,85 @@ class LoginPage extends StatelessWidget {
     return ChangeNotifierProvider<LoginViewModel>(
       create: (context) => LoginViewModel(),
       child: Consumer<LoginViewModel>(
-        builder: (context, loginViewModel, _) => Scaffold(
-          resizeToAvoidBottomInset: false,
-          // backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0, 0.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  HeadlineWithContent(
-                      headLineText: headLineText, content: content),
-                  const SizedBox(height: 50),
-                  _EmailForm(),
-                  const SizedBox(height: 50),
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Expanded(
-                          flex: 2,
-                          child: Divider(
-                            thickness: 4,
-                          )),
-                      Expanded(
-                          flex: 3,
-                          child: Text(
-                            "連接其他帳號",
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          )),
-                      const Expanded(
-                          flex: 2,
-                          child: Divider(
-                            thickness: 4,
-                          )),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: Column(
-                      children: authButtonNameList
-                          .map((name) => AuthButton(
-                              fileName: "$name.png",
-                              name: name,
-                              onPressed: () async {
-                                await loginViewModel.onThirdPartyLogin(name);
-                                switch (loginViewModel.loginState) {
-                                  case LoginState.loginSuccess:
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const WorksapceBasePage()));
-                                    break;
-                                  case LoginState.loginFaild:
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(const SnackBar(
-                                      content: Text("登入失敗"),
-                                      duration: Duration(seconds: 2),
-                                    ));
-                                    break;
-                                  default:
-                                    break;
-                                }
-                              }))
-                          .toList(),
+        builder: (context, loginViewModel, _) => WillPopScope(
+          onWillPop: () async {
+            return false; // 禁用返回鍵
+          },
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            // backgroundColor: Colors.white,
+            body: SingleChildScrollView(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0, 0.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    HeadlineWithContent(
+                        headLineText: headLineText, content: content),
+                    const SizedBox(height: 50),
+                    _EmailForm(),
+                    const SizedBox(height: 50),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Expanded(
+                            flex: 2,
+                            child: Divider(
+                              thickness: 4,
+                            )),
+                        Expanded(
+                            flex: 3,
+                            child: Text(
+                              "連接其他帳號",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge!
+                                  .copyWith(fontWeight: FontWeight.bold),
+                            )),
+                        const Expanded(
+                            flex: 2,
+                            child: Divider(
+                              thickness: 4,
+                            )),
+                      ],
                     ),
-                  )
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: Column(
+                        children: authButtonNameList
+                            .map((name) => AuthButton(
+                                fileName: "$name.png",
+                                name: name,
+                                onPressed: () async {
+                                  await loginViewModel.onThirdPartyLogin(name);
+                                  switch (loginViewModel.loginState) {
+                                    case LoginState.loginSuccess:
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const WorksapceBasePage()));
+                                      break;
+                                    case LoginState.loginFaild:
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content: Text("登入失敗"),
+                                        duration: Duration(seconds: 2),
+                                      ));
+                                      break;
+                                    default:
+                                      break;
+                                  }
+                                }))
+                            .toList(),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
