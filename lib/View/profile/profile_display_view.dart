@@ -77,40 +77,47 @@ class ProfileDispalyPageViewState extends State<ProfileDispalyPageView> {
           Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: value.accountProfileData.associateEntityAccount
-                  .map((account) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: account.photo.isEmpty
-                        ? Image.asset('assets/images/profile_male.png').image
-                        : Image.memory(account.photo).image),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      Text(
-                        account.nickname,
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 2,
-                  ),
-                  Divider(
-                    thickness: 1.5,
-                    color: Theme.of(context).colorScheme.secondary,
-                    height: 20,
-                  ),
-                ],
-              )),
-      )
-.toList()),
+                  .map(
+                    (account) => Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 3),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                    backgroundImage: account.photo.isEmpty
+                                        ? Image.asset(
+                                                'assets/images/profile_male.png')
+                                            .image
+                                        : Image.memory(account.photo).image),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                Text(
+                                  account.nickname,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge!
+                                      .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 2,
+                            ),
+                            Divider(
+                              thickness: 1.5,
+                              color: Theme.of(context).colorScheme.secondary,
+                              height: 20,
+                            ),
+                          ],
+                        )),
+                  )
+                  .toList()),
         ]);
       }
     } else if (model.isShare) {
@@ -235,7 +242,7 @@ class CustomLabel extends StatelessWidget {
       required this.title,
       required this.information,
       this.forGroupTags = false});
-    
+
   Widget? child;
   final String title;
   final String information;
@@ -360,8 +367,8 @@ class _ShowQRCodeViewState extends State<ShowQRCodeView> {
                   'Welcome to ${value.accountProfile.name}!');
             } else {
               debugPrint('It\'s personal account');
-              model.showGroupId('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-              model.updateWelcomeMessage('Never gonna give you up ~');
+              model.showGroupId('https://reurl.cc/EG3gy1');
+              model.updateWelcomeMessage('You should not be here!');
             }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
