@@ -8,7 +8,7 @@ class DataResult<T extends DatabaseDocument?> {
       {required this.ownerAccountRef,
       required this.ownerProfile,
       required this.data});
-  static Future<DataResult<T>> withProfileGetting<T extends DatabaseDocument?>(
+  static Future<DataResult<T>> _withProfileGetting<T extends DatabaseDocument?>(
       {required Account ownerAccount, required List<T> data}) async {
     return DataResult<T>._create(
         ownerAccountRef: ownerAccount._ref,

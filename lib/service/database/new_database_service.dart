@@ -23,6 +23,7 @@ abstract class _DefaultFieldValue {
   static int zeroInt = 0;
   static List emptyList = [];
   static Timestamp zeroTimestamp = Timestamp(0, 0);
+  static Map emptyMap = {};
 }
 
 class DatabaseService {
@@ -46,29 +47,30 @@ class DatabaseService {
   //
   // For simply create document in database without binding
   static Future<Event> _createEventWithoutBinding() async {
-    final eventRef =
-        await _firestore.collection(_DatabaseCollectionName.event).add({});
+    final eventRef = await _firestore
+        .collection(_DatabaseCollectionName.event)
+        .add(_DefaultFieldValue.emptyMap as Map<String, dynamic>);
     Event event = Event._create(eventRef: eventRef);
-    //TODO: set event
     return event;
   }
 
   static Future<Profile> _createProfileWithoutBinding() async {
-    final profileRef =
-        await _firestore.collection(_DatabaseCollectionName.profile).add({});
-    // Profile profile = Profile._create(profileRef: profileRef, photo: photo)
-    //TODO: set profile
+    final profileRef = await _firestore
+        .collection(_DatabaseCollectionName.profile)
+        .add(_DefaultFieldValue.emptyMap as Map<String, dynamic>);
+    // Profile profile = Profile._create(profileRef: profileRef, photo: photo);
+    //TODO: implement photo type
     throw UnimplementedError();
     // return profile;
   }
 
   static Future<Account> _createAccountWithoutBinding() async {
     Profile profile = await _createProfileWithoutBinding();
-    final accountRef =
-        await _firestore.collection(_DatabaseCollectionName.account).add({});
+    final accountRef = await _firestore
+        .collection(_DatabaseCollectionName.account)
+        .add(_DefaultFieldValue.emptyMap as Map<String, dynamic>);
     Account account = Account._create(
         isUser: true, accountRef: accountRef, profile: profile._ref);
-    //TODO: set account
     return account;
   }
 
@@ -93,16 +95,16 @@ class DatabaseService {
     }
     Account newAccount = await _createAccountWithoutBinding();
     _account._addAssociateAccountRef(newAccount._ref);
-    //TODO: set _account
+    await _setAccount();
     newAccount._addAssociateAccountRef(_account._ref);
-    //TODO: set newAccount
+    await (await DatabaseService.withAccountChecking(newAccount))._setAccount();
     return newAccount;
   }
 
   Future<Event> createEvent() async {
     Event event = await _createEventWithoutBinding();
     _account._addEventRef(event._ref);
-    //TODO: set _account
+    await _setAccount();
     return event;
   }
 
@@ -134,6 +136,16 @@ class DatabaseService {
         stackTrace: StackTrace.current);
   }
 
+  void _checkDocumentRefBelongTo(
+      {required List<DocumentReference<Map<String, dynamic>>> refList,
+      required DocumentReference<Map<String, dynamic>> documentRef}) {
+    _reloadAccount();
+    if (!(List.from(refList.map((ref) => ref.path))
+        .contains(documentRef.path))) {
+      _throwExceptionDocumentNotBelongToAccount();
+    }
+  }
+
   Future<void> _setDocument(DatabaseDocument document) async {
     await document._ref.set(document._toDatabase());
   }
@@ -143,31 +155,28 @@ class DatabaseService {
   }
 
   Future<void> setProfile(Profile profile) async {
-    _reloadAccount();
-    if (profile._ref.path != _account.profile.path) {
-      _throwExceptionDocumentNotBelongToAccount();
-    }
+    _checkDocumentRefBelongTo(
+        refList: [_account.profile], documentRef: profile._ref);
     await _setDocument(profile);
   }
 
   Future<void> setEvent(Event event) async {
-    _reloadAccount();
-    if (!(List.from(_account.event.map((ref) => ref.path))
-        .contains(event._ref.path))) {
-      _throwExceptionDocumentNotBelongToAccount();
-    }
+    _checkDocumentRefBelongTo(refList: _account.event, documentRef: event._ref);
     await _setDocument(event);
   }
 
   //
   // For get document with owner account and profile
   Future<DataResult<Null>> getProfile() async {
-    return DataResult._create(
-        ownerAccountRef: _account._ref,
-        ownerProfile: await getSimpleProfile(_account.profile),
-        data: []);
+    return await DataResult._withProfileGetting(
+        ownerAccount: _account, data: []);
   }
 
   Future<DataResult<Event>> getEvent(
-      DocumentReference<Map<String, dynamic>> eventRef) {}
+      DocumentReference<Map<String, dynamic>> eventRef) async {
+    _checkDocumentRefBelongTo(refList: _account.event, documentRef: eventRef);
+    return await DataResult._withProfileGetting(
+        ownerAccount: _account,
+        data: [Event._fromDatabase(eventSnap: await eventRef.get())]);
+  }
 }
