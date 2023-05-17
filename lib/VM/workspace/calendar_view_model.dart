@@ -227,155 +227,142 @@ class CalendarViewModel extends ChangeNotifier {
         // TODO: delete if not used
         Expanded(
           flex: 2,
-          child:
-            data is EventModel
-                // is Event
-                ? data.startTime.day == data.endTime.day
-                    ? Column(children: [
-                        Text(DateFormat('hh:mm a').format(data.startTime),
-                            style: TextStyle(
-                                fontSize: height * 0.2,
-                                fontWeight: FontWeight.bold)),
-                        Text(DateFormat('hh:mm a').format(data.endTime),
-                            style: TextStyle(
-                                fontSize: height * 0.2,
-                                fontWeight: FontWeight.bold))
-                      ])
-                    // is all-day of event?
-                    : controller.selectedDate!.day != data.startTime.day &&
-                            controller.selectedDate!.day != data.endTime.day
-                        ? Center(
+          child: data is EventModel
+              // is Event
+              ? data.startTime.day == data.endTime.day
+                  ? Column(children: [
+                      Text(DateFormat('hh:mm a').format(data.startTime),
+                          style: TextStyle(
+                              fontSize: height * 0.2,
+                              fontWeight: FontWeight.bold)),
+                      Text(DateFormat('hh:mm a').format(data.endTime),
+                          style: TextStyle(
+                              fontSize: height * 0.2,
+                              fontWeight: FontWeight.bold))
+                    ])
+                  // is all-day of event?
+                  : controller.selectedDate!.day != data.startTime.day &&
+                          controller.selectedDate!.day != data.endTime.day
+                      ? Center(
                           child: Text('All-Day',
                               style: TextStyle(
                                   fontSize: height * 0.2,
                                   fontWeight: FontWeight.bold)),
                         )
-                        : Column(
-                            children: controller.selectedDate!.day ==
-                                    data.startTime.day
-                                ? [
-                                    Text(
-                                        DateFormat('hh:mm a')
-                                            .format(data.startTime),
-                                        style: TextStyle(
-                                            fontSize: height * 0.2,
-                                            fontWeight: FontWeight.bold)),
-                                    Text('Start',
-                                        style: TextStyle(
-                                            fontSize: height * 0.2,
-                                            fontWeight: FontWeight.bold))
-                                  ]
-                                : [
-                                    Text(
-                                        DateFormat('hh:mm a')
-                                            .format(data.startTime),
-                                        style: TextStyle(
-                                            fontSize: height * 0.2,
-                                            fontWeight: FontWeight.bold)),
-                                    Text('End',
-                                        style: TextStyle(
-                                            fontSize: height * 0.2,
-                                            fontWeight: FontWeight.bold))
-                                  ],
-                          )
-                // is Mission
-                : Column(
-                    children: [
-                      Container(
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                  color: stageColorMap[
-                                      (data as MissionModel).state.stage]!,
-                                  width: 1),
-                            ),
-                            // borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            data.state.stateName,
-                            style: TextStyle(
-                                fontSize: height * 0.2,
-                                fontWeight: FontWeight.w600),
-                          )),
-                      Text(
-                          DateFormat('hh:mm a')
-                              .format(data.deadline),
-                          style: TextStyle(
-                              fontSize: height * 0.2,
-                              fontWeight: FontWeight.bold))
-                    ],
-                  )
-            // Column(
-            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //   children: [
-            //     // StartTime of data
-            //     data is EventModel
-            //         ? Text(
-            //             (data.startTime.day ==
-            //                     DateTime.now().day
-            //                 ? DateFormat('hh:mm a').format(data.startTime)
-            //                 : data.startTime.day ==
-            //                         controller.selectedDate!.day
-            //                     ? DateFormat('hh:mm a')
-            //                         .format(data.startTime)
-            //                     : '00:00 AM'),
-            //             style: TextStyle(
-            //                 fontSize: height * 0.2,
-            //                 fontWeight: FontWeight.bold),
-            //           )
-            //           // is Mission
-            //         : Container(
-            //             decoration: BoxDecoration(
-            //               border: Border(
-            //                 bottom: BorderSide(
-            //                     color: stageColorMap[(data as MissionModel).state.stage]!,
-            //                     width: 1),
-            //               ),
-            //               // borderRadius: BorderRadius.circular(10),
-            //             ),
-            //             child: Text(
-            //               data.state.stateName,
-            //               style: TextStyle(
-            //                   fontSize: height * 0.2,
-            //                   fontWeight: FontWeight.w600),
-            //             )),
-            //     // EndTime/DeadLine of data
-            //     Text(
-            //       data is EventModel
-            //       // data.toString() == 'Instance of \'EventModel\''
-            //           ? (data.endTime.day == DateTime.now().day
-            //               ? DateFormat('hh:mm a').format(data.endTime)
-            //               : data.endTime.day ==
-            //                       controller.selectedDate!.day
-            //                   ? DateFormat('hh:mm a')
-            //                       .format(data.endTime)
-            //                   : 'Start')
-            //           // Is mission
-            //           : ((data as MissionModel).deadline.day ==
-            //                   DateTime.now().day
-            //               ? DateFormat('hh:mm a')
-            //                   .format(data.deadline)
-            //               : data.deadline.day ==
-            //                       controller.selectedDate!.day
-            //                   ? DateFormat('hh:mm a')
-            //                       .format(data.deadline)
-            //                   : '00:00 AM'),
-            //       style: TextStyle(
-            //           fontSize: height * 0.2, fontWeight: FontWeight.bold),
-            //     ),
-            //   ],
-            // ),
-            // Padding(
-            //     padding: const EdgeInsets.only(left: 5),
-            //     // child: data.toString() == 'Instance of \'EventModel\''
-            //     child: data is EventModel && data.startTime.day != data.endTime.day
-            //         ? Text(
-            //                 '(${controller.selectedDate!.copyWith(hour: 12, minute: 0).difference(data.startTime.copyWith(hour: 12, minute: 0)).inDays + 1}/${data.endTime.copyWith(hour: 12, minute: 0).difference(data.startTime.copyWith(hour: 12, minute: 0)).inDays + 1})',
-            //                 style: TextStyle(
-            //                     fontSize: height * 0.2,
-            //                     fontWeight: FontWeight.bold),
-            //               )
-            //         : const SizedBox())
+                      : Column(
+                          children:
+                              controller.selectedDate!.day == data.startTime.day
+                                  ? [
+                                      Text(
+                                          DateFormat('hh:mm a')
+                                              .format(data.startTime),
+                                          style: TextStyle(
+                                              fontSize: height * 0.2,
+                                              fontWeight: FontWeight.bold)),
+                                      Text('Start',
+                                          style: TextStyle(
+                                              fontSize: height * 0.2,
+                                              fontWeight: FontWeight.bold))
+                                    ]
+                                  : [
+                                      Text(
+                                          DateFormat('hh:mm a')
+                                              .format(data.startTime),
+                                          style: TextStyle(
+                                              fontSize: height * 0.2,
+                                              fontWeight: FontWeight.bold)),
+                                      Text('End',
+                                          style: TextStyle(
+                                              fontSize: height * 0.2,
+                                              fontWeight: FontWeight.bold))
+                                    ],
+                        )
+              // is Mission
+              : Column(
+                  children: [
+                    Text('Deadline',
+                        style: TextStyle(
+                            fontSize: height * 0.2,
+                            fontWeight: FontWeight.bold)),
+                    Text(
+                        DateFormat('hh:mm a')
+                            .format((data as MissionModel).deadline),
+                        style: TextStyle(
+                            fontSize: height * 0.2,
+                            fontWeight: FontWeight.bold))
+                  ],
+                )
+          // Column(
+          //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //   children: [
+          //     // StartTime of data
+          //     data is EventModel
+          //         ? Text(
+          //             (data.startTime.day ==
+          //                     DateTime.now().day
+          //                 ? DateFormat('hh:mm a').format(data.startTime)
+          //                 : data.startTime.day ==
+          //                         controller.selectedDate!.day
+          //                     ? DateFormat('hh:mm a')
+          //                         .format(data.startTime)
+          //                     : '00:00 AM'),
+          //             style: TextStyle(
+          //                 fontSize: height * 0.2,
+          //                 fontWeight: FontWeight.bold),
+          //           )
+          //           // is Mission
+          //         : Container(
+          //             decoration: BoxDecoration(
+          //               border: Border(
+          //                 bottom: BorderSide(
+          //                     color: stageColorMap[(data as MissionModel).state.stage]!,
+          //                     width: 1),
+          //               ),
+          //               // borderRadius: BorderRadius.circular(10),
+          //             ),
+          //             child: Text(
+          //               data.state.stateName,
+          //               style: TextStyle(
+          //                   fontSize: height * 0.2,
+          //                   fontWeight: FontWeight.w600),
+          //             )),
+          //     // EndTime/DeadLine of data
+          //     Text(
+          //       data is EventModel
+          //       // data.toString() == 'Instance of \'EventModel\''
+          //           ? (data.endTime.day == DateTime.now().day
+          //               ? DateFormat('hh:mm a').format(data.endTime)
+          //               : data.endTime.day ==
+          //                       controller.selectedDate!.day
+          //                   ? DateFormat('hh:mm a')
+          //                       .format(data.endTime)
+          //                   : 'Start')
+          //           // Is mission
+          //           : ((data as MissionModel).deadline.day ==
+          //                   DateTime.now().day
+          //               ? DateFormat('hh:mm a')
+          //                   .format(data.deadline)
+          //               : data.deadline.day ==
+          //                       controller.selectedDate!.day
+          //                   ? DateFormat('hh:mm a')
+          //                       .format(data.deadline)
+          //                   : '00:00 AM'),
+          //       style: TextStyle(
+          //           fontSize: height * 0.2, fontWeight: FontWeight.bold),
+          //     ),
+          //   ],
+          // ),
+          // Padding(
+          //     padding: const EdgeInsets.only(left: 5),
+          //     // child: data.toString() == 'Instance of \'EventModel\''
+          //     child: data is EventModel && data.startTime.day != data.endTime.day
+          //         ? Text(
+          //                 '(${controller.selectedDate!.copyWith(hour: 12, minute: 0).difference(data.startTime.copyWith(hour: 12, minute: 0)).inDays + 1}/${data.endTime.copyWith(hour: 12, minute: 0).difference(data.startTime.copyWith(hour: 12, minute: 0)).inDays + 1})',
+          //                 style: TextStyle(
+          //                     fontSize: height * 0.2,
+          //                     fontWeight: FontWeight.bold),
+          //               )
+          //         : const SizedBox())
           ,
         ),
         // ),
@@ -393,28 +380,75 @@ class CalendarViewModel extends ChangeNotifier {
         ),
         Expanded(
             flex: 10,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                    data is EventModel
-                        // data.toString() == 'Instance of \'EventModel\''
-                        ? data.title
-                        : (data as MissionModel).title,
-                    style: TextStyle(
-                        fontSize: height * 0.25, fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis),
-                Text(
-                  data is EventModel
-                      // data.toString() == 'Instance of \'EventModel\''
-                      ? data.introduction
-                      : (data as MissionModel).introduction,
-                  style: TextStyle(fontSize: height * 0.2),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 3,
-                ),
-              ],
-            )),
+            child: data is EventModel
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(data.title,
+                          style: TextStyle(
+                              fontSize: height * 0.25,
+                              fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis),
+                      Text(
+                        data.introduction,
+                        style: TextStyle(fontSize: height * 0.2),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
+                      ),
+                    ],
+                  )
+                : Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        flex: 7,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text((data as MissionModel).title,
+                                style: TextStyle(
+                                    fontSize: height * 0.25,
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.ellipsis),
+                            Text(
+                              data.introduction,
+                              style: TextStyle(fontSize: height * 0.2),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Flexible(
+                        flex: 3,
+                        child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 3),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: stageColorMap[data.state.stage]!),
+                                borderRadius: BorderRadius.circular(10)
+                                // elevation: 4,
+                                ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircleAvatar(
+                                    backgroundColor:
+                                        stageColorMap[data.state.stage]!,
+                                    radius: 5),
+                                const SizedBox(width: 5),
+                                Text(
+                                  data.state.stateName,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: stageColorMap[data.state.stage]!),
+                                ),
+                              ],
+                            )),
+                      )
+                    ],
+                  )),
       ]),
     );
   }
