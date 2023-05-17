@@ -8,14 +8,14 @@ import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
 
-class CalendarViewPage extends StatefulWidget {
-  const CalendarViewPage({super.key});
+class CalendarGroupViewPage extends StatefulWidget {
+  const CalendarGroupViewPage({super.key});
 
   @override
-  State<CalendarViewPage> createState() => CalendarViewPageState();
+  State<CalendarGroupViewPage> createState() => _CalendarGroupViewPageState();
 }
 
-class CalendarViewPageState extends State<CalendarViewPage> {
+class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
   CalendarController controller = CalendarController();
 
   @override
@@ -34,21 +34,26 @@ class CalendarViewPageState extends State<CalendarViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeManager>(
-      builder: (context, themeManager, child) =>
-          Consumer<WorkspaceDashBoardViewModel>(
+    return IgnorePointer(
+      //Try to stop taps until build
+      ignoring: !mounted,
+      child: Consumer<WorkspaceDashBoardViewModel>(
         builder: (context, workspaceVM, child) =>
             ChangeNotifierProvider<CalendarViewModel>(
-          create: (context) => CalendarViewModel(workspaceVM),
+          create: (context) => CalendarViewModel(
+              events: workspaceVM.events,
+              missions: workspaceVM.missions,
+              defaultSelectedDate: DateTime(DateTime.now().year,
+                  DateTime.now().month, DateTime.now().day),
+              isItGroup: true),
           child: Consumer<CalendarViewModel>(
             builder: (context, calendarVM, child) {
-              controller.view == CalendarView.month
-                  ? calendarVM.getActivityByDots()
-                  : calendarVM.getActivityByLabel();
+              calendarVM.getActivityByLabel();
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 calendarVM.showActivityList(
-                    controller: controller, mounted: false);
+                    controller: controller, needRefresh: false);
               });
+              debugPrint('Called build()');
               return Column(children: [
                 Expanded(
                   flex: 3,
@@ -58,7 +63,8 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                       padding:
                           const EdgeInsets.only(bottom: 10, left: 5, right: 5),
                       child: SfCalendar(
-                        view: CalendarView.month,
+                        key: ValueKey(controller.view),
+                        view: controller.view!,
                         controller: controller,
                         dataSource: calendarVM.activitySource,
                         todayHighlightColor:
@@ -71,14 +77,20 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                         // change the display mode as appointment using the appointment display
                         // mode property
                         onTap: (calendarTapDetails) {
+                          debugPrint(
+                              'onTap: ${calendarTapDetails.targetElement}');
                           if (calendarTapDetails.targetElement ==
                               CalendarElement.header) {
                             calendarVM.popupDatePicker(context, controller);
                           }
                           controller.view = calendarVM.changeView(
-                              controller: controller,
-                              calendarTapDetails: calendarTapDetails,
-                              mounted: mounted);
+                            controller: controller,
+                            // NOTE: this null check may cause issues
+                            date: calendarTapDetails.date!,
+                          );
+                          if (mounted) {
+                            calendarVM.showActivityList(controller: controller);
+                          }
                         },
                         onSelectionChanged: (calendarSelectionDetails) {
                           if ((calendarSelectionDetails.date != null) &&
@@ -88,16 +100,33 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                                 calendarSelectionDetails.date ??
                                     calendarVM.selectedDate;
                             calendarVM.setDate(controller);
-                            calendarVM.showActivityList(
-                                controller: controller, mounted: mounted);
+                            if (mounted) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                calendarVM.showActivityList(
+                                    controller: controller);
+                              });
+                            }
+                          } else if ((mounted) &&
+                              (calendarSelectionDetails.date != null)) {
+                            calendarVM.changeView(
+                                controller: controller,
+                                date: calendarSelectionDetails.date!);
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              calendarVM.showActivityList(
+                                  controller: controller);
+                            });
                           }
                         },
                         onViewChanged: (viewChangedDetails) {
                           controller.view == CalendarView.month
                               ? calendarVM.getActivityByDots()
                               : calendarVM.getActivityByLabel();
-                          calendarVM.showActivityList(
-                              controller: controller, mounted: mounted);
+                          if (mounted) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              calendarVM.showActivityList(
+                                  controller: controller);
+                            });
+                          }
                         },
                         // allowViewNavigation: true,
                         headerStyle: CalendarHeaderStyle(
@@ -114,13 +143,9 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                         monthViewSettings: const MonthViewSettings(
                           // appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
                           appointmentDisplayMode:
-                              MonthAppointmentDisplayMode.indicator,
+                              MonthAppointmentDisplayMode.appointment,
                           // 瑞弟: 顯示點點或 event 的 name(預設 false)
                         ),
-                        allowedViews: const [
-                          CalendarView.day,
-                          CalendarView.month
-                        ],
                         headerHeight: 50,
                         // 瑞弟: this function can customize the view of event
                         appointmentBuilder:
@@ -140,14 +165,9 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                                 calendarAppointmentDetails:
                                     calendarAppointmentDetails,
                                 controller: controller);
-                            // return calendarVM.showTotalDayView(
-                            //     context: context,
-                            //     calendarAppointmentDetails:
-                            //         calendarAppointmentDetails,
-                            //     controller: controller);
                           } else if (controller.view == CalendarView.month) {
                             // debugPrint(calendarAppointmentDetails.bounds.height.toString());
-                            return calendarVM.showMonthDotAgendaView(
+                            return calendarVM.showSingleAgendaViewForLabel(
                                 data: data,
                                 context: context,
                                 calendarAppointmentDetails:
@@ -162,7 +182,7 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                     ),
                   ),
                 ),
-                calendarVM.activityListView,
+                // calendarVM.activityListView,
               ]);
             },
           ),
