@@ -56,7 +56,9 @@ class _CalendarPersonalViewPageState extends State<CalendarPersonalViewPage> {
                   : calendarVM.getActivityByLabel();
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 calendarVM.showActivityList(
-                    controller: controller, needRefresh: false);
+                    controller: controller,
+                    needRefresh: false,
+                    workspaceVM: workspaceVM);
               });
               debugPrint('Called build()');
               return Column(children: [
@@ -159,7 +161,9 @@ class _CalendarPersonalViewPageState extends State<CalendarPersonalViewPage> {
                             }
                           }
                           if (mounted) {
-                            calendarVM.showActivityList(controller: controller);
+                            calendarVM.showActivityList(
+                                controller: controller,
+                                workspaceVM: workspaceVM);
                           }
                         },
                         onSelectionChanged: (calendarSelectionDetails) {
@@ -173,7 +177,8 @@ class _CalendarPersonalViewPageState extends State<CalendarPersonalViewPage> {
                             if (mounted) {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 calendarVM.showActivityList(
-                                    controller: controller);
+                                    controller: controller,
+                                    workspaceVM: workspaceVM);
                               });
                             }
                           }
@@ -185,7 +190,8 @@ class _CalendarPersonalViewPageState extends State<CalendarPersonalViewPage> {
                           if (mounted) {
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               calendarVM.showActivityList(
-                                  controller: controller);
+                                  controller: controller,
+                                  workspaceVM: workspaceVM);
                             });
                           }
                         },

@@ -55,7 +55,9 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
               calendarVM.getActivityByLabel();
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 calendarVM.showActivityList(
-                    controller: controller, needRefresh: false);
+                    controller: controller,
+                    needRefresh: false,
+                    workspaceVM: workspaceVM);
               });
               debugPrint('Called build()');
               return Flex(direction: Axis.horizontal, children: [
@@ -157,7 +159,8 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                           }
                         }
                         if (mounted) {
-                          calendarVM.showActivityList(controller: controller);
+                          calendarVM.showActivityList(
+                              controller: controller, workspaceVM: workspaceVM);
                         }
                       },
                       onSelectionChanged: (calendarSelectionDetails) {
@@ -171,7 +174,8 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                           if (mounted) {
                             WidgetsBinding.instance.addPostFrameCallback((_) {
                               calendarVM.showActivityList(
-                                  controller: controller);
+                                  controller: controller,
+                                  workspaceVM: workspaceVM);
                             });
                           }
                         }
@@ -182,7 +186,9 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                             : calendarVM.getActivityByLabel();
                         if (mounted) {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
-                            calendarVM.showActivityList(controller: controller);
+                            calendarVM.showActivityList(
+                                controller: controller,
+                                workspaceVM: workspaceVM);
                           });
                         }
                       },

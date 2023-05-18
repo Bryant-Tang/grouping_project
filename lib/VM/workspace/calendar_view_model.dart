@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
+import 'package:grouping_project/View/EditableCard/event_card_view.dart';
+import 'package:grouping_project/View/EditableCard/mission_card_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
@@ -537,7 +541,9 @@ class CalendarViewModel extends ChangeNotifier {
   }
 
   showActivityList(
-      {required CalendarController controller, bool needRefresh = true}) {
+      {required CalendarController controller,
+      bool needRefresh = true,
+      required WorkspaceDashBoardViewModel workspaceVM}) {
     _activityListView = null;
     if (controller.view == CalendarView.day) {
       if (needRefresh) {
@@ -550,8 +556,61 @@ class CalendarViewModel extends ChangeNotifier {
           itemCount: activityAtTheDay.length,
           itemBuilder: (context, index) {
             if (activityAtTheDay.isNotEmpty) {
-              return Container(
+              return InkWell(
                 key: ValueKey(activityAtTheDay[index]),
+                onTap: () {
+                  if (activityAtTheDay[index] is EventModel) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MultiProvider(
+                          providers: [
+                            ChangeNotifierProvider<
+                                    WorkspaceDashBoardViewModel>.value(
+                                value: workspaceVM),
+                            ChangeNotifierProvider<EventSettingViewModel>(
+                              create: (context) => EventSettingViewModel()
+                                ..initializeDisplayEvent(
+                                  model: activityAtTheDay[index] as EventModel,
+                                  user: context
+                                      .read<WorkspaceDashBoardViewModel>()
+                                      .personalprofileData,
+                                ),
+                            )
+                          ],
+                          child: const EventEditCardView(),
+                        ),
+                      ),
+                    );
+                  } else if (activityAtTheDay[index] is MissionModel) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MultiProvider(
+                          providers: [
+                            ChangeNotifierProvider<
+                                    WorkspaceDashBoardViewModel>.value(
+                                value: workspaceVM),
+                            ChangeNotifierProvider<MissionSettingViewModel>(
+                              create: (context) => MissionSettingViewModel()
+                                ..initializeDisplayMission(
+                                  model:
+                                      activityAtTheDay[index] as MissionModel,
+                                  user: context
+                                      .read<WorkspaceDashBoardViewModel>()
+                                      .personalprofileData,
+                                ),
+                            )
+                          ],
+                          child: const MissionEditCardView(),
+                        ),
+                      ),
+                    );
+                  } else {
+                    debugPrint(
+                        'You seeing this mean there\'s a bug in the type');
+                  }
+                },
                 child: showSingleAgendaViewForDot(
                     data: activityAtTheDay[index],
                     context: context,
