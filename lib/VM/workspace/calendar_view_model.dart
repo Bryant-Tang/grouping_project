@@ -45,10 +45,10 @@ class CalendarViewModel extends ChangeNotifier {
   /// need to call showActivity after this
   changeView({
     required CalendarController controller,
-    required DateTime date,
+    bool toMontView = false,
     bool needRefresh = true,
   }) {
-    if (date == _selectedDate) {
+    if (!toMontView) {
       controller.view = CalendarView.day;
       if (!isGroup) {
         getActivityByLabel();
@@ -61,6 +61,9 @@ class CalendarViewModel extends ChangeNotifier {
       } else {
         _activitySource.getVisibleAppointments(DateTime(2000), '');
       }
+    }
+    if (needRefresh) {
+      notifyListeners();
     }
   }
 
@@ -466,14 +469,16 @@ class CalendarViewModel extends ChangeNotifier {
         ),
         alignment: Alignment.center,
         child: FittedBox(
-            child: Text(
-          data.title,
-          textAlign: TextAlign.left,
-          style: Theme.of(context)
-              .textTheme
-              .labelSmall!
-              .copyWith(fontWeight: FontWeight.w500, fontSize: 10),
-        )),
+          child: Text(
+            data.title,
+            softWrap: true,
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 10,
+                ),
+          ),
+        ),
       );
     } else if (data is MissionModel) {
       return Container(
@@ -481,15 +486,20 @@ class CalendarViewModel extends ChangeNotifier {
           color: Color(data.ownerAccount.color),
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.all(Radius.circular(4.0)),
+          border: Border.all(color: Color(data.ownerAccount.color), width: 2.0),
         ),
         alignment: Alignment.center,
         child: FittedBox(
-            child: Text(data.title,
-                textAlign: TextAlign.left,
-                style: Theme.of(context)
-                    .textTheme
-                    .labelSmall!
-                    .copyWith(fontWeight: FontWeight.w500, fontSize: 10))),
+          child: Text(
+            data.title,
+            softWrap: true,
+            textAlign: TextAlign.left,
+            style: Theme.of(context)
+                .textTheme
+                .labelSmall!
+                .copyWith(fontWeight: FontWeight.w500, fontSize: 10),
+          ),
+        ),
       );
     }
   }

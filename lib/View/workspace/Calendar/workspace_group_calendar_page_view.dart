@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
 import 'package:grouping_project/model/data_model.dart';
+import 'package:grouping_project/model/editable_model.dart';
 import 'package:grouping_project/model/event_model.dart';
 import 'package:grouping_project/model/mission_model.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +55,7 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                     controller: controller, needRefresh: false);
               });
               debugPrint('Called build()');
-              return Column(children: [
+              return Flex(direction: Axis.horizontal, children: [
                 Expanded(
                   flex: 3,
                   child: Center(
@@ -83,11 +84,23 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                               CalendarElement.header) {
                             calendarVM.popupDatePicker(context, controller);
                           }
-                          controller.view = calendarVM.changeView(
-                            controller: controller,
-                            // NOTE: this null check may cause issues
-                            date: calendarTapDetails.date!,
-                          );
+                          if (((calendarTapDetails.targetElement ==
+                                      CalendarElement.calendarCell) &&
+                                  (calendarTapDetails.date ==
+                                      calendarVM.selectedDate)) ||
+                              (calendarTapDetails.targetElement ==
+                                  CalendarElement.viewHeader)) {
+                            debugPrint('Group onTap');
+                            controller.view = calendarVM.changeView(
+                              controller: controller,
+                              toMontView: controller.view != CalendarView.month,
+                            );
+                          } else if (calendarTapDetails.targetElement ==
+                              CalendarElement.appointment) {
+                            debugPrint(
+                                'Say my name: ${calendarTapDetails.appointments![0] is EventModel ? (calendarTapDetails.appointments![0] as EventModel).title : (calendarTapDetails.appointments![0] as MissionModel).title}');
+                            //TODO: ready to be shown
+                          }
                           if (mounted) {
                             calendarVM.showActivityList(controller: controller);
                           }
@@ -106,15 +119,6 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                                     controller: controller);
                               });
                             }
-                          } else if ((mounted) &&
-                              (calendarSelectionDetails.date != null)) {
-                            calendarVM.changeView(
-                                controller: controller,
-                                date: calendarSelectionDetails.date!);
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              calendarVM.showActivityList(
-                                  controller: controller);
-                            });
                           }
                         },
                         onViewChanged: (viewChangedDetails) {
@@ -182,7 +186,6 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                     ),
                   ),
                 ),
-                // calendarVM.activityListView,
               ]);
             },
           ),

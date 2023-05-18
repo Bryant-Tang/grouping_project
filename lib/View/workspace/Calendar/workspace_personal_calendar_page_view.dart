@@ -84,12 +84,16 @@ class _CalendarPersonalViewPageState extends State<CalendarPersonalViewPage> {
                           if (calendarTapDetails.targetElement ==
                               CalendarElement.header) {
                             calendarVM.popupDatePicker(context, controller);
+                          } else if ((calendarTapDetails.targetElement ==
+                                  CalendarElement.calendarCell) &&
+                              (controller.selectedDate ==
+                                  calendarVM.selectedDate)) {
+                            debugPrint('Personal onTap');
+                            calendarVM.changeView(
+                                controller: controller,
+                                toMontView:
+                                    controller.view != CalendarView.month);
                           }
-                          controller.view = calendarVM.changeView(
-                            controller: controller,
-                            // NOTE: this null check may cause issues
-                            date: calendarTapDetails.date!,
-                          );
                           if (mounted) {
                             calendarVM.showActivityList(controller: controller);
                           }
@@ -108,15 +112,6 @@ class _CalendarPersonalViewPageState extends State<CalendarPersonalViewPage> {
                                     controller: controller);
                               });
                             }
-                          } else if ((mounted) &&
-                              (calendarSelectionDetails.date != null)) {
-                            calendarVM.changeView(
-                                controller: controller,
-                                date: calendarSelectionDetails.date!);
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              calendarVM.showActivityList(
-                                  controller: controller);
-                            });
                           }
                         },
                         onViewChanged: (viewChangedDetails) {
