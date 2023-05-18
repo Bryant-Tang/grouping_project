@@ -53,6 +53,7 @@ class CalendarViewModel extends ChangeNotifier {
       if (!isGroup) {
         getActivityByLabel();
       }
+      _activitySource.getVisibleAppointments(DateTime(2000), '');
       // TODO: show activity list
     } else {
       controller.view = CalendarView.month;
@@ -537,8 +538,8 @@ class CalendarViewModel extends ChangeNotifier {
 
   showActivityList(
       {required CalendarController controller, bool needRefresh = true}) {
+    _activityListView = null;
     if (controller.view == CalendarView.day) {
-      _activityListView = null;
       if (needRefresh) {
         notifyListeners();
       }

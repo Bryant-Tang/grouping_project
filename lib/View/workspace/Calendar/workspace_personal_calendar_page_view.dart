@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
+import 'package:grouping_project/View/EditableCard/event_card_view.dart';
+import 'package:grouping_project/View/EditableCard/mission_card_view.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:grouping_project/model/event_model.dart';
 import 'package:grouping_project/model/mission_model.dart';
@@ -84,15 +87,76 @@ class _CalendarPersonalViewPageState extends State<CalendarPersonalViewPage> {
                           if (calendarTapDetails.targetElement ==
                               CalendarElement.header) {
                             calendarVM.popupDatePicker(context, controller);
-                          } else if ((calendarTapDetails.targetElement ==
-                                  CalendarElement.calendarCell) &&
-                              (controller.selectedDate ==
-                                  calendarVM.selectedDate)) {
+                          } else if (((calendarTapDetails.targetElement ==
+                                      CalendarElement.calendarCell) &&
+                                  (controller.selectedDate ==
+                                      calendarVM.selectedDate)) ||
+                              (calendarTapDetails.targetElement ==
+                                  CalendarElement.viewHeader)) {
                             debugPrint('Personal onTap');
                             calendarVM.changeView(
                                 controller: controller,
                                 toMontView:
                                     controller.view != CalendarView.month);
+                          } else if (calendarTapDetails.targetElement ==
+                              CalendarElement.appointment) {
+                            debugPrint(
+                                'Say my name: ${calendarTapDetails.appointments![0] is EventModel ? (calendarTapDetails.appointments![0] as EventModel).title : (calendarTapDetails.appointments![0] as MissionModel).title}');
+                            if (calendarTapDetails.appointments![0]
+                                is EventModel) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MultiProvider(
+                                    providers: [
+                                      ChangeNotifierProvider<
+                                              WorkspaceDashBoardViewModel>.value(
+                                          value: workspaceVM),
+                                      ChangeNotifierProvider<
+                                          EventSettingViewModel>(
+                                        create: (context) =>
+                                            EventSettingViewModel()
+                                              ..initializeDisplayEvent(
+                                                model: calendarTapDetails
+                                                    .appointments![0],
+                                                user: context
+                                                    .read<
+                                                        WorkspaceDashBoardViewModel>()
+                                                    .personalprofileData,
+                                              ),
+                                      )
+                                    ],
+                                    child: const EventEditCardView(),
+                                  ),
+                                ),
+                              );
+                            } else if (calendarTapDetails.appointments![0]
+                                is MissionModel) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MultiProvider(
+                                    providers: [
+                                      ChangeNotifierProvider<
+                                              WorkspaceDashBoardViewModel>.value(
+                                          value: workspaceVM),
+                                      ChangeNotifierProvider<
+                                              MissionSettingViewModel>(
+                                          create: (context) =>
+                                              MissionSettingViewModel()
+                                                ..initializeDisplayMission(
+                                                    model: calendarTapDetails
+                                                        .appointments![0],
+                                                    user: context
+                                                        .read<
+                                                            WorkspaceDashBoardViewModel>()
+                                                        .personalprofileData))
+                                    ],
+                                    child: const MissionEditCardView(),
+                                  ),
+                                ),
+                              );
+                            }
                           }
                           if (mounted) {
                             calendarVM.showActivityList(controller: controller);

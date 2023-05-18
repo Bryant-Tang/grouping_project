@@ -42,14 +42,15 @@ class _CoverPageState extends State<CoverPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // debugPrint(Theme.of(context).colorScheme.primary.toString());
     return Scaffold(
-      // decoration: BoxDecoration(
-      //     // color: Colors.white,
-      //     image: DecorationImage(
-      //         image: const AssetImage("assets/images/cover.png"),
-      //         fit: BoxFit.cover,
-      //         colorFilter: ColorFilter.mode(
-      //             Colors.white.withOpacity(0.1), BlendMode.modulate))),
-      body: Column(
+        // decoration: BoxDecoration(
+        //     // color: Colors.white,
+        //     image: DecorationImage(
+        //         image: const AssetImage("assets/images/cover.png"),
+        //         fit: BoxFit.cover,
+        //         colorFilter: ColorFilter.mode(
+        //             Colors.white.withOpacity(0.1), BlendMode.modulate))),
+        body: SafeArea(
+      child: Column(
         children: [
           const SizedBox(width: 10, height: 315),
           const GroupingLogo(),
@@ -77,7 +78,7 @@ class _CoverPageState extends State<CoverPage> with TickerProviderStateMixin {
           )
         ],
       ),
-    );
+    ));
   }
 }
 
