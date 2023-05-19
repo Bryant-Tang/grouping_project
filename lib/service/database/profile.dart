@@ -36,11 +36,11 @@ class Profile extends DatabaseDocument {
   String slogan;
   String introduction;
   final List<ProfileTag> _tag;
-  final DocumentReference<Map<String, dynamic>> _photo;
+  ImageData _photo;
 
   Profile._create({
     required DocumentReference<Map<String, dynamic>> profileRef,
-    required DocumentReference<Map<String, dynamic>> photo,
+    required ImageData photo,
   })  : realName = _DefaultFieldValue.unknownStr,
         email = _DefaultFieldValue.unknownStr,
         color = _DefaultFieldValue.zeroInt,
@@ -52,7 +52,8 @@ class Profile extends DatabaseDocument {
         super._create(ref: profileRef);
 
   Profile._fromDatabase(
-      {required DocumentSnapshot<Map<String, dynamic>> profileSnap})
+      {required DocumentSnapshot<Map<String, dynamic>> profileSnap,
+      required ImageData photo})
       : realName = profileSnap.data()?[_FieldNameForProfile.name] ??
             _DefaultFieldValue.unknownStr,
         email = profileSnap.data()?[_FieldNameForProfile.email] ??
@@ -70,7 +71,7 @@ class Profile extends DatabaseDocument {
                     _DefaultFieldValue.emptyList)
             .map(
                 (tagInList) => ProfileTag.fromTwoElementList(list: tagInList))),
-        _photo = profileSnap.data()?[_FieldNameForProfile.photo],
+        _photo = photo,
         super._fromDatabase(snap: profileSnap);
 
   Map<String, dynamic> _toDatabase() {
@@ -82,12 +83,12 @@ class Profile extends DatabaseDocument {
       _FieldNameForProfile.slogan: slogan,
       _FieldNameForProfile.introduction: introduction,
       _FieldNameForProfile.tag: _tag.map((tag) => tag.toList),
-      _FieldNameForProfile.photo: _photo,
+      _FieldNameForProfile.photo: _photo._ref,
     };
   }
 
   List<ProfileTag> get tag => _tag;
-  DocumentReference<Map<String, dynamic>> get photo => _photo;
+  ImageData get photo => _photo;
 
   void addTag(ProfileTag tag) => _tag.add(tag);
   void removeTag(ProfileTag tag) => _tag.remove(tag);
