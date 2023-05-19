@@ -70,7 +70,7 @@ class _OverViewChoiceButtonState extends State<OverViewChoiceButton> {
                   widget.numberText.toString(),
                   style: TextStyle(
                       color: getNumberColor(context),
-                      fontSize: MediaQuery.of(context).size.width / 14,
+                      fontSize: MediaQuery.of(context).size.width / 18,
                       fontWeight: FontWeight.bold),
                 ),
               ],
@@ -79,7 +79,7 @@ class _OverViewChoiceButtonState extends State<OverViewChoiceButton> {
               widget.labelText,
               style: TextStyle(
                   color: getTextColor(context),
-                  fontSize: MediaQuery.of(context).size.width / 30,
+                  fontSize: MediaQuery.of(context).size.width / 35,
                   fontWeight: FontWeight.bold),
             )
           ],

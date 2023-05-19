@@ -32,36 +32,34 @@ class CalendarViewPageState extends State<CalendarViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeManager>(
-      builder: (context, themeManager, child) =>
-          Consumer<WorkspaceDashBoardViewModel>(
-        builder: (context, workspaceVM, child) =>
-            ChangeNotifierProvider<CalendarViewModel>(
-          create: (context) => CalendarViewModel(workspaceVM),
-          child: Consumer<CalendarViewModel>(
-            builder: (context, calendarVM, child) {
-              calendarVM.getActivityByDots();
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                calendarVM.showActivityList(
-                    controller: controller, mounted: false);
-              });
-              return Column(children: [
-                Expanded(
-                  flex: 3,
-                  child: Center(
-                    child: Padding(
-                      // TODO: limit calendar height
-                      padding:
-                          const EdgeInsets.only(bottom: 10, left: 5, right: 5),
+    return SafeArea(
+      child: Consumer<ThemeManager>(
+        builder: (context, themeManager, child) =>
+            Consumer<WorkspaceDashBoardViewModel>(
+          builder: (context, workspaceVM, child) =>
+              ChangeNotifierProvider<CalendarViewModel>(
+            create: (context) => CalendarViewModel(workspaceVM),
+            child: Consumer<CalendarViewModel>(
+              builder: (context, calendarVM, child) {
+                calendarVM.getActivityByDots();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  calendarVM.showActivityList(
+                      controller: controller, mounted: false);
+                });
+                return Column(children: [
+                  Expanded(
+                    flex: 3,
+                    child: Center(
                       child: SfCalendar(
                         view: CalendarView.month,
                         controller: controller,
                         dataSource: calendarVM.activitySource,
                         todayHighlightColor:
-                            Theme.of(context).colorScheme.primaryContainer,
+                            Theme.of(context).colorScheme.primary,
                         todayTextStyle: TextStyle(
                           color: Theme.of(context).colorScheme.onSecondary,
                         ),
+                        firstDayOfWeek: 1,
                         initialSelectedDate: DateTime.now(),
                         // by default the month appointment display mode set as Indicator, we can
                         // change the display mode as appointment using the appointment display
@@ -105,11 +103,6 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                               MonthAppointmentDisplayMode.indicator,
                           // 瑞弟: 顯示點點或 event 的 name(預設 false)
                         ),
-                        allowedViews: const [
-                          CalendarView.day,
-                          CalendarView.month
-                        ],
-                        headerHeight: 50,
                         // 瑞弟: this function can customize the view of event
                         appointmentBuilder:
                             (context, calendarAppointmentDetails) {
@@ -143,10 +136,10 @@ class CalendarViewPageState extends State<CalendarViewPage> {
                       ),
                     ),
                   ),
-                ),
-                calendarVM.activityListView,
-              ]);
-            },
+                  calendarVM.activityListView,
+                ]);
+              },
+            ),
           ),
         ),
       ),
