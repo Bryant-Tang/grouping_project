@@ -670,9 +670,12 @@ class CalendarViewModel extends ChangeNotifier {
         child: ListView.builder(
           itemCount: activityAtTheDay.length,
           itemBuilder: (context, index) {
-            if (activityAtTheDay.isNotEmpty) {
+            if (activityAtTheDay.isNotEmpty &&
+                activityAtTheDay.length > index) {
               return InkWell(
-                key: ValueKey(activityAtTheDay[index]),
+                key: activityAtTheDay.length == 0
+                    ? null
+                    : ValueKey(activityAtTheDay[index]),
                 onTap: () {
                   activityOnTap(
                       data: activityAtTheDay[index],
@@ -684,8 +687,6 @@ class CalendarViewModel extends ChangeNotifier {
                     context: context,
                     controller: controller),
               );
-            } else {
-              return Container();
             }
           },
         ),

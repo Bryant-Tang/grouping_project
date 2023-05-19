@@ -60,7 +60,6 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                       needRefresh: false,
                       workspaceVM: workspaceVM);
                 });
-                debugPrint('Called build()');
                 return Flex(direction: Axis.horizontal, children: [
                   Expanded(
                     flex: 3,
@@ -72,6 +71,7 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                         view: controller.view!,
                         controller: controller,
                         dataSource: calendarVM.activitySource,
+                        firstDayOfWeek: 1,
                         todayHighlightColor:
                             Theme.of(context).colorScheme.primary,
                         todayTextStyle: TextStyle(
@@ -82,8 +82,6 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                         // change the display mode as appointment using the appointment display
                         // mode property
                         onTap: (calendarTapDetails) {
-                          debugPrint(
-                              'onTap: ${calendarTapDetails.targetElement}');
                           if (calendarTapDetails.targetElement ==
                               CalendarElement.header) {
                             calendarVM.popupDatePicker(context, controller);
@@ -94,15 +92,12 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
                                       calendarVM.selectedDate)) ||
                               (calendarTapDetails.targetElement ==
                                   CalendarElement.viewHeader)) {
-                            debugPrint('Group onTap');
                             controller.view = calendarVM.changeView(
                               controller: controller,
                               toMontView: controller.view != CalendarView.month,
                             );
                           } else if (calendarTapDetails.targetElement ==
                               CalendarElement.appointment) {
-                            debugPrint(
-                                'Say my name: ${calendarTapDetails.appointments![0] is EventModel ? (calendarTapDetails.appointments![0] as EventModel).title : (calendarTapDetails.appointments![0] as MissionModel).title}');
                             if (calendarTapDetails.appointments![0]
                                 is EventModel) {
                               Navigator.push(
