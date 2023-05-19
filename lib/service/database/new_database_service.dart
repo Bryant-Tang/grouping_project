@@ -40,10 +40,11 @@ class DatabaseService {
   //
   // For constructing DatabaseService
   Account _account;
-  DatabaseService._create(Account account) : _account = account;
-  static Future<DatabaseService> withAccountChecking(Account account) async {
+  DatabaseService._create({required Account account}) : _account = account;
+  static Future<DatabaseService> withAccountChecking(
+      {required Account account}) async {
     if ((await account._ref.get()).exists) {
-      return DatabaseService._create(account);
+      return DatabaseService._create(account: account);
     }
     throw GroupingProjectException(
         message: 'This account is not exist in database.'
@@ -102,17 +103,14 @@ class DatabaseService {
 
   Future<Account> createGroupAccount() async {
     if (_account.isUser == false) {
-      throw GroupingProjectException(
-          message:
-              'It is not allow to create group account for a group account.',
-          code: GroupingProjectExceptionCode.wrongParameter,
-          stackTrace: StackTrace.current);
+      _throwExceptionNotAllowGroupAccount();
     }
     Account newAccount = await _createAccountWithoutBinding();
     _account._addAssociateAccountRef(newAccount._ref);
     await _setAccount();
     newAccount._addAssociateAccountRef(_account._ref);
-    await (await DatabaseService.withAccountChecking(newAccount))._setAccount();
+    await (await DatabaseService.withAccountChecking(account: newAccount))
+        ._setAccount();
     return newAccount;
   }
 
@@ -125,7 +123,7 @@ class DatabaseService {
 
   //
   // For get only document itself without owner profile
-  static Future<Account> getUserAccount(String uid) async {
+  static Future<Account> getUserAccount({required String uid}) async {
     return Account._fromDatabase(
         accountSnap: (await _firestore
             .collection(_DatabaseCollectionName.uidCorrespondAccount)
@@ -157,19 +155,53 @@ class DatabaseService {
   }
 
   static Future<Profile> getSimpleProfile(
-      DocumentReference<Map<String, dynamic>> profileRef) async {
+      {required DocumentReference<Map<String, dynamic>> profileRef}) async {
     var profileSnap = await profileRef.get();
     ImageData image = await _getImage(
         imageRef: profileSnap.data()?[_FieldNameForProfile.photo]);
     return Profile._fromDatabase(profileSnap: profileSnap, photo: image);
   }
 
+  Future<Event> _getSimpleEvent(
+      {required DocumentReference<Map<String, dynamic>> eventRef}) async {
+    return Event._fromDatabase(eventSnap: await eventRef.get());
+  }
+
   Future<void> _reloadAccount() async {
     _account = Account._fromDatabase(accountSnap: await _account._ref.get());
   }
 
+  Future<Account> getGroupAccount(
+      {required DocumentReference<Map<String, dynamic>>
+          groupAccountRef}) async {
+    _reloadAccount();
+    if (_account.isUser == false) {
+      _throwExceptionNotAllowGroupAccount();
+    }
+    _checkDocumentRefBelongTo(
+        refList: _account._associateAccount, documentRef: groupAccountRef);
+    return Account._fromDatabase(accountSnap: await groupAccountRef.get());
+  }
+
+  Future<List<Account>> getAllGroupAccount() async {
+    _reloadAccount();
+    return List.from(_account._associateAccount.map((groupAccountRef) async =>
+        (await getGroupAccount(groupAccountRef: groupAccountRef))));
+  }
+
+  Future<Account> getOwnerAccount({required DataResult dataResult}) async {
+    return await getGroupAccount(groupAccountRef: dataResult.ownerAccountRef);
+  }
+
   //
-  // For set document
+  // For throw exception
+  void _throwExceptionNotAllowGroupAccount() {
+    throw GroupingProjectException(
+        message: 'This action is not for group account.',
+        code: GroupingProjectExceptionCode.notCorrectAccount,
+        stackTrace: StackTrace.current);
+  }
+
   void _throwExceptionDocumentNotBelongToAccount() {
     throw GroupingProjectException(
         message: 'This document is not belong to the controlled account.',
@@ -187,32 +219,34 @@ class DatabaseService {
     }
   }
 
-  Future<void> _setDocument(DatabaseDocument document) async {
+  //
+  // For set document
+  Future<void> _setDocument({required DatabaseDocument document}) async {
     await document._ref.set(document._toDatabase());
   }
 
   Future<void> _setAccount() async {
-    await _setDocument(_account);
+    await _setDocument(document: _account);
   }
 
-  Future<void> setProfile(Profile profile) async {
+  Future<void> setProfile({required Profile profile}) async {
     _checkDocumentRefBelongTo(
         refList: [_account.profile], documentRef: profile._ref);
-    await _setDocument(profile);
-    await _setImage(profile.photo);
+    await _setDocument(document: profile);
+    await _setImage(image: profile.photo);
   }
 
-  Future<void> _setImage(ImageData image) async {
+  Future<void> _setImage({required ImageData image}) async {
     image._lastModified = Timestamp.now();
-    await _setDocument(image);
+    await _setDocument(document: image);
     _imageCache.removeWhere((i) => i._ref.id == image._ref.id);
     _imageCache.add(image.toCache());
     await _storage.child(image._ref.id).putData(image._data);
   }
 
-  Future<void> setEvent(Event event) async {
+  Future<void> setEvent({required Event event}) async {
     _checkDocumentRefBelongTo(refList: _account.event, documentRef: event._ref);
-    await _setDocument(event);
+    await _setDocument(document: event);
   }
 
   //
@@ -227,9 +261,71 @@ class DatabaseService {
     _checkDocumentRefBelongTo(refList: _account.event, documentRef: eventRef);
     return await DataResult._withProfileGetting(
         ownerAccount: _account,
-        data: [Event._fromDatabase(eventSnap: await eventRef.get())]);
+        data: [await _getSimpleEvent(eventRef: eventRef)]);
+  }
+
+  //
+  // For get all documents of the same kind, in the account
+  Future<DataResult<Event>> getAllEvent() async {
+    _reloadAccount();
+    List<Event> data = [];
+    for (var eventRef in _account._event) {
+      data.add(await _getSimpleEvent(eventRef: eventRef));
+    }
+    return await DataResult._withProfileGetting(
+        ownerAccount: _account, data: data);
+  }
+
+  //
+  // special get method
+  Future<List<DataResult<Event>>> getContributingEvent() async {
+    if (_account.isUser == false) {
+      _throwExceptionNotAllowGroupAccount();
+    }
+    List<DataResult<Event>> data = [await getAllEvent()];
+    for (var account in (await getAllGroupAccount())) {
+      var groupEvents =
+          await (await DatabaseService.withAccountChecking(account: account))
+              .getAllEvent();
+      groupEvents.data.removeWhere((event) => !(event.contributor
+          .map((ref) => ref.id)
+          .contains(_account.profile.id)));
+      data.add(groupEvents);
+    }
+    return data;
   }
 
   //
   // For delete document
+  Future<void> _removeDocument(
+      {required DocumentReference<Map<String, dynamic>> ref}) async {
+    await ref.delete();
+  }
+
+  Future<void> removeEvent(
+      {required DocumentReference<Map<String, dynamic>> eventRef}) async {
+    _checkDocumentRefBelongTo(refList: _account._event, documentRef: eventRef);
+    _account._removeEventRef(eventRef);
+    await _setAccount();
+    await _removeDocument(ref: eventRef);
+  }
+
+  Future<void> leaveGroup(
+      {required DocumentReference<Map<String, dynamic>> accountRef}) async {
+    _checkDocumentRefBelongTo(
+        refList: _account._associateAccount, documentRef: accountRef);
+    var groupAccountService = await DatabaseService.withAccountChecking(
+        account: await getGroupAccount(groupAccountRef: accountRef));
+    _account._removeAssociateAccountRef(accountRef);
+    await _setAccount();
+    groupAccountService._removeUser(accountRef: _account._ref);
+  }
+
+  Future<void> _removeUser(
+      {required DocumentReference<Map<String, dynamic>> accountRef}) async {
+    _checkDocumentRefBelongTo(
+        refList: _account._associateAccount, documentRef: accountRef);
+    _account._removeAssociateAccountRef(accountRef);
+    await _setAccount();
+  }
 }
