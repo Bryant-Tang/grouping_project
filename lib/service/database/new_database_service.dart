@@ -75,8 +75,7 @@ class DatabaseService {
         .collection(_DatabaseCollectionName.profile)
         .add(_DefaultFieldValue.emptyMap as Map<String, dynamic>);
     ImageData image = await _createImageWithoutBinding();
-    Profile profile =
-        Profile._create(profileRef: profileRef, photo: image._ref);
+    Profile profile = Profile._create(profileRef: profileRef, photo: image);
     return profile;
   }
 
@@ -134,9 +133,35 @@ class DatabaseService {
             .get()));
   }
 
+  static Future<ImageData> _getImage(
+      {required DocumentReference<Map<String, dynamic>> imageRef}) async {
+    var imageSnap = await imageRef.get();
+    if (_imageCache.map((i) => i._ref.id).contains(imageRef.id)) {
+      ImageData imageCache =
+          _imageCache.singleWhere((i) => i._ref.id == imageRef.id);
+      Timestamp databaseLastModified =
+          imageSnap.data()?[_FieldNameForImage.lastModified] ??
+              Timestamp.fromMicrosecondsSinceEpoch(0);
+      if (imageCache.lastModified
+          .toDate()
+          .isAfter(databaseLastModified.toDate())) {
+        return ImageData._fromCache(imageCache);
+      }
+    }
+
+    ImageData image = ImageData._fromDatabase(
+        imageSnap: imageSnap,
+        storageData: (await _storage.child(imageRef.id).getData()) ??
+            _DefaultFieldValue.emptyUint8List);
+    return image;
+  }
+
   static Future<Profile> getSimpleProfile(
       DocumentReference<Map<String, dynamic>> profileRef) async {
-    return Profile._fromDatabase(profileSnap: await profileRef.get());
+    var profileSnap = await profileRef.get();
+    ImageData image = await _getImage(
+        imageRef: profileSnap.data()?[_FieldNameForProfile.photo]);
+    return Profile._fromDatabase(profileSnap: profileSnap, photo: image);
   }
 
   Future<void> _reloadAccount() async {
@@ -174,9 +199,10 @@ class DatabaseService {
     _checkDocumentRefBelongTo(
         refList: [_account.profile], documentRef: profile._ref);
     await _setDocument(profile);
+    await _setImage(profile.photo);
   }
 
-  Future<void> setImage(ImageData image) async {
+  Future<void> _setImage(ImageData image) async {
     image._lastModified = Timestamp.now();
     await _setDocument(image);
     _imageCache.removeWhere((i) => i._ref.id == image._ref.id);
@@ -194,29 +220,6 @@ class DatabaseService {
   Future<DataResult<Null>> getProfile() async {
     return await DataResult._withProfileGetting(
         ownerAccount: _account, data: []);
-  }
-
-  Future<ImageData> getImage(
-      {required DocumentReference<Map<String, dynamic>> imageRef}) async {
-    var imageSnap = await imageRef.get();
-    if (_imageCache.map((i) => i._ref.id).contains(imageRef.id)) {
-      ImageData imageCache =
-          _imageCache.singleWhere((i) => i._ref.id == imageRef.id);
-      Timestamp databaseLastModified =
-          imageSnap.data()?[_FieldNameForImage.lastModified] ??
-              Timestamp.fromMicrosecondsSinceEpoch(0);
-      if (imageCache.lastModified
-          .toDate()
-          .isAfter(databaseLastModified.toDate())) {
-        return ImageData._fromCache(imageCache);
-      }
-    }
-
-    ImageData image = ImageData._fromDatabase(
-        imageSnap: imageSnap,
-        storageData: (await _storage.child(imageRef.id).getData()) ??
-            _DefaultFieldValue.emptyUint8List);
-    return image;
   }
 
   Future<DataResult<Event>> getEvent(
