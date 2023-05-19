@@ -1,6 +1,9 @@
 library database_service;
 
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:grouping_project/exception.dart';
 
 part 'account.dart';
@@ -8,6 +11,7 @@ part 'data_result.dart';
 part 'event.dart';
 part 'profile.dart';
 part 'database_document.dart';
+part 'image.dart';
 
 abstract class _DatabaseCollectionName {
   static String account = 'account';
@@ -16,6 +20,7 @@ abstract class _DatabaseCollectionName {
   static String event = 'event';
   static String mission = 'mission';
   static String state = 'state';
+  static String image = 'image';
 }
 
 abstract class _DefaultFieldValue {
@@ -24,10 +29,13 @@ abstract class _DefaultFieldValue {
   static List emptyList = [];
   static Timestamp zeroTimestamp = Timestamp(0, 0);
   static Map emptyMap = {};
+  static Uint8List emptyUint8List = Uint8List(0);
 }
 
 class DatabaseService {
   static final _firestore = FirebaseFirestore.instance;
+  static final _storage = FirebaseStorage.instance.ref();
+  static final List<ImageData> _imageCache = [];
 
   //
   // For constructing DatabaseService
@@ -54,14 +62,22 @@ class DatabaseService {
     return event;
   }
 
+  static Future<ImageData> _createImageWithoutBinding() async {
+    final imageRef = await _firestore
+        .collection(_DatabaseCollectionName.image)
+        .add(_DefaultFieldValue.emptyMap as Map<String, dynamic>);
+    ImageData image = ImageData._create(imageRef: imageRef);
+    return image;
+  }
+
   static Future<Profile> _createProfileWithoutBinding() async {
     final profileRef = await _firestore
         .collection(_DatabaseCollectionName.profile)
         .add(_DefaultFieldValue.emptyMap as Map<String, dynamic>);
-    // Profile profile = Profile._create(profileRef: profileRef, photo: photo);
-    //TODO: implement photo type
-    throw UnimplementedError();
-    // return profile;
+    ImageData image = await _createImageWithoutBinding();
+    Profile profile =
+        Profile._create(profileRef: profileRef, photo: image._ref);
+    return profile;
   }
 
   static Future<Account> _createAccountWithoutBinding() async {
@@ -160,6 +176,14 @@ class DatabaseService {
     await _setDocument(profile);
   }
 
+  Future<void> setImage(ImageData image) async {
+    image._lastModified = Timestamp.now();
+    await _setDocument(image);
+    _imageCache.removeWhere((i) => i._ref.id == image._ref.id);
+    _imageCache.add(image.toCache());
+    await _storage.child(image._ref.id).putData(image._data);
+  }
+
   Future<void> setEvent(Event event) async {
     _checkDocumentRefBelongTo(refList: _account.event, documentRef: event._ref);
     await _setDocument(event);
@@ -172,11 +196,37 @@ class DatabaseService {
         ownerAccount: _account, data: []);
   }
 
+  Future<ImageData> getImage(
+      {required DocumentReference<Map<String, dynamic>> imageRef}) async {
+    var imageSnap = await imageRef.get();
+    if (_imageCache.map((i) => i._ref.id).contains(imageRef.id)) {
+      ImageData imageCache =
+          _imageCache.singleWhere((i) => i._ref.id == imageRef.id);
+      Timestamp databaseLastModified =
+          imageSnap.data()?[_FieldNameForImage.lastModified] ??
+              Timestamp.fromMicrosecondsSinceEpoch(0);
+      if (imageCache.lastModified
+          .toDate()
+          .isAfter(databaseLastModified.toDate())) {
+        return ImageData._fromCache(imageCache);
+      }
+    }
+
+    ImageData image = ImageData._fromDatabase(
+        imageSnap: imageSnap,
+        storageData: (await _storage.child(imageRef.id).getData()) ??
+            _DefaultFieldValue.emptyUint8List);
+    return image;
+  }
+
   Future<DataResult<Event>> getEvent(
-      DocumentReference<Map<String, dynamic>> eventRef) async {
+      {required DocumentReference<Map<String, dynamic>> eventRef}) async {
     _checkDocumentRefBelongTo(refList: _account.event, documentRef: eventRef);
     return await DataResult._withProfileGetting(
         ownerAccount: _account,
         data: [Event._fromDatabase(eventSnap: await eventRef.get())]);
   }
+
+  //
+  // For delete document
 }
