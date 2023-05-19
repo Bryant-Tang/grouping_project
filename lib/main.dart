@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:grouping_project/View/helper_page/cover_view.dart';
 // import 'package:grouping_project/pages/profile/profile_edit_page.dart';
 import 'firebase_options.dart';
+import 'package:flutter/services.dart';
 // 繞過登入直接進入(測試用library)
 // import 'package:grouping_project/pages/home/personal_dashboard/personal_dashboard_page.dart';
 // import 'package:grouping_project/pages/event_data_test_page.dart';
@@ -16,7 +17,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((value) => runApp(const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,7 +47,8 @@ class MyApp extends StatelessWidget {
                 */
                 final double newtextScaleFactor = data.textScaleFactor;
                 // final double newtextScaleFactor = data.size.height / data.size.width;
-                final num constrainedTextScaleFactor = newtextScaleFactor.clamp(1.0, 2.0);
+                final num constrainedTextScaleFactor =
+                    newtextScaleFactor.clamp(1.0, 2.0);
                 return MediaQuery(
                   data: data.copyWith(
                     textScaleFactor: constrainedTextScaleFactor as double,
