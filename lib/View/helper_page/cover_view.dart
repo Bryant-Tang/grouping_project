@@ -42,43 +42,45 @@ class _CoverPageState extends State<CoverPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // debugPrint(Theme.of(context).colorScheme.primary.toString());
     return Scaffold(
-        // decoration: BoxDecoration(
-        //     // color: Colors.white,
-        //     image: DecorationImage(
-        //         image: const AssetImage("assets/images/cover.png"),
-        //         fit: BoxFit.cover,
-        //         colorFilter: ColorFilter.mode(
-        //             Colors.white.withOpacity(0.1), BlendMode.modulate))),
-        body: SafeArea(
-      child: Column(
-        children: [
-          const SizedBox(width: 10, height: 315),
-          const GroupingLogo(),
-          const SizedBox(width: 10, height: 210),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 60),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                LinearProgressIndicator(
-                  value: controller.value,
-                  minHeight: 8,
-                  semanticsLabel: 'Linear progress indicator',
-                ),
-                // FlowButton(
-                //     buttonText: "登入 LOGIN",
-                //     onPressed: () {
-                //       Navigator.pushReplacement(context,
-                //           MaterialPageRoute(builder: (context) => LoginPage()));
-                //     }),
-              ],
-            ),
-          )
-        ],
+      // decoration: BoxDecoration(
+      //     // color: Colors.white,
+      //     image: DecorationImage(
+      //         image: const AssetImage("assets/images/cover.png"),
+      //         fit: BoxFit.cover,
+      //         colorFilter: ColorFilter.mode(
+      //             Colors.white.withOpacity(0.1), BlendMode.modulate))),
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            // const SizedBox(width: 10, height: 315),
+            const GroupingLogo(),
+            // const SizedBox(width: 10, height: 210),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 60),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  LinearProgressIndicator(
+                    value: controller.value,
+                    minHeight: 8,
+                    semanticsLabel: 'Linear progress indicator',
+                  ),
+                  // FlowButton(
+                  //     buttonText: "登入 LOGIN",
+                  //     onPressed: () {
+                  //       Navigator.pushReplacement(context,
+                  //           MaterialPageRoute(builder: (context) => LoginPage()));
+                  //     }),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
-    ));
+    );
   }
 }
 

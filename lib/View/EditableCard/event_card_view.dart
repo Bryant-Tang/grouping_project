@@ -35,10 +35,11 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
     if (isNeedRefresh != null && isNeedRefresh) {
       await workspaceVM.getAllData();
     }
-    if(mounted){
-      context.read<ThemeManager>().updateColorSchemeSeed(Color(workspaceVM.accountProfileData.color));
+    if (mounted) {
+      context
+          .read<ThemeManager>()
+          .updateColorSchemeSeed(Color(workspaceVM.accountProfileData.color));
     }
-    
   }
 
   @override
@@ -55,7 +56,7 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
               padding: const EdgeInsets.all(5.0),
               // TODO: delete ratio?
               child: AspectRatio(
-                aspectRatio: 3.2,
+                aspectRatio: 3.3,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: themeData.colorScheme.surface,
@@ -96,22 +97,27 @@ class _EventCardViewTemplateState extends State<EventCardViewTemplate> {
                                 style: themeData.textTheme.titleMedium!
                                     .copyWith(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 16)),
+                                        fontSize: 14)),
                             Text(
                               model.introduction,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               style: themeData.textTheme.titleSmall!.copyWith(
                                   // color: themeData.colorScheme.secondary,
-                                  fontSize: 14),
+                                  fontSize: 12),
                             ),
                             Row(
                               children: [
-                                Text(model.formattedStartTime),
+                                Text(model.formattedStartTime,
+                                    style: themeData.textTheme.titleSmall!
+                                        .copyWith(fontSize: 12, color: themeData.colorScheme.primary)),
                                 const Icon(Icons.arrow_right_rounded),
                                 Expanded(
                                   child: Text(model.formattedEndTime,
-                                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      style: themeData.textTheme.titleSmall!
+                                          .copyWith(fontSize: 12, color: themeData.colorScheme.primary),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis),
                                 )
                               ],
                             )

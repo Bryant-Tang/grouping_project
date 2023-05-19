@@ -31,6 +31,7 @@ class _WorkspaceDashboardPageViewState
         children: const [
           // adjust child size
           // ref. https://stackoverflow.com/questions/52645944/flutter-expanded-vs-flexible
+          // TODO: or just use device size to detemine the flex?
           Flexible(flex: 1, child: Progress()),
           Expanded(flex: 3, child: OverView()),
         ]);
