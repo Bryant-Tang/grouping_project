@@ -448,6 +448,7 @@ class CalendarViewModel extends ChangeNotifier {
                       data is EventModel
                           ? (data as EventModel).introduction
                           : (data as MissionModel).introduction,
+                      softWrap: true,
                       style: TextStyle(fontSize: height * 0.2),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -550,6 +551,19 @@ class CalendarViewModel extends ChangeNotifier {
         notifyListeners();
       }
     } else {
+      activityAtTheDay.sort((a, b) {
+        if (a is EventModel && b is EventModel) {
+          return a.startTime.compareTo(b.startTime);
+        } else if (a is EventModel && b is MissionModel) {
+          return 1;
+        } else if (a is MissionModel && b is EventModel) {
+          return -1;
+        } else if (a is MissionModel && b is MissionModel) {
+          return a.deadline.compareTo(b.deadline);
+        } else {
+          return 0;
+        }
+      });
       _activityListView = Expanded(
         flex: 2,
         child: ListView.builder(
@@ -559,57 +573,10 @@ class CalendarViewModel extends ChangeNotifier {
               return InkWell(
                 key: ValueKey(activityAtTheDay[index]),
                 onTap: () {
-                  if (activityAtTheDay[index] is EventModel) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MultiProvider(
-                          providers: [
-                            ChangeNotifierProvider<
-                                    WorkspaceDashBoardViewModel>.value(
-                                value: workspaceVM),
-                            ChangeNotifierProvider<EventSettingViewModel>(
-                              create: (context) => EventSettingViewModel()
-                                ..initializeDisplayEvent(
-                                  model: activityAtTheDay[index] as EventModel,
-                                  user: context
-                                      .read<WorkspaceDashBoardViewModel>()
-                                      .personalprofileData,
-                                ),
-                            )
-                          ],
-                          child: const EventEditCardView(),
-                        ),
-                      ),
-                    );
-                  } else if (activityAtTheDay[index] is MissionModel) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MultiProvider(
-                          providers: [
-                            ChangeNotifierProvider<
-                                    WorkspaceDashBoardViewModel>.value(
-                                value: workspaceVM),
-                            ChangeNotifierProvider<MissionSettingViewModel>(
-                              create: (context) => MissionSettingViewModel()
-                                ..initializeDisplayMission(
-                                  model:
-                                      activityAtTheDay[index] as MissionModel,
-                                  user: context
-                                      .read<WorkspaceDashBoardViewModel>()
-                                      .personalprofileData,
-                                ),
-                            )
-                          ],
-                          child: const MissionEditCardView(),
-                        ),
-                      ),
-                    );
-                  } else {
-                    debugPrint(
-                        'You seeing this mean there\'s a bug in the type');
-                  }
+                  activityOnTap(
+                      data: activityAtTheDay[index],
+                      context: context,
+                      workspaceVM: workspaceVM);
                 },
                 child: showSingleAgendaViewForDot(
                     data: activityAtTheDay[index],
@@ -626,6 +593,59 @@ class CalendarViewModel extends ChangeNotifier {
     if (needRefresh) {
       notifyListeners();
     }
+  }
+}
+
+activityOnTap(
+    {required BaseDataModel data,
+    required BuildContext context,
+    required WorkspaceDashBoardViewModel workspaceVM}) {
+  if (data is EventModel) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
+                value: workspaceVM),
+            ChangeNotifierProvider<EventSettingViewModel>(
+              create: (context) => EventSettingViewModel()
+                ..initializeDisplayEvent(
+                  model: data,
+                  user: context
+                      .read<WorkspaceDashBoardViewModel>()
+                      .personalprofileData,
+                ),
+            )
+          ],
+          child: const EventEditCardView(),
+        ),
+      ),
+    );
+  } else if (data is MissionModel) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
+                value: workspaceVM),
+            ChangeNotifierProvider<MissionSettingViewModel>(
+              create: (context) => MissionSettingViewModel()
+                ..initializeDisplayMission(
+                  model: data,
+                  user: context
+                      .read<WorkspaceDashBoardViewModel>()
+                      .personalprofileData,
+                ),
+            )
+          ],
+          child: const MissionEditCardView(),
+        ),
+      ),
+    );
+  } else {
+    debugPrint('You seeing this mean there\'s a bug in the type');
   }
 }
 
