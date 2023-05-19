@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:grouping_project/VM/workspace/calendar_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:grouping_project/View/helper_page/building.dart';
 import 'package:grouping_project/View/profile/profile_display_view.dart';
 import 'package:grouping_project/View/workspace/worksapce_create_sheet_view.dart';
 import 'package:grouping_project/View/workspace/workspace_dashboard_page_view.dart';
 import 'package:provider/provider.dart';
-import 'package:grouping_project/View/workspace/workspace_personal_calendar_page_view.dart';
+import 'package:grouping_project/View/workspace/workspace_calendar_cover_page_view.dart';
 import 'worksapce_switching_sheet_view.dart';
 
 class WorksapceBasePage extends StatefulWidget {
@@ -23,7 +22,7 @@ class _WorksapceBasePageState extends State<WorksapceBasePage> {
   // final model = WorkspaceDashboardViewModel();
   final _pages = const <Widget>[
     WorkspaceDashboardPageView(),
-    CalendarViewPage(),
+    CalendarCoverPage(),
     Center(child: BuildingPage(errorMessage: "Message Page")),
     Center(child: BuildingPage(errorMessage: "Note Page")),
   ];

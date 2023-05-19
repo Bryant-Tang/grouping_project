@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:grouping_project/VM/mission_setting_view_model.dart';
 import 'package:grouping_project/VM/view_model_lib.dart';
+import 'package:grouping_project/View/EditableCard/event_card_view.dart';
+import 'package:grouping_project/View/EditableCard/mission_card_view.dart';
 import 'package:grouping_project/model/model_lib.dart';
 import 'package:grouping_project/model/data_model.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-//TODO: same day conpare is not ok for different month(should compare by int day)
 class CalendarViewModel extends ChangeNotifier {
   late CalendarSource _activitySource;
   late List<EventModel> _events;
   late List<MissionModel> _missions;
-  late DateTime _selectedDate = DateTime.now();
-  late CalendarController controller;
-  Widget _activityListView = SizedBox();
+  late DateTime _selectedDate;
+  Widget? _activityListView;
+  late bool isGroup;
+  List<BaseDataModel> activityAtTheDay = [];
 
   List<MissionStateModel> inProgress = [];
   List<MissionStateModel> pending = [];
@@ -25,31 +29,103 @@ class CalendarViewModel extends ChangeNotifier {
     // state the color 應該要在後端上面
   };
 
-  CalendarViewModel(WorkspaceDashBoardViewModel workspaceVM) {
-    _events = workspaceVM.events;
-    _missions = workspaceVM.missions;
+  CalendarViewModel(
+      {required List<EventModel> events,
+      required List<MissionModel> missions,
+      required DateTime defaultSelectedDate,
+      isItGroup = false}) {
+    _events = events;
+    _missions = missions;
+    _selectedDate = defaultSelectedDate.copyWith(
+        hour: 0, minute: 0, second: 0, millisecond: 0, microsecond: 0);
+    isGroup = isItGroup;
   }
 
   CalendarSource get activitySource => _activitySource;
-  Widget get activityListView => _activityListView;
+  Widget get activityListView => _activityListView ?? const SizedBox();
   DateTime get selectedDate => _selectedDate;
   set selectedDate(DateTime value) => _selectedDate = value;
 
-  changeView(
-      {required CalendarController controller,
-      required CalendarTapDetails calendarTapDetails,
-      required bool mounted}) {
-    if (calendarTapDetails.date == _selectedDate) {
+  /// need to call showActivity after this
+  changeView({
+    required CalendarController controller,
+    bool toMontView = false,
+    bool needRefresh = true,
+  }) {
+    if (!toMontView) {
       controller.view = CalendarView.day;
-      showActivityList(controller: controller, mounted: mounted);
+      if (!isGroup) {
+        getActivityByLabel();
+      }
+      _activitySource.getVisibleAppointments(DateTime(2000), '');
+      // TODO: show activity list
+    } else {
+      controller.view = CalendarView.month;
+      if (!isGroup) {
+        getActivityByDots();
+      } else {
+        _activitySource.getVisibleAppointments(DateTime(2000), '');
+      }
     }
+    if (needRefresh) {
+      notifyListeners();
+    }
+  }
+
+  /// When change date, need to call this
+  setDate(CalendarController controller) {
+    _selectedDate = controller.selectedDate!;
+    activityAtTheDay = [];
+
+    activityAtTheDay.addAll(_events.cast<BaseDataModel>());
+    activityAtTheDay.addAll(_missions.cast<BaseDataModel>());
+
+    DateTime theDateStart = DateTime(controller.selectedDate!.year,
+        controller.selectedDate!.month, controller.selectedDate!.day, 0, 0, 0);
+    DateTime theDateEnd = DateTime(
+        controller.selectedDate!.year,
+        controller.selectedDate!.month,
+        controller.selectedDate!.day,
+        23,
+        59,
+        59);
+
+    activityAtTheDay = activityAtTheDay.where((element) {
+      if (element is EventModel) {
+        // element = element as EventModel;
+        bool result = ((element.startTime.isBefore(theDateEnd) ||
+                    element.startTime.isAtSameMomentAs(theDateEnd)) &&
+                (element.endTime.isAfter(theDateStart))
+            //  || element.endTime.isAtSameMomentAs(theDateStart)
+            );
+        return result;
+      } else {
+        element = element as MissionModel;
+        bool result = element.deadline.hour == 0 && element.deadline.minute == 0
+            ? DateTime(
+                    controller.selectedDate!.year,
+                    controller.selectedDate!.month,
+                    controller.selectedDate!.day) ==
+                DateTime(element.deadline.year, element.deadline.month,
+                        element.deadline.day)
+                    .add(const Duration(days: -1))
+            : DateTime(
+                    controller.selectedDate!.year,
+                    controller.selectedDate!.month,
+                    controller.selectedDate!.day) ==
+                DateTime(element.deadline.year, element.deadline.month,
+                    element.deadline.day);
+        return result;
+      }
+    }).toList();
   }
 
   /// return the activity source for label type calendar
   getActivityByLabel() {
     //TODO:return labels for the group
     _activitySource = CalendarSource(
-        (_events as List<BaseDataModel>) + (_missions as List<BaseDataModel>));
+        _events.cast<BaseDataModel>() + _missions.cast<BaseDataModel>());
+    _activitySource.getVisibleAppointments(DateTime(2000), '');
   }
 
   /// return the activity source for dots type calendar
@@ -123,7 +199,9 @@ class CalendarViewModel extends ChangeNotifier {
       required CalendarAppointmentDetails calendarAppointmentDetails,
       required CalendarController controller}) {
     if (data is EventModel) {
-      return data.startTime.day == data.endTime.day
+      data = data as EventModel;
+      return data.startTime.copyWith(hour: 0, minute: 0) ==
+              data.endTime.copyWith(hour: 0, minute: 0)
           ? Container(
               //TODO: when time range is very small => overflow occur
               padding: const EdgeInsets.all(5),
@@ -179,26 +257,57 @@ class CalendarViewModel extends ChangeNotifier {
         width: calendarAppointmentDetails.bounds.width,
         height: calendarAppointmentDetails.bounds.height,
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.black12)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+            border: Border.all(color: Color(data.ownerAccount.color))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(data.title,
-                style: TextStyle(
-                  fontSize: (calendarAppointmentDetails.bounds.height * 0.25)
-                      .clamp(1, 20),
-                  fontWeight: FontWeight.bold,
-                ),
-                overflow: TextOverflow.ellipsis),
-            Text(
-              data.introduction,
-              style: TextStyle(
-                fontSize: (calendarAppointmentDetails.bounds.height * 0.2)
-                    .clamp(1, 20),
+            FittedBox(
+              alignment: Alignment.centerLeft,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(data.title,
+                      style: TextStyle(
+                        fontSize:
+                            (calendarAppointmentDetails.bounds.height * 0.25)
+                                .clamp(1, 20),
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.clip),
+                  Text(
+                    data.introduction,
+                    style: TextStyle(
+                      fontSize: (calendarAppointmentDetails.bounds.height * 0.2)
+                          .clamp(1, 20),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-              overflow: TextOverflow.ellipsis,
+            ),
+            FittedBox(
+              alignment: Alignment.centerRight,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: stageColorMap[data.state.stage],
+                    radius: 5,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 2),
+                    child: Text(
+                      data.state.stateName,
+                      style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 10,
+                          color: stageColorMap[data.state.stage]),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -206,8 +315,8 @@ class CalendarViewModel extends ChangeNotifier {
     }
   }
 
-  /// For seperating the agenda view template
-  showMonthDotAgendaView(
+  /// For seperating the agenda view template, only call it by the show activity func.
+  showSingleAgendaViewForDot(
       {required BaseDataModel data,
       required BuildContext context,
       CalendarAppointmentDetails? calendarAppointmentDetails,
@@ -398,7 +507,7 @@ class CalendarViewModel extends ChangeNotifier {
                     ],
                   )
                 : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
                         flex: 7,
@@ -453,6 +562,55 @@ class CalendarViewModel extends ChangeNotifier {
     );
   }
 
+  showSingleAgendaViewForLabel(
+      {required BaseDataModel data,
+      required BuildContext context,
+      CalendarAppointmentDetails? calendarAppointmentDetails,
+      required CalendarController controller}) {
+    if (data is EventModel) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Color(data.ownerAccount.color),
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.all(Radius.circular(4.0)),
+        ),
+        alignment: Alignment.center,
+        child: FittedBox(
+          child: Text(
+            data.title,
+            softWrap: true,
+            textAlign: TextAlign.left,
+            style: Theme.of(context).textTheme.labelSmall!.copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 10,
+                ),
+          ),
+        ),
+      );
+    } else if (data is MissionModel) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Color(data.ownerAccount.color),
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.all(Radius.circular(4.0)),
+          border: Border.all(color: Color(data.ownerAccount.color), width: 2.0),
+        ),
+        alignment: Alignment.center,
+        child: FittedBox(
+          child: Text(
+            data.title,
+            softWrap: true,
+            textAlign: TextAlign.left,
+            style: Theme.of(context)
+                .textTheme
+                .labelSmall!
+                .copyWith(fontWeight: FontWeight.w500, fontSize: 10),
+          ),
+        ),
+      );
+    }
+  }
+
   Future<DateTime?> popupDatePicker(
       BuildContext context, CalendarController controller) {
     DateTime? selectedDate = DateTime.now();
@@ -485,75 +643,111 @@ class CalendarViewModel extends ChangeNotifier {
   }
 
   showActivityList(
-      {required CalendarController controller, required bool mounted}) {
+      {required CalendarController controller,
+      bool needRefresh = true,
+      required WorkspaceDashBoardViewModel workspaceVM}) {
+    _activityListView = null;
     if (controller.view == CalendarView.day) {
-      _activityListView = SizedBox();
+      if (needRefresh) {
+        notifyListeners();
+      }
     } else {
-      List<BaseDataModel> totalList = [];
-      totalList.addAll(_events.cast<BaseDataModel>());
-      totalList.addAll(_missions.cast<BaseDataModel>());
-      DateTime theDateStart = DateTime(
-          controller.selectedDate!.year,
-          controller.selectedDate!.month,
-          controller.selectedDate!.day,
-          0,
-          0,
-          0);
-      DateTime theDateEnd = DateTime(
-          controller.selectedDate!.year,
-          controller.selectedDate!.month,
-          controller.selectedDate!.day,
-          23,
-          59,
-          59);
-      List<BaseDataModel> resultList = totalList.where((element) {
-        if (element.toString() == 'Instance of \'EventModel\'') {
-          element = element as EventModel;
-          bool result = ((element.startTime.isBefore(theDateEnd) ||
-                      element.startTime.isAtSameMomentAs(theDateEnd)) &&
-                  (element.endTime.isAfter(theDateStart))
-              //  || element.endTime.isAtSameMomentAs(theDateStart)
-              );
-          return result;
+      activityAtTheDay.sort((a, b) {
+        if (a is EventModel && b is EventModel) {
+          return a.startTime.compareTo(b.startTime);
+        } else if (a is EventModel && b is MissionModel) {
+          return 1;
+        } else if (a is MissionModel && b is EventModel) {
+          return -1;
+        } else if (a is MissionModel && b is MissionModel) {
+          return a.deadline.compareTo(b.deadline);
         } else {
-          element = element as MissionModel;
-          bool result =
-              element.deadline.hour == 0 && element.deadline.minute == 0
-                  ? DateTime(
-                          controller.selectedDate!.year,
-                          controller.selectedDate!.month,
-                          controller.selectedDate!.day) ==
-                      DateTime(element.deadline.year, element.deadline.month,
-                              element.deadline.day)
-                          .add(const Duration(days: -1))
-                  : DateTime(
-                          controller.selectedDate!.year,
-                          controller.selectedDate!.month,
-                          controller.selectedDate!.day) ==
-                      DateTime(element.deadline.year, element.deadline.month,
-                          element.deadline.day);
-          return result;
+          return 0;
         }
-      }).toList();
+      });
       _activityListView = Expanded(
         flex: 2,
         child: ListView.builder(
-          itemCount: resultList.length,
+          itemCount: activityAtTheDay.length,
           itemBuilder: (context, index) {
-            return Container(
-              key: ValueKey(resultList[index]),
-              child: showMonthDotAgendaView(
-                  data: resultList[index],
-                  context: context,
-                  controller: controller),
-            );
+            if (activityAtTheDay.isNotEmpty &&
+                activityAtTheDay.length > index) {
+              return InkWell(
+                key: activityAtTheDay.length == 0
+                    ? null
+                    : ValueKey(activityAtTheDay[index]),
+                onTap: () {
+                  activityOnTap(
+                      data: activityAtTheDay[index],
+                      context: context,
+                      workspaceVM: workspaceVM);
+                },
+                child: showSingleAgendaViewForDot(
+                    data: activityAtTheDay[index],
+                    context: context,
+                    controller: controller),
+              );
+            }
           },
         ),
       );
     }
-    if (mounted) {
+    if (needRefresh) {
       notifyListeners();
     }
+  }
+}
+
+activityOnTap(
+    {required BaseDataModel data,
+    required BuildContext context,
+    required WorkspaceDashBoardViewModel workspaceVM}) {
+  if (data is EventModel) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
+                value: workspaceVM),
+            ChangeNotifierProvider<EventSettingViewModel>(
+              create: (context) => EventSettingViewModel()
+                ..initializeDisplayEvent(
+                  model: data,
+                  user: context
+                      .read<WorkspaceDashBoardViewModel>()
+                      .personalprofileData,
+                ),
+            )
+          ],
+          child: const EventEditCardView(),
+        ),
+      ),
+    );
+  } else if (data is MissionModel) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider<WorkspaceDashBoardViewModel>.value(
+                value: workspaceVM),
+            ChangeNotifierProvider<MissionSettingViewModel>(
+              create: (context) => MissionSettingViewModel()
+                ..initializeDisplayMission(
+                  model: data,
+                  user: context
+                      .read<WorkspaceDashBoardViewModel>()
+                      .personalprofileData,
+                ),
+            )
+          ],
+          child: const MissionEditCardView(),
+        ),
+      ),
+    );
+  } else {
+    debugPrint('You seeing this mean there\'s a bug in the type');
   }
 }
 
@@ -566,9 +760,21 @@ class CalendarSource extends CalendarDataSource {
   CalendarSource(List<BaseDataModel> source) {
     appointments = source;
   }
+
+  @override
+  List<Appointment> getVisibleAppointments(
+      DateTime startDate, String calendarTimeZone,
+      [DateTime? endDate]) {
+    // TODO: implement getVisibleAppointments
+    List<Appointment> result = super.getVisibleAppointments(
+        startDate, calendarTimeZone, endDate ?? DateTime(2030));
+
+    return result;
+  }
+
   @override
   DateTime getStartTime(int index) {
-    return appointments?[index].toString() == 'Instance of \'EventModel\''
+    return appointments?[index] is EventModel
         ? (appointments?[index] as EventModel).startTime.hour == 0 &&
                 (appointments?[index] as EventModel).startTime.minute == 0
             ? (appointments?[index] as EventModel)
@@ -578,7 +784,7 @@ class CalendarSource extends CalendarDataSource {
         : (appointments?[index] as MissionModel)
                     .deadline
                     .copyWith()
-                    .add(const Duration(minutes: -15))
+                    .add(const Duration(hours: -1))
                     .day !=
                 (appointments?[index] as MissionModel).deadline.copyWith().day
             ? (appointments?[index] as MissionModel)
@@ -587,12 +793,12 @@ class CalendarSource extends CalendarDataSource {
             : (appointments?[index] as MissionModel)
                 .deadline
                 .copyWith()
-                .add(const Duration(minutes: -15));
+                .add(const Duration(hours: -1));
   }
 
   @override
   DateTime getEndTime(int index) {
-    return appointments?[index].toString() == 'Instance of \'EventModel\''
+    return appointments?[index] is EventModel
         ? (appointments?[index] as EventModel).endTime.hour == 0 &&
                 (appointments?[index] as EventModel).endTime.minute == 0
             ? (appointments?[index] as EventModel)
@@ -611,14 +817,14 @@ class CalendarSource extends CalendarDataSource {
 
   @override
   String getSubject(int index) {
-    return appointments?[index].toString() == 'Instance of \'EventModel\''
+    return appointments?[index] is EventModel
         ? (appointments?[index] as EventModel).title
         : (appointments?[index] as MissionModel).title;
   }
 
   @override
   Color getColor(int index) {
-    return appointments?[index].toString() == 'Instance of \'EventModel\''
+    return appointments?[index] is EventModel
         ? Color((appointments?[index] as EventModel).ownerAccount.color)
         : Color((appointments?[index] as MissionModel).ownerAccount.color);
   }
