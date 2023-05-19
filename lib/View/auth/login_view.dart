@@ -32,7 +32,8 @@ class LoginPage extends StatelessWidget {
             // backgroundColor: Colors.white,
             body: SingleChildScrollView(
               child: Container(
-                padding: const EdgeInsets.fromLTRB(30.0, 120.0, 30.0, 0.0),
+                // padding: const EdgeInsets.fromLTRB(30.0, 80.0, 30.0, 0.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 100),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,

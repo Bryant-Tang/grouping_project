@@ -1,4 +1,3 @@
-
 import 'package:grouping_project/VM/view_model_lib.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -38,6 +37,21 @@ class MyApp extends StatelessWidget {
         create: (_) => ThemeManager(),
         child: Consumer<ThemeManager>(
           builder: (context, themeManager, child) => MaterialApp(
+              builder: (BuildContext context, Widget? child) {
+                final MediaQueryData data = MediaQuery.of(context);
+                /* TODO:  textscalefactor will change depend on device
+                          also need to be careful with user depend on their own need
+                */
+                final double newtextScaleFactor = data.textScaleFactor;
+                // final double newtextScaleFactor = data.size.height / data.size.width;
+                final num constrainedTextScaleFactor = newtextScaleFactor.clamp(1.0, 2.0);
+                return MediaQuery(
+                  data: data.copyWith(
+                    textScaleFactor: constrainedTextScaleFactor as double,
+                  ),
+                  child: child!,
+                );
+              },
               theme: ThemeData(
                 brightness: themeManager.brightness,
                 useMaterial3: true,
