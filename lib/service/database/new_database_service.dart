@@ -13,6 +13,7 @@ part 'profile.dart';
 part 'database_document.dart';
 part 'image.dart';
 part 'mission_state.dart';
+part 'mission.dart';
 
 abstract class _DatabaseCollectionName {
   static String account = 'account';
@@ -32,12 +33,16 @@ abstract class _DefaultFieldValue {
   static Map emptyMap = {};
   static Uint8List emptyUint8List = Uint8List(0);
   static Stage unknownStage = Stage.unknown;
+  static String unknownStateId = 'unknown_state';
 }
 
 class DatabaseService {
   static final _firestore = FirebaseFirestore.instance;
   static final _storage = FirebaseStorage.instance.ref();
   static final List<ImageData> _imageCache = [];
+  static final _defaultStateRef = _firestore
+      .collection(_DatabaseCollectionName.state)
+      .doc(_DefaultFieldValue.unknownStateId);
 
   //
   // For constructing DatabaseService
@@ -57,6 +62,15 @@ class DatabaseService {
 
   //
   // For simply create document in database without binding
+  static Future<Mission> _createMissionWithoutBinding() async {
+    final missionRef = await _firestore
+        .collection(_DatabaseCollectionName.mission)
+        .add(_DefaultFieldValue.emptyMap as Map<String, dynamic>);
+    Mission mission =
+        Mission._create(missionRef: missionRef, state: _defaultStateRef);
+    return mission;
+  }
+
   static Future<State> _createStateWithoutBinding() async {
     final stateRef = await _firestore
         .collection(_DatabaseCollectionName.state)
@@ -141,6 +155,14 @@ class DatabaseService {
     return state;
   }
 
+  Future<Mission> createMission() async {
+    Mission mission = await _createMissionWithoutBinding();
+    _reloadAccount();
+    _account._addStateRef(mission._ref);
+    await _setAccount();
+    return mission;
+  }
+
   //
   // For get only document itself without owner profile
   static Future<Account> getUserAccount({required String uid}) async {
@@ -190,6 +212,11 @@ class DatabaseService {
   Future<State> _getSimpleState(
       {required DocumentReference<Map<String, dynamic>> stateRef}) async {
     return State._fromDatabase(stateSnap: await stateRef.get());
+  }
+
+  Future<Mission> _getSimpleMission(
+      {required DocumentReference<Map<String, dynamic>> missionRef}) async {
+    return Mission._fromDatabase(missionSnap: await missionRef.get());
   }
 
   Future<void> _reloadAccount() async {
@@ -279,6 +306,12 @@ class DatabaseService {
     await _setDocument(document: state);
   }
 
+  Future<void> setMission({required Mission mission}) async {
+    _checkDocumentRefBelongTo(
+        refList: _account.mission, documentRef: mission._ref);
+    await _setDocument(document: mission);
+  }
+
   //
   // For get document with owner account and profile
   Future<DataResult<Null>> getProfile() async {
@@ -300,6 +333,15 @@ class DatabaseService {
     return await DataResult._withProfileGetting(
         ownerAccount: _account,
         data: [await _getSimpleState(stateRef: stateRef)]);
+  }
+
+  Future<DataResult<Mission>> getMission(
+      {required DocumentReference<Map<String, dynamic>> missionRef}) async {
+    _checkDocumentRefBelongTo(
+        refList: _account.mission, documentRef: missionRef);
+    return await DataResult._withProfileGetting(
+        ownerAccount: _account,
+        data: [await _getSimpleMission(missionRef: missionRef)]);
   }
 
   //
@@ -324,6 +366,16 @@ class DatabaseService {
         ownerAccount: _account, data: data);
   }
 
+  Future<DataResult<Mission>> getAllMission() async {
+    _reloadAccount();
+    List<Mission> data = [];
+    for (var missionRef in _account._mission) {
+      data.add(await _getSimpleMission(missionRef: missionRef));
+    }
+    return await DataResult._withProfileGetting(
+        ownerAccount: _account, data: data);
+  }
+
   //
   // special get method
   Future<List<DataResult<Event>>> getContributingEvent() async {
@@ -343,6 +395,23 @@ class DatabaseService {
     return data;
   }
 
+  Future<List<DataResult<Mission>>> getContributingMission() async {
+    if (_account.isUser == false) {
+      _throwExceptionNotAllowGroupAccount();
+    }
+    List<DataResult<Mission>> data = [await getAllMission()];
+    for (var account in (await getAllGroupAccount())) {
+      var groupMissions =
+          await (await DatabaseService.withAccountChecking(account: account))
+              .getAllMission();
+      groupMissions.data.removeWhere((mission) => !(mission.contributor
+          .map((ref) => ref.id)
+          .contains(_account.profile.id)));
+      data.add(groupMissions);
+    }
+    return data;
+  }
+
   //
   // For delete document
   Future<void> _removeDocument(
@@ -350,9 +419,18 @@ class DatabaseService {
     await ref.delete();
   }
 
+  Future<void> removeMission(
+      {required DocumentReference<Map<String, dynamic>> missionRef}) async {
+    _checkDocumentRefBelongTo(
+        refList: _account.mission, documentRef: missionRef);
+    _account._removeStateRef(missionRef);
+    await _setAccount();
+    await _removeDocument(ref: missionRef);
+  }
+
   Future<void> removeState(
       {required DocumentReference<Map<String, dynamic>> stateRef}) async {
-    _checkDocumentRefBelongTo(refList: _account._state, documentRef: stateRef);
+    _checkDocumentRefBelongTo(refList: _account.state, documentRef: stateRef);
     _account._removeStateRef(stateRef);
     await _setAccount();
     await _removeDocument(ref: stateRef);
@@ -360,7 +438,7 @@ class DatabaseService {
 
   Future<void> removeEvent(
       {required DocumentReference<Map<String, dynamic>> eventRef}) async {
-    _checkDocumentRefBelongTo(refList: _account._event, documentRef: eventRef);
+    _checkDocumentRefBelongTo(refList: _account.event, documentRef: eventRef);
     _account._removeEventRef(eventRef);
     await _setAccount();
     await _removeDocument(ref: eventRef);
