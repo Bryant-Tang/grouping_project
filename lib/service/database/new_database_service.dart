@@ -12,6 +12,7 @@ part 'event.dart';
 part 'profile.dart';
 part 'database_document.dart';
 part 'image.dart';
+part 'mission_state.dart';
 
 abstract class _DatabaseCollectionName {
   static String account = 'account';
@@ -30,6 +31,7 @@ abstract class _DefaultFieldValue {
   static Timestamp zeroTimestamp = Timestamp(0, 0);
   static Map emptyMap = {};
   static Uint8List emptyUint8List = Uint8List(0);
+  static Stage unknownStage = Stage.unknown;
 }
 
 class DatabaseService {
@@ -55,6 +57,14 @@ class DatabaseService {
 
   //
   // For simply create document in database without binding
+  static Future<State> _createStateWithoutBinding() async {
+    final stateRef = await _firestore
+        .collection(_DatabaseCollectionName.state)
+        .add(_DefaultFieldValue.emptyMap as Map<String, dynamic>);
+    State state = State._create(stateRef: stateRef);
+    return state;
+  }
+
   static Future<Event> _createEventWithoutBinding() async {
     final eventRef = await _firestore
         .collection(_DatabaseCollectionName.event)
@@ -106,6 +116,7 @@ class DatabaseService {
       _throwExceptionNotAllowGroupAccount();
     }
     Account newAccount = await _createAccountWithoutBinding();
+    _reloadAccount();
     _account._addAssociateAccountRef(newAccount._ref);
     await _setAccount();
     newAccount._addAssociateAccountRef(_account._ref);
@@ -116,9 +127,18 @@ class DatabaseService {
 
   Future<Event> createEvent() async {
     Event event = await _createEventWithoutBinding();
+    _reloadAccount();
     _account._addEventRef(event._ref);
     await _setAccount();
     return event;
+  }
+
+  Future<State> createState() async {
+    State state = await _createStateWithoutBinding();
+    _reloadAccount();
+    _account._addStateRef(state._ref);
+    await _setAccount();
+    return state;
   }
 
   //
@@ -165,6 +185,11 @@ class DatabaseService {
   Future<Event> _getSimpleEvent(
       {required DocumentReference<Map<String, dynamic>> eventRef}) async {
     return Event._fromDatabase(eventSnap: await eventRef.get());
+  }
+
+  Future<State> _getSimpleState(
+      {required DocumentReference<Map<String, dynamic>> stateRef}) async {
+    return State._fromDatabase(stateSnap: await stateRef.get());
   }
 
   Future<void> _reloadAccount() async {
@@ -249,6 +274,11 @@ class DatabaseService {
     await _setDocument(document: event);
   }
 
+  Future<void> setState({required State state}) async {
+    _checkDocumentRefBelongTo(refList: _account.state, documentRef: state._ref);
+    await _setDocument(document: state);
+  }
+
   //
   // For get document with owner account and profile
   Future<DataResult<Null>> getProfile() async {
@@ -264,6 +294,14 @@ class DatabaseService {
         data: [await _getSimpleEvent(eventRef: eventRef)]);
   }
 
+  Future<DataResult<State>> getState(
+      {required DocumentReference<Map<String, dynamic>> stateRef}) async {
+    _checkDocumentRefBelongTo(refList: _account.state, documentRef: stateRef);
+    return await DataResult._withProfileGetting(
+        ownerAccount: _account,
+        data: [await _getSimpleState(stateRef: stateRef)]);
+  }
+
   //
   // For get all documents of the same kind, in the account
   Future<DataResult<Event>> getAllEvent() async {
@@ -271,6 +309,16 @@ class DatabaseService {
     List<Event> data = [];
     for (var eventRef in _account._event) {
       data.add(await _getSimpleEvent(eventRef: eventRef));
+    }
+    return await DataResult._withProfileGetting(
+        ownerAccount: _account, data: data);
+  }
+
+  Future<DataResult<State>> getAllState() async {
+    _reloadAccount();
+    List<State> data = [];
+    for (var stateRef in _account._state) {
+      data.add(await _getSimpleState(stateRef: stateRef));
     }
     return await DataResult._withProfileGetting(
         ownerAccount: _account, data: data);
@@ -300,6 +348,14 @@ class DatabaseService {
   Future<void> _removeDocument(
       {required DocumentReference<Map<String, dynamic>> ref}) async {
     await ref.delete();
+  }
+
+  Future<void> removeState(
+      {required DocumentReference<Map<String, dynamic>> stateRef}) async {
+    _checkDocumentRefBelongTo(refList: _account._state, documentRef: stateRef);
+    _account._removeStateRef(stateRef);
+    await _setAccount();
+    await _removeDocument(ref: stateRef);
   }
 
   Future<void> removeEvent(
