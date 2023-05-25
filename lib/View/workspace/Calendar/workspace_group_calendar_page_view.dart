@@ -168,28 +168,13 @@ class _CalendarGroupViewPageState extends State<CalendarGroupViewPage> {
           children: [
             FittedBox(
               alignment: Alignment.centerLeft,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(data.title,
-                      style: TextStyle(
-                        fontSize:
-                            (calendarAppointmentDetails.bounds.height * 0.25)
-                                .clamp(1, 20),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.clip),
-                  Text(
-                    data.introduction,
-                    style: TextStyle(
-                      fontSize: (calendarAppointmentDetails.bounds.height * 0.2)
-                          .clamp(1, 20),
-                    ),
-                    overflow: TextOverflow.ellipsis,
+              child: Text(data.title,
+                  style: TextStyle(
+                    fontSize: (calendarAppointmentDetails.bounds.height * 0.25)
+                        .clamp(1, 20),
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
+                  overflow: TextOverflow.clip),
             ),
             Flexible(
               flex: 3,

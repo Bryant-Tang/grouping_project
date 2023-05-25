@@ -347,28 +347,13 @@ class _CalendarPersonalViewPageState extends State<CalendarPersonalViewPage> {
           children: [
             FittedBox(
               alignment: Alignment.centerLeft,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(data.title,
-                      style: TextStyle(
-                        fontSize:
-                            (calendarAppointmentDetails.bounds.height * 0.25)
-                                .clamp(1, 20),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.clip),
-                  Text(
-                    data.introduction,
-                    style: TextStyle(
-                      fontSize: (calendarAppointmentDetails.bounds.height * 0.2)
-                          .clamp(1, 20),
-                    ),
-                    overflow: TextOverflow.ellipsis,
+              child: Text(data.title,
+                  style: TextStyle(
+                    fontSize: (calendarAppointmentDetails.bounds.height * 0.25)
+                        .clamp(1, 20),
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
+                  overflow: TextOverflow.clip),
             ),
             Flexible(
               flex: 3,
@@ -471,7 +456,7 @@ class _CalendarPersonalViewPageState extends State<CalendarPersonalViewPage> {
                           dataSource: calendarVM.activitySource,
                           firstDayOfWeek: 1,
                           todayHighlightColor:
-                              Theme.of(context).colorScheme.primaryContainer,
+                              Theme.of(context).colorScheme.primary,
                           todayTextStyle: TextStyle(
                             color: Theme.of(context).colorScheme.onSecondary,
                           ),

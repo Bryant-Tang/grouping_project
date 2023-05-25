@@ -35,10 +35,12 @@ class CalendarViewModel extends ChangeNotifier {
       isItGroup = false}) {
     _events = events;
     _missions = missions;
+
     _lastSelectedDate = defaultSelectedDate.copyWith();
+
     _lastSelectedDate = DateTime(_lastSelectedDate.year,
         _lastSelectedDate.month, _lastSelectedDate.day, 0, 0, 0);
-    debugPrint('selected date: $lastSelectedDate');
+
     isGroup = isItGroup;
   }
 
@@ -54,8 +56,6 @@ class CalendarViewModel extends ChangeNotifier {
   }) {
     if (!toMontView) {
       controller.view = CalendarView.day;
-      debugPrint('change to day view');
-
       if (!isGroup) {
         getActivityByLabel();
       }
@@ -63,7 +63,6 @@ class CalendarViewModel extends ChangeNotifier {
       // TODO: show activity list
     } else {
       controller.view = CalendarView.month;
-      debugPrint('change to month view');
       if (!isGroup) {
         getActivityByDots();
       } else {
@@ -126,7 +125,6 @@ class CalendarViewModel extends ChangeNotifier {
 
   /// return the activity source for label type calendar
   getActivityByLabel() {
-    //TODO:return labels for the group
     _activitySource = CalendarSource(
         _events.cast<BaseDataModel>() + _missions.cast<BaseDataModel>());
     _activitySource.getVisibleAppointments(DateTime(2000), '');
@@ -138,33 +136,39 @@ class CalendarViewModel extends ChangeNotifier {
   getActivityByDots() {
     Map<DateTime, List<String>> dayMap = {};
     List<BaseDataModel> oneForAday = [];
-    DateTime key;
+    DateTime keyToMapDots;
+
     for (var element in _missions) {
       element.deadline.hour == 0 && element.deadline.minute == 0
-          ? key = DateTime(element.deadline.year, element.deadline.month,
-                  element.deadline.day, 12)
+          ? keyToMapDots = DateTime(element.deadline.year,
+                  element.deadline.month, element.deadline.day, 12)
               .add(const Duration(days: -1))
-          : key = DateTime(element.deadline.year, element.deadline.month,
-              element.deadline.day, 12);
-      if (!dayMap.containsKey(key)) {
-        dayMap[key] = [];
-        dayMap[key]!.add(element.ownerAccount.nickname);
+          : keyToMapDots = DateTime(element.deadline.year,
+              element.deadline.month, element.deadline.day, 12);
+
+      if (!dayMap.containsKey(keyToMapDots)) {
+        dayMap[keyToMapDots] = [];
+        dayMap[keyToMapDots]!.add(element.ownerAccount.nickname);
+
         MissionModel toAdd = MissionModel(
-          deadline: key.copyWith(hour: 12),
+          deadline: keyToMapDots.copyWith(hour: 12),
         );
         toAdd.setOwner(ownerAccount: element.ownerAccount);
+
         oneForAday.add(toAdd);
       } else {
-        if (!dayMap[key]!.contains(element.ownerAccount.nickname)) {
-          dayMap[key]!.add(element.ownerAccount.nickname);
+        if (!dayMap[keyToMapDots]!.contains(element.ownerAccount.nickname)) {
+          dayMap[keyToMapDots]!.add(element.ownerAccount.nickname);
           MissionModel toAdd = MissionModel(
-            deadline: key.copyWith(hour: 12),
+            deadline: keyToMapDots.copyWith(hour: 12),
           );
           toAdd.setOwner(ownerAccount: element.ownerAccount);
+
           oneForAday.add(toAdd);
         }
       }
     }
+
     for (var element in _events) {
       DateTime startTime = DateTime(element.startTime.year,
           element.startTime.month, element.startTime.day, 12);
