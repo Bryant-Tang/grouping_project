@@ -58,7 +58,15 @@ dependencies:
   path: ^1.8.3
   qr_flutter: ^4.0.0
   mobile_scanner: ^3.2.0
+  # For HTTP requests
   http: ^0.13.5
+  # For OAuth2
+  oauth2: ^2.0.1
+  flutter_appauth: ^6.0.1
+  # For .env file
+  flutter_dotenv: ^5.1.0
+  # For token storage
+  flutter_secure_storage: ^8.0.0
 
 dev_dependencies:
   flutter_test:
@@ -99,6 +107,7 @@ flutter:
     - assets/icons/
     - assets/icons/authIcon/
     - assets/icons/appBar/
+    - .env
 
   fonts:
      - family: NotoSansTC
