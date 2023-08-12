@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'package:grouping_project/service/auth/account_auth.dart';
 import 'package:grouping_project/service/auth/github_auth.dart';
 import 'package:grouping_project/service/auth/google_auth.dart';
-import 'package:http/http.dart' as http;
 
 enum Provier { google, github, line, account }
 
@@ -18,6 +20,8 @@ class AuthService {
   Future signIn({required String account, required String password}) async {
     AccountAuth accountAuth = AccountAuth();
     await accountAuth.signIn(account: account, password: password);
+    const storage = FlutterSecureStorage();
+    storage.readAll().then((value) => debugPrint('storage: $value'));
     _provier = Provier.account;
   }
 
@@ -25,6 +29,8 @@ class AuthService {
 
   Future googleSignIn() async {
     await _googleAuth.signIn();
+    const storage = FlutterSecureStorage();
+    storage.readAll().then((value) => debugPrint('storage: $value'));
     _provier = Provier.google;
   }
 
@@ -62,16 +68,14 @@ class AuthWithBackEndService {
           'account': account,
           'password': password,
         }));
-
-    debugPrint(response.body);
+    const storage = FlutterSecureStorage();
+    await storage.write(key: 'auth-token', value: response.body);
   }
 
   /// When debugging on web, you need to run the backend on localhost:5000
   ///
   /// flutter run --web-hostname localhost --web-port 5000
   static Future authWithGoogle(String idToken) async {
-    debugPrint('authWithGoogle: $idToken');
-
     Uri url;
     if (kIsWeb) {
       url = Uri.parse('http://localhost:8000/auth/google/');
@@ -85,8 +89,8 @@ class AuthWithBackEndService {
         body: ({
           'auth_token': idToken,
         }));
-
-    debugPrint(response.body);
+    const storage = FlutterSecureStorage();
+    await storage.write(key: 'auth-token', value: response.body);
   }
 
   static Future authWithGitHub() async {
