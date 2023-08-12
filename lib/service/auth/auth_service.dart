@@ -8,21 +8,17 @@ import 'package:grouping_project/service/auth/account_auth.dart';
 import 'package:grouping_project/service/auth/github_auth.dart';
 import 'package:grouping_project/service/auth/google_auth.dart';
 
-enum Provier { google, github, line, account }
-
 class AuthService {
   final GoogleAuth _googleAuth = GoogleAuth();
   final GitHubAuth _gitHubAuth = GitHubAuth();
 
-  late Provier _provier;
-  get provier => _provier;
-
   Future signIn({required String account, required String password}) async {
     AccountAuth accountAuth = AccountAuth();
     await accountAuth.signIn(account: account, password: password);
+
     const storage = FlutterSecureStorage();
+    await storage.write(key: 'auth-provider', value: 'account');
     storage.readAll().then((value) => debugPrint('storage: $value'));
-    _provier = Provier.account;
   }
 
   Future signOut() async {}
@@ -30,8 +26,8 @@ class AuthService {
   Future googleSignIn() async {
     await _googleAuth.signIn();
     const storage = FlutterSecureStorage();
+    await storage.write(key: 'auth-provider', value: 'google');
     storage.readAll().then((value) => debugPrint('storage: $value'));
-    _provier = Provier.google;
   }
 
   Future githubSignIn() async {
@@ -40,12 +36,10 @@ class AuthService {
     } else if (Platform.isAndroid || Platform.isIOS) {
       await _gitHubAuth.signInMobile();
     }
-    _provier = Provier.github;
   }
 
   Future lineSignIn() async {
-    // TODO: implement lineSignIn
-    _provier = Provier.line;
+    // TODO: implement lineSignIn;
   }
 }
 
