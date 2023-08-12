@@ -5,7 +5,7 @@ class AccountAuth {
   late String password;
 
   AccountAuth();
-  Future signIn() async {
+  Future signIn({required String account, required String password}) async {
     AuthWithBackEndService.authWithAcccountAndPassword(
         account: account, password: password);
   }

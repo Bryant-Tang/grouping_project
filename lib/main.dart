@@ -1,12 +1,23 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'dart:html' as html;
+
 import 'package:grouping_project/View/app/app_view.dart';
 
 void main() {
-  runApp(const MyApp());
+  Map<String, String> initialQueryParameters;
+  if (kIsWeb) {
+    initialQueryParameters =
+        Uri.parse(html.window.location.href).queryParameters;
+    runApp(MyApp(
+      queryParameters: initialQueryParameters,
+    ));
+  }
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final Map<String, String> queryParameters;
+  const MyApp({super.key, required this.queryParameters});
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -22,7 +33,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         // 呼叫 home_page.dart
-        '/': (context) => AppView(),
+        '/': (context) => AppView(queryParameters: queryParameters),
       },
       initialRoute: '/',
       // 呼叫 home_page.dart

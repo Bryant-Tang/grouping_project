@@ -40,6 +40,7 @@ class GoogleAuth {
       if (kIsWeb) {
         GoogleSignInAccount? googleUser =
             await googleSignIn.signInSilently() ?? await googleSignIn.signIn();
+        googleUser = await googleSignIn.signInSilently();
 
         if (googleUser == null) {
           throw Exception('Google Sign In Failed');

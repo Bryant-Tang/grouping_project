@@ -1,8 +1,51 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+import 'package:grouping_project/service/auth/account_auth.dart';
+import 'package:grouping_project/service/auth/github_auth.dart';
+import 'package:grouping_project/service/auth/google_auth.dart';
 import 'package:http/http.dart' as http;
+
+enum Provier { google, github, line, account }
+
+class AuthService {
+  final GoogleAuth _googleAuth = GoogleAuth();
+  final GitHubAuth _gitHubAuth = GitHubAuth();
+
+  late Provier _provier;
+  get provier => _provier;
+
+  Future signIn({required String account, required String password}) async {
+    AccountAuth accountAuth = AccountAuth();
+    await accountAuth.signIn(account: account, password: password);
+    _provier = Provier.account;
+  }
+
+  Future signOut() async {}
+
+  Future googleSignIn() async {
+    await _googleAuth.signIn();
+    _provier = Provier.google;
+  }
+
+  Future githubSignIn() async {
+    if (kIsWeb) {
+      await _gitHubAuth.signInWeb();
+    } else if (Platform.isAndroid || Platform.isIOS) {
+      await _gitHubAuth.signInMobile();
+    }
+    _provier = Provier.github;
+  }
+
+  Future lineSignIn() async {
+    // TODO: implement lineSignIn
+    _provier = Provier.line;
+  }
+}
 
 /// Used to authenticate to our backend
 class AuthWithBackEndService {
+  // TODO : add support for android and ios
   static Future authWithAcccountAndPassword(
       {required String account, required String password}) async {
     Uri url;
