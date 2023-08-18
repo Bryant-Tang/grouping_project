@@ -4,6 +4,7 @@ import 'dart:html' as html;
 import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uni_links/uni_links.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class GitHubAuth {
   late oauth2.AuthorizationCodeGrant _grant;
@@ -13,6 +14,7 @@ class GitHubAuth {
   get authorizationUrl => _authorizationUrl;
 
   Future signInMobile() async {
+    await dotenv.load(fileName: ".env");
     // TODO: implement signIn
     _grant = GitHubOauth2.createGitHubGrant();
     _authorizationUrl = GitHubOauth2.getAuthorizationUrl(_grant);
@@ -26,24 +28,12 @@ class GitHubAuth {
   }
 
   Future signInWeb() async {
+    await dotenv.load(fileName: ".env");
     _grant = GitHubOauth2.createGitHubGrant();
     _authorizationUrl = GitHubOauth2.getAuthorizationUrl(_grant);
 
-    html.window.open(authorizationUrl.toString(), "_self");
-
-    _grant.close();
-  }
-
-  Future signInWebOnCallback(Map<String, String> queryParameters) async {
-    _grant = GitHubOauth2.createGitHubGrant();
-    _authorizationUrl = GitHubOauth2.getAuthorizationUrl(_grant);
-
-    debugPrint("try handleAuthorizationResponse");
-    var client = await _grant.handleAuthorizationResponse(queryParameters);
-    if (client != null) {
-      debugPrint('client: $client');
-    }
-    _grant.close();
+    var window = html.window.open(authorizationUrl.toString(), "_blank");
+    return;
   }
 
   Future<void> redirect(Uri url) async {
@@ -65,14 +55,14 @@ class GitHubAuth {
 }
 
 class GitHubOauth2 {
-  static const String _clientId = 'da30cd009045f2354c82';
-  static const String _secret = '75e8ac127fde7544016043a55ff9963bb12af107';
+  static final String _clientId = dotenv.env['GITHUB_CLIENT_ID']!;
+  static final String _secret = dotenv.env['GITHUB_CLIENT_SECRET']!;
   static const scopes = ['read:user', 'user:email'];
   static final authorizationEndpoint =
       Uri.parse('https://github.com/login/oauth/authorize');
   static final tokenEndpoint =
       Uri.parse('https://github.com/login/oauth/access_token');
-  static final redirectUrl = Uri.parse('http://localhost:5000');
+  static final redirectUrl = Uri.parse('http://localhost:8000/auth/callback/');
 
   static oauth2.AuthorizationCodeGrant createGitHubGrant() {
     var grant = oauth2.AuthorizationCodeGrant(

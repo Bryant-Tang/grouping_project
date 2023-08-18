@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:googleapis/connectors/v1.dart';
 import 'package:grouping_project/service/auth/auth_service.dart';
 import 'package:grouping_project/service/auth/github_auth.dart';
 // For end-to-end testing
@@ -16,7 +17,10 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (queryParameters.isEmpty) {
+    String provider = '';
+    const storage = FlutterSecureStorage();
+    storage.read(key: 'auth-provider').then((value) => provider = value ?? '');
+    if (provider == '') {
       return Scaffold(
         body: Center(
           child: Column(
@@ -44,18 +48,22 @@ class AppView extends StatelessWidget {
                   onPressed: () async {
                     await authService.githubSignIn();
                   },
-                  child: const Text('Sign in with GitHub'))
+                  child: const Text('Sign in with GitHub')),
+              ElevatedButton(
+                  onPressed: () async {
+                    await AuthWithBackEndService.authWithGitHub();
+                    debugPrint('Done');
+                  },
+                  child: Text('Handle ccode with GitHub'))
             ],
           ),
         ),
       );
     } else {
-      GitHubAuth gitHubAuth = GitHubAuth();
-      gitHubAuth.signInWebOnCallback(queryParameters!);
+      AuthWithBackEndService.authWithGitHub()
+          .whenComplete(() => debugPrint('Yeah!'));
       return Scaffold(
-        body: Center(
-          child: Text("queryParameters: $queryParameters"),
-        ),
+        body: Text('Currently logging'),
       );
     }
   }

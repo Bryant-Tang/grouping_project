@@ -34,7 +34,6 @@ class GoogleAuth {
 
   Future signIn() async {
     final googleSignIn = await _getCorrectGoogleSignIn();
-    debugPrint('googleSignIn: ${googleSignIn.clientId}}');
     try {
       isLoading = true;
       if (kIsWeb) {
@@ -50,8 +49,6 @@ class GoogleAuth {
         if (googleAuth.idToken == null) {
           throw Exception('Google Sign In Failed');
         }
-        debugPrint('googleAuth.idToken:');
-        debugPrint(googleAuth.idToken);
 
         AuthWithBackEndService.authWithGoogle(googleAuth.idToken!);
       } else if (Platform.isAndroid || Platform.isIOS) {
@@ -66,8 +63,6 @@ class GoogleAuth {
         if (googleAuth.idToken == null) {
           throw Exception('Google Sign In Failed');
         }
-        debugPrint('googleAuth.idToken:');
-        debugPrint(googleAuth.idToken);
 
         AuthWithBackEndService.authWithGoogle(googleAuth.idToken!);
       } else {

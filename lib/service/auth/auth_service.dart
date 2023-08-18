@@ -33,6 +33,9 @@ class AuthService {
   Future githubSignIn() async {
     if (kIsWeb) {
       await _gitHubAuth.signInWeb();
+      const storage = FlutterSecureStorage();
+      await storage.write(key: 'auth-provider', value: 'github');
+      // await AuthWithBackEndService.authWithGitHub();
     } else if (Platform.isAndroid || Platform.isIOS) {
       await _gitHubAuth.signInMobile();
     }
@@ -88,17 +91,17 @@ class AuthWithBackEndService {
   }
 
   static Future authWithGitHub() async {
+    debugPrint('authWithGitHub started');
     Uri url;
     if (kIsWeb) {
-      url = Uri.parse('http://localhost:8000/auth/google/');
+      url = Uri.parse('http://localhost:8000/auth/github/');
     } else {
-      url = Uri.parse('http://192.168.0.102:8000/auth/google/');
+      url = Uri.parse('http://192.168.0.102:8000/auth/github/');
     }
 
-    http.Response response = await http.post(url,
-        body: ({
-          'unkown': 'unkown',
-        }));
+    http.Response response = await http.post(
+      url,
+    );
 
     debugPrint(response.body);
   }
