@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:googleapis/connectors/v1.dart';
 import 'package:grouping_project/service/auth/auth_service.dart';
-import 'package:grouping_project/service/auth/github_auth.dart';
 // For end-to-end testing
 
 //
 
 class AppView extends StatelessWidget {
-  AppView({Key? key, required this.queryParameters}) : super(key: key);
+  AppView({Key? key}) : super(key: key);
   AuthService authService = AuthService();
   late String account;
   late String password;
-  final Map<String, String> queryParameters;
   Uri? Url;
 
   @override
@@ -49,19 +46,11 @@ class AppView extends StatelessWidget {
                     await authService.githubSignIn();
                   },
                   child: const Text('Sign in with GitHub')),
-              ElevatedButton(
-                  onPressed: () async {
-                    await AuthWithBackEndService.authWithGitHub();
-                    debugPrint('Done');
-                  },
-                  child: Text('Handle ccode with GitHub'))
             ],
           ),
         ),
       );
     } else {
-      AuthWithBackEndService.authWithGitHub()
-          .whenComplete(() => debugPrint('Yeah!'));
       return Scaffold(
         body: Text('Currently logging'),
       );
