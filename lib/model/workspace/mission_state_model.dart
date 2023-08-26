@@ -61,7 +61,7 @@ class MissionStateModel extends BaseDataModel<MissionStateModel> {
   @override
   Map<String, dynamic> toFirestore() {
     return {
-      if (this != defaultUnknownState) 'stage': stageToString(stage),
+      if (this != defaultUnknownState) 'stage': stage.label,
       if (this != defaultUnknownState) 'state_name': stateName,
     };
   }
@@ -74,7 +74,8 @@ class MissionStateModel extends BaseDataModel<MissionStateModel> {
       {required String id, required Map<String, dynamic> data}) {
     return MissionStateModel(
       id: id,
-      stage: stringToStage(data['stage']),
+      stage: MissionStage.fromLabel(data['stage']),
+      // stage: stringToStage(data['stage']),
       stateName: data['state_name'],
     );
   }

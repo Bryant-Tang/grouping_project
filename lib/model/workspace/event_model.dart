@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_this
-import 'package:grouping_project/model/editable_card_model.dart';
+import 'package:grouping_project/model/auth/account_model.dart';
+import 'package:grouping_project/model/workspace/editable_card_model.dart';
 
-import 'data_model.dart';
 // import 'account_model.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
@@ -17,7 +17,7 @@ class EventModel extends EditableCardModel {
   // List<String> tags;
   // List<DateTime> notifications;
   List<String> relatedMissionIds;
-  // AccountModel ownerAccount; TODO
+  // AccountModel ownerAccount;
 
   static final EventModel defaultEvent = EventModel._default();
 
@@ -36,6 +36,7 @@ class EventModel extends EditableCardModel {
             introduction: 'unknown',
             tags: [],
             notifications: [],
+            ownerAccount: AccountModel.defaultAccount,
             id: 'default_event',
             databasePath: 'event',
             storageRequired: false);
@@ -70,6 +71,7 @@ class EventModel extends EditableCardModel {
           introduction: introduction ?? defaultEvent.introduction,
           tags: tags ?? List.from(defaultEvent.tags),
           notifications: notifications ?? List.from(defaultEvent.notifications),
+          ownerAccount: defaultEvent.ownerAccount,
           databasePath: defaultEvent.databasePath,
           storageRequired: defaultEvent.storageRequired,
           // setOwnerRequired: true
@@ -147,7 +149,7 @@ class EventModel extends EditableCardModel {
   }
 
   /// TODO: set the data about owner for this instance
-  // void setOwner({required AccountModel ownerAccount}) {
-  //   this.ownerAccount = ownerAccount;
-  // }
+  void setOwner({required AccountModel ownerAccount}) {
+    this.ownerAccount = ownerAccount;
+  }
 }

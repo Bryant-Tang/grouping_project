@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:grouping_project/model/event_model.dart';
+import 'package:grouping_project/model/auth/auth_model_lib.dart';
+import 'package:grouping_project/model/workspace/workspace_model_lib.dart';
 // import 'package:grouping_project/model/model_lib.dart';
 // import 'package:grouping_project/service/service_lib.dart';
 import 'package:intl/intl.dart';
@@ -16,7 +17,7 @@ class EventSettingViewModel extends ChangeNotifier implements EditableCardViewMo
   // Event 的擁有者, group or people Account。
   // AccountModel ownerAccount = AccountModel();
   // Event 的創建者, 只有在第一次create的時候有用。
-  // AccountModel creatorAccount = AccountModel();      TODO
+  AccountModel creatorAccount = AccountModel();
   // True if ownerAccount id equals to creator Account, otherwise False
   bool forUser = true;
   bool get isforUser => forUser;
@@ -29,15 +30,15 @@ class EventSettingViewModel extends ChangeNotifier implements EditableCardViewMo
   String get formattedEndTime => dataformat.format(endTime);
 
   // getter of eventModel
-  // AccountModel get eventOwnerAccount => eventModel.ownerAccount;     TODO
+  AccountModel get eventOwnerAccount => eventModel.ownerAccount;
   String get title => eventModel.title; // Event title
   String get introduction => eventModel.introduction; // Introduction od event
-  // String get ownerAccountName =>
-  //     eventOwnerAccount.name; // event owner account name        TODO
+  String get ownerAccountName =>
+      eventOwnerAccount.name; // event owner account name
   DateTime get startTime => eventModel.startTime; // event start time
   DateTime get endTime => eventModel.endTime; // event end time
-  // Color get color => Color(eventModel.ownerAccount.color);     TODO
-  Color get color => Colors.amber;
+  Color get color => Color(eventModel.ownerAccount.color);
+  // Color get color => Colors.amber;
 
   /// TODO: The list of contributor Account model whom involve in this event
   // List<AccountModel> get contributors => forUser
@@ -107,7 +108,6 @@ class EventSettingViewModel extends ChangeNotifier implements EditableCardViewMo
     notifyListeners();
   }
 
-  /*
   void initializeNewEvent(
       {required AccountModel creatorAccount,
       required AccountModel ownerAccount}) {
@@ -141,7 +141,6 @@ class EventSettingViewModel extends ChangeNotifier implements EditableCardViewMo
     isLoading = false;
     notifyListeners();
   }
-  */
 
   // Future<bool> onSave() async {
   //   debugPrint("setting mode $settingMode");
@@ -225,7 +224,7 @@ class EventSettingViewModel extends ChangeNotifier implements EditableCardViewMo
   //   const Duration(seconds: 1),
   //   (_) => DateTime.now(),
   // );
-  /*
+
   Future<void> createEvent() async {
     // Create event with eventData
     // Add account profile id into contributorIds
@@ -250,5 +249,4 @@ class EventSettingViewModel extends ChangeNotifier implements EditableCardViewMo
         .deleteEvent(eventModel);
     notifyListeners();
   }
-  */
 }
