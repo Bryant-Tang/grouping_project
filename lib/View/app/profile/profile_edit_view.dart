@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // import 'dart:io';
 // import 'package:flutter/material.dart';
 // import 'package:grouping_project/View/components/auth_view/headline_with_content.dart';
@@ -10,19 +9,6 @@
 // import 'package:grouping_project/model/auth/account_model.dart';
 // import 'package:provider/provider.dart';
 // import 'package:image_picker/image_picker.dart';
-=======
-import 'dart:io';
-import 'package:flutter/material.dart';
-
-import 'package:grouping_project/model/auth/account_model.dart';
-
-import 'package:grouping_project/View/components/auth_view/auth_view_components_lib.dart';
-import 'package:grouping_project/View/components/state.dart';
-import 'package:grouping_project/ViewModel/profile/profile_view_model_lib.dart';
-
-import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
->>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // class ProfileEditPageView extends StatefulWidget {
 //   final ProfileEditViewModel model;

@@ -6,7 +6,6 @@
 // // import 'package:grouping_project/View/workspace/workspace_view.dart';
 // // import 'package:grouping_project/View/profile/profile_edit_view.dart';
 
-<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:grouping_project/View/app/helper_page/building.dart';
 // import 'package:grouping_project/View/app/profile/profile_edit_view.dart';
@@ -18,21 +17,6 @@
 // import 'package:grouping_project/ViewModel/profile/profile_view_model_lib.dart';
 // import 'package:grouping_project/model/auth/auth_model_lib.dart';
 // import 'package:provider/provider.dart';
-=======
-import 'package:flutter/material.dart';
-
-import 'package:grouping_project/View/app/helper_page/building.dart';
-import 'package:grouping_project/View/app/profile/profile_edit_view.dart';
-import 'package:grouping_project/View/app/workspace/workspace_view.dart';
-import 'package:grouping_project/View/components/auth_view/auth_view_components_lib.dart';
-import 'package:grouping_project/View/components/sing_up_page_template.dart';
-import 'package:grouping_project/View/components/state.dart';
-import 'package:grouping_project/ViewModel/auth/auth_view_model_lib.dart';
-import 'package:grouping_project/ViewModel/profile/profile_view_model_lib.dart';
-import 'package:grouping_project/model/auth/auth_model_lib.dart';
-
-import 'package:provider/provider.dart';
->>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // class SignUpPage extends StatefulWidget {
 //   // final SignUpDataModel data;

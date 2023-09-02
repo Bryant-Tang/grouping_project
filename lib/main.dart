@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:grouping_project/View/app/app_view.dart';
+import 'package:grouping_project/View/app/auth/auth_view.dart';
 import 'package:grouping_project/View/theme/theme_manager.dart';
 import 'package:provider/provider.dart';
 
@@ -28,6 +29,8 @@ class MyApp extends StatelessWidget {
           routes: {
             // 呼叫 home_page.dart
             '/': (context) => const AppView(),
+            '/login': (context) => const AuthView(),
+            '/signIn': (context) => const AuthView(mode: 'signIn',),
           },
           initialRoute: '/',
           // 呼叫 home_page.dart

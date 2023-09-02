@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:grouping_project/View/app/workspace/EditableCard/mission_card_view.dart';
 // // import 'package:grouping_project/VM/event_setting_view_model.dart';
@@ -11,18 +10,6 @@
 // import 'package:grouping_project/ViewModel/workspace/workspace_dashboard_view_model.dart';
 // // import 'package:grouping_project/View/EditableCard/event_card_view.dart';
 // import 'package:provider/provider.dart';
-=======
-import 'package:flutter/material.dart';
-
-import 'package:grouping_project/View/app/workspace/EditableCard/event_card_view.dart';
-import 'package:grouping_project/View/app/workspace/EditableCard/mission_card_view.dart';
-import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
-// import 'package:grouping_project/ViewModel/workspace/event_view_model.dart';
-// import 'package:grouping_project/ViewModel/workspace/mission_view_model.dart';
-// import 'package:grouping_project/ViewModel/workspace/workspace_dashboard_view_model.dart';
-
-import 'package:provider/provider.dart';
->>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // class CreateButton extends StatefulWidget {
 //   const CreateButton({super.key});

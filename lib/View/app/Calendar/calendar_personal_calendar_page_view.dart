@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:grouping_project/View/app/workspace/EditableCard/event_card_view.dart';
 // import 'package:grouping_project/View/app/workspace/EditableCard/mission_card_view.dart';
@@ -8,20 +7,6 @@
 // import 'package:intl/intl.dart';
 // import 'package:syncfusion_flutter_calendar/calendar.dart';
 // import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-=======
-import 'package:flutter/material.dart';
-
-import 'package:grouping_project/View/app/workspace/EditableCard/event_card_view.dart';
-import 'package:grouping_project/View/app/workspace/EditableCard/mission_card_view.dart';
-import 'package:grouping_project/ViewModel/calendar/calendar_view_model_lib.dart';
-import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
-import 'package:grouping_project/model/workspace/workspace_model_lib.dart';
-
-import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
->>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // class CalendarPersonalViewPage extends StatefulWidget {
 //   const CalendarPersonalViewPage({super.key});

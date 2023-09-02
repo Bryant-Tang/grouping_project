@@ -1,10 +1,10 @@
 enum RegisterState {
   success,
-  faild,
+  fail,
 }
 enum LoginState {
   loginSuccess,
-  loginFaild,
+  loginFail,
   userNotFound,
   wrongPassword,
 }
@@ -17,6 +17,7 @@ enum WorkspaceMode{
   personal,
   group,
 }
-enum SettingMode { 
-  create, edit, displpay 
-}
+
+// enum SettingMode { 
+//   create, edit, displpay 
+// }

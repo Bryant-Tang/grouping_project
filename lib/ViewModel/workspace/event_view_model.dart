@@ -6,7 +6,6 @@
 // import 'package:intl/intl.dart';
 // import 'package:grouping_project/ViewModel/workspace/editable_card_view_model.dart';
 
-<<<<<<< HEAD
 // class EventSettingViewModel extends ChangeNotifier implements EditableCardViewModel {
 //   // The event model
 //   // In display mode, call initialzeEventDisplay and pass eventModel to this VM
@@ -23,24 +22,6 @@
 //   bool forUser = true;
 //   bool get isforUser => forUser;
 //   bool isLoading = false;
-=======
-class EventSettingViewModel extends EditableCardViewModel {
-  // The event model
-  // In display mode, call initialzeEventDisplay and pass eventModel to this VM
-  // In edit mode, call initialzeNewEvent to create new event model
-  // and pass owenr account and crator account to this model
-  // Scenario1 -> dispaly (need to be initialize) -> edit
-  // Scenario2 -> Create (need to be initialize) -> edit
-  EventModel eventModel = EventModel();
-  // Event 的擁有者, group or people Account。
-  // AccountModel ownerAccount = AccountModel();
-  // Event 的創建者, 只有在第一次create的時候有用。
-  AccountModel creatorAccount = AccountModel();
-  // True if ownerAccount id equals to creator Account, otherwise False
-  bool forUser = true;
-  bool get isforUser => forUser;
-  bool isLoading = false;
->>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   // SettingMode settingMode = SettingMode.create;
 //   // timeer output format
@@ -59,7 +40,6 @@ class EventSettingViewModel extends EditableCardViewModel {
 //   Color get color => Color(eventModel.ownerAccount.color);
 //   // Color get color => Colors.amber;
 
-<<<<<<< HEAD
 //   /// TODO: The list of contributor Account model whom involve in this event
 //   // List<AccountModel> get contributors => forUser
 //   //     ? [creatorAccount]
@@ -67,15 +47,6 @@ class EventSettingViewModel extends EditableCardViewModel {
 //   //         eventModel.contributorIds.contains(accountModel.id!)));
 //   // List<AccountModel> get contributorCandidate =>
 //   //     forUser ? [] : eventOwnerAccount.associateEntityAccount;
-=======
-  /// TODO: The list of contributor Account model whom involve in this event
-  List<AccountModel> get contributors => forUser
-      ? [creatorAccount]
-      : List.from(contributorCandidate.where((accountModel) =>
-          eventModel.contributorIds.contains(accountModel.id!)));
-  List<AccountModel> get contributorCandidate =>
-      forUser ? [] : eventOwnerAccount.associateEntityAccount;
->>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   // get event card Material design  color scheem seed;
 //   bool onTime() {
@@ -89,7 +60,6 @@ class EventSettingViewModel extends EditableCardViewModel {
 //     return 1 - (currentTime.inSeconds / eventTotalTime.inSeconds);
 //   }
 
-<<<<<<< HEAD
 //   // void updateContibutor(AccountModel model) {
 //   //   isContributors(model)
 //   //       ? eventModel.contributorIds.remove(model.id!)
@@ -99,17 +69,6 @@ class EventSettingViewModel extends EditableCardViewModel {
 
 //   // bool isContributors(AccountModel model) =>
 //   //     eventModel.contributorIds.contains(model.id!);
-=======
-  void updateContibutor(AccountModel model) {
-    isContributors(model)
-        ? eventModel.contributorIds.remove(model.id!)
-        : eventModel.contributorIds.add(model.id!);
-    notifyListeners();
-  }
-
-  bool isContributors(AccountModel model) =>
-      eventModel.contributorIds.contains(model.id!);
->>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   void updateTitle(String newTitle) {
 //     eventModel.title = newTitle == '' ? '事件標題' : newTitle;

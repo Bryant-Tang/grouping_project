@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:grouping_project/View/app/profile/profile_edit_view.dart';
 // import 'package:grouping_project/ViewModel/profile/profile_view_model_lib.dart';
@@ -7,14 +6,6 @@
 // import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
 // import 'package:grouping_project/model/auth/account_model.dart';
 // // import 'package:grouping_project/model/model_lib.dart';
-=======
-import 'package:flutter/material.dart';
-
-import 'package:grouping_project/model/auth/auth_model_lib.dart';
-import 'package:grouping_project/View/app/profile/profile_edit_view.dart';
-import 'package:grouping_project/ViewModel/profile/profile_view_model_lib.dart';
-import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
->>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // import 'package:qr_flutter/qr_flutter.dart';
 // import 'package:mobile_scanner/mobile_scanner.dart';

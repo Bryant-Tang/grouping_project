@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:grouping_project/View/app/Calendar/calendar_cover_page_view.dart';
@@ -10,21 +9,6 @@
 // import 'package:grouping_project/View/theme/theme_manager.dart';
 // import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
 // import 'package:provider/provider.dart';
-=======
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
-import 'package:grouping_project/View/app/Calendar/calendar_cover_page_view.dart';
-import 'package:grouping_project/View/app/helper_page/building.dart';
-import 'package:grouping_project/View/app/profile/profile_display_view.dart';
-import 'package:grouping_project/View/app/workspace/workspace_dashboard_page.dart';
-import 'package:grouping_project/View/app/workspace/workspace_create_sheet_view.dart';
-import 'package:grouping_project/View/app/workspace/workspace_switching_sheet_view.dart';
-import 'package:grouping_project/View/theme/theme_manager.dart';
-import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
-
-import 'package:provider/provider.dart';
->>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // class WorksapceBasePage extends StatefulWidget {
 //   const WorksapceBasePage({Key? key}) : super(key: key);
