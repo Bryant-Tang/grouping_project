@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:grouping_project/View/components/state.dart';
 // import 'package:grouping_project/model/auth/auth_model_lib.dart';
@@ -5,6 +6,11 @@
 // // import 'package:grouping_project/VM/view_model_lib.dart';
 // // import 'package:grouping_project/model/model_lib.dart';
 // // import 'package:grouping_project/model/register_model.dart';
+=======
+import 'package:flutter/material.dart';
+import 'package:grouping_project/View/components/state.dart';
+import 'package:grouping_project/model/auth/auth_model_lib.dart';
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // class SignUpViewModel extends ChangeNotifier {
 //   // final AuthService authService = AuthService();

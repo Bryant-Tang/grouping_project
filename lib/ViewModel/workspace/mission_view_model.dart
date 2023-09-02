@@ -1,16 +1,33 @@
+<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:grouping_project/model/auth/account_model.dart';
 // // import 'package:grouping_project/model/model_lib.dart';
 // // import 'package:grouping_project/service/service_lib.dart';
 // import 'package:grouping_project/model/workspace/workspace_model_lib.dart';
+=======
+import 'package:flutter/material.dart';
+import 'package:grouping_project/ViewModel/workspace/editable_card_view_model.dart';
+import 'package:grouping_project/model/auth/account_model.dart';
+// import 'package:grouping_project/model/model_lib.dart';
+// import 'package:grouping_project/service/service_lib.dart';
+import 'package:grouping_project/model/workspace/workspace_model_lib.dart';
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // import 'package:intl/intl.dart';
 
+<<<<<<< HEAD
 // class MissionSettingViewModel extends ChangeNotifier {
 //   MissionModel missionModel = MissionModel();
 //   AccountModel creatorAccount = AccountModel();
 //   // List<AccountModel> contributorAccountModelList = [];
 //   bool forUser = true;
+=======
+class MissionSettingViewModel extends EditableCardViewModel<MissionModel> {
+  MissionModel missionModel = MissionModel();
+  AccountModel creatorAccount = AccountModel();
+  // List<AccountModel> contributorAccountModelList = [];
+  bool forUser = true;
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   List<MissionStateModel> inProgress = [];
 //   List<MissionStateModel> pending = [];

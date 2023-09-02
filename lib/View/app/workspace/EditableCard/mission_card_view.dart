@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:grouping_project/View/components/color_tag_chip.dart';
 // import 'package:grouping_project/View/theme/theme_manager.dart';
@@ -7,6 +8,18 @@
 // import 'package:provider/provider.dart';
 // import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 // import 'package:day_night_time_picker/day_night_time_picker.dart';
+=======
+import 'package:flutter/material.dart';
+
+import 'package:grouping_project/model/auth/auth_model_lib.dart';
+import 'package:grouping_project/model/workspace/workspace_model_lib.dart';
+import 'package:grouping_project/View/components/color_tag_chip.dart';
+import 'package:grouping_project/View/components/activity_components/cards_components.dart';
+import 'package:grouping_project/View/theme/theme_manager.dart';
+import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
+
+import 'package:provider/provider.dart';
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // class MissionCardViewTemplate extends StatefulWidget {
 //   const MissionCardViewTemplate({super.key});
@@ -195,6 +208,7 @@
 //     );
 //   }
 
+<<<<<<< HEAD
 //   Widget generateContentDisplayBlock(String blockTitle, Widget child) {
 //     TextStyle blockTitleTextStyle = Theme.of(context)
 //         .textTheme
@@ -214,6 +228,27 @@
 //           ],
 //         ));
 //   }
+=======
+  // Widget generateContentDisplayBlock(String blockTitle, Widget child) {
+  //   TextStyle blockTitleTextStyle = Theme.of(context)
+  //       .textTheme
+  //       .titleMedium!
+  //       .copyWith(
+  //           fontWeight: FontWeight.bold,
+  //           fontSize: 16,
+  //           color: Theme.of(context).colorScheme.secondary);
+  //   return Padding(
+  //       padding: const EdgeInsets.symmetric(vertical: 10),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(blockTitle, style: blockTitleTextStyle),
+  //           const Divider(thickness: 3),
+  //           child
+  //         ],
+  //       ));
+  // }
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   Widget getInformationDisplay(MissionSettingViewModel model) {
 //     TextStyle titleTextStyle = Theme.of(context)
@@ -254,6 +289,7 @@
 //     );
 //   }
 
+<<<<<<< HEAD
 //   Widget getMissionDescriptionDisplay(MissionSettingViewModel model) {
 //     TextStyle textStyle = Theme.of(context)
 //         .textTheme
@@ -319,6 +355,73 @@
 //           );
 //         }));
 //   }
+=======
+  Widget getMissionDescriptionDisplay(MissionSettingViewModel model) {
+    TextStyle textStyle = Theme.of(context)
+        .textTheme
+        .titleMedium!
+        .copyWith(fontWeight: FontWeight.bold, fontSize: 16);
+    return GenerateContentDisplayBlock(
+        blockTitle: '任務介紹',
+        child: TextFormField(
+          initialValue: model.introduction == "任務介紹" ? "" : model.introduction,
+          style: textStyle,
+          onChanged: model.updateIntroduction,
+          maxLines: null,
+          decoration: const InputDecoration(
+              hintText: "任務介紹",
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 2),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  width: 0,
+                  style: BorderStyle.none,
+                ),
+              )),
+          validator: model.introductionValidator,
+        ));
+  }
+
+  // void showTimePicker(
+  //     Function callBack, BuildContext context, DateTime initialTime) {
+  //   showDialog(
+  //       context: context,
+  //       builder: ((BuildContext context) {
+  //         return AlertDialog(
+  //           title: const Text('選擇時間'),
+  //           content: SizedBox(
+  //             height: MediaQuery.of(context).size.height * 0.4,
+  //             width: MediaQuery.of(context).size.height * 0.8,
+  //             child: SfDateRangePicker(
+  //               initialSelectedDate: initialTime,
+  //               onSubmit: (value) {
+  //                 // debugPrint(value.toString());
+  //                 Navigator.pop(context);
+  //                 Navigator.of(context).push(
+  //                   showPicker(
+  //                       is24HrFormat: true,
+  //                       value: Time(
+  //                           hour: initialTime.hour, minute: initialTime.minute),
+  //                       onChange: (newTime) {
+  //                         debugPrint(value.runtimeType.toString());
+  //                         debugPrint(newTime.toString());
+  //                         callBack((value as DateTime).copyWith(
+  //                           hour: newTime.hour,
+  //                           minute: newTime.minute,
+  //                         ));
+  //                       }),
+  //                 );
+  //               },
+  //               onCancel: () {
+  //                 Navigator.pop(context);
+  //               },
+  //               showActionButtons: true,
+  //             ),
+  //           ),
+  //         );
+  //       }));
+  // }
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   Widget getStateLabelButton(
 //       Function callBack, MissionStateModel state, Color color) {
@@ -345,6 +448,7 @@
 //     );
 //   }
 
+<<<<<<< HEAD
 //   Widget getDeadlineBlock(MissionSettingViewModel model) {
 //     return generateContentDisplayBlock(
 //         '截止時間',
@@ -365,6 +469,28 @@
 //               ],
 //             )));
 //   }
+=======
+  // Widget getDeadlineBlock(MissionSettingViewModel model) {
+  //   return generateContentDisplayBlock(
+  //       '截止時間',
+  //       ElevatedButton(
+  //           onPressed: () => showTimePicker(
+  //               model.updateDeadline, context, model.missionDeadline),
+  //           style: ElevatedButton.styleFrom(
+  //             shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.circular(5),
+  //             ),
+  //           ),
+  //           child: Row(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               const Icon(Icons.access_time),
+  //               const SizedBox(width: 10),
+  //               Text(model.formattedDeadline),
+  //             ],
+  //           )));
+  // }
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   Widget getContributorButton(
 //       MissionSettingViewModel model, AccountModel account) {
@@ -414,6 +540,7 @@
 //     // debugPrint(model.contributors.length.toString());
 //   }
 
+<<<<<<< HEAD
 //   Widget getContributorBlock(MissionSettingViewModel model) {
 //     return generateContentDisplayBlock(
 //         '參與者',
@@ -501,6 +628,95 @@
 //               ),
 //             ));
 //   }
+=======
+  Widget getContributorBlock(MissionSettingViewModel model) {
+    return GenerateContentDisplayBlock(
+        blockTitle: '參與者',
+        child: MaterialButton(
+          onPressed: () async {
+            // debugPrint(model.missionModel.contributorIds.length.toString());
+            onUpdateContributor(model);
+          },
+          child: model.contributors.isEmpty
+              ? const Text('参加者はいません')
+              : Wrap(
+                children: List.generate(
+                    model.contributors.length,
+                    (index) => getContributorButton(
+                        model, model.contributors[index])),
+              ),
+        ));
+  }
+
+  Widget getStateBlock(MissionSettingViewModel model) {
+    return GenerateContentDisplayBlock(
+        blockTitle: '任務狀態',
+        child: getStateLabelButton(() => onUpdateState(model), model.missionState,
+            model.stageColorMap[model.missionState.stage]!));
+  }
+
+  void onUpdateState(MissionSettingViewModel model) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) =>
+            ChangeNotifierProvider<MissionSettingViewModel>.value(
+              value: model,
+              child: Consumer<MissionSettingViewModel>(
+                builder: (context, model, child) => SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: ListView(
+                            children: <Widget>[
+                              GenerateContentDisplayBlock(
+                                  blockTitle: '進行中 In Progress',
+                                  child: Column(
+                                      children: List.from(model.inProgress.map(
+                                          (stateLabel) => getStateLabelButton(
+                                                  () {
+                                                model.updateState(stateLabel);
+                                                Navigator.pop(context);
+                                              },
+                                                  stateLabel,
+                                                  model.stageColorMap[
+                                                      stateLabel.stage]!))))),
+                              GenerateContentDisplayBlock(
+                                  blockTitle: '待討論 Pending',
+                                  child: Column(
+                                      children: List.from(model.pending.map(
+                                          (stateLabel) => getStateLabelButton(
+                                                  () {
+                                                model.updateState(stateLabel);
+                                                Navigator.pop(context);
+                                              },
+                                                  stateLabel,
+                                                  model.stageColorMap[
+                                                      stateLabel.stage]!))))),
+                              GenerateContentDisplayBlock(
+                                blockTitle: '已結束 Close',
+                                child: Column(
+                                    children: List.from(model.close.map(
+                                        (stateLabel) => getStateLabelButton(() {
+                                              model.updateState(stateLabel);
+                                              Navigator.pop(context);
+                                            },
+                                                stateLabel,
+                                                model.stageColorMap[
+                                                    stateLabel.stage]!)))),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ));
+  }
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   void onFinish(MissionSettingViewModel model) async {
 //     if (formKey.currentState!.validate()) {
@@ -565,6 +781,7 @@
 //     }
 //   }
 
+<<<<<<< HEAD
 //   final formKey = GlobalKey<FormState>();
 //   Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
 //     const Duration(seconds: 1),
@@ -659,3 +876,105 @@
 //     );
 //   }
 // }
+=======
+  final formKey = GlobalKey<FormState>();
+  Stream<DateTime> currentTimeStream = Stream<DateTime>.periodic(
+    const Duration(seconds: 1),
+    (_) => DateTime.now(),
+  );
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeManager>(
+      builder: (context, theme, child) => Consumer<WorkspaceDashBoardViewModel>(
+        builder: (context, workspaceVM, child) =>
+            Consumer<MissionSettingViewModel>(builder: (context, model, child) {
+          // theme.updateColorSchemeSeed(model.color);
+          return StreamBuilder<DateTime>(
+            stream: currentTimeStream,
+            builder: (context, snapshot) => GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Hero(
+                tag: "${model.missionModel.id}",
+                child: Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    elevation: 2,
+                    leading: IconButton(
+                      onPressed: () {
+                        // theme.updateColorSchemeSeed(
+                        //   Color(workspaceVM.accountProfileData.color));
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.arrow_back_ios_rounded,
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                    actions: [
+                      IconButton(
+                        onPressed: () => onFinish(model),
+                        icon: Icon(Icons.check,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                      IconButton(
+                          onPressed: () => onDelete(model),
+                          icon: const Icon(Icons.delete))
+                    ],
+                  ),
+                  // display all event data
+                  body: SingleChildScrollView(
+                    child: Form(
+                      key: formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              getInformationDisplay(model),
+                              getMissionDescriptionDisplay(model),
+                              getStateBlock(model),
+                              // getDeadlineBlock(model),
+                              GetTimeBlock(callBack: model.updateDeadline, blockTitle: '截止時間', oldTime: model.missionDeadline),
+                              getContributorBlock(model),
+                              const GenerateContentDisplayBlock(blockTitle: '子任務', child: Text('沒有子任務')),
+                              const GenerateContentDisplayBlock(blockTitle: '關聯筆記', child: Text('沒有關聯筆記')),
+                              const GenerateContentDisplayBlock(blockTitle: '關聯話題', child: Text('沒有關聯話題'))
+
+                              // generateContentDisplayBlock('子任務', Text('沒有子任務')),
+                              // model.missionModel.relatedMissionIds.isEmpty
+                              //     ? const
+
+                              //     : ListView.builder(
+                              //         shrinkWrap: true,
+                              //         physics:
+                              //             const NeverScrollableScrollPhysics(),
+                              //         itemCount: model.eventModel
+                              //             .relatedMissionIds.length,
+                              //         itemBuilder: (context, index) => Text(
+                              //             model.eventModel
+                              //                 .relatedMissionIds[index]))),
+
+                              // relation note
+                              // generateContentDisplayBlock(
+                              //     '關聯筆記', const Text('沒有關聯筆記')),
+                              // relation message
+                              // generateContentDisplayBlock(
+                              //     '關聯話題', const Text('沒有關聯話題')),
+                            ]),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74

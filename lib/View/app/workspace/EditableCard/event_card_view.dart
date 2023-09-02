@@ -1,9 +1,21 @@
+<<<<<<< HEAD
 // import 'package:flutter/material.dart';
 // import 'package:grouping_project/View/components/activity_components/cards_components.dart';
 // import 'package:grouping_project/View/components/color_tag_chip.dart';
 // import 'package:grouping_project/View/theme/theme_manager.dart';
 // import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
 // import 'package:provider/provider.dart';
+=======
+import 'package:flutter/material.dart';
+
+import 'package:grouping_project/model/auth/auth_model_lib.dart';
+import 'package:grouping_project/View/components/activity_components/cards_components.dart';
+import 'package:grouping_project/View/components/color_tag_chip.dart';
+import 'package:grouping_project/View/theme/theme_manager.dart';
+import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
+
+import 'package:provider/provider.dart';
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 // class EventCardViewTemplate extends StatefulWidget {
 //   const EventCardViewTemplate({super.key});
@@ -163,6 +175,7 @@
 //     );
 //   }
 
+<<<<<<< HEAD
 //   Widget getInformationDisplay(
 //       EventSettingViewModel model) {
 //     TextStyle titleTextStyle = Theme.of(context)
@@ -203,6 +216,48 @@
 //       ],
 //     );
 //   }
+=======
+  Widget getInformationDisplay(
+      EventSettingViewModel model) {
+    TextStyle titleTextStyle = Theme.of(context)
+        .textTheme
+        .titleMedium!
+        .copyWith(fontWeight: FontWeight.bold, fontSize: 28);
+    Widget eventOwnerLabel = Row(
+      children: [
+        ColorTagChip(
+            tagString: "事件 - ${model.eventModel.ownerAccount.nickname} 的工作區",
+            // tagString: "NoName 的工作區",
+            color: Theme.of(context).colorScheme.primary,
+            fontSize: 14),
+      ],
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        eventOwnerLabel,
+        TextFormField(
+          initialValue: model.title == "事件標題" ? "" : model.title,
+          style: titleTextStyle,
+          onChanged: model.updateTitle,
+          decoration: const InputDecoration(
+              hintText: "事件標題",
+              isDense: true,
+              contentPadding: EdgeInsets.symmetric(vertical: 2),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  width: 0,
+                  style: BorderStyle.none,
+                ),
+              )),
+          validator: model.titleValidator,
+        ),
+        _getDateTime(model, context)
+      ],
+    );
+  }
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   Widget getEventDescriptionDisplay(
 //       EventSettingViewModel model) {
@@ -231,6 +286,7 @@
 //         ));
 //   }
 
+<<<<<<< HEAD
 //   // Widget getContributorButton(
 //   //     EventSettingViewModel model, AccountModel account) {
 //   //   return Padding(
@@ -296,6 +352,73 @@
 //       //       ),
 //     ));
 //   }
+=======
+  Widget getContributorButton(
+      EventSettingViewModel model, AccountModel account) {
+    return Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: RawChip(
+            onPressed: () => model.updateContibutor(account),
+            // onDeleted: () => model.updateContibutor(account),
+            // deleteIcon: model.isContributors(account) ? const Icon(Icons.delete) : const Icon(Icons.add),
+            selected: model.isContributors(account),
+            elevation: 3,
+            label: Text(account.nickname),
+            avatar: CircleAvatar(
+                backgroundImage: account.photo.isEmpty
+                    ? Image.asset('assets/images/profile_male.png').image
+                    : Image.memory(account.photo).image)));
+  }
+
+  void _onUpdateContributor(EventSettingViewModel model) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) =>
+            ChangeNotifierProvider<EventSettingViewModel>.value(
+              value: model,
+              child: Consumer<EventSettingViewModel>(
+                builder: (context, model, child) => SafeArea(
+                  child: Column(
+                    children: [
+                      Expanded(
+                          child: model.contributorCandidate.isEmpty
+                              ? const Center(child: Text('無其他成員'))
+                              : Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Wrap(
+                                      children: List.generate(
+                                          model.contributorCandidate.length,
+                                          (index) => getContributorButton(
+                                              model,
+                                              model.contributorCandidate[
+                                                  index]))),
+                                )),
+                    ],
+                  ),
+                ),
+              ),
+            ));
+    // debugPrint(model.contributors.length.toString());
+  }
+
+  Widget getContributorBlock(
+      EventSettingViewModel model) {
+        return GenerateContentDisplayBlock(blockTitle: '參與者', child: MaterialButton(
+      onPressed: () async {
+        // debugPrint(model.eventModel.contributorIds.length.toString());
+        _onUpdateContributor(model);
+      },
+      child: model.contributors.isEmpty
+          ? const Text('沒有參與者')
+          : Wrap(
+              children: List.generate(
+                  model.contributors.length,
+                  (index) => getContributorButton(
+                      model, model.contributors[index])),
+            ),
+    ));
+  }
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
 
 //   void onFinish(EventSettingViewModel model) async {
 //     if (formKey.currentState!.validate()) {
@@ -366,6 +489,7 @@
 //     (_) => DateTime.now(),
 //   );
 
+<<<<<<< HEAD
 //   @override
 //   Widget build(BuildContext context) {
 //     return Consumer<ThemeManager>(
@@ -449,3 +573,91 @@
 //     );
 //   }
 // }
+=======
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeManager>(
+      builder: (context, theme, child) => Consumer<WorkspaceDashBoardViewModel>(
+        builder: (context, workspaceVM, child) =>
+            Consumer<EventSettingViewModel>(builder: (context, model, child) {
+          return StreamBuilder<DateTime>(
+            stream: currentTimeStream,
+            builder: (context, snapshot) => GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Hero(
+                tag: "${model.eventModel.id}",
+                child: Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    elevation: 2,
+                    leading: IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.arrow_back_ios_rounded,
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                    actions: [
+                      IconButton(
+                        onPressed: () => onFinish(model),
+                        icon: Icon(Icons.check,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                      IconButton(
+                          onPressed: () => onDelete(model),
+                          icon: const Icon(Icons.delete))
+                    ],
+                  ),
+                  // display all event data
+                  body: SingleChildScrollView(
+                    child: Form(
+                      key: formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              getInformationDisplay(model),
+                              getEventDescriptionDisplay(model),
+                              GetTimeBlock(
+                                  callBack: model.updateStartTime,
+                                  blockTitle: '開始時間',
+                                  oldTime: model.startTime),
+                              GetTimeBlock(
+                                  callBack: model.updateEndTime,
+                                  blockTitle: '結束時間',
+                                  oldTime: model.endTime),
+                              // getStartTimeBlock(model),
+                              // getEndTimeBlock(model),
+                              getContributorBlock(model),
+                              const GenerateContentDisplayBlock(blockTitle: '子任務', child: Text('沒有仔任務')),
+                              const GenerateContentDisplayBlock(blockTitle: '關聯筆記', child: Text('沒有關聯筆記')),
+                              const GenerateContentDisplayBlock(blockTitle: '關聯話題', child: Text('沒有關聯話題'))
+                              // generateContentDisplayBlock(
+                              //     '子任務', const Text('沒有子任務')),
+                              // // relation note
+                              // generateContentDisplayBlock(
+                              //     '關聯筆記', const Text('沒有關聯筆記')),
+                              // // relation message
+                              // generateContentDisplayBlock(
+                              //     '關聯話題', const Text('沒有關聯話題')),
+                            ]),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+>>>>>>> 4b1202b8e0afcc7bc8d42fc957fdf25c48c21b74
