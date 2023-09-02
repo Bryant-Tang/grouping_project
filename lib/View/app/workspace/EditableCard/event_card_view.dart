@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+
+import 'package:grouping_project/model/auth/auth_model_lib.dart';
 import 'package:grouping_project/View/components/activity_components/cards_components.dart';
 import 'package:grouping_project/View/components/color_tag_chip.dart';
 import 'package:grouping_project/View/theme/theme_manager.dart';
 import 'package:grouping_project/ViewModel/workspace/workspace_view_model_lib.dart';
+
 import 'package:provider/provider.dart';
 
 class EventCardViewTemplate extends StatefulWidget {
@@ -172,8 +175,8 @@ class _EditEventCardViewState extends State<EventEditCardView> {
     Widget eventOwnerLabel = Row(
       children: [
         ColorTagChip(
-            // tagString: "事件 - ${model.eventModel.ownerAccount.nickname} 的工作區",
-            tagString: "NoName 的工作區",
+            tagString: "事件 - ${model.eventModel.ownerAccount.nickname} 的工作區",
+            // tagString: "NoName 的工作區",
             color: Theme.of(context).colorScheme.primary,
             fontSize: 14),
       ],
@@ -231,24 +234,24 @@ class _EditEventCardViewState extends State<EventEditCardView> {
         ));
   }
 
-  // Widget getContributorButton(
-  //     EventSettingViewModel model, AccountModel account) {
-  //   return Padding(
-  //       padding: const EdgeInsets.all(6.0),
-  //       child: RawChip(
-  //           onPressed: () => model.updateContibutor(account),
-  //           // onDeleted: () => model.updateContibutor(account),
-  //           // deleteIcon: model.isContributors(account) ? const Icon(Icons.delete) : const Icon(Icons.add),
-  //           selected: model.isContributors(account),
-  //           elevation: 3,
-  //           label: Text(account.nickname),
-  //           avatar: CircleAvatar(
-  //               backgroundImage: account.photo.isEmpty
-  //                   ? Image.asset('assets/images/profile_male.png').image
-  //                   : Image.memory(account.photo).image)));
-  // }
+  Widget getContributorButton(
+      EventSettingViewModel model, AccountModel account) {
+    return Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: RawChip(
+            onPressed: () => model.updateContibutor(account),
+            // onDeleted: () => model.updateContibutor(account),
+            // deleteIcon: model.isContributors(account) ? const Icon(Icons.delete) : const Icon(Icons.add),
+            selected: model.isContributors(account),
+            elevation: 3,
+            label: Text(account.nickname),
+            avatar: CircleAvatar(
+                backgroundImage: account.photo.isEmpty
+                    ? Image.asset('assets/images/profile_male.png').image
+                    : Image.memory(account.photo).image)));
+  }
 
-  void _onUpdateContributor(EventSettingViewModel model, BuildContext context) {
+  void _onUpdateContributor(EventSettingViewModel model) {
     showModalBottomSheet(
         context: context,
         builder: (context) =>
@@ -258,19 +261,19 @@ class _EditEventCardViewState extends State<EventEditCardView> {
                 builder: (context, model, child) => SafeArea(
                   child: Column(
                     children: [
-                      // Expanded(
-                      //     child: model.contributorCandidate.isEmpty
-                      //         ? const Center(child: Text('無其他成員'))
-                      //         : Padding(
-                      //             padding: const EdgeInsets.all(20.0),
-                      //             child: Wrap(
-                      //                 children: List.generate(
-                      //                     model.contributorCandidate.length,
-                      //                     (index) => getContributorButton(
-                      //                         model,
-                      //                         model.contributorCandidate[
-                      //                             index]))),
-                      //           )),
+                      Expanded(
+                          child: model.contributorCandidate.isEmpty
+                              ? const Center(child: Text('無其他成員'))
+                              : Padding(
+                                  padding: const EdgeInsets.all(20.0),
+                                  child: Wrap(
+                                      children: List.generate(
+                                          model.contributorCandidate.length,
+                                          (index) => getContributorButton(
+                                              model,
+                                              model.contributorCandidate[
+                                                  index]))),
+                                )),
                     ],
                   ),
                 ),
@@ -284,16 +287,16 @@ class _EditEventCardViewState extends State<EventEditCardView> {
         return GenerateContentDisplayBlock(blockTitle: '參與者', child: MaterialButton(
       onPressed: () async {
         // debugPrint(model.eventModel.contributorIds.length.toString());
-        _onUpdateContributor(model, context);
+        _onUpdateContributor(model);
       },
-      // child: model.contributors.isEmpty
-      //     ? const Text('沒有參與者')
-      //     : Wrap(
-      //         children: List.generate(
-      //             model.contributors.length,
-      //             (index) => getContributorButton(
-      //                 model, model.contributors[index])),
-      //       ),
+      child: model.contributors.isEmpty
+          ? const Text('沒有參與者')
+          : Wrap(
+              children: List.generate(
+                  model.contributors.length,
+                  (index) => getContributorButton(
+                      model, model.contributors[index])),
+            ),
     ));
   }
 
@@ -428,6 +431,9 @@ class _EditEventCardViewState extends State<EventEditCardView> {
                               // getStartTimeBlock(model),
                               // getEndTimeBlock(model),
                               getContributorBlock(model),
+                              const GenerateContentDisplayBlock(blockTitle: '子任務', child: Text('沒有仔任務')),
+                              const GenerateContentDisplayBlock(blockTitle: '關聯筆記', child: Text('沒有關聯筆記')),
+                              const GenerateContentDisplayBlock(blockTitle: '關聯話題', child: Text('沒有關聯話題'))
                               // generateContentDisplayBlock(
                               //     '子任務', const Text('沒有子任務')),
                               // // relation note

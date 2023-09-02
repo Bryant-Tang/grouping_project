@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/View/components/state.dart';
 import 'package:grouping_project/model/auth/auth_model_lib.dart';
-// import 'package:grouping_project/VM/state.dart';
-// import 'package:grouping_project/VM/view_model_lib.dart';
-// import 'package:grouping_project/model/model_lib.dart';
-// import 'package:grouping_project/model/register_model.dart';
 
 class SignUpViewModel extends ChangeNotifier {
   // final AuthService authService = AuthService();

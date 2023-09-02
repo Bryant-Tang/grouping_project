@@ -6,7 +6,7 @@ import 'package:grouping_project/model/workspace/workspace_model_lib.dart';
 import 'package:intl/intl.dart';
 import 'package:grouping_project/ViewModel/workspace/editable_card_view_model.dart';
 
-class EventSettingViewModel extends ChangeNotifier implements EditableCardViewModel {
+class EventSettingViewModel extends EditableCardViewModel {
   // The event model
   // In display mode, call initialzeEventDisplay and pass eventModel to this VM
   // In edit mode, call initialzeNewEvent to create new event model
@@ -41,12 +41,12 @@ class EventSettingViewModel extends ChangeNotifier implements EditableCardViewMo
   // Color get color => Colors.amber;
 
   /// TODO: The list of contributor Account model whom involve in this event
-  // List<AccountModel> get contributors => forUser
-  //     ? [creatorAccount]
-  //     : List.from(contributorCandidate.where((accountModel) =>
-  //         eventModel.contributorIds.contains(accountModel.id!)));
-  // List<AccountModel> get contributorCandidate =>
-  //     forUser ? [] : eventOwnerAccount.associateEntityAccount;
+  List<AccountModel> get contributors => forUser
+      ? [creatorAccount]
+      : List.from(contributorCandidate.where((accountModel) =>
+          eventModel.contributorIds.contains(accountModel.id!)));
+  List<AccountModel> get contributorCandidate =>
+      forUser ? [] : eventOwnerAccount.associateEntityAccount;
 
   // get event card Material design  color scheem seed;
   bool onTime() {
@@ -60,15 +60,15 @@ class EventSettingViewModel extends ChangeNotifier implements EditableCardViewMo
     return 1 - (currentTime.inSeconds / eventTotalTime.inSeconds);
   }
 
-  // void updateContibutor(AccountModel model) {
-  //   isContributors(model)
-  //       ? eventModel.contributorIds.remove(model.id!)
-  //       : eventModel.contributorIds.add(model.id!);
-  //   notifyListeners();
-  // }
+  void updateContibutor(AccountModel model) {
+    isContributors(model)
+        ? eventModel.contributorIds.remove(model.id!)
+        : eventModel.contributorIds.add(model.id!);
+    notifyListeners();
+  }
 
-  // bool isContributors(AccountModel model) =>
-  //     eventModel.contributorIds.contains(model.id!);
+  bool isContributors(AccountModel model) =>
+      eventModel.contributorIds.contains(model.id!);
 
   void updateTitle(String newTitle) {
     eventModel.title = newTitle == '' ? '事件標題' : newTitle;

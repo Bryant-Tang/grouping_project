@@ -2,7 +2,7 @@
 // show a building page when this page has not been implemented yet
 // image file name : technical_support.png
 import "package:flutter/material.dart";
-import "package:grouping_project/View/components/auth_view/headline_with_content.dart";
+import "package:grouping_project/View/components/auth_view/auth_view_components_lib.dart";
 
 class BuildingPage extends StatelessWidget {
   final String errorMessage;

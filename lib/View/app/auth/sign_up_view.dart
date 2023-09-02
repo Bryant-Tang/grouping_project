@@ -7,6 +7,7 @@
 // import 'package:grouping_project/View/profile/profile_edit_view.dart';
 
 import 'package:flutter/material.dart';
+
 import 'package:grouping_project/View/app/helper_page/building.dart';
 import 'package:grouping_project/View/app/profile/profile_edit_view.dart';
 import 'package:grouping_project/View/app/workspace/workspace_view.dart';
@@ -16,6 +17,7 @@ import 'package:grouping_project/View/components/state.dart';
 import 'package:grouping_project/ViewModel/auth/auth_view_model_lib.dart';
 import 'package:grouping_project/ViewModel/profile/profile_view_model_lib.dart';
 import 'package:grouping_project/model/auth/auth_model_lib.dart';
+
 import 'package:provider/provider.dart';
 
 class SignUpPage extends StatefulWidget {

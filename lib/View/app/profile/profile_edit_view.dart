@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:grouping_project/View/components/auth_view/headline_with_content.dart';
-import 'package:grouping_project/View/components/auth_view/navigation_toggle_bar.dart';
-import 'package:grouping_project/View/components/state.dart';
-// import 'package:grouping_project/ViewModel/profile/profile_edit_view_model.dart';
-import 'package:grouping_project/ViewModel/profile/profile_view_model_lib.dart';
-// import 'package:grouping_project/components/component_lib.dart';
+
 import 'package:grouping_project/model/auth/account_model.dart';
+
+import 'package:grouping_project/View/components/auth_view/auth_view_components_lib.dart';
+import 'package:grouping_project/View/components/state.dart';
+import 'package:grouping_project/ViewModel/profile/profile_view_model_lib.dart';
+
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
