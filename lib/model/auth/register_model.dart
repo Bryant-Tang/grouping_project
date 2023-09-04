@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:grouping_project/View/components/state.dart';
 import 'package:grouping_project/model/auth/auth_model_lib.dart';
+import 'package:grouping_project/service/auth/auth_service.dart';
 
 class RegisterModel {
   String password = "";
@@ -11,9 +12,9 @@ class RegisterModel {
   bool isPasswordConfirmValid = false;
   bool isUserNameValid = false;
   AccountModel get tempProfile => AccountModel(
-    nickname: userName,
-    email: email,
-  );
+        nickname: userName,
+        email: email,
+      );
   void updateEmail(String value) {
     email = value;
   }
@@ -46,6 +47,9 @@ class RegisterModel {
       // final userId = await db.createUserAccount();
       // debugPrint(userId);
       // await db.setAccount(account: tempProfile.copyWith(accountId: userId));
+      AuthService authService = AuthService();
+      authService.signUp(
+          account: email, password: password, username: userName);
       debugPrint('upload successfully');
       return RegisterState.success;
     } catch (error) {
