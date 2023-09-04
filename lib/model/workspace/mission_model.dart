@@ -1,8 +1,8 @@
 // ignore_for_file: unnecessary_this
-import 'package:grouping_project/model/editable_card_model.dart';
+import 'package:grouping_project/service/exception.dart';
+import 'package:grouping_project/model/auth/account_model.dart';
+import 'package:grouping_project/model/workspace/editable_card_model.dart';
 
-import 'data_model.dart';
-// import 'account_model.dart';
 import 'mission_state_model.dart';
 // import 'package:grouping_project/exception.dart';
 
@@ -43,6 +43,7 @@ class MissionModel extends EditableCardModel {
           introduction: 'unknown',
           tags: [],
           notifications: [],
+          ownerAccount: AccountModel.defaultAccount,
             id: 'default_mission',
             databasePath: 'mission',
             storageRequired: false);
@@ -84,6 +85,7 @@ class MissionModel extends EditableCardModel {
           introduction: introduction ?? defaultMission.introduction,
           tags: tags ?? List.from(defaultMission.tags),
           notifications: notifications ?? List.from(defaultMission.notifications),
+          ownerAccount: defaultMission.ownerAccount,
           databasePath: defaultMission.databasePath,
           storageRequired: defaultMission.storageRequired,
           // setOwnerRequired: true
@@ -162,21 +164,21 @@ class MissionModel extends EditableCardModel {
   }
 
   // /// set the data about owner for this instance
-  // void setOwner({required AccountModel ownerAccount}) {
-  //   this.ownerAccount = ownerAccount;
-  // }
+  void setOwner({required AccountModel ownerAccount}) {
+    this.ownerAccount = ownerAccount;
+  }
 
-  // /// ### This is the perfered method to change state of mission
-  // /// - please make sure the [stateModel] is a correct model in database
-  // void setStateByStateModel(MissionStateModel stateModel) {
-  //   if (stateModel.id != null) {
-  //     stateId = stateModel.id!;
-  //     state = stateModel;
-  //   } else {
-  //     throw GroupingProjectException(
-  //         message: 'This state model is not from the database.',
-  //         code: GroupingProjectExceptionCode.wrongParameter,
-  //         stackTrace: StackTrace.current);
-  //   }
-  // }
+  /// ### This is the perfered method to change state of mission
+  /// - please make sure the [stateModel] is a correct model in database
+  void setStateByStateModel(MissionStateModel stateModel) {
+    if (stateModel.id != null) {
+      stateId = stateModel.id!;
+      state = stateModel;
+    } else {
+      throw GroupingProjectException(
+          message: 'This state model is not from the database.',
+          code: GroupingProjectExceptionCode.wrongParameter,
+          stackTrace: StackTrace.current);
+    }
+  }
 }
