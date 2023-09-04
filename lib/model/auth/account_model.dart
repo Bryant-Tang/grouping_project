@@ -121,7 +121,7 @@ class AccountModel extends BaseDataModel<AccountModel>
   }
 
   /// convert `List<AccountTag>` to `List<String>` with `AccountTag.tag`
-  List<String> _toFirestoreTag(List<AccountTag> accountTagList) {
+  List<String> _toBackendTag(List<AccountTag> accountTagList) {
     List<String> processList = [];
     for (AccountTag accountTag in accountTagList) {
       processList.add(accountTag.tag);
@@ -130,7 +130,7 @@ class AccountModel extends BaseDataModel<AccountModel>
   }
 
   /// convert `List<AccountTag>` to `List<String>` with `AccountTag.content`
-  List<String> _toFirestoreTagContent(List<AccountTag> accountTagList) {
+  List<String> _toBackendTagContent(List<AccountTag> accountTagList) {
     List<String> processList = [];
     for (AccountTag accountTag in accountTagList) {
       processList.add(accountTag.content);
@@ -139,7 +139,7 @@ class AccountModel extends BaseDataModel<AccountModel>
   }
 
   /// convert two `List<String>` to `List<AccountTag>`
-  List<AccountTag> _fromFirestoreTags(
+  List<AccountTag> _fromBackendTags(
       List<String> tagList, List<String> tagContentList) {
     List<AccountTag> processList = [];
     for (var i = 0; i < tagList.length; i++) {
@@ -151,53 +151,87 @@ class AccountModel extends BaseDataModel<AccountModel>
     return processList;
   }
 
+  @override
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'id': this.id,
+    'name': this.name,
+    'nickname': this.nickname,
+    'email': this.email,
+    'color': this.color,
+    'slogan': this.slogan,
+    'introduction': this.introduction,
+    'tags': _toBackendTag(this.tags),
+    'tag_contents': _toBackendTagContent(this.tags),
+    'photo_id': this.photoId,
+    'associate_entity_id': this.associateEntityId,
+  };
+
+  @override
+  AccountModel fromJson({required String id, required Map<String, dynamic> data}) => AccountModel(
+    accountId: id,
+    name: data['name'] as String,
+    nickname: data['nickname'] as String,
+    email: data['email'] as String,
+    color: data['color'] as int,
+    slogan: data['slogan'] as String,
+    introduction: data['introduction'] as String,
+    tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
+        ? _fromBackendTags(
+            List.from(data['tags']), List.from(data['tag_contents']))
+        : null,
+    photoId: data['photo_id'],
+    associateEntityId: data['associate_entity_id'] is Iterable
+        ? List.from(data['associate_entity_id'])
+        : null
+  );
+
   /// ### convert data from this instance to the type accepted for firestore
   /// * ***DO NOT*** use this method in frontend
-  @override
-  Map<String, dynamic> toFirestore() {
-    return {
-      if (name != defaultAccount.name) 'name': name,
-      if (email != defaultAccount.email) 'email': email,
-      if (color != defaultAccount.color) 'color': color,
-      if (nickname != defaultAccount.nickname) 'nickname': nickname,
-      if (slogan != defaultAccount.slogan) 'slogan': slogan,
-      if (introduction != defaultAccount.introduction)
-        'introduction': introduction,
-      if (tags != defaultAccount.tags) 'tags': _toFirestoreTag(tags),
-      if (tags != defaultAccount.tags)
-        'tag_contents': _toFirestoreTagContent(tags),
-      if (photoId != defaultAccount.photoId) 'photo_id': photoId,
-      if (associateEntityId != defaultAccount.associateEntityId)
-        'associate_entity_id': associateEntityId,
-    };
-  }
+  // @override
+  // Map<String, dynamic> toFirestore() {
+  //   return {
+  //     if (name != defaultAccount.name) 'name': name,
+  //     if (email != defaultAccount.email) 'email': email,
+  //     if (color != defaultAccount.color) 'color': color,
+  //     if (nickname != defaultAccount.nickname) 'nickname': nickname,
+  //     if (slogan != defaultAccount.slogan) 'slogan': slogan,
+  //     if (introduction != defaultAccount.introduction)
+  //       'introduction': introduction,
+  //     if (tags != defaultAccount.tags) 'tags': _toFirestoreTag(tags),
+  //     if (tags != defaultAccount.tags)
+  //       'tag_contents': _toFirestoreTagContent(tags),
+  //     if (photoId != defaultAccount.photoId) 'photo_id': photoId,
+  //     if (associateEntityId != defaultAccount.associateEntityId)
+  //       'associate_entity_id': associateEntityId,
+  //   };
+  // }
 
   /// ### return an instance with data from firestore
   /// * also seting attribute about owner if given
   /// * ***DO NOT*** use this method in frontend
   /// [id] : the account id of this account
-  @override
-  AccountModel fromFirestore(
-      {String? uid, required String id, required Map<String, dynamic> data}) {
-    AccountModel processData = AccountModel(
-        accountId: id,
-        name: data['name'],
-        email: data['email'],
-        color: data['color'],
-        nickname: data['nickname'],
-        slogan: data['slogan'],
-        introduction: data['introduction'],
-        tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
-            ? _fromFirestoreTags(
-                List.from(data['tags']), List.from(data['tag_contents']))
-            : null,
-        photoId: data['photo_id'],
-        associateEntityId: data['associate_entity_id'] is Iterable
-            ? List.from(data['associate_entity_id'])
-            : null);
+  // @override
+  // AccountModel fromFirestore(
+  //     {String? uid, required String id, required Map<String, dynamic> data}) {
+  //   AccountModel processData = AccountModel(
+  //       accountId: id,
+  //       name: data['name'],
+  //       email: data['email'],
+  //       color: data['color'],
+  //       nickname: data['nickname'],
+  //       slogan: data['slogan'],
+  //       introduction: data['introduction'],
+  //       tags: (data['tags'] is Iterable) && (data['tag_contents'] is Iterable)
+  //           ? _fromFirestoreTags(
+  //               List.from(data['tags']), List.from(data['tag_contents']))
+  //           : null,
+  //       photoId: data['photo_id'],
+  //       associateEntityId: data['associate_entity_id'] is Iterable
+  //           ? List.from(data['associate_entity_id'])
+  //           : null);
 
-    return processData;
-  }
+  //   return processData;
+  // }
 
   /// ### collect the data in this instance which need to upload to storage
   /// * ***DO NOT*** use this method in frontend
@@ -214,16 +248,16 @@ class AccountModel extends BaseDataModel<AccountModel>
   }
 
   /// ### add an associate entity id to this account
-  void addEntity(String id) {
-    if (associateEntityId.contains(id) == false) {
-      associateEntityId.add(id);
-    }
-  }
+  // void addEntity(String id) {
+  //   if (associateEntityId.contains(id) == false) {
+  //     associateEntityId.add(id);
+  //   }
+  // }
 
   /// ### remove an associate entity id to this account
-  void removeEntity(String id) {
-    if (associateEntityId.contains(id) == true) {
-      associateEntityId.remove(id);
-    }
-  }
+  // void removeEntity(String id) {
+  //   if (associateEntityId.contains(id) == true) {
+  //     associateEntityId.remove(id);
+  //   }
+  // }
 }

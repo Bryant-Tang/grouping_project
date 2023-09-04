@@ -56,27 +56,41 @@ class MissionStateModel extends BaseDataModel<MissionStateModel> {
           // setOwnerRequired: false
         );
 
+  @override
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'id': this.id,
+    'stage': this.stage.label,
+    'state_name': this.stateName,
+  };
+
+  @override
+  MissionStateModel fromJson({required String id, required Map<String, dynamic> data}) => MissionStateModel(
+    id: id,
+    stage: MissionStage.fromLabel(data['stage']),
+    stateName: data['stateName'],
+  );
+
   /// ### convert data from this instance to the type accepted for firestore
   /// * ***DO NOT*** use this method in frontend
-  @override
-  Map<String, dynamic> toFirestore() {
-    return {
-      if (this != defaultUnknownState) 'stage': stage.label,
-      if (this != defaultUnknownState) 'state_name': stateName,
-    };
-  }
+  // @override
+  // Map<String, dynamic> toFirestore() {
+  //   return {
+  //     if (this != defaultUnknownState) 'stage': stage.label,
+  //     if (this != defaultUnknownState) 'state_name': stateName,
+  //   };
+  // }
 
   /// ### return an instance with data from firestore
   /// * also seting attribute about owner if given
   /// * ***DO NOT*** use this method in frontend
-  @override
-  MissionStateModel fromFirestore(
-      {required String id, required Map<String, dynamic> data}) {
-    return MissionStateModel(
-      id: id,
-      stage: MissionStage.fromLabel(data['stage']),
-      // stage: stringToStage(data['stage']),
-      stateName: data['state_name'],
-    );
-  }
+  // @override
+  // MissionStateModel fromFirestore(
+  //     {required String id, required Map<String, dynamic> data}) {
+  //   return MissionStateModel(
+  //     id: id,
+  //     stage: MissionStage.fromLabel(data['stage']),
+  //     // stage: stringToStage(data['stage']),
+  //     stateName: data['state_name'],
+  //   );
+  // }
 }
