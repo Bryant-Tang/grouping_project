@@ -109,59 +109,88 @@ class MissionModel extends EditableCardModel {
     return processList;
   }
 
+  @override
+  MissionModel fromJson({required String id, required Map<String, dynamic> data}) => MissionModel(
+    id: id,
+    title: data['title'] as String,
+    introduction: data['introduction'] as String,
+    deadline: data['deadline'] as DateTime,
+    state: data['state'] as MissionStateModel,
+    stateId: data['stateId'] as String,
+    contributorIds: data['contributorIds'] as List<String>,
+    tags: data['tags'] as List<String>,
+    parentMissionIds: data['parentMissionIds'] as List<String>,
+    childMissionIds: data['childMissionIds'] as List<String>,
+    notifications: data['notifications'] as List<DateTime>);
+
+  @override
+  Map<String, dynamic> toJson() => <String, dynamic>{
+    'id': this.id,
+    'title': this.title,
+    'introduction': this.introduction,
+    'deadline': this.deadline,
+    'state': this.state,
+    'stateId': this.stateId,
+    'contributorIds': this.contributorIds,
+    'tags': this.tags,
+    'parentMissionIds': this.parentMissionIds,
+    'childMissionIds': this.childMissionIds,
+    'notifications': this.notifications
+  };
+
   /// ### convert data from this instance to the type accepted for firestore
   /// * ***DO NOT*** use this method in frontend
-  @override
-  Map<String, dynamic> toFirestore() {
-    return {
-      if (title != defaultMission.title) 'title': title,
-      if (deadline != defaultMission.deadline)
-        'deadline': Timestamp.fromDate(deadline),
-      if (contributorIds != defaultMission.contributorIds)
-        'contributor_ids': contributorIds,
-      if (introduction != defaultMission.introduction)
-        'introduction': introduction,
-      if (stateId != defaultMission.stateId) 'state_model_id': stateId,
-      if (tags != defaultMission.tags) 'tags': tags,
-      if (parentMissionIds != defaultMission.parentMissionIds)
-        'parent_mission_ids': parentMissionIds,
-      if (childMissionIds != defaultMission.childMissionIds)
-        'child_mission_ids': childMissionIds,
-      if (notifications != defaultMission.notifications)
-        'notifications': _toFirestoreTimeList(notifications),
-    };
-  }
+  // @override
+  // Map<String, dynamic> toFirestore() {
+  //   return {
+  //     if (title != defaultMission.title) 'title': title,
+  //     if (deadline != defaultMission.deadline)
+  //       'deadline': Timestamp.fromDate(deadline),
+  //     if (contributorIds != defaultMission.contributorIds)
+  //       'contributor_ids': contributorIds,
+  //     if (introduction != defaultMission.introduction)
+  //       'introduction': introduction,
+  //     if (stateId != defaultMission.stateId) 'state_model_id': stateId,
+  //     if (tags != defaultMission.tags) 'tags': tags,
+  //     if (parentMissionIds != defaultMission.parentMissionIds)
+  //       'parent_mission_ids': parentMissionIds,
+  //     if (childMissionIds != defaultMission.childMissionIds)
+  //       'child_mission_ids': childMissionIds,
+  //     if (notifications != defaultMission.notifications)
+  //       'notifications': _toFirestoreTimeList(notifications),
+  //   };
+  // }
 
   /// ### return an instance with data from firestore
   /// * also seting attribute about owner if given
   /// * ***DO NOT*** use this method in frontend
-  @override
-  MissionModel fromFirestore(
-      {required String id, required Map<String, dynamic> data}) {
-    MissionModel processData = MissionModel(
-      id: id,
-      title: data['title'],
-      deadline: data['deadline'] != null
-          ? (data['deadline'] as Timestamp).toDate()
-          : null,
-      contributorIds: data['contributor_ids'] is Iterable
-          ? List.from(data['contributor_ids'])
-          : null,
-      introduction: data['introduction'],
-      stateId: data['state_model_id'],
-      tags: data['tags'] is Iterable ? List.from(data['tags']) : null,
-      parentMissionIds: data['parent_mission_ids'] is Iterable
-          ? List.from(data['parent_mission_ids'])
-          : null,
-      childMissionIds: data['child_mission_ids'] is Iterable
-          ? List.from(data['child_mission_ids'])
-          : null,
-      notifications: data['notifications'] is Iterable
-          ? _fromFirestoreTimeList(List.from(data['notifications']))
-          : null,
-    );
-    return processData;
-  }
+  // @override
+  // MissionModel fromFirestore(
+  //     {required String id, required Map<String, dynamic> data}) {
+  //   MissionModel processData = MissionModel(
+  //     id: id,
+  //     title: data['title'],
+  //     deadline: data['deadline'] != null
+  //         ? (data['deadline'] as Timestamp).toDate()
+  //         : null,
+  //     contributorIds: data['contributor_ids'] is Iterable
+  //         ? List.from(data['contributor_ids'])
+  //         : null,
+  //     introduction: data['introduction'],
+  //     stateId: data['state_model_id'],
+  //     tags: data['tags'] is Iterable ? List.from(data['tags']) : null,
+  //     parentMissionIds: data['parent_mission_ids'] is Iterable
+  //         ? List.from(data['parent_mission_ids'])
+  //         : null,
+  //     childMissionIds: data['child_mission_ids'] is Iterable
+  //         ? List.from(data['child_mission_ids'])
+  //         : null,
+  //     notifications: data['notifications'] is Iterable
+  //         ? _fromFirestoreTimeList(List.from(data['notifications']))
+  //         : null,
+  //   );
+  //   return processData;
+  // }
 
   // /// set the data about owner for this instance
   void setOwner({required AccountModel ownerAccount}) {
