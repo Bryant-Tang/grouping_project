@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/View/components/state.dart';
+import 'package:grouping_project/exceptions/auth_service_exceptions.dart';
 import 'package:grouping_project/service/auth/auth_service.dart';
 // import 'package:grouping_project/VM/state.dart';
 
@@ -31,13 +32,13 @@ class LoginModel {
 
       return LoginState.loginSuccess;
     } catch (error) {
-      // debugPrint(error.toString());
-      switch ((error as FirebaseAuthException).code) {
-        case 'wrong-password':
-          debugPrint('user-not-found');
+      // debugPrint('In func. passwordLogin: $error');
+      switch ((error as AuthServiceException).code) {
+        case 'wrong_password':
+          debugPrint('wrong_password');
           return LoginState.wrongPassword;
-        case 'user-not-found':
-          debugPrint('user-not-found');
+        case 'user_does_not_exist':
+          debugPrint('user_does_not_exist');
           return LoginState.userNotFound;
         default:
           debugPrint(error.toString());

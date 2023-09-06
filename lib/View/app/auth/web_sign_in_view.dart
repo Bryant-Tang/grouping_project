@@ -97,6 +97,7 @@ class _WebSignInViewState extends State<WebSignInView> {
                 child: ElevatedButton(
                     onPressed: () {
                       if (textFormKey.currentState!.validate()) {
+                        signInManager.register();
                         debugPrint("註冊成功");
                         Navigator.push(
                             context,

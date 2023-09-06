@@ -25,9 +25,10 @@ class AuthService {
           provider: 'account',
           account: account,
           password: password,
-          username: username);
+          username: username,
+          register: true);
     } catch (e) {
-      debugPrint(e.toString());
+      // debugPrint("In func. signUp: $e");
       rethrow;
     }
   }
@@ -40,7 +41,7 @@ class AuthService {
           provider: 'account',
           account: account,
           password: password,
-          register: true);
+          register: false);
     } catch (e) {
       debugPrint(e.toString());
       rethrow;
@@ -87,7 +88,7 @@ class PassToBackEnd {
       String? password,
       bool register = false,
       String? username}) async {
-    dynamic body;
+    Object body = {};
     try {
       Uri url;
       String stringUrl;
@@ -104,14 +105,22 @@ class PassToBackEnd {
         if (password == null) {
           throw Exception('Please enter password');
         }
-        body = {'account': account, 'password': password, 'username': username};
-        if (register) {
-          stringUrl += 'register';
+        if (username != null && register == true) {
+          body = {
+            'account': account,
+            'password': password,
+            'username': username
+          };
         } else {
-          stringUrl += 'sigin';
+          body = {'account': account, 'password': password};
+        }
+        if (register == true) {
+          stringUrl += 'register/';
+        } else {
+          stringUrl += 'signin/';
         }
       }
-
+      debugPrint(stringUrl);
       url = Uri.parse(stringUrl);
 
       http.Response response = await http.post(url, body: body);
@@ -126,13 +135,14 @@ class PassToBackEnd {
         await storage.write(key: 'auth-provider', value: provider);
         await storage.write(key: 'auth-token', value: response.body);
 
-        // storage.readAll().then((value) => debugPrint(value.toString()));
+        storage.readAll().then((value) => debugPrint(value.toString()));
       } else if (response.statusCode < 600 && response.statusCode > 499) {
         throw Exception('Server exception: code ${response.statusCode}');
       } else {
         throw Exception('reponses status: ${response.statusCode}');
       }
     } catch (e) {
+      debugPrint("In func. toAuthBabkend: $e");
       rethrow;
     }
   }

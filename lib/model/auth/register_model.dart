@@ -48,7 +48,7 @@ class RegisterModel {
       // debugPrint(userId);
       // await db.setAccount(account: tempProfile.copyWith(accountId: userId));
       AuthService authService = AuthService();
-      authService.signUp(
+      await authService.signUp(
           account: email, password: password, username: userName);
       debugPrint('upload successfully');
       return RegisterState.success;
