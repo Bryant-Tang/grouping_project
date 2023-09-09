@@ -48,7 +48,13 @@ class AuthService {
     }
   }
 
-  Future signOut() async {}
+  Future logOut() async {
+    const storage = FlutterSecureStorage();
+
+    await storage.delete(key: 'auth-provider');
+    await storage.delete(key: 'auth-token');
+    storage.readAll().then((value) => debugPrint(value.toString()));
+  }
 
   Future googleSignIn() async {
     try {
