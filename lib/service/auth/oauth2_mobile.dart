@@ -70,13 +70,14 @@ class BaseOauth {
       ..setNavigationDelegate(
         NavigationDelegate(
           onWebResourceError: (WebResourceError error) {
+            // TODO: Do some error handling
             debugPrint("===============================> onWebResourceError:");
             debugPrint(error.errorType.toString());
             debugPrint(error.errorCode.toString());
             debugPrint(error.description);
           },
           onUrlChange: (change) {
-            debugPrint(change.url);
+            // debugPrint(change.url);
           },
         ),
       )

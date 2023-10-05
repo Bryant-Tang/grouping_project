@@ -20,7 +20,6 @@ class AuthService {
       {required String account,
       required String password,
       String? username}) async {
-    debugPrint(Platform.operatingSystem);
     try {
       await PassToBackEnd.toAuthBabkend(
           provider: 'account',
@@ -37,7 +36,6 @@ class AuthService {
   Future signIn({required String account, required String password}) async {
     // AccountAuth accountAuth = AccountAuth();
     // await accountAuth.signIn(account: account, password: password);
-    debugPrint(Platform.operatingSystem);
     try {
       await PassToBackEnd.toAuthBabkend(
           provider: 'account',
@@ -105,7 +103,6 @@ class AuthService {
   }
 
   Future lineSignIn() async {
-    debugPrint(Platform.operatingSystem);
     // TODO: implement lineSignIn;
   }
 }
@@ -160,7 +157,7 @@ class PassToBackEnd {
           stringUrl += 'signin/';
         }
       }
-      debugPrint(stringUrl);
+
       url = Uri.parse(stringUrl);
 
       http.Response response = await http.post(url, body: body);
