@@ -1,6 +1,6 @@
 class Config {
-  static String baseUriWeb = 'http://localhost:8000';
-  static String baseUriMobile = 'http://192.168.0.102:8000';
+  static String baseUri = 'http://localhost:8000';
+  static String baseUriMobile = 'http://10.0.2.2:8000';
 
   static Uri googleAuthEndpoint =
       Uri.parse('https://accounts.google.com/o/oauth2/v2/auth');

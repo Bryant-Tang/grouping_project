@@ -49,12 +49,9 @@ class LoginModel {
 
   Future<LoginState> thirdPartyLogin(String name) async {
     try {
-      // final result = await authService.thridPartyLogin(name);
+      AuthService authService = AuthService();
+      await authService.thridPartyLogin(name);
       // TODO: add email login method
-      final result = null;
-      if (result == null) {
-        return LoginState.loginFail;
-      }
     } catch (e) {
       debugPrint(e.toString());
       return LoginState.loginFail;

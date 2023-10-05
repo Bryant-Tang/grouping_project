@@ -2,8 +2,9 @@ import "dart:io";
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:grouping_project/service/auth/oauth2.dart';
 import 'package:grouping_project/config/config.dart';
+
+import 'oauth2_mobile.dart' if (kIsWeb) 'oauth2_web.dart';
 
 class GoogleAuth {
   bool isLoading = false;
@@ -43,7 +44,7 @@ class GoogleAuth {
       authorizationEndpoint: Config.googleAuthEndpoint,
       tokenEndpoint: Config.googleTokenEndpoint,
     );
-    oauth2.signInWeb();
+    // oauth2.signIn();
   }
 
   Future signInMobile() async {
@@ -55,6 +56,6 @@ class GoogleAuth {
       authorizationEndpoint: Config.googleAuthEndpoint,
       tokenEndpoint: Config.googleTokenEndpoint,
     );
-    oauth2.signInMobile();
+    // oauth2.signIn();
   }
 }

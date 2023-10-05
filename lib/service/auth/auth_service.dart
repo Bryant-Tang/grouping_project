@@ -20,6 +20,7 @@ class AuthService {
       {required String account,
       required String password,
       String? username}) async {
+    debugPrint(Platform.operatingSystem);
     try {
       await PassToBackEnd.toAuthBabkend(
           provider: 'account',
@@ -36,6 +37,7 @@ class AuthService {
   Future signIn({required String account, required String password}) async {
     // AccountAuth accountAuth = AccountAuth();
     // await accountAuth.signIn(account: account, password: password);
+    debugPrint(Platform.operatingSystem);
     try {
       await PassToBackEnd.toAuthBabkend(
           provider: 'account',
@@ -56,13 +58,30 @@ class AuthService {
     storage.readAll().then((value) => debugPrint(value.toString()));
   }
 
+  Future thridPartyLogin(String name) async {
+    switch (name) {
+      case 'google':
+        googleSignIn();
+        break;
+      case 'github':
+        githubSignIn();
+        break;
+      case 'line':
+        lineSignIn();
+        break;
+      default:
+    }
+  }
+
   Future googleSignIn() async {
     try {
+      debugPrint(Platform.operatingSystem);
       if (kIsWeb) {
         await _googleAuth.signInWeb();
         await PassToBackEnd.toAuthBabkend(provider: 'google');
       } else if (Platform.isAndroid || Platform.isIOS) {
-        throw UnimplementedError('Mobile platforms are current WIP');
+        await _googleAuth.signInMobile();
+        await PassToBackEnd.toAuthBabkend(provider: 'google');
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -71,11 +90,14 @@ class AuthService {
 
   Future githubSignIn() async {
     try {
+      debugPrint(Platform.operatingSystem);
+      await PassToBackEnd.toInformPlatform();
       if (kIsWeb) {
         await _gitHubAuth.signInWeb();
         await PassToBackEnd.toAuthBabkend(provider: 'github');
       } else if (Platform.isAndroid || Platform.isIOS) {
-        throw UnimplementedError('Mobile platforms are current WIP');
+        await _gitHubAuth.signInMobile();
+        await PassToBackEnd.toAuthBabkend(provider: 'github');
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -83,11 +105,23 @@ class AuthService {
   }
 
   Future lineSignIn() async {
+    debugPrint(Platform.operatingSystem);
     // TODO: implement lineSignIn;
   }
 }
 
 class PassToBackEnd {
+  static Future toInformPlatform() async {
+    String stringUrl;
+    if (kIsWeb) {
+      stringUrl = '${Config.baseUri}/auth/platform/';
+    } else {
+      stringUrl = '${Config.baseUriMobile}/auth/platform/';
+    }
+    http.Response response = await http.post(Uri.parse(stringUrl),
+        body: {'platform': kIsWeb ? 'web' : 'mobile'});
+  }
+
   static Future toAuthBabkend(
       {required String provider,
       String? account,
@@ -99,7 +133,7 @@ class PassToBackEnd {
       Uri url;
       String stringUrl;
       if (kIsWeb) {
-        stringUrl = '${Config.baseUriWeb}/auth/$provider/';
+        stringUrl = '${Config.baseUri}/auth/$provider/';
       } else {
         stringUrl = '${Config.baseUriMobile}/auth/$provider/';
       }
