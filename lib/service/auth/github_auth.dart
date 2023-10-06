@@ -7,7 +7,7 @@ import 'package:grouping_project/config/config.dart';
 import 'oauth2_mobile.dart' if (kIsWeb) 'oauth2_web.dart';
 
 class GitHubAuth {
-  Future signInWeb() async {
+  Future signInWeb(BuildContext context) async {
     await dotenv.load(fileName: ".env");
     BaseOauth oauth2 = BaseOauth(
       clientId: dotenv.env['GITHUB_CLIENT_ID_WEB']!,
@@ -16,10 +16,11 @@ class GitHubAuth {
       authorizationEndpoint: Config.gitHubAuthEndpoint,
       tokenEndpoint: Config.gitHubTokenEndpoint,
     );
-    return oauth2.signIn();
+    oauth2.getSignInGrant();
+    oauth2.getSignInWindow(context);
   }
 
-  Future signInMobile() async {
+  Future signInMobile(BuildContext context) async {
     await dotenv.load(fileName: ".env");
     BaseOauth oauth2 = BaseOauth(
       clientId: dotenv.env['GITHUB_CLIENT_ID_MOBILE']!,
@@ -28,6 +29,7 @@ class GitHubAuth {
       authorizationEndpoint: Config.gitHubAuthEndpoint,
       tokenEndpoint: Config.gitHubTokenEndpoint,
     );
-    return oauth2.signIn();
+    oauth2.getSignInGrant();
+    oauth2.getSignInWindow(context);
   }
 }

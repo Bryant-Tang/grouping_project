@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:grouping_project/config/config.dart';
 import 'package:grouping_project/exceptions/auth_service_exceptions.dart';
 import 'package:http/http.dart' as http;
@@ -62,7 +63,7 @@ class AuthService {
         googleSignIn();
         break;
       case 'github':
-        githubSignIn();
+        // githubSignIn();
         break;
       case 'line':
         lineSignIn();
@@ -86,16 +87,15 @@ class AuthService {
     }
   }
 
-  Future githubSignIn() async {
+  Future githubSignIn(BuildContext context) async {
     try {
       debugPrint(Platform.operatingSystem);
       await PassToBackEnd.toInformPlatform();
       if (kIsWeb) {
-        await _gitHubAuth.signInWeb();
+        await _gitHubAuth.signInWeb(context);
         await PassToBackEnd.toAuthBabkend(provider: 'github');
       } else if (Platform.isAndroid || Platform.isIOS) {
-        await _gitHubAuth.signInMobile();
-        await PassToBackEnd.toAuthBabkend(provider: 'github');
+        await _gitHubAuth.signInMobile(context);
       }
     } catch (e) {
       debugPrint(e.toString());

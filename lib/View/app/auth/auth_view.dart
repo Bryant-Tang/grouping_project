@@ -35,7 +35,7 @@ class AuthView extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 AuthService authService = AuthService();
-                authService.githubSignIn();
+                authService.githubSignIn(context);
               },
               child: Text("Login With Github"),
             ),

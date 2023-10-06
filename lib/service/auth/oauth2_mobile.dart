@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:grouping_project/service/auth/auth_service.dart';
 
 import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:webview_flutter/webview_flutter.dart';
@@ -48,23 +50,23 @@ class BaseOauth {
     // scopes = scopes;
   }
 
-  Future signIn() async {
-    grant = oauth2.AuthorizationCodeGrant(
+  oauth2.AuthorizationCodeGrant getSignInGrant() {
+    return grant = oauth2.AuthorizationCodeGrant(
         clientId, authorizationEndpoint, tokenEndpoint,
         secret: clientSecret, httpClient: JsonFormatHttpClient());
+  }
+
+  getSignInWindow(BuildContext context) {
     authorizationUrl = grant.getAuthorizationUrl(redirectedUrl, scopes: scopes);
 
     try {
-      await redirectAndListen(authorizationUrl);
-      await Future.delayed(Duration(seconds: 2));
+      redirectAndListen(authorizationUrl, context);
     } catch (e) {
       debugPrint(e.toString());
-    } finally {
-      grant.close();
     }
   }
 
-  WebViewWidget redirectAndListen(Uri url) {
+  redirectAndListen(Uri url, BuildContext context) {
     WebViewController controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
@@ -77,12 +79,23 @@ class BaseOauth {
             debugPrint(error.description);
           },
           onUrlChange: (change) {
-            // debugPrint(change.url);
+            if (change.url!.contains("8000")) {
+              Navigator.of(context).pop();
+              PassToBackEnd.toAuthBabkend(provider: 'github');
+              grant.close();
+            }
           },
         ),
       )
       ..loadRequest(authorizationUrl);
 
-    return WebViewWidget(controller: controller);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return WebViewWidget(controller: controller);
+        },
+      ),
+    );
   }
 }
