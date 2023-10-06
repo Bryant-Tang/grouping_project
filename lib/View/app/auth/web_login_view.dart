@@ -139,7 +139,12 @@ class _WebLoginViewState extends State<WebLoginView> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         thirdPartyLoginButton(
-            color: Colors.blue, iconPath: googleIconPath, onPressed: () {}),
+            color: Colors.blue,
+            iconPath: googleIconPath,
+            onPressed: () {
+              AuthService authService = AuthService();
+              authService.googleSignIn();
+            }),
         thirdPartyLoginButton(
             color: Colors.purple,
             iconPath: gitHubIconPath,
@@ -148,7 +153,12 @@ class _WebLoginViewState extends State<WebLoginView> {
               authService.githubSignIn(context);
             }),
         thirdPartyLoginButton(
-            color: Colors.green, iconPath: lineIconPath, onPressed: () {}),
+            color: Colors.green,
+            iconPath: lineIconPath,
+            onPressed: () {
+              AuthService authService = AuthService();
+              authService.lineSignIn(context);
+            }),
       ],
     );
   }

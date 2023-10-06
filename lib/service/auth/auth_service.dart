@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:grouping_project/config/config.dart';
 import 'package:grouping_project/exceptions/auth_service_exceptions.dart';
+import 'package:grouping_project/service/auth/line_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -16,6 +17,7 @@ import 'package:grouping_project/service/auth/google_auth.dart';
 class AuthService {
   final GoogleAuth _googleAuth = GoogleAuth();
   final GitHubAuth _gitHubAuth = GitHubAuth();
+  final LineAuth _lineAuth = LineAuth();
 
   Future signUp(
       {required String account,
@@ -66,7 +68,7 @@ class AuthService {
         // githubSignIn();
         break;
       case 'line':
-        lineSignIn();
+        // lineSignIn();
         break;
       default:
     }
@@ -105,8 +107,22 @@ class AuthService {
     }
   }
 
-  Future lineSignIn() async {
-    // TODO: implement lineSignIn;
+  Future lineSignIn(BuildContext context) async {
+    try {
+      // debugPrint(Platform.operatingSystem);
+      await PassToBackEnd.toInformPlatform();
+      if (kIsWeb) {
+        await _lineAuth.signInWeb(context);
+        await Future.delayed(Duration(seconds: 3));
+        await PassToBackEnd.toAuthBabkend(provider: 'github');
+      } else if (Platform.isAndroid || Platform.isIOS) {
+        await _lineAuth.signInMobile(context);
+      } else {
+        await _lineAuth.signInWeb(context);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 }
 

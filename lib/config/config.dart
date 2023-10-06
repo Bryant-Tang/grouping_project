@@ -11,4 +11,9 @@ class Config {
       Uri.parse('https://github.com/login/oauth/authorize');
   static Uri gitHubTokenEndpoint =
       Uri.parse('https://github.com/login/oauth/access_token');
+
+  static Uri lineAuthEndPoint =
+      Uri.parse("https://access.line.me/oauth2/v2.1/authorize");
+  static Uri lineTokenEndpoint =
+      Uri.parse("https://api.line.me/oauth2/v2.1/token");
 }

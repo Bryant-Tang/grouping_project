@@ -42,7 +42,7 @@ class AuthView extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 AuthService authService = AuthService();
-                authService.lineSignIn();
+                authService.lineSignIn(context);
               },
               child: Text("Login With Line"),
             ),
