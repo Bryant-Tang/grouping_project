@@ -12,8 +12,8 @@ import '../../config/config.dart';
 
 // Import for Android features.
 import ''
-    if (Platform.isAndroid) 'package:webview_flutter_android/webview_flutter_android.dart'
-    if (Platform.isAndroid) 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+    if (Platform.isAndroid) 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart'
+    if (Platform.isAndroid) 'package:webview_flutter_android/webview_flutter_android.dart';
 // Import for iOS features.
 
 class JsonFormatHttpClient extends http.BaseClient {

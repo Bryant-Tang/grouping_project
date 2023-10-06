@@ -89,13 +89,16 @@ class AuthService {
 
   Future githubSignIn(BuildContext context) async {
     try {
-      debugPrint(Platform.operatingSystem);
+      // debugPrint(Platform.operatingSystem);
       await PassToBackEnd.toInformPlatform();
       if (kIsWeb) {
         await _gitHubAuth.signInWeb(context);
+        await Future.delayed(Duration(seconds: 3));
         await PassToBackEnd.toAuthBabkend(provider: 'github');
       } else if (Platform.isAndroid || Platform.isIOS) {
         await _gitHubAuth.signInMobile(context);
+      } else {
+        await _gitHubAuth.signInWeb(context);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -112,8 +115,10 @@ class PassToBackEnd {
     String stringUrl;
     if (kIsWeb) {
       stringUrl = '${Config.baseUri}/auth/platform/';
-    } else {
+    } else if (Platform.isAndroid || Platform.isIOS) {
       stringUrl = '${Config.baseUriMobile}/auth/platform/';
+    } else {
+      stringUrl = '${Config.baseUri}/auth/platform/';
     }
     http.Response response = await http.post(Uri.parse(stringUrl),
         body: {'platform': kIsWeb ? 'web' : 'mobile'});

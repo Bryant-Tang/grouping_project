@@ -5,6 +5,7 @@ import 'package:grouping_project/View/theme/padding.dart';
 import 'package:grouping_project/View/theme/text.dart';
 import 'package:grouping_project/View/theme/theme_manager.dart';
 import 'package:grouping_project/ViewModel/auth/login_view_model.dart';
+import 'package:grouping_project/service/auth/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class WebLoginView extends StatefulWidget {
@@ -140,7 +141,12 @@ class _WebLoginViewState extends State<WebLoginView> {
         thirdPartyLoginButton(
             color: Colors.blue, iconPath: googleIconPath, onPressed: () {}),
         thirdPartyLoginButton(
-            color: Colors.purple, iconPath: gitHubIconPath, onPressed: () {}),
+            color: Colors.purple,
+            iconPath: gitHubIconPath,
+            onPressed: () {
+              AuthService authService = AuthService();
+              authService.githubSignIn(context);
+            }),
         thirdPartyLoginButton(
             color: Colors.green, iconPath: lineIconPath, onPressed: () {}),
       ],

@@ -58,9 +58,11 @@ class BaseOauth {
 
     try {
       var window = html.window.open(authorizationUrl.toString(), "_blank");
-      debugPrint(Uri.base.toString());
+      debugPrint(window.location.toString());
     } catch (e) {
       debugPrint(e.toString());
+    } finally {
+      grant.close();
     }
   }
 }

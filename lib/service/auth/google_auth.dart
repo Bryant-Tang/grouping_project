@@ -4,7 +4,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:grouping_project/config/config.dart';
 
-import 'oauth2_mobile.dart' if (kIsWeb) 'oauth2_web.dart';
+import 'oauth2_mobile.dart'
+    if (kIsWeb) 'oauth2_web.dart'
+    if (Platform.isWindows) 'oauth2_web.dart';
 
 class GoogleAuth {
   bool isLoading = false;

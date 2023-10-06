@@ -1,10 +1,14 @@
 // import 'package:oauth2/oauth2.dart' as oauth2;
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:grouping_project/config/config.dart';
 
-import 'oauth2_mobile.dart' if (kIsWeb) 'oauth2_web.dart';
+import 'oauth2_web.dart'
+    if (Platform.isAndroid) 'oauth2_mobile.dart'
+    if (Platform.isIOS) 'oauth2_mobile.dart';
 
 class GitHubAuth {
   Future signInWeb(BuildContext context) async {
